@@ -1,32 +1,32 @@
-# Prerequisites
-*.d
+*.swp
+*.*~
+project.lock.json
+.DS_Store
+*.pyc
 
-# Compiled Object files
-*.slo
-*.lo
-*.o
-*.obj
+# Visual Studio Code
+.vscode
 
-# Precompiled Headers
-*.gch
-*.pch
+# User-specific files
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
 
-# Compiled Dynamic libraries
-*.so
-*.dylib
-*.dll
+# Build results
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+x64/
+x86/
+build/
+bld/
+[Bb]in/
+[Oo]bj/
+msbuild.log
+msbuild.err
+msbuild.wrn
 
-# Fortran module files
-*.mod
-*.smod
-
-# Compiled Static libraries
-*.lai
-*.la
-*.a
-*.lib
-
-# Executables
-*.exe
-*.out
-*.app
+# Visual Studio 2015
+.vs/
