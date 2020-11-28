@@ -1,10 +1,6 @@
 ﻿using CoStudy.API.WebAPI.Middlewares;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace CoStudy.API.WebAPI.Extensions
 {
@@ -18,7 +14,7 @@ namespace CoStudy.API.WebAPI.Extensions
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "CoStudy.API.WebAPI");
                 c.RoutePrefix = string.Empty;
             });
-          
+
         }
         public static void UseErrorHandlingMiddleware(this IApplicationBuilder app)
         {
@@ -28,6 +24,11 @@ namespace CoStudy.API.WebAPI.Extensions
                 context.Request.EnableBuffering(); // or .EnableRewind();
                 await next();
             });
+        }
+
+        public static void UseCustomAuthentication(this IApplicationBuilder app)
+        {
+
         }
     }
 }

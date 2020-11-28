@@ -6,8 +6,12 @@
 
   <ItemGroup>
     <Folder Include="Common\" />
-    <Folder Include="Entities\" />
     <Folder Include="Settings\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Abstractions" Version="3.1.9" />
+    <PackageReference Include="MongoDB.Driver" Version="2.11.4" />
   </ItemGroup>
 
 </Project>

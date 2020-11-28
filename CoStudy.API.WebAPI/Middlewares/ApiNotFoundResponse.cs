@@ -2,11 +2,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace CoStudy.API.WebAPI.Middlewares
 {
-    public class ApiNotFoundResponse:ApiResponse
+    public class ApiNotFoundResponse : ApiResponse
     {
         public IEnumerable<string> Errors { get; }
 

@@ -11,17 +11,21 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Infrastructure", "Infrastru
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "WebApi", "WebApi", "{1345D795-7A43-45E0-9106-F2406AAA198E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoStudy.API.Application", "CoStudy.API.Application\CoStudy.API.Application.csproj", "{E97194FB-E7AD-4134-A65D-1F7424FF4C87}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CoStudy.API.Application", "CoStudy.API.Application\CoStudy.API.Application.csproj", "{E97194FB-E7AD-4134-A65D-1F7424FF4C87}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoStudy.API.Domain", "CoStudy.API.Domain\CoStudy.API.Domain.csproj", "{3B7E0080-5ACE-4B54-8D9E-A90A311C9307}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CoStudy.API.Domain", "CoStudy.API.Domain\CoStudy.API.Domain.csproj", "{3B7E0080-5ACE-4B54-8D9E-A90A311C9307}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoStudy.API.Infrastructure.Identity", "CoStudy.API.Infrastructure.Identity\CoStudy.API.Infrastructure.Identity.csproj", "{42D3C496-9AD4-4EBB-81DC-337ECF75AA00}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CoStudy.API.Infrastructure.Identity", "CoStudy.API.Infrastructure.Identity\CoStudy.API.Infrastructure.Identity.csproj", "{42D3C496-9AD4-4EBB-81DC-337ECF75AA00}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoStudy.API.Infrastructure.Persistence", "CoStudy.API.Infrastructure.Persistence\CoStudy.API.Infrastructure.Persistence.csproj", "{91D06452-2A5B-4CD5-83B1-3FD00CF727C6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CoStudy.API.Infrastructure.Persistence", "CoStudy.API.Infrastructure.Persistence\CoStudy.API.Infrastructure.Persistence.csproj", "{91D06452-2A5B-4CD5-83B1-3FD00CF727C6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoStudy.API.Infrastructure.Shared", "CoStudy.API.Infrastructure.Shared\CoStudy.API.Infrastructure.Shared.csproj", "{763C24EC-6F47-41BF-A2D6-B5F92F5BE52D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CoStudy.API.Infrastructure.Shared", "CoStudy.API.Infrastructure.Shared\CoStudy.API.Infrastructure.Shared.csproj", "{763C24EC-6F47-41BF-A2D6-B5F92F5BE52D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoStudy.API.WebAPI", "CoStudy.API.WebAPI\CoStudy.API.WebAPI.csproj", "{B9067C29-33A8-43DF-B5C5-7DCE3B832503}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CoStudy.API.WebAPI", "CoStudy.API.WebAPI\CoStudy.API.WebAPI.csproj", "{B9067C29-33A8-43DF-B5C5-7DCE3B832503}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Example.Mongo.Entities", "Example.Mongo.Entities", "{28E4CA3F-3744-480F-921A-84BCBB80DA7D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mongo.Entities.Demo", "Mongo.Entities.Demo\Mongo.Entities.Demo.csproj", "{4F7370AE-7D9B-4ADF-BC68-D82129C7C6D2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -53,6 +57,10 @@ Global
 		{B9067C29-33A8-43DF-B5C5-7DCE3B832503}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B9067C29-33A8-43DF-B5C5-7DCE3B832503}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B9067C29-33A8-43DF-B5C5-7DCE3B832503}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4F7370AE-7D9B-4ADF-BC68-D82129C7C6D2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4F7370AE-7D9B-4ADF-BC68-D82129C7C6D2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4F7370AE-7D9B-4ADF-BC68-D82129C7C6D2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4F7370AE-7D9B-4ADF-BC68-D82129C7C6D2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -67,6 +75,7 @@ Global
 		{91D06452-2A5B-4CD5-83B1-3FD00CF727C6} = {FD517B0F-3526-4F75-86CF-B9B9C0395B09}
 		{763C24EC-6F47-41BF-A2D6-B5F92F5BE52D} = {FD517B0F-3526-4F75-86CF-B9B9C0395B09}
 		{B9067C29-33A8-43DF-B5C5-7DCE3B832503} = {1345D795-7A43-45E0-9106-F2406AAA198E}
+		{4F7370AE-7D9B-4ADF-BC68-D82129C7C6D2} = {28E4CA3F-3744-480F-921A-84BCBB80DA7D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {6DFC4A65-77A4-4AEA-AE9E-416FBA6D9D20}

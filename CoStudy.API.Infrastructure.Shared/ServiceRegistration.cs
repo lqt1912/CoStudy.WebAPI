@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace CoStudy.API.Infrastructure.Shared
+﻿namespace CoStudy.API.Infrastructure.Shared
 {
-    class ServiceRegistration
+    public class ServiceRegistration
     {
+
     }
 }

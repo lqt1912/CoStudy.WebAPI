@@ -1,20 +1,16 @@
 ﻿using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace CoStudy.API.WebAPI.Extensions
 {
-    public static  class ServiceExtensions
+    public static class ServiceExtensions
     {
 
         public static void AddSwaggerExtension(this IServiceCollection services)
         {
-            services.AddSwaggerGen(c=>
+            services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo
                 {
@@ -56,6 +52,11 @@ namespace CoStudy.API.WebAPI.Extensions
                 options.UseCaseSensitivePaths = true;
                 options.MaximumBodySize = 1024;
             });
+        }
+
+        public static void ConfigureApiAuthentication(this IServiceCollection services)
+        {
+
         }
     }
 }

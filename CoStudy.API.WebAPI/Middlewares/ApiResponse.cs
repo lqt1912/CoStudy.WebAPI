@@ -1,7 +1,4 @@
 ﻿using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Text.Json.Serialization;
 
 namespace CoStudy.API.WebAPI.Middlewares
@@ -11,11 +8,11 @@ namespace CoStudy.API.WebAPI.Middlewares
     /// </summary>
     public class ApiResponse
     {
-        [JsonProperty(PropertyName ="success")]
+        [JsonProperty(PropertyName = "success")]
         public bool Success { get; }
 
         [JsonPropertyName("code")]
-        [JsonProperty(PropertyName ="code")]
+        [JsonProperty(PropertyName = "code")]
         public int StatusCode { get; }
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "message")]

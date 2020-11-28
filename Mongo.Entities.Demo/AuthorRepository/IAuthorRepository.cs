@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace CoStudy.API.Infrastructure.Persistence
+namespace Mongo.Entities.Demo.AuthorRepository
 {
-    class ServiceRegistration
+    public interface IAuthorRepository
     {
     }
 }

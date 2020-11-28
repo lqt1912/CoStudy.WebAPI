@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using CoStudy.API.Infrastructure.Identity.Helpers;
 using CoStudy.API.WebAPI.Middlewares;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CoStudy.API.WebAPI.Controllers
@@ -13,9 +9,10 @@ namespace CoStudy.API.WebAPI.Controllers
     public class InitialController : ControllerBase
     {
         [HttpGet]
+        [Authorize]
         public IActionResult Get()
         {
-            return Ok( new ApiOkResponse("aaa"));
+            return Ok(new ApiOkResponse("Api test success"));
         }
     }
 }

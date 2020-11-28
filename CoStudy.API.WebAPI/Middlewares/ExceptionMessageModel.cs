@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace CoStudy.API.WebAPI.Middlewares
+﻿namespace CoStudy.API.WebAPI.Middlewares
 {
     public class ExceptionMessageModel
     {

@@ -48,6 +48,7 @@ namespace CoStudy.API.WebAPI.Middlewares
                 message = messageDetail.Message;
 
                 context.Response.StatusCode = 400;
+
                 success = false;
             }
 
