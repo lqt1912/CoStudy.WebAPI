@@ -24,9 +24,18 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
             _httpContextAccessor = httpContextAccessor;
         }
 
-        public Task<AddAdditionalInfoResponse> AddAdditonalInfoAsync(AddAdditionalInfoRequest request)
+        public async Task<AddAdditionalInfoResponse> AddAdditonalInfoAsync(AddAdditionalInfoRequest request)
         {
-            throw new NotImplementedException();
+            var additionalInfos = UserAdapter.FromRequest(request);
+
+            var currentUser = await userRepository.GetByIdAsync(ObjectId.Parse(request.UserId));
+
+            currentUser.AdditionalInfos.AddRange(additionalInfos);
+            currentUser.ModifiedDate = DateTime.Now;
+
+            await userRepository.UpdateAsync(currentUser, ObjectId.Parse(request.UserId));
+
+            return UserAdapter.ToResponse(additionalInfos, request.UserId);
         }
 
         public async Task<AddAvatarResponse> AddAvatarAsync(AddAvatarRequest request)
@@ -92,6 +101,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
 
             return UserAdapter.ToResponse(user);
         }
+
 
     }
 }

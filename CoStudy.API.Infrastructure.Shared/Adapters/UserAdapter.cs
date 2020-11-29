@@ -6,6 +6,7 @@ using CoStudy.API.Infrastructure.Shared.Models.Response.UserResponse;
 using Microsoft.AspNetCore.Http;
 using MongoDB.Bson;
 using System;
+using System.Collections.Generic;
 
 namespace CoStudy.API.Infrastructure.Shared.Adapters
 {
@@ -73,6 +74,30 @@ namespace CoStudy.API.Infrastructure.Shared.Adapters
             };
         }
 
+        public static List<AdditionalInfo> FromRequest(AddAdditionalInfoRequest request)
+        {
+            var result = new List<AdditionalInfo>();
+            foreach (var item in request.AdditionalInfos)
+            {
+                result.Add(
+                    new AdditionalInfo() { 
+                    InfoValue = item.InfoValue,
+                    InfoType = item.InfoType,
+                    CreatedDate =DateTime.Now,
+                    ModifiedDate = DateTime.Now
+                    });
+            }
+            return request.AdditionalInfos;
+        }
+
+        public static AddAdditionalInfoResponse ToResponse(List<AdditionalInfo> info, string id)
+        {
+            return new AddAdditionalInfoResponse()
+            { 
+                UserId =id,
+                AdditionalInfos =info
+            };
+        }
 
     }
 }

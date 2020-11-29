@@ -23,7 +23,7 @@ namespace CoStudy.API.WebAPI.Controllers
         }
 
         [HttpPost]
-        [Route("user/register")]
+        [Route("register")]
         public async Task<IActionResult> AddUser(AddUserRequest user)
         {
             var data = await userService.AddUserAsync(user);
@@ -32,7 +32,7 @@ namespace CoStudy.API.WebAPI.Controllers
         }
 
         [HttpPost]
-        [Route("user/avatar")]
+        [Route("avatar")]
         public async Task<IActionResult> UploadAvatar([FromForm]AddAvatarRequest request)
         {
             var data = await userService.AddAvatarAsync(request);
@@ -40,7 +40,7 @@ namespace CoStudy.API.WebAPI.Controllers
         }
 
         [HttpPost]
-        [Route("user/followers")]
+        [Route("followers")]
         public async Task<IActionResult> AddFollowers([FromBody] AddFollowerRequest request)
         {
             var data = await userService.AddFollowersAsync(request);
@@ -48,11 +48,20 @@ namespace CoStudy.API.WebAPI.Controllers
         }
 
         [HttpPost]
-        [Route("user/followings")]
+        [Route("followings")]
         public async Task<IActionResult> AddFollowings([FromBody] AddFollowerRequest request)
         {
             var data = await userService.AddFollowingsAsync(request);
             return Ok(new ApiOkResponse(data));
         }
+
+        [HttpPost]
+        [Route("additionalinfos")]
+        public async Task<IActionResult> AddAdditionalInfos(AddAdditionalInfoRequest request)
+        {
+            var data = await userService.AddAdditonalInfoAsync(request);
+            return Ok(new ApiOkResponse(data));
+        }
+
     }
 }
