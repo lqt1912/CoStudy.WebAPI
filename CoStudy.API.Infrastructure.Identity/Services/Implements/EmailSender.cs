@@ -12,7 +12,7 @@ namespace CoStudy.API.Infrastructure.Identity.Services.Implements
         public string SendGridKey { get; set; }
     }
 
-    public class EmailSender :IEmailSender
+    public class EmailSender : IEmailSender
     {
         public EmailSender(IOptions<AuthMessageSenderOptions> optionsAccessor)
         {

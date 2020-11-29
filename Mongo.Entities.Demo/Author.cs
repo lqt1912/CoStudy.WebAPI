@@ -6,7 +6,7 @@ namespace Examples.Models
 {
     public class Author : MyEntity
     {
-        public Author() :base()
+        public Author() : base()
         {
             Reviews = new List<Review>();
         }
@@ -20,7 +20,7 @@ namespace Examples.Models
 
         [BsonElement("reviews")]
 
-        public List<Review> Reviews  { get; set; }
-   
+        public List<Review> Reviews { get; set; }
+
     }
 }

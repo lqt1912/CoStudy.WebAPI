@@ -1,15 +1,11 @@
 ﻿using MongoDB.Bson;
 using MongoDB.Driver;
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Base
 {
-   public  interface IBaseRepository<T> where T:class
+    public interface IBaseRepository<T> where T : class
     {
         Task AddAsync(T entity);
         void Add(T entity);
@@ -21,7 +17,7 @@ namespace Base
         Task DeleteAsync(ObjectId id);
         bool Exists(ObjectId id);
         T Find(FilterDefinition<T> match);
-            Task<T> FindAsync(FilterDefinition<T> match);
+        Task<T> FindAsync(FilterDefinition<T> match);
 
         IQueryable<T> GetAll();
         Task<T> GetByIdAsync(ObjectId id);

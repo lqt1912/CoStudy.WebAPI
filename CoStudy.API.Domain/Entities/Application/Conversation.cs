@@ -1,22 +1,34 @@
-﻿using MongoDB.Bson;
+﻿using CoStudy.API.Domain.Entities.BaseEntity;
+using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
 using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace CoStudy.API.Domain.Entities.Application
 {
-   public  class Conversation
+    public class Conversation:Entity
     {
-        public ObjectId Id { get; set; }
+        public Conversation():base()
+        {
+            Messages = new List<Message>();
+        }
 
-        public string HostId { get; set;  }
+        [BsonElement("host_id")]
+        public string HostId { get; set; }
+
+        [BsonElement("guest_id")]
         public string GuestId { get; set; }
 
-        public virtual ICollection<Message> Messages { get; set; }
+        [BsonElement("messages")]
+        public  List<Message> Messages { get; set; }
 
+        [BsonElement("status")]
         public ItemStatus Status { get; set; }
 
+        [BsonElement("created_date")]
         public DateTime CreatedDate { get; set; }
+
+        [BsonElement("modified_date")]
         public DateTime ModifiedDate { get; set; }
     }
 }

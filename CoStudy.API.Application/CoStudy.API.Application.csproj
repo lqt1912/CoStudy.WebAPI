@@ -5,24 +5,21 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Behaviours\" />
-    <Folder Include="DTOs\" />
-    <Folder Include="Enums\" />
-    <Folder Include="Exceptions\" />
-    <Folder Include="Features\" />
-    <Folder Include="Mappings\" />
-    <Folder Include="Repositories\Implements\" />
-    <Folder Include="Repositories\Interfaces\" />
-    <Folder Include="Wrappers\" />
-    <Folder Include="Parameters\" />
+    <Compile Remove="Mappings\**" />
+    <EmbeddedResource Remove="Mappings\**" />
+    <None Remove="Mappings\**" />
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="10.1.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Http.Features" Version="5.0.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.1.9" />
     <PackageReference Include="MongoDB.Driver" Version="2.11.4" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\CoStudy.API.Domain\CoStudy.API.Domain.csproj" />
     <ProjectReference Include="..\CoStudy.API.Infrastructure.Persistence\CoStudy.API.Infrastructure.Persistence.csproj" />
   </ItemGroup>
 

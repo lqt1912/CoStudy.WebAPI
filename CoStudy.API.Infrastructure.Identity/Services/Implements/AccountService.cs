@@ -106,7 +106,7 @@ namespace CoStudy.API.Infrastructure.Identity.Services.Implements
             if (_context.Accounts.Any(x => x.Email == model.Email))
             {
                 // send already registered error in email to prevent account enumeration
-                  sendAlreadyRegisteredEmail(model.Email, origin);
+                sendAlreadyRegisteredEmail(model.Email, origin);
                 return;
             }
 

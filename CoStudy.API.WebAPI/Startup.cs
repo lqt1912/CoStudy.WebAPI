@@ -1,6 +1,8 @@
+using CoStudy.API.Application.Repositories;
 using CoStudy.API.Infrastructure.Identity;
 using CoStudy.API.Infrastructure.Identity.Contexts;
 using CoStudy.API.Infrastructure.Identity.Helpers;
+using CoStudy.API.Infrastructure.Shared.Services;
 using CoStudy.API.WebAPI.Extensions;
 using CoStudy.API.WebAPI.Middlewares;
 using Microsoft.AspNetCore.Builder;
@@ -31,12 +33,17 @@ namespace CoStudy.API.WebAPI
             //Config identity
             services.ConfigureIdentity();
 
+            services.RegisterCustomRepository();
+            services.RegisterCustomService();
+
             services.AddControllers();
             services.AddSwaggerExtension();
             services.ConfigureCors();
             services.ConfigureIISIntegration();
             services.ConfigureResponseCaching();
             services.ConfigureApiAuthentication();
+
+            services.AddHttpContextAccessor();
             // configure strongly typed settings object
 
         }
@@ -61,7 +68,7 @@ namespace CoStudy.API.WebAPI
             app.UseCustomAuthentication();
             app.UseSwaggerExtension();
             app.UseErrorHandlingMiddleware();
-
+            app.UseStaticFiles();
             app.UseMiddleware(middleware: typeof(ErrorWrappingMiddleware));
             app.Use(async (context, next) =>
             {  // <----

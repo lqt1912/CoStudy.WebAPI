@@ -1,17 +1,27 @@
-﻿using MongoDB.Bson;
-using System;
+﻿using CoStudy.API.Domain.Entities.BaseEntity;
+using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
 using System.Collections.Generic;
-using System.Text;
 
 namespace CoStudy.API.Domain.Entities.Application
 {
-   public  class Comment
+    public class Comment :Entity
     {
-        public ObjectId Id { get; set; }
+        public Comment():base()
+        {
+            Replies = new List<Comment>();
+        }
+
+        [BsonElement("content")]
         public string Content { get; set; }
 
+        [BsonElement("author_id")]
         public string AuthorId { get; set; }
+
+        [BsonElement("status")]
         public ItemStatus Status { get; set; }
-        public virtual ICollection<Comment> Replies { get; set; }
+
+        [BsonElement("replies")]
+        public  List<Comment> Replies { get; set; }
     }
 }

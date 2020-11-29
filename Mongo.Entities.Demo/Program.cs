@@ -1,14 +1,8 @@
 ﻿using Examples.Models;
-using MongoDB.Entities;
-using System;
-using System.Diagnostics;
-using System.Threading.Tasks;
-using MongoDB.Driver.Linq;
-using MongoDB.Driver;
-using Mongo.Entities.Demo.BookRepository1;
 using Mongo.Entities.Demo.BookServices;
-using System.Collections.Generic;
 using MongoDB.Bson;
+using System;
+using System.Threading.Tasks;
 
 namespace Mongo.Entities.Demo
 {
@@ -25,7 +19,7 @@ namespace Mongo.Entities.Demo
             {
                 Name = "Lê Quốc Thắng",
                 PhoneNumber = "012893723"
-             };
+            };
             var review = new Review()
             {
                 Stars = 3,

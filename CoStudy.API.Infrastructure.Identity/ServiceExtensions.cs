@@ -5,8 +5,6 @@ using CoStudy.API.Infrastructure.Identity.Services.Implements;
 using CoStudy.API.Infrastructure.Identity.Services.Interfaces;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.Extensions.DependencyInjection;
-using SendGrid;
-using SendGrid.Helpers.Mail;
 
 namespace CoStudy.API.Infrastructure.Identity
 {

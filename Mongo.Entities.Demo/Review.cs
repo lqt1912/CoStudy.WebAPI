@@ -1,12 +1,11 @@
 ﻿using Mongo.Entities.Demo;
 using MongoDB.Bson.Serialization.Attributes;
-using MongoDB.Entities;
 
 namespace Examples.Models
 {
-    public class Review:MyEntity
+    public class Review : MyEntity
     {
-        public Review():base()
+        public Review() : base()
         {
 
         }

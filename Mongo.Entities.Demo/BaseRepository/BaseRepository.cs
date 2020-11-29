@@ -1,11 +1,7 @@
 ﻿using Mongo.Entities.Demo;
 using MongoDB.Bson;
 using MongoDB.Driver;
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Base
@@ -21,7 +17,7 @@ namespace Base
             _collection = _client.GetDatabase().GetCollection<T>(alias);
         }
 
-        public async Task  AddAsync(T entity)
+        public async Task AddAsync(T entity)
         {
             await _collection.InsertOneAsync(entity);
         }
@@ -70,7 +66,7 @@ namespace Base
 
         public IQueryable<T> GetAll()
         {
-            return _collection.AsQueryable() ;
+            return _collection.AsQueryable();
         }
 
         public Task<T> GetByIdAsync(ObjectId id)
@@ -88,8 +84,8 @@ namespace Base
 
         public ReplaceOneResult Update(T entity, ObjectId id)
         {
-            var filter = Builders<T>.Filter.Eq("_id",id );
-           return  _collection.ReplaceOne(filter, entity);
+            var filter = Builders<T>.Filter.Eq("_id", id);
+            return _collection.ReplaceOne(filter, entity);
 
         }
 

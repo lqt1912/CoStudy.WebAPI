@@ -6,7 +6,7 @@ namespace Examples.Models
 {
     public class Book : Entity
     {
-        public Book() :base()
+        public Book() : base()
         {
             Authors = new List<Author>();
         }
