@@ -46,9 +46,17 @@ namespace CoStudy.API.Domain.Entities.Application
         [BsonElement("noftications")]
         public  List<Noftication> Noftications { get; set; }
 
+
+        /// <summary>
+        /// List id of follower
+        /// </summary>
         [BsonElement("followers")]
         public  List<string> Followers { get; set; }
 
+
+        /// <summary>
+        /// List id of followings
+        /// </summary>
         [BsonElement("followings")]
         public  List<string> Following { get; set; }
 

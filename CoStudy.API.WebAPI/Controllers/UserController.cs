@@ -63,5 +63,11 @@ namespace CoStudy.API.WebAPI.Controllers
             return Ok(new ApiOkResponse(data));
         }
 
+        [HttpPost]
+        [Route("field")]
+        public IActionResult AddField([FromForm]AddFieldRequest request)
+        {
+            return Ok();
+        }
     }
 }

@@ -10,7 +10,8 @@ namespace CoStudy.API.Domain.Entities.Application
     {
         public Post() : base()
         {
-            Contents = new List<MediaContent>();
+            StringContents = new List<string>();
+            MediaContents = new List<Image>();
             Comments = new List<Comment>();
             Fields = new List<Field>();
         }
@@ -31,12 +32,17 @@ namespace CoStudy.API.Domain.Entities.Application
         public DateTime ModifiedDate { get; set; }
 
         /// <summary>
-        /// Nội dung 
+        /// String content of posts
         /// </summary>
-        /// 
-        [BsonElement("contents")]
-        public  List<MediaContent> Contents { get; set; }
+        [BsonElement("string_contents")]
+        public  List<string> StringContents { get; set; }
 
+
+        /// <summary>
+        /// Media content of post
+        /// </summary>
+        [BsonElement("media_contents")]
+        public List<Image> MediaContents { get; set; }
 
         /// <summary>
         /// Bình luận
