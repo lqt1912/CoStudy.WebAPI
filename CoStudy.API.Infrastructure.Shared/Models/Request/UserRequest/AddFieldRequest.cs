@@ -1,4 +1,5 @@
 ﻿using CoStudy.API.Domain.Entities.Application;
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -11,7 +12,10 @@ namespace CoStudy.API.Infrastructure.Shared.Models.Request.UserRequest
         [JsonPropertyName("user_id")]
         public string UserId { get; set; }
 
-        [JsonPropertyName("field")]
-        public Field UserField { get; set; }
+        [JsonPropertyName("field_image")]
+        public IFormFile Image { get; set; }
+
+        [JsonPropertyName("field_value")]
+        public string UserField { get; set; }
     }
 }

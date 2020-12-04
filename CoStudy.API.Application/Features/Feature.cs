@@ -35,5 +35,14 @@ namespace CoStudy.API.Application.Features
             return location + fileName;
         }
 
+        public static string GetHostUrl(IHttpContextAccessor httpContextAccessor)
+        {
+            var scheme = httpContextAccessor.HttpContext.Request.Scheme;
+            var host = httpContextAccessor.HttpContext.Request.Host;
+            var pathBase = httpContextAccessor.HttpContext.Request.PathBase;
+            var location = $"{scheme}://{host}{pathBase}";
+            return location;
+        }
+
     }
 }

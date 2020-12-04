@@ -1,18 +1,20 @@
 ﻿using AutoMapper;
 using CoStudy.API.Infrastructure.Identity.Contexts;
 using CoStudy.API.Infrastructure.Identity.Helpers;
+using CoStudy.API.Infrastructure.Identity.Repositories.AccountRepository;
+using CoStudy.API.Infrastructure.Identity.Services.AccountService;
 using CoStudy.API.Infrastructure.Identity.Services.Implements;
 using CoStudy.API.Infrastructure.Identity.Services.Interfaces;
-using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.Extensions.DependencyInjection;
+using System.Configuration;
 
 namespace CoStudy.API.Infrastructure.Identity
 {
     public static class ServiceExtensions
     {
+
         public static void ConfigureIdentity(this IServiceCollection services)
         {
-            services.AddDbContext<IdentityContext>();
 
             var config = new MapperConfiguration(cfg =>
             {
@@ -21,16 +23,16 @@ namespace CoStudy.API.Infrastructure.Identity
 
             var mapper = config.CreateMapper();
             services.AddSingleton(mapper);
-            services.AddScoped<IAccountService, AccountService>();
+            services.AddTransient<IAccountRepository, AccountRepository>();
+            services.AddTransient<IAccountService, AccountService>();
             services.AddScoped<IEmailService, EmailService>();
 
-            services.AddTransient<IEmailSender, EmailSender>();
-
-            services.Configure<AuthMessageSenderOptions>(option =>
-            {
-                option.SendGridUser = "CoSudy.API";
-                option.SendGridKey = "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";
-            });
+            //services.Configure<AuthMessageSenderOptions>(option =>
+            //{
+            //    option.SendGridUser = "Costudy.API";
+            //    option.SendGridKey = "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";
+            //});
+            
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿using CoStudy.API.Domain.Entities.Identity;
+﻿using CoStudy.API.Domain.Entities.Identity.MongoAuthen;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CoStudy.API.WebAPI.Controllers

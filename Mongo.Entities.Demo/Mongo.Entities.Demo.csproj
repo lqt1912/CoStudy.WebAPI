@@ -6,6 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="3.1.10" />
     <PackageReference Include="MongoDB.Driver" Version="2.11.4" />
     <PackageReference Include="MongoDB.Entities" Version="20.4.0" />
   </ItemGroup>

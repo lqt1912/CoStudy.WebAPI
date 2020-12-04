@@ -1,8 +1,10 @@
 ﻿using CoStudy.API.Infrastructure.Identity.Contexts;
 using CoStudy.API.Infrastructure.Identity.Helpers;
+using CoStudy.API.Infrastructure.Identity.Repositories.AccountRepository;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using MongoDB.Bson;
 using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
@@ -15,6 +17,7 @@ namespace CoStudy.API.WebAPI.Middlewares
     {
         private readonly RequestDelegate _next;
         private readonly AppSettings _appSettings;
+       
 
         public JwtMiddleware(RequestDelegate next, IOptions<AppSettings> appSettings)
         {
@@ -22,17 +25,17 @@ namespace CoStudy.API.WebAPI.Middlewares
             _appSettings = appSettings.Value;
         }
 
-        public async Task Invoke(HttpContext context, IdentityContext dataContext)
+        public async Task Invoke(HttpContext context, IAccountRepository accountRepository)
         {
             var token = context.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
 
             if (token != null)
-                await attachAccountToContext(context, dataContext, token);
+                await attachAccountToContext(context, token, accountRepository);
 
             await _next(context);
         }
 
-        private async Task attachAccountToContext(HttpContext context, IdentityContext dataContext, string token)
+        private async Task attachAccountToContext(HttpContext context,  string token, IAccountRepository accountRepository)
         {
             try
             {
@@ -49,10 +52,10 @@ namespace CoStudy.API.WebAPI.Middlewares
                 }, out SecurityToken validatedToken);
 
                 var jwtToken = (JwtSecurityToken)validatedToken;
-                var accountId = int.Parse(jwtToken.Claims.First(x => x.Type == "id").Value);
+                var accountId = jwtToken.Claims.First(x => x.Type == "_id").Value;
 
                 // attach account to context on successful jwt validation
-                context.Items["Account"] = await dataContext.Accounts.FindAsync(accountId);
+                context.Items["Account"] = await accountRepository.GetByIdAsync(ObjectId.Parse(accountId));
             }
             catch
             {

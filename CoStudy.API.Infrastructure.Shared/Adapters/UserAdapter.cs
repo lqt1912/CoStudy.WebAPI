@@ -99,5 +99,38 @@ namespace CoStudy.API.Infrastructure.Shared.Adapters
             };
         }
 
+        public static Field FromRequest(AddFieldRequest request, IHttpContextAccessor context)
+        {
+
+            var url = Feature.SaveImageToUrl(request.Image, context);
+            var image = new Image()
+            {
+                ImageUrl = url,
+                Base64String = "updating",
+                OriginalHeight = 1,
+                OriginalWidth = 1,
+                CompressRatio =1,
+                CreatedDate = DateTime.Now,
+                ModifiedDate = DateTime.Now,
+                Discription = request.UserField
+            
+            };
+            return new Field()
+            {
+                Value= request.UserField,
+                ThumbnailImage=image
+            };
+        }
+
+        public static AddFieldResponse ToResponse(Field field, string id)
+        {
+            return new AddFieldResponse()
+            {
+                UserId = id,
+                Value= field.Value,
+                Image=field.ThumbnailImage.ImageUrl
+            };
+        }
+
     }
 }

@@ -1,10 +1,11 @@
-﻿using System;
+﻿using MongoDB.Bson;
+using System;
 
 namespace CoStudy.API.Infrastructure.Identity.Models.Account.Response
 {
     public class AccountResponse
     {
-        public int Id { get; set; }
+        public ObjectId Id { get; set; }
         public string Title { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }

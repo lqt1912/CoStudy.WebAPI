@@ -29,7 +29,6 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
             var additionalInfos = UserAdapter.FromRequest(request);
 
             var currentUser = await userRepository.GetByIdAsync(ObjectId.Parse(request.UserId));
-
             currentUser.AdditionalInfos.AddRange(additionalInfos);
             currentUser.ModifiedDate = DateTime.Now;
 
@@ -52,6 +51,18 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
 
             return UserAdapter.ToResponse(avatar,request.UserId);
 
+        }
+
+        public async Task<AddFieldResponse> AddFieldAsync(AddFieldRequest request)
+        {
+            var field = UserAdapter.FromRequest(request, _httpContextAccessor);
+            var currentUser = await userRepository.GetByIdAsync(ObjectId.Parse(request.UserId));
+            if (currentUser.Fortes == null)
+                currentUser.Fortes = new List<Field>();
+            currentUser.Fortes.Add(field);
+            currentUser.ModifiedDate = DateTime.Now;
+            await userRepository.UpdateAsync(currentUser, ObjectId.Parse(request.UserId));
+            return UserAdapter.ToResponse(field, request.UserId);
         }
 
         public async Task<AddFollowerResponse> AddFollowersAsync(AddFollowerRequest request)
@@ -102,6 +113,16 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
             return UserAdapter.ToResponse(user);
         }
 
+        public User GetByEmail(string email)
+        {
+            var user = userRepository.GetAll().ToList().SingleOrDefault(x => x.Email == email);
+            return user;
+        }
 
+        public async Task UpdateAsyc(User entity, string Id)
+        {
+            await userRepository.UpdateAsync(entity, ObjectId.Parse(Id));
+            
+        }
     }
 }

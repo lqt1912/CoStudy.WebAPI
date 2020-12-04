@@ -1,5 +1,8 @@
 ﻿using CoStudy.API.Domain.Entities.Identity;
+using CoStudy.API.Domain.Entities.Identity.MongoAuthen;
+using System;
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace CoStudy.API.Infrastructure.Identity.Models.Account.Request
 {

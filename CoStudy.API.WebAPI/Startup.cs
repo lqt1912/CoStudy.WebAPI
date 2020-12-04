@@ -2,6 +2,7 @@ using CoStudy.API.Application.Repositories;
 using CoStudy.API.Infrastructure.Identity;
 using CoStudy.API.Infrastructure.Identity.Contexts;
 using CoStudy.API.Infrastructure.Identity.Helpers;
+using CoStudy.API.Infrastructure.Identity.Services.Implements;
 using CoStudy.API.Infrastructure.Shared.Services;
 using CoStudy.API.WebAPI.Extensions;
 using CoStudy.API.WebAPI.Middlewares;
@@ -28,7 +29,7 @@ namespace CoStudy.API.WebAPI
         public void ConfigureServices(IServiceCollection services)
         {
             services.Configure<AppSettings>(Configuration.GetSection("AppSettings"));
-
+            services.Configure<MailSettings>(Configuration.GetSection("MailSettings"));
 
             //Config identity
             services.ConfigureIdentity();
@@ -49,11 +50,11 @@ namespace CoStudy.API.WebAPI
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IdentityContext context)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
 
             // migrate database changes on startup (includes initial db creation)
-            context.Database.Migrate();
+           // context.Database.Migrate();
 
             if (env.IsDevelopment())
             {

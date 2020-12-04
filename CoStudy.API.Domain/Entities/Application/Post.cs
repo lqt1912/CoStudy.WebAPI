@@ -10,7 +10,7 @@ namespace CoStudy.API.Domain.Entities.Application
     {
         public Post() : base()
         {
-            StringContents = new List<string>();
+            StringContents = new List<PostContent>();
             MediaContents = new List<Image>();
             Comments = new List<Comment>();
             Fields = new List<Field>();
@@ -35,13 +35,13 @@ namespace CoStudy.API.Domain.Entities.Application
         /// String content of posts
         /// </summary>
         [BsonElement("string_contents")]
-        public  List<string> StringContents { get; set; }
+        public  List<PostContent> StringContents { get; set; }
 
 
         /// <summary>
         /// Media content of post
         /// </summary>
-        [BsonElement("media_contents")]
+        [BsonElement("image_contents")]
         public List<Image> MediaContents { get; set; }
 
         /// <summary>

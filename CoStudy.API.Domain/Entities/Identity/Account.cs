@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CoStudy.API.Domain.Entities.Identity.MongoAuthen;
+using System;
 using System.Collections.Generic;
 
 namespace CoStudy.API.Domain.Entities.Identity

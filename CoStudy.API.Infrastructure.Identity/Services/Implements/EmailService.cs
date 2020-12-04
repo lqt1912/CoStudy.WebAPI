@@ -1,20 +1,35 @@
 ﻿using CoStudy.API.Infrastructure.Identity.Helpers;
+using CoStudy.API.Infrastructure.Identity.Models.Account.Request;
 using CoStudy.API.Infrastructure.Identity.Services.Interfaces;
 using MailKit.Net.Smtp;
 using MailKit.Security;
 using Microsoft.Extensions.Options;
 using MimeKit;
 using MimeKit.Text;
+using System.IO;
+using System.Threading.Tasks;
 
 namespace CoStudy.API.Infrastructure.Identity.Services.Implements
 {
+    public class MailSettings
+    {
+        public string Mail { get; set; }
+        public string DisplayName { get; set; }
+        public string Password { get; set; }
+        public string Host { get; set; }
+        public int Port { get; set; }
+    }
+
     public class EmailService : IEmailService
     {
         private readonly AppSettings _appSettings;
 
-        public EmailService(IOptions<AppSettings> appSettings)
+        MailSettings _mailSettings;
+
+        public EmailService(IOptions<AppSettings> appSettings, IOptions<MailSettings> mailSettings)
         {
             _appSettings = appSettings.Value;
+            _mailSettings = mailSettings.Value;
         }
 
         public void Send(string to, string subject, string html, string from = null)
@@ -31,6 +46,38 @@ namespace CoStudy.API.Infrastructure.Identity.Services.Implements
             smtp.Connect(_appSettings.SmtpHost, _appSettings.SmtpPort, SecureSocketOptions.StartTls);
             smtp.Authenticate(_appSettings.SmtpUser, _appSettings.SmtpPass);
             smtp.Send(email);
+            smtp.Disconnect(true);
+        }
+
+        public async Task SendEmailAsync(MailRequest mailRequest)
+        {
+            var email = new MimeMessage();
+            email.Sender = MailboxAddress.Parse(_mailSettings.Mail);
+            email.To.Add(MailboxAddress.Parse(mailRequest.ToEmail));
+            email.Subject = mailRequest.Subject;
+            var builder = new BodyBuilder();
+            if (mailRequest.Attachments != null)
+            {
+                byte[] fileBytes;
+                foreach (var file in mailRequest.Attachments)
+                {
+                    if (file.Length > 0)
+                    {
+                        using (var ms = new MemoryStream())
+                        {
+                            file.CopyTo(ms);
+                            fileBytes = ms.ToArray();
+                        }
+                        builder.Attachments.Add(file.FileName, fileBytes, ContentType.Parse(file.ContentType));
+                    }
+                }
+            }
+            builder.HtmlBody = mailRequest.Body;
+            email.Body = builder.ToMessageBody();
+            using var smtp = new SmtpClient();
+            smtp.Connect(_mailSettings.Host, _mailSettings.Port, SecureSocketOptions.StartTls);
+            smtp.Authenticate(_mailSettings.Mail, _mailSettings.Password);
+            await smtp.SendAsync(email);
             smtp.Disconnect(true);
         }
     }

@@ -1,14 +1,17 @@
 ﻿using AutoMapper;
 using CoStudy.API.Domain.Entities.Identity;
+using CoStudy.API.Domain.Entities.Identity.MongoAuthen;
 using CoStudy.API.Infrastructure.Identity.Helpers;
 using CoStudy.API.Infrastructure.Identity.Models.Account.Request;
 using CoStudy.API.Infrastructure.Identity.Models.Account.Response;
+using CoStudy.API.Infrastructure.Identity.Services.AccountService;
 using CoStudy.API.Infrastructure.Identity.Services.Interfaces;
+using CoStudy.API.WebAPI.Middlewares;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace CoStudy.API.WebAPI.Controllers
 {
@@ -18,14 +21,14 @@ namespace CoStudy.API.WebAPI.Controllers
     {
         private readonly IAccountService _accountService;
         private readonly IMapper _mapper;
-        private readonly IEmailSender emailSender;
+        private readonly IHttpContextAccessor httpContextAccessor;
         public AccountsController(
             IAccountService accountService,
-            IMapper mapper, IEmailSender emailSender)
+            IMapper mapper,  IHttpContextAccessor httpContextAccessor)
         {
             _accountService = accountService;
             _mapper = mapper;
-            this.emailSender = emailSender;
+            this.httpContextAccessor = httpContextAccessor;
         }
 
         [HttpPost("login")]
@@ -33,7 +36,7 @@ namespace CoStudy.API.WebAPI.Controllers
         {
             var response = _accountService.Authenticate(model, ipAddress());
             setTokenCookie(response.RefreshToken);
-            return Ok(response);
+            return Ok(new ApiOkResponse(response));
         }
 
         [HttpPost("refresh-token")]
@@ -42,7 +45,7 @@ namespace CoStudy.API.WebAPI.Controllers
             var refreshToken = Request.Cookies["refreshToken"];
             var response = _accountService.RefreshToken(refreshToken, ipAddress());
             setTokenCookie(response.RefreshToken);
-            return Ok(response);
+            return Ok(new ApiOkResponse(response));
         }
 
         [Authorize]
@@ -60,42 +63,43 @@ namespace CoStudy.API.WebAPI.Controllers
                 return Unauthorized(new { message = "Unauthorized" });
 
             _accountService.RevokeToken(token, ipAddress());
-            return Ok(new { message = "Token revoked" });
+            return Ok(new ApiOkResponse( "Token revoked" ));
         }
 
         [HttpPost("register")]
-        public IActionResult Register(RegisterRequest model)
+        public async Task<IActionResult> Register(RegisterRequest model)
         {
-            _accountService.Register(model, Request.Headers["origin"]);
-            return Ok(new { message = "Registration successful, please check your email for verification instructions" });
+            await _accountService.Register(model, GetHostUrl());
+            return Ok(new ApiOkResponse( "Registration successful, please check your email for verification instructions" ));
         }
 
         [HttpPost("verify-email")]
-        public IActionResult VerifyEmail(VerifyEmailRequest model)
+        public IActionResult VerifyEmail(string token)
         {
-            _accountService.VerifyEmail(model.Token);
-            return Ok(new { message = "Verification successful, you can now login" });
+            _accountService.VerifyEmail(token);
+            return Ok(new ApiOkResponse("Verification successful, you can now login" ));
         }
 
         [HttpPost("forgot-password")]
-        public IActionResult ForgotPassword(ForgotPasswordRequest model)
+        public async Task<IActionResult> ForgotPassword(ForgotPasswordRequest model)
         {
-            _accountService.ForgotPassword(model, Request.Headers["origin"]);
-            return Ok(new { message = "Please check your email for password reset instructions" });
+            await _accountService.ForgotPassword(model, GetHostUrl());
+
+            return Ok(new ApiOkResponse(  "Please check your email for password reset instructions" ));
         }
 
         [HttpPost("validate-reset-token")]
         public IActionResult ValidateResetToken(ValidateResetTokenRequest model)
         {
             _accountService.ValidateResetToken(model);
-            return Ok(new { message = "Token is valid" });
+            return Ok(new ApiOkResponse( "Token is valid" ));
         }
 
         [HttpPost("reset-password")]
         public IActionResult ResetPassword(ResetPasswordRequest model)
         {
             _accountService.ResetPassword(model);
-            return Ok(new { message = "Password reset successful, you can now login" });
+            return Ok(new ApiOkResponse("Password reset successful, you can now login" ));
         }
 
         [Authorize(Role.Admin)]
@@ -103,19 +107,19 @@ namespace CoStudy.API.WebAPI.Controllers
         public ActionResult<IEnumerable<AccountResponse>> GetAll()
         {
             var accounts = _accountService.GetAll();
-            return Ok(accounts);
+            return Ok(new ApiOkResponse(accounts));
         }
 
         [Authorize]
-        [HttpGet("{id:int}")]
-        public ActionResult<AccountResponse> GetById(int id)
+        [HttpGet("{id}")]
+        public ActionResult<AccountResponse> GetById(string id)
         {
             // users can get their own account and admins can get any account
-            if (id != Account.Id && Account.Role != Role.Admin)
+            if (id != Account.Id.ToString() && Account.Role != Role.Admin)
                 return Unauthorized(new { message = "Unauthorized" });
 
             var account = _accountService.GetById(id);
-            return Ok(account);
+            return Ok(new ApiOkResponse(account));
         }
 
         [Authorize(Role.Admin)]
@@ -123,15 +127,15 @@ namespace CoStudy.API.WebAPI.Controllers
         public ActionResult<AccountResponse> Create(CreateRequest model)
         {
             var account = _accountService.Create(model);
-            return Ok(account);
+            return Ok(new ApiOkResponse(account));
         }
 
         [Authorize]
-        [HttpPut("{id:int}")]
-        public ActionResult<AccountResponse> Update(int id, UpdateRequest model)
+        [HttpPut("{id}")]
+        public ActionResult<AccountResponse> Update(string id, UpdateRequest model)
         {
             // users can update their own account and admins can update any account
-            if (id != Account.Id && Account.Role != Role.Admin)
+            if (id != Account.Id.ToString() && Account.Role != Role.Admin)
                 return Unauthorized(new { message = "Unauthorized" });
 
             // only admins can update role
@@ -139,19 +143,19 @@ namespace CoStudy.API.WebAPI.Controllers
                 model.Role = null;
 
             var account = _accountService.Update(id, model);
-            return Ok(account);
+            return Ok(new ApiOkResponse(account));
         }
 
-        [Authorize]
-        [HttpDelete("{id:int}")]
-        public IActionResult Delete(int id)
+       // [Authorize]
+        [HttpDelete("{id}")]
+        public IActionResult Delete(string id)
         {
             // users can delete their own account and admins can delete any account
-            if (id != Account.Id && Account.Role != Role.Admin)
-                return Unauthorized(new { message = "Unauthorized" });
+            //if (id != Account.Id && Account.Role != Role.Admin)
+            //    return Unauthorized(new { message = "Unauthorized" });
 
             _accountService.Delete(id);
-            return Ok(new { message = "Account deleted successfully" });
+            return Ok(new ApiOkResponse("Account deleted successfully" ));
         }
 
         // helper methods
@@ -174,5 +178,13 @@ namespace CoStudy.API.WebAPI.Controllers
                 return HttpContext.Connection.RemoteIpAddress.MapToIPv4().ToString();
         }
 
+        private string GetHostUrl()
+        {
+            var scheme = httpContextAccessor.HttpContext.Request.Scheme;
+            var host = httpContextAccessor.HttpContext.Request.Host;
+            var pathBase = httpContextAccessor.HttpContext.Request.PathBase;
+            var location = $"{scheme}://{host}{pathBase}";
+            return location;
+        }
     }
 }

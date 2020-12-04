@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using CoStudy.API.Domain.Entities.Identity;
+using CoStudy.API.Domain.Entities.Identity.MongoAuthen;
 using CoStudy.API.Infrastructure.Identity.Models.Account.Request;
 using CoStudy.API.Infrastructure.Identity.Models.Account.Response;
 
@@ -9,7 +10,7 @@ namespace CoStudy.API.Infrastructure.Identity.Helpers
     {
         public AutoMapperProfile()
         {
-            CreateMap<Account, AccountResponse>();
+            CreateMap<Account, AccountResponse>().ReverseMap();
 
             CreateMap<Account, AuthenticateResponse>();
 

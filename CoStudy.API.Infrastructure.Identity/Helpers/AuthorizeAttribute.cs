@@ -1,4 +1,4 @@
-﻿using CoStudy.API.Domain.Entities.Identity;
+﻿using CoStudy.API.Domain.Entities.Identity.MongoAuthen;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;

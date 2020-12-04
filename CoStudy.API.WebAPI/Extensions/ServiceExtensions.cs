@@ -15,13 +15,15 @@ namespace CoStudy.API.WebAPI.Extensions
                 c.SwaggerDoc("v1", new OpenApiInfo
                 {
                     Version = "v1",
-                    Title = "CoStudy - Study communication system backend API",
+                    Title = "CoStudy's api",
+                    Description= "Study Communication system backend API",
+                    TermsOfService = new Uri("https://example.com/terms"),
                     Contact = new OpenApiContact
                     {
                         Name = "Le Quoc Thang",
-                        Email = "thanglequoc1912@gmail.com",
+                        Email = "thang.le@tekmedi.com",
                         Url = new Uri("https://github.com/lqt1912"),
-                    }
+                    },
                 });
             });
         }

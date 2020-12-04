@@ -11,6 +11,8 @@ namespace CoStudy.API.Domain.Entities.Application
         [BsonElement("first_name")]
         public string FirstName { get; set; }
 
+
+
         [BsonElement("last_name")]
         public string LastName { get; set; }
 
@@ -39,8 +41,11 @@ namespace CoStudy.API.Domain.Entities.Application
         public DateTime ModifiedDate { get; set; }
 
 
+        /// <summary>
+        /// List id of post written by this id
+        /// </summary>
         [BsonElement("posts")]
-        public  List<Post> Posts { get; set; }
+        public  List<string> Posts { get; set; }
 
 
         [BsonElement("noftications")]
@@ -74,14 +79,17 @@ namespace CoStudy.API.Domain.Entities.Application
         [BsonElement("fortes")]
         public  List<Field> Fortes { get; set; }
 
+        [BsonElement("auth_id")]
+        public ObjectId AutenticationId { get; set; }
         public User() : base()
         {
             Avatar = new Image();
-            Posts = new List<Post>();
+            Posts = new List<string>();
             Noftications = new List<Noftication>();
             Followers = new List<string>();
             Following = new List<string>();
             AdditionalInfos = new List<AdditionalInfo>();
+            Fortes = new List<Field>();
         }
     }
 }
