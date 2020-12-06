@@ -20,18 +20,7 @@ namespace CoStudy.API.Infrastructure.Shared.Models.Response.UserResponse
         [JsonPropertyName("image_url")]
         public string ImageUrl { get; set; }
 
-        [JsonPropertyName("base64_string")]
-        public string Base64String { get; set; }
-
-        [JsonPropertyName("original_width")]
-        public int OriginalWidth { get; set; }
-
-        [JsonPropertyName("original_height")]
-        public int OriginalHeight { get; set; }
-
-
-        [JsonPropertyName("compress_ratio")]
-        public double CompressRatio { get; set; }
+    
 
         [JsonPropertyName("created_date")]
         public DateTime CreatedDate { get; set; }

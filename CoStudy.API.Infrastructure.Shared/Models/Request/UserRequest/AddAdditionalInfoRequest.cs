@@ -13,9 +13,6 @@ namespace CoStudy.API.Infrastructure.Shared.Models.Request.UserRequest
             AdditionalInfos = new List<AdditionalInfo>();
         }
 
-        [JsonPropertyName("user_id")]
-        public string UserId { get; set; }
-
         [JsonPropertyName("additional_infos")]
         public List<AdditionalInfo> AdditionalInfos { get; set; }
     }

@@ -1,6 +1,7 @@
 ﻿using CoStudy.API.Infrastructure.Persistence.Contexts;
 using MongoDB.Bson;
 using MongoDB.Driver;
+using MongoDB.Driver.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -72,6 +73,12 @@ namespace CoStudy.API.Infrastructure.Persistence.Repositories
             return _collection.AsQueryable();
         }
 
+        public IQueryable<T> GetAll(long amount)
+        {
+            if (Count() < amount)
+                return _collection.AsQueryable();
+            else return _collection.AsQueryable().Take((int)amount);
+        }
         public Task<T> GetByIdAsync(ObjectId id)
         {
             var findFilter = Builders<T>.Filter.Eq("_id", id);
@@ -98,5 +105,7 @@ namespace CoStudy.API.Infrastructure.Persistence.Repositories
             return _collection.ReplaceOneAsync(filter, entity);
 
         }
+
+    
     }
 }

@@ -10,10 +10,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\CoStudy.API.Application\CoStudy.API.Application.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Models\Response\PostResponse\" />
+    <ProjectReference Include="..\CoStudy.API.Infrastructure.Identity\CoStudy.API.Infrastructure.Identity.csproj" />
   </ItemGroup>
 
 </Project>

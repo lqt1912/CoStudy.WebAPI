@@ -10,9 +10,6 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
 {
     public interface IUserService
     {
-        User GetByEmail(string email);
-
-        Task UpdateAsyc(User entity, string Id);
         Task<AddUserResponse> AddUserAsync(AddUserRequest entity);
 
         Task<AddAvatarResponse> AddAvatarAsync(AddAvatarRequest request);

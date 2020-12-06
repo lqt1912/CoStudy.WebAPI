@@ -11,9 +11,7 @@ namespace CoStudy.API.Infrastructure.Identity.Models.Account.Request
         private string _role;
         private string _email;
 
-        public string Title { get; set; }
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
+     
 
         [EnumDataType(typeof(Role))]
         public string Role

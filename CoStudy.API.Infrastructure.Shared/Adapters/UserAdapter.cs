@@ -48,10 +48,6 @@ namespace CoStudy.API.Infrastructure.Shared.Adapters
             {
                 Discription = request.Discription,
                 ImageUrl = url,
-                Base64String = "updating",
-                OriginalWidth = 1,
-                OriginalHeight = 1,
-                CompressRatio = 1.0,
                 CreatedDate = DateTime.Now,
                 ModifiedDate = DateTime.Now,
             };
@@ -65,10 +61,6 @@ namespace CoStudy.API.Infrastructure.Shared.Adapters
                 Id = image.Id,
                 Discription = image.Discription,
                 ImageUrl = image.ImageUrl,
-                Base64String = image.Base64String,
-                OriginalWidth = image.OriginalWidth,
-                OriginalHeight = image.OriginalHeight,
-                CompressRatio = image.CompressRatio,
                 CreatedDate = image.CreatedDate,
                 ModifiedDate = image.ModifiedDate
             };
@@ -106,10 +98,6 @@ namespace CoStudy.API.Infrastructure.Shared.Adapters
             var image = new Image()
             {
                 ImageUrl = url,
-                Base64String = "updating",
-                OriginalHeight = 1,
-                OriginalWidth = 1,
-                CompressRatio =1,
                 CreatedDate = DateTime.Now,
                 ModifiedDate = DateTime.Now,
                 Discription = request.UserField
@@ -118,7 +106,9 @@ namespace CoStudy.API.Infrastructure.Shared.Adapters
             return new Field()
             {
                 Value= request.UserField,
-                ThumbnailImage=image
+                ThumbnailImage=image,
+                CreatedDate = DateTime.Now,
+                ModifiedDate = DateTime.Now
             };
         }
 

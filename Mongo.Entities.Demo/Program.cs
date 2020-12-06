@@ -1,7 +1,11 @@
 ﻿using Examples.Models;
+using Mongo.Entities.Demo.BookRepository1;
 using Mongo.Entities.Demo.BookServices;
 using MongoDB.Bson;
+using MongoDB.Bson.Serialization;
+using MongoDB.Driver;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Mongo.Entities.Demo
@@ -50,6 +54,10 @@ namespace Mongo.Entities.Demo
                 PhoneNumber = "012893723"
             };
             await bookRepo.AddAuthor(ObjectId.Parse("5fb61b3aec3a441caf868da6"), author3);
+
+            var bookCollection = new CustomMongoClient().GetDatabase().GetCollection<Book>("Book");
+            var bookRepository = new BookRepository().GetAll();
+           
         }
     }
 }

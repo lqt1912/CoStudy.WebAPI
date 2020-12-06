@@ -1,9 +1,12 @@
 ﻿using CoStudy.API.Application.Repositories;
 using CoStudy.API.Domain.Entities.Application;
+using CoStudy.API.Domain.Entities.Identity.MongoAuthen;
+using CoStudy.API.Infrastructure.Identity.Repositories.AccountRepository;
 using CoStudy.API.Infrastructure.Shared.Adapters;
 using CoStudy.API.Infrastructure.Shared.Models.Request.UserRequest;
 using CoStudy.API.Infrastructure.Shared.Models.Response.UserResponse;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
 using MongoDB.Bson;
 using System;
 using System.Collections.Generic;
@@ -16,68 +19,75 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
     public class UserService:IUserService
     {
         IUserRepository userRepository;
+        IAccountRepository accountRepository;
         IHttpContextAccessor _httpContextAccessor;
+        IConfiguration _configuration;
 
-        public UserService(IUserRepository userRepository, IHttpContextAccessor httpContextAccessor)
+        public UserService(IUserRepository userRepository, 
+            IHttpContextAccessor httpContextAccessor, 
+            IConfiguration configuration, 
+            IAccountRepository accountRepository)
         {
             this.userRepository = userRepository;
             _httpContextAccessor = httpContextAccessor;
+            _configuration = configuration;
+            this.accountRepository = accountRepository;
         }
 
         public async Task<AddAdditionalInfoResponse> AddAdditonalInfoAsync(AddAdditionalInfoRequest request)
         {
             var additionalInfos = UserAdapter.FromRequest(request);
 
-            var currentUser = await userRepository.GetByIdAsync(ObjectId.Parse(request.UserId));
+            var currentUser = CurrentUser();
+
             currentUser.AdditionalInfos.AddRange(additionalInfos);
             currentUser.ModifiedDate = DateTime.Now;
 
-            await userRepository.UpdateAsync(currentUser, ObjectId.Parse(request.UserId));
+            await userRepository.UpdateAsync(currentUser, currentUser.Id);
 
-            return UserAdapter.ToResponse(additionalInfos, request.UserId);
+            return UserAdapter.ToResponse(additionalInfos, currentUser.Id.ToString());
         }
 
         public async Task<AddAvatarResponse> AddAvatarAsync(AddAvatarRequest request)
         {
             var avatar = UserAdapter.FromRequest(request,_httpContextAccessor);
 
-            var currentUser = await userRepository.GetByIdAsync(ObjectId.Parse(request.UserId));
+            var currentUser = CurrentUser();
 
             currentUser.Avatar = avatar;
 
             currentUser.ModifiedDate = DateTime.Now;
 
-            await userRepository.UpdateAsync(currentUser, ObjectId.Parse(request.UserId));
+            await userRepository.UpdateAsync(currentUser, currentUser.Id);
 
-            return UserAdapter.ToResponse(avatar,request.UserId);
+            return UserAdapter.ToResponse(avatar,currentUser.Id.ToString());
 
         }
 
         public async Task<AddFieldResponse> AddFieldAsync(AddFieldRequest request)
         {
             var field = UserAdapter.FromRequest(request, _httpContextAccessor);
-            var currentUser = await userRepository.GetByIdAsync(ObjectId.Parse(request.UserId));
-            if (currentUser.Fortes == null)
-                currentUser.Fortes = new List<Field>();
+
+            var currentUser = CurrentUser();
             currentUser.Fortes.Add(field);
             currentUser.ModifiedDate = DateTime.Now;
-            await userRepository.UpdateAsync(currentUser, ObjectId.Parse(request.UserId));
-            return UserAdapter.ToResponse(field, request.UserId);
+            await userRepository.UpdateAsync(currentUser, currentUser.Id);
+            return UserAdapter.ToResponse(field, currentUser.Id.ToString());
         }
 
         public async Task<AddFollowerResponse> AddFollowersAsync(AddFollowerRequest request)
         {
-            var currentUser = await userRepository.GetByIdAsync(ObjectId.Parse(request.UserId));
+            var currentUser = CurrentUser();
 
             currentUser.Followers.AddRange(request.Followers);
             currentUser.Followers = currentUser.Followers.Distinct().ToList();
             currentUser.ModifiedDate = DateTime.Now;
 
-            await userRepository.UpdateAsync(currentUser, ObjectId.Parse(request.UserId));
+            await userRepository.UpdateAsync(currentUser, currentUser.Id);
 
             return new AddFollowerResponse()
             {
-                UserId = request.UserId,
+                UserId = currentUser.Id.ToString(),
                 Followers = request.Followers.Distinct().ToList()
             };
         }
@@ -89,17 +99,17 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
         /// <returns></returns>
         public async Task<AddFollowerResponse> AddFollowingsAsync(AddFollowerRequest request)
         {
-            var currentUser = await userRepository.GetByIdAsync(ObjectId.Parse(request.UserId));
+            var currentUser = CurrentUser();
 
             currentUser.Following.AddRange(request.Followers);
             currentUser.Following = currentUser.Following.Distinct().ToList();
             currentUser.ModifiedDate = DateTime.Now;
 
-            await userRepository.UpdateAsync(currentUser, ObjectId.Parse(request.UserId));
+            await userRepository.UpdateAsync(currentUser, currentUser.Id);
 
             return new AddFollowerResponse()
             {
-                UserId = request.UserId,
+                UserId = currentUser.Id.ToString(),
                 Followers = request.Followers.Distinct().ToList()
             };
         }
@@ -113,16 +123,17 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
             return UserAdapter.ToResponse(user);
         }
 
-        public User GetByEmail(string email)
+
+        private User FromAccount(Account account)
         {
-            var user = userRepository.GetAll().ToList().SingleOrDefault(x => x.Email == email);
+            var user = userRepository.GetAll().SingleOrDefault(x => x.Email == account.Email);
             return user;
         }
 
-        public async Task UpdateAsyc(User entity, string Id)
+        private User CurrentUser()
         {
-            await userRepository.UpdateAsync(entity, ObjectId.Parse(Id));
-            
+            var currentAccount = (Account)_httpContextAccessor.HttpContext.Items["Account"];
+            return FromAccount(currentAccount);
         }
     }
 }

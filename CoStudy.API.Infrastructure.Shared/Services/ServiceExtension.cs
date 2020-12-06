@@ -1,4 +1,5 @@
-﻿using CoStudy.API.Infrastructure.Shared.Services.UserServices;
+﻿using CoStudy.API.Infrastructure.Shared.Services.PostServices;
+using CoStudy.API.Infrastructure.Shared.Services.UserServices;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
@@ -12,7 +13,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services
         {
             services.AddTransient<IUserService, UserService>();
 
-          
+            services.AddTransient<IPostService, PostService>();
         }
     }
 }

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using CoStudy.API.Application.Features;
 using CoStudy.API.Domain.Entities.Application;
+using CoStudy.API.Infrastructure.Identity.Helpers;
 using CoStudy.API.Infrastructure.Identity.Models.Account.Request;
 using CoStudy.API.Infrastructure.Identity.Services.AccountService;
 using CoStudy.API.Infrastructure.Identity.Services.Interfaces;
@@ -17,6 +18,7 @@ namespace CoStudy.API.WebAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+ 
     public class UserController : ControllerBase
     {
         private readonly IUserService userService;
@@ -35,9 +37,6 @@ namespace CoStudy.API.WebAPI.Controllers
         {
             var registerRequest = new RegisterRequest()
             {
-                Title = user.Title,
-                FirstName = user.FisrtName,
-                LastName = user.LastName,
                 Email = user.Email,
                 Password = user.Password,
                 ConfirmPassword = user.ConfirmPassword,

@@ -66,12 +66,12 @@ namespace CoStudy.API.WebAPI.Controllers
             return Ok(new ApiOkResponse( "Token revoked" ));
         }
 
-        [HttpPost("register")]
-        public async Task<IActionResult> Register(RegisterRequest model)
-        {
-            await _accountService.Register(model, GetHostUrl());
-            return Ok(new ApiOkResponse( "Registration successful, please check your email for verification instructions" ));
-        }
+        //[HttpPost("register")]
+        //public async Task<IActionResult> Register(RegisterRequest model)
+        //{
+        //    await _accountService.Register(model, GetHostUrl());
+        //    return Ok(new ApiOkResponse( "Registration successful, please check your email for verification instructions" ));
+        //}
 
         [HttpPost("verify-email")]
         public IActionResult VerifyEmail(string token)

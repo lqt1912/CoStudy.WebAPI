@@ -11,8 +11,8 @@ namespace CoStudy.API.Infrastructure.Shared.Models.Request.UserRequest
         {
             Followers = new List<string>();
         }
-        [JsonPropertyName("user_id")]
-        public string UserId { get; set; }
+
+     
 
         [JsonPropertyName("followers")]
         public List<string> Followers { get; set; }

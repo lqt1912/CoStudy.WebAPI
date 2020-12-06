@@ -15,8 +15,8 @@ namespace CoStudy.API.Infrastructure.Shared.Models.Request.UserRequest
         [JsonPropertyName("description")]
         public string Discription { get; set; }
 
-        [JsonPropertyName("user_id")]
-        public string UserId { get; set; }
+        //[JsonPropertyName("user_id")]
+        //public string UserId { get; set; }
 
     }
 }

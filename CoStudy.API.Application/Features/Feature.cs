@@ -1,7 +1,11 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using CoStudy.API.Application.Repositories;
+using CoStudy.API.Domain.Entities.Application;
+using CoStudy.API.Domain.Entities.Identity.MongoAuthen;
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 
 namespace CoStudy.API.Application.Features
@@ -35,6 +39,36 @@ namespace CoStudy.API.Application.Features
             return location + fileName;
         }
 
+        public static string SaveImage(IFormFile image, IHttpContextAccessor accessor, string folder)
+        {
+            if (image == null)
+            {
+                return "";
+            }
+
+
+            var scheme = accessor.HttpContext.Request.Scheme;
+            var host = accessor.HttpContext.Request.Host;
+            var pathBase = accessor.HttpContext.Request.PathBase;
+            var imageFolder = $"{folder}/";
+            var location = $"{scheme}://{host}{pathBase}/{imageFolder}";
+
+            var target = Path.Combine(Directory.GetCurrentDirectory(), $"wwwroot\\{folder}\\" );
+
+            Directory.CreateDirectory(target);
+
+            var extension = Path.GetExtension(image.FileName);
+            var name = Guid.NewGuid();
+            var fileName = name + extension;
+            var filePath = Path.Combine(target, fileName);
+
+            image.CopyTo(new FileStream(filePath, FileMode.Create));
+
+            return location + fileName;
+        }
+
+
+
         public static string GetHostUrl(IHttpContextAccessor httpContextAccessor)
         {
             var scheme = httpContextAccessor.HttpContext.Request.Scheme;
@@ -42,6 +76,14 @@ namespace CoStudy.API.Application.Features
             var pathBase = httpContextAccessor.HttpContext.Request.PathBase;
             var location = $"{scheme}://{host}{pathBase}";
             return location;
+        }
+
+        public static  User CurrentUser(IHttpContextAccessor _httpContextAccessor,IUserRepository userRepository)
+        {
+            var currentAccount = (Account)_httpContextAccessor.HttpContext.Items["Account"];
+
+            var user = userRepository.GetAll().SingleOrDefault(x => x.Email == currentAccount.Email);
+            return user;
         }
 
     }
