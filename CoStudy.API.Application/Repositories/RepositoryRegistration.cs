@@ -29,6 +29,7 @@ namespace CoStudy.API.Application.Repositories
             services.AddTransient<IPostRepository, PostRepository>();
 
             services.AddTransient<IUserRepository, UserRepository>();
+            services.AddTransient<IReplyCommentRepository, ReplyCommentRepository>();
 
         }
 

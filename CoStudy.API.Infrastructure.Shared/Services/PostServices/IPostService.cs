@@ -17,5 +17,8 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
         Task<AddCommentResponse> AddComment(AddCommentRequest request);
 
         Task<ReplyCommentResponse> ReplyComment(ReplyCommentRequest request);
+
+        Task SyncComment();
+        Task SyncReply();
     }
 }

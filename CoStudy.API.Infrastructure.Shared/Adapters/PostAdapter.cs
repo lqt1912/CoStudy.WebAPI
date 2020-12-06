@@ -69,6 +69,7 @@ namespace CoStudy.API.Infrastructure.Shared.Adapters
             return new Comment()
             {
                 AuthorId = UserId,
+                PostId = request.PostId,
                 Content = request.Content,
                 Status = ItemStatus.Active,
                 CreatedDate = DateTime.Now,
@@ -87,11 +88,13 @@ namespace CoStudy.API.Infrastructure.Shared.Adapters
             };
         }
 
-        public static Comment FromRequest(ReplyCommentRequest request, string UserId)
+        public static ReplyComment FromRequest(ReplyCommentRequest request, string UserId)
         {
-            return new Comment()
+            return new ReplyComment()
             {
                 AuthorId = UserId,
+                
+                ParentId =request.ParentCommentId,
                 Content = request.Content,
                 Status = ItemStatus.Active,
                 CreatedDate = DateTime.Now,
@@ -100,13 +103,13 @@ namespace CoStudy.API.Infrastructure.Shared.Adapters
         }
 
 
-        public static ReplyCommentResponse ToResponseReply(Comment comment, string parentId)
+        public static ReplyCommentResponse ToResponseReply(ReplyComment comment)
         {
             return new ReplyCommentResponse()
             {
                 Content = comment.Content,
                 AuthorId = comment.AuthorId,
-                ParentCommentId = parentId
+                ParentCommentId = comment.ParentId
             };
         }
 

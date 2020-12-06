@@ -4,6 +4,7 @@ using CoStudy.API.Infrastructure.Identity.Contexts;
 using CoStudy.API.Infrastructure.Identity.Helpers;
 using CoStudy.API.Infrastructure.Identity.Services.Implements;
 using CoStudy.API.Infrastructure.Shared.Services;
+using CoStudy.API.WebAPI.BackgroundTask.WorkerService;
 using CoStudy.API.WebAPI.Extensions;
 using CoStudy.API.WebAPI.Middlewares;
 using Microsoft.AspNetCore.Builder;
@@ -47,6 +48,7 @@ namespace CoStudy.API.WebAPI
             services.AddHttpContextAccessor();
             // configure strongly typed settings object
 
+            services.AddSingleton<IWorker, Worker>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

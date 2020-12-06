@@ -19,6 +19,9 @@ namespace CoStudy.API.Domain.Entities.Application
         [BsonElement("title")]
         public string Title { get; set; }
 
+        [BsonElement("author_id")]
+        public string AuthorId { get; set; }
+
         [BsonElement("upvote")]
         public int Upvote { get; set; }
 

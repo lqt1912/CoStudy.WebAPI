@@ -1,9 +1,11 @@
-using CoStudy.API.WebAPI.BackgroundTask;
-using Microsoft.AspNetCore.Hosting;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
-namespace CoStudy.API.WebAPI
+namespace DataSyncing
 {
     public class Program
     {
@@ -14,10 +16,9 @@ namespace CoStudy.API.WebAPI
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
-                .ConfigureWebHostDefaults(webBuilder =>
+                .ConfigureServices((hostContext, services) =>
                 {
-                    webBuilder.UseStartup<Startup>();
-                }).ConfigureServices(services =>
-                    services.AddHostedService<DerivedBackgroundPrinter>());
+                    services.AddHostedService<Worker>();
+                });
     }
 }

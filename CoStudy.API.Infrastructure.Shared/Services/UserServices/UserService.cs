@@ -22,16 +22,18 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
         IAccountRepository accountRepository;
         IHttpContextAccessor _httpContextAccessor;
         IConfiguration _configuration;
+        IPostRepository postRepository;
 
-        public UserService(IUserRepository userRepository, 
-            IHttpContextAccessor httpContextAccessor, 
-            IConfiguration configuration, 
-            IAccountRepository accountRepository)
+        public UserService(IUserRepository userRepository,
+            IHttpContextAccessor httpContextAccessor,
+            IConfiguration configuration,
+            IAccountRepository accountRepository, IPostRepository postRepository)
         {
             this.userRepository = userRepository;
             _httpContextAccessor = httpContextAccessor;
             _configuration = configuration;
             this.accountRepository = accountRepository;
+            this.postRepository = postRepository;
         }
 
         public async Task<AddAdditionalInfoResponse> AddAdditonalInfoAsync(AddAdditionalInfoRequest request)
@@ -134,6 +136,33 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
         {
             var currentAccount = (Account)_httpContextAccessor.HttpContext.Items["Account"];
             return FromAccount(currentAccount);
+        }
+
+        public async Task SyncPost()
+        {
+            try
+            {
+                var users = userRepository.GetAll();
+                int c = 0;
+                foreach (var user in users)
+                {
+
+                    var latestUserPosts = postRepository.GetAll().Where(x => x.AuthorId == user.Id.ToString());
+                    if (latestUserPosts.Count() > 10)
+                        latestUserPosts = latestUserPosts.Take(10);
+
+                    user.Posts.Clear();
+                    user.Posts.AddRange(latestUserPosts);
+                    user.ModifiedDate = DateTime.Now;
+                    await userRepository.UpdateAsync(user, user.Id);
+                    c = latestUserPosts.Count();
+                }
+            }
+            catch (Exception)
+            {
+                //do nothing
+
+            }
         }
     }
 }

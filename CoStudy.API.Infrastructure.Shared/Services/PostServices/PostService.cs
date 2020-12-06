@@ -22,30 +22,32 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
         IUserRepository userRepository;
         IPostRepository postRepository;
         ICommentRepository commentRepository;
+        IReplyCommentRepository replyCommentRepository;
 
-        public PostService(IHttpContextAccessor httpContextAccessor, IConfiguration configuration, IUserRepository userRepository, IPostRepository postRepository, ICommentRepository commentRepository)
+        public PostService(IHttpContextAccessor httpContextAccessor, IConfiguration configuration, IUserRepository userRepository, IPostRepository postRepository, ICommentRepository commentRepository, IReplyCommentRepository replyCommentRepository)
         {
             this.httpContextAccessor = httpContextAccessor;
             this.configuration = configuration;
             this.userRepository = userRepository;
             this.postRepository = postRepository;
             this.commentRepository = commentRepository;
+            this.replyCommentRepository = replyCommentRepository;
         }
 
         public async Task<AddCommentResponse> AddComment(AddCommentRequest request)
         {
             var currentUser = Feature.CurrentUser(httpContextAccessor, userRepository);
+
             var currentPost = await postRepository.GetByIdAsync(ObjectId.Parse(request.PostId));
-            var comment = PostAdapter.FromRequest(request, currentUser.Id.ToString());
+            if (currentPost != null)
+            {
+                var comment = PostAdapter.FromRequest(request, currentUser.Id.ToString());
 
-            //Clear comment
-            currentPost.Comments.Clear();
-            //Update again
-            currentPost.Comments.AddRange(commentRepository.GetAll(10));
-
-            await postRepository.UpdateAsync(currentPost, currentPost.Id);
-
-            return PostAdapter.ToResponse(comment, currentPost.Id.ToString());
+                await commentRepository.AddAsync(comment);
+                //Update again
+                return PostAdapter.ToResponse(comment, request.PostId);
+            }
+            else throw new Exception("Post đã bị xóa");
         }
 
         public async Task<AddMediaResponse> AddMedia(AddMediaRequest request)
@@ -60,7 +62,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
 
                 return PostAdapter.ToResponse(image, currentPost.Id.ToString());
             }
-            return null;
+            else throw new Exception("Post đã bị xóa");
         }
 
         public async Task<AddPostResponse> AddPost(AddPostRequest request)
@@ -68,13 +70,8 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
 
             var currentUser = Feature.CurrentUser(httpContextAccessor,userRepository);
             var post = PostAdapter.FromRequest(request);
+            post.AuthorId = currentUser.Id.ToString();
             await postRepository.AddAsync(post);
-
-            currentUser.Posts.Clear();
-            currentUser.Posts.AddRange(postRepository.GetAll(5));
-
-            currentUser.ModifiedDate = DateTime.Now;
-            await userRepository.UpdateAsync(currentUser, currentUser.Id);
 
             return PostAdapter.ToResponse(post, currentUser.Id.ToString());
         }
@@ -83,17 +80,59 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
         {
             var currentUser = Feature.CurrentUser(httpContextAccessor, userRepository);
 
-            var comment = PostAdapter.FromRequest(request, currentUser.Id.ToString());
+            var replyComment = PostAdapter.FromRequest(request, currentUser.Id.ToString());
+            //Check commenr exist 
+            var comment = await commentRepository.GetByIdAsync(ObjectId.Parse(request.ParentCommentId));
+            if (comment != null)
+            {
+                await replyCommentRepository.AddAsync(replyComment);
 
-            var currentPost = await postRepository.GetByIdAsync(ObjectId.Parse(request.PostId));
+                return PostAdapter.ToResponseReply(replyComment);
+            }
+            else throw new Exception("Bình luận đã bị xóa");
+           
+        }
 
-            var rootComment =currentPost.Comments.SingleOrDefault(x=>x.Id == ObjectId.Parse(request.ParentCommentId));
-         
-            rootComment.Replies.Add(comment);
+        public async Task SyncComment()
+        {
+            try
+            {
+                var posts = postRepository.GetAll();
+                foreach (var post in posts)
+                {
+                    var latestComments = commentRepository.GetAll().OrderByDescending(x=>x.CreatedDate).Where(x => x.PostId == post.Id.ToString());
+                    if (latestComments.Count() > 3)
+                        latestComments =  latestComments.Take(3);
+                    post.Comments.Clear();
+                    post.Comments.AddRange(latestComments);
+                    await postRepository.UpdateAsync(post, post.Id);
+                }
 
-            await postRepository.UpdateAsync(currentPost, currentPost.Id);
+            } catch(Exception)
+            {
+                //do nothing
+                return;
+            }
+        }
 
-            return PostAdapter.ToResponseReply(comment, rootComment.Id.ToString());
+        public async Task SyncReply()
+        {
+            try
+            {
+                var comments = commentRepository.GetAll();
+                foreach (var comment in comments)
+                {
+                    var latestReplies = replyCommentRepository.GetAll().OrderByDescending(x => x.CreatedDate).Where(x => x.ParentId == comment.Id.ToString());
+                    if (latestReplies.Count() > 3)
+                        latestReplies =  latestReplies.Take(3);
+                    comment.Replies.Clear();
+                    comment.Replies.AddRange(latestReplies);
+                    await commentRepository.UpdateAsync(comment, comment.Id);
+                }
+            } catch(Exception)
+            {
+                return;
+            }
         }
     }
 }

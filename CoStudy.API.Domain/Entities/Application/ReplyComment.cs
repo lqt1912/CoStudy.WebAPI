@@ -1,20 +1,20 @@
 ﻿using CoStudy.API.Domain.Entities.BaseEntity;
-using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 using System;
 using System.Collections.Generic;
+using System.Text;
 
 namespace CoStudy.API.Domain.Entities.Application
 {
-    public class Comment :Entity
+    public class ReplyComment:Entity
     {
-        public Comment():base()
+        public ReplyComment():base()
         {
-            Replies = new List<ReplyComment>();
+
         }
 
-        [BsonElement("post_id")]
-        public string PostId { get; set; }
+        [BsonElement("parent_id")]
+        public string ParentId { get; set; }
 
         [BsonElement("content")]
         public string Content { get; set; }
@@ -31,9 +31,5 @@ namespace CoStudy.API.Domain.Entities.Application
 
         [BsonElement("modified_date")]
         public DateTime? ModifiedDate { get; set; }
-
-        [BsonElement("replies")]
-        public  List<ReplyComment> Replies { get; set; }
-       
     }
 }

@@ -25,7 +25,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CoStudy.API.WebAPI", "CoStu
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Example.Mongo.Entities", "Example.Mongo.Entities", "{28E4CA3F-3744-480F-921A-84BCBB80DA7D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mongo.Entities.Demo", "Mongo.Entities.Demo\Mongo.Entities.Demo.csproj", "{4F7370AE-7D9B-4ADF-BC68-D82129C7C6D2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mongo.Entities.Demo", "Mongo.Entities.Demo\Mongo.Entities.Demo.csproj", "{4F7370AE-7D9B-4ADF-BC68-D82129C7C6D2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

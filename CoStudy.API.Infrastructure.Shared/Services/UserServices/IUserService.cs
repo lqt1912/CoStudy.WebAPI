@@ -22,6 +22,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
 
         Task<AddFieldResponse> AddFieldAsync(AddFieldRequest request);
 
+        Task SyncPost();
 
     }
 }
