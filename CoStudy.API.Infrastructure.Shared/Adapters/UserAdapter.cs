@@ -122,5 +122,29 @@ namespace CoStudy.API.Infrastructure.Shared.Adapters
             };
         }
 
+        public static GetUserByIdResponse ToResponse1(User user1)
+        {
+            var result = new GetUserByIdResponse()
+            {
+                UserId = user1.Id.ToString(),
+                FirstName = user1.FirstName,
+                LastName = user1.LastName,
+                DateOfBirth = user1.DateOfBirth,
+                Email = user1.Email,
+                PhoneNumber = user1.PhoneNumber,
+                Address = user1.Address,
+                Avatar = user1.Avatar,
+                Status = user1.Status,
+                CreatedDate = user1.CreatedDate,
+                ModifiedDate = user1.ModifiedDate,
+                Posts = user1.Posts,
+                Noftications = user1.Noftications,
+                Followers = user1.Followers,
+                Following = user1.Following,
+                AdditionalInfos = user1.AdditionalInfos,
+                Fortes = user1.Fortes
+            };
+            return result;
+        }
     }
 }

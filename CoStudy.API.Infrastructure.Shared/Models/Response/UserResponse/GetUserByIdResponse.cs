@@ -1,110 +1,89 @@
-﻿using CoStudy.API.Domain.Entities.BaseEntity;
-using MongoDB.Bson;
-using MongoDB.Bson.Serialization.Attributes;
+﻿using CoStudy.API.Domain.Entities.Application;
 using System;
 using System.Collections.Generic;
+using System.Text;
 using System.Text.Json.Serialization;
 
-namespace CoStudy.API.Domain.Entities.Application
+namespace CoStudy.API.Infrastructure.Shared.Models.Response.UserResponse
 {
-    public class User :Entity
+    public class GetUserByIdResponse
     {
-        [BsonElement("first_name")]
+        [JsonPropertyName("user_id")]
+        public string UserId { get; set; }
+
         [JsonPropertyName("first_name")]
         public string FirstName { get; set; }
 
-
-
-        [BsonElement("last_name")]
         [JsonPropertyName("last_name")]
         public string LastName { get; set; }
 
-        [BsonElement("date_of_birth")]
         [JsonPropertyName("date_of_birth")]
         public DateTime DateOfBirth { get; set; }
 
-        [BsonElement("email")]
+
         [JsonPropertyName("email")]
         public string Email { get; set; }
 
-        [BsonElement("phone_number")]
         [JsonPropertyName("phone_number")]
         public string PhoneNumber { get; set; }
 
-        [BsonElement("address")]
         [JsonPropertyName("address")]
         public Address Address { get; set; }
 
-        [BsonElement("avatar")]
+
         [JsonPropertyName("avatar")]
         public Image Avatar { get; set; }
 
-        [BsonElement("status")]
+
         [JsonPropertyName("status")]
         public ItemStatus Status { get; set; }
 
-        [BsonElement("created_date")]
+
         [JsonPropertyName("created_date")]
         public DateTime CreatedDate { get; set; }
 
-        [BsonElement("modified_date")]
-        [JsonPropertyName("modified_date")]
+        [JsonPropertyName("moified_date")]
         public DateTime ModifiedDate { get; set; }
 
 
         /// <summary>
         /// List id of post written by this id
         /// </summary>
-        [BsonElement("posts")]
+        /// 
         [JsonPropertyName("posts")]
-        public  List<Post> Posts { get; set; }
+        public List<Post> Posts { get; set; }
 
-
-        [BsonElement("noftications")]
         [JsonPropertyName("noftications")]
-        public  List<Noftication> Noftications { get; set; }
+        public List<Noftication> Noftications { get; set; }
 
 
         /// <summary>
         /// List id of follower
         /// </summary>
-        [BsonElement("followers")]
+        /// 
         [JsonPropertyName("followers")]
-        public  List<string> Followers { get; set; }
+        public List<string> Followers { get; set; }
 
 
         /// <summary>
         /// List id of followings
         /// </summary>
-        [BsonElement("followings")]
-        [JsonPropertyName("followings")]
-        public  List<string> Following { get; set; }
+        /// 
+        [JsonPropertyName("following")]
+        public List<string> Following { get; set; }
 
         /// <summary>
         /// Thông tin thêm
         /// </summary>
         /// 
-        [BsonElement("additional_infos")]
         [JsonPropertyName("additional_infos")]
-        public  List<AdditionalInfo> AdditionalInfos { get; set; }
+        public List<AdditionalInfo> AdditionalInfos { get; set; }
 
         /// <summary>
         /// Sở trường
         /// </summary>
         /// 
-        [BsonElement("fortes")]
         [JsonPropertyName("fortes")]
-        public  List<Field> Fortes { get; set; }
-
-        public User() : base()
-        {
-            Avatar = new Image();
-            Posts = new List<Post>();
-            Noftications = new List<Noftication>();
-            Followers = new List<string>();
-            Following = new List<string>();
-            AdditionalInfos = new List<AdditionalInfo>();
-            Fortes = new List<Field>();
-        }
+        public List<Field> Fortes { get; set; }
     }
 }

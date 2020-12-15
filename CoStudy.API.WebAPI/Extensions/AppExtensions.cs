@@ -13,6 +13,7 @@ namespace CoStudy.API.WebAPI.Extensions
             {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "CoStudy.API.WebAPI");
                 c.RoutePrefix = string.Empty;
+               
             });
 
         }

@@ -52,8 +52,8 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
 
         public async Task<AddMediaResponse> AddMedia(AddMediaRequest request)
         {
-            var currentPost =await  postRepository.GetByIdAsync(ObjectId.Parse(request.PostId));
-            if(currentPost!=null)
+            var currentPost = await postRepository.GetByIdAsync(ObjectId.Parse(request.PostId));
+            if (currentPost != null)
             {
                 var image = PostAdapter.FromRequest(request, httpContextAccessor);
                 currentPost.MediaContents.Add(image);
@@ -68,12 +68,47 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
         public async Task<AddPostResponse> AddPost(AddPostRequest request)
         {
 
-            var currentUser = Feature.CurrentUser(httpContextAccessor,userRepository);
+            var currentUser = Feature.CurrentUser(httpContextAccessor, userRepository);
             var post = PostAdapter.FromRequest(request);
             post.AuthorId = currentUser.Id.ToString();
             await postRepository.AddAsync(post);
 
             return PostAdapter.ToResponse(post, currentUser.Id.ToString());
+        }
+
+        public async Task<GetPostByIdResponse> GetPostById(string postId)
+        {
+            var post = await postRepository.GetByIdAsync(ObjectId.Parse(postId));
+            if (post == null)
+                throw new Exception("Không tìm thấy bài viết ");
+            return PostAdapter.ToResponse(post);
+        }
+
+        public  GetPostsByUserIdResponse GetPostByUserId(string userId)
+        {
+
+            var result = postRepository.GetAll().Where(x => x.AuthorId == userId).ToList();
+            if (result != null)
+                return new GetPostsByUserIdResponse()
+                {
+                    Posts = result
+                };
+            else throw new Exception("Người dùng chưa có bài viết nào");
+
+        }
+
+        public List<Post> GetPostTimeline()
+        {
+            var currentUser = Feature.CurrentUser(httpContextAccessor, userRepository);
+            var listAuthor = currentUser.Followers;
+            listAuthor.Add(currentUser.Id.ToString());
+            var result = new List<Post>();
+            foreach (var post in postRepository.GetAll())
+            {
+                if (listAuthor.Contains(post.AuthorId))
+                    result.Add(post);
+            }
+            return result;
         }
 
         public async Task<ReplyCommentResponse> ReplyComment(ReplyCommentRequest request)
@@ -90,7 +125,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
                 return PostAdapter.ToResponseReply(replyComment);
             }
             else throw new Exception("Bình luận đã bị xóa");
-           
+
         }
 
         public async Task SyncComment()
@@ -100,15 +135,16 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
                 var posts = postRepository.GetAll();
                 foreach (var post in posts)
                 {
-                    var latestComments = commentRepository.GetAll().OrderByDescending(x=>x.CreatedDate).Where(x => x.PostId == post.Id.ToString());
+                    var latestComments = commentRepository.GetAll().OrderByDescending(x => x.CreatedDate).Where(x => x.PostId == post.Id.ToString());
                     if (latestComments.Count() > 3)
-                        latestComments =  latestComments.Take(3);
+                        latestComments = latestComments.Take(3);
                     post.Comments.Clear();
                     post.Comments.AddRange(latestComments);
                     await postRepository.UpdateAsync(post, post.Id);
                 }
 
-            } catch(Exception)
+            }
+            catch (Exception)
             {
                 //do nothing
                 return;
@@ -124,12 +160,13 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
                 {
                     var latestReplies = replyCommentRepository.GetAll().OrderByDescending(x => x.CreatedDate).Where(x => x.ParentId == comment.Id.ToString());
                     if (latestReplies.Count() > 3)
-                        latestReplies =  latestReplies.Take(3);
+                        latestReplies = latestReplies.Take(3);
                     comment.Replies.Clear();
                     comment.Replies.AddRange(latestReplies);
                     await commentRepository.UpdateAsync(comment, comment.Id);
                 }
-            } catch(Exception)
+            }
+            catch (Exception)
             {
                 return;
             }

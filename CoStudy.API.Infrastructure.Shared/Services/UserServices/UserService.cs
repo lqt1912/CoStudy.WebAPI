@@ -1,10 +1,12 @@
-﻿using CoStudy.API.Application.Repositories;
+﻿using CoStudy.API.Application.Features;
+using CoStudy.API.Application.Repositories;
 using CoStudy.API.Domain.Entities.Application;
 using CoStudy.API.Domain.Entities.Identity.MongoAuthen;
 using CoStudy.API.Infrastructure.Identity.Repositories.AccountRepository;
 using CoStudy.API.Infrastructure.Shared.Adapters;
 using CoStudy.API.Infrastructure.Shared.Models.Request.UserRequest;
 using CoStudy.API.Infrastructure.Shared.Models.Response.UserResponse;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using MongoDB.Bson;
@@ -16,7 +18,7 @@ using System.Threading.Tasks;
 
 namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
 {
-    public class UserService:IUserService
+    public class UserService : IUserService
     {
         IUserRepository userRepository;
         IAccountRepository accountRepository;
@@ -52,7 +54,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
 
         public async Task<AddAvatarResponse> AddAvatarAsync(AddAvatarRequest request)
         {
-            var avatar = UserAdapter.FromRequest(request,_httpContextAccessor);
+            var avatar = UserAdapter.FromRequest(request, _httpContextAccessor);
 
             var currentUser = CurrentUser();
 
@@ -62,7 +64,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
 
             await userRepository.UpdateAsync(currentUser, currentUser.Id);
 
-            return UserAdapter.ToResponse(avatar,currentUser.Id.ToString());
+            return UserAdapter.ToResponse(avatar, currentUser.Id.ToString());
 
         }
 
@@ -161,7 +163,31 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
             catch (Exception)
             {
                 //do nothing
+            }
+        }
 
+        public async Task<GetUserByIdResponse> GetUserById(string id)
+        {
+            var user = await userRepository.GetByIdAsync(ObjectId.Parse(id));
+            if (user == null)
+                throw new Exception("Không tìm thấy user");
+            return UserAdapter.ToResponse1(user);
+        }
+
+        [Authorize]
+        public GetUserByIdResponse GetCurrentUser()
+        {
+            try
+            {
+                var user = Feature.CurrentUser(_httpContextAccessor, userRepository);
+
+                if (user == null)
+                    throw new Exception("Không tìm thấy user");
+                return UserAdapter.ToResponse1(user);
+            }
+            catch (Exception)
+            {
+                throw new Exception("Không tìm thấy user");
             }
         }
     }

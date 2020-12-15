@@ -2,6 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
 using System;
+using System.Collections.Generic;
 
 namespace CoStudy.API.WebAPI.Extensions
 {
@@ -16,7 +17,7 @@ namespace CoStudy.API.WebAPI.Extensions
                 {
                     Version = "v1",
                     Title = "CoStudy's api",
-                    Description= "Study Communication system backend API",
+                    Description = "Study Communication system backend API",
                     TermsOfService = new Uri("https://example.com/terms"),
                     Contact = new OpenApiContact
                     {
@@ -25,18 +26,40 @@ namespace CoStudy.API.WebAPI.Extensions
                         Url = new Uri("https://github.com/lqt1912"),
                     },
                 });
+                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                {
+                    Description = @"Input bearer authentication here! ",
+                    Name = "Authorization",
+                    In = ParameterLocation.Header,
+                    Type = SecuritySchemeType.ApiKey,
+                    Scheme = "Bearer"
+                });
+
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement()
+                  {
+                    {
+                      new OpenApiSecurityScheme
+                      {
+                        Reference = new OpenApiReference
+                          {
+                            Type = ReferenceType.SecurityScheme,
+                            Id = "Bearer"
+                          },
+                          Scheme = "oauth2",
+                          Name = "Bearer",
+                          In = ParameterLocation.Header,
+
+                        },
+                        new List<string>()
+                      }
+                    });
             });
         }
 
         public static void ConfigureCors(this IServiceCollection services)
         {
-            services.AddCors(options =>
-            {
-                options.AddPolicy("CorsPolicy",
-                   builder => builder.AllowAnyOrigin()
-                   .AllowAnyMethod()
-                   .AllowAnyHeader());
-            });
+            services.AddCors();
+
         }
 
         public static void ConfigureIISIntegration(this IServiceCollection services)

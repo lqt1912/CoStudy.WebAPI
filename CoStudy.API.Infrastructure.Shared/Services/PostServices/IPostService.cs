@@ -1,4 +1,5 @@
-﻿using CoStudy.API.Infrastructure.Shared.Models.Request.PostRequest;
+﻿using CoStudy.API.Domain.Entities.Application;
+using CoStudy.API.Infrastructure.Shared.Models.Request.PostRequest;
 using CoStudy.API.Infrastructure.Shared.Models.Response.PostResponse;
 using System;
 using System.Collections.Generic;
@@ -20,5 +21,10 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
 
         Task SyncComment();
         Task SyncReply();
+
+        Task<GetPostByIdResponse> GetPostById(string postId );
+
+        GetPostsByUserIdResponse GetPostByUserId(string  userId);
+        List<Post> GetPostTimeline();
     }
 }

@@ -55,5 +55,29 @@ namespace CoStudy.API.WebAPI.Controllers
             var data = await postService.ReplyComment(request);
             return Ok(new ApiOkResponse(data));
         }
+
+        [HttpGet]
+        [Route("get/{id}")]
+        public async Task<IActionResult> GetById(string id)
+        {
+            var data = await postService.GetPostById(id);
+            return Ok(new ApiOkResponse(data));
+        }
+
+        [HttpGet]
+        [Route("get/user/{userId}")]
+        public IActionResult GetByUserId(string userId )
+        {
+            var data = postService.GetPostByUserId(userId);
+            return Ok(new ApiOkResponse(data));
+        }
+
+        [HttpGet]
+        [Route("timeline")]
+        public IActionResult GetPostTimeline()
+        {
+            var data = postService.GetPostTimeline();
+            return Ok(new ApiOkResponse(data));
+        }
     }
 }

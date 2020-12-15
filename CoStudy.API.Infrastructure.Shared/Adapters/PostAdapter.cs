@@ -113,5 +113,22 @@ namespace CoStudy.API.Infrastructure.Shared.Adapters
             };
         }
 
+        public static GetPostByIdResponse ToResponse(Post post)
+        {
+            return new GetPostByIdResponse()
+            {
+                Id = post.Id.ToString(),
+                Title = post.Title,
+                AuthorId = post.AuthorId,
+                Upvote = post.Upvote,
+                Downvote = post.Downvote,
+                CreatedDate = post.CreatedDate,
+                ModifiedDate = post.ModifiedDate,
+                StringContents = post.StringContents,
+                MediaContents = post.MediaContents,
+                Comments =post.Comments,
+                Fields = post.Fields
+            };
+        }
     }
 }

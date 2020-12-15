@@ -22,7 +22,8 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
 
         Task<AddFieldResponse> AddFieldAsync(AddFieldRequest request);
 
+        Task<GetUserByIdResponse> GetUserById(string    id);
         Task SyncPost();
-
+        GetUserByIdResponse GetCurrentUser();
     }
 }

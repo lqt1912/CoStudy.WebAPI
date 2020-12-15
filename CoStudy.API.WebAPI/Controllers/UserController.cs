@@ -93,7 +93,21 @@ namespace CoStudy.API.WebAPI.Controllers
         public async Task<IActionResult> AddField([FromForm]AddFieldRequest request)
         {
             var data = await userService.AddFieldAsync(request);
+            return Ok(new ApiOkResponse(data));
+        }
 
+        [HttpGet]
+        [Route("get/{id}")]
+        public async Task<IActionResult> GetById(string id)
+        {
+            var data = await userService.GetUserById(id);
+            return Ok(new ApiOkResponse(data));
+        }
+        [HttpGet] 
+        [Route("current")]
+        public IActionResult GetCurrentUser()
+        {
+            var data = userService.GetCurrentUser();
             return Ok(new ApiOkResponse(data));
         }
     }
