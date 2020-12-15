@@ -1,38 +1,29 @@
-﻿using CoStudy.API.Domain.Entities.BaseEntity;
-using MongoDB.Bson;
-using MongoDB.Bson.Serialization.Attributes;
+﻿using CoStudy.API.Domain.Entities.Application;
 using System;
+using System.Collections.Generic;
+using System.Text;
 using System.Text.Json.Serialization;
 
-namespace CoStudy.API.Domain.Entities.Application
+namespace CoStudy.API.Infrastructure.Shared.Models.Response.NofticationResponse
 {
-    public class Noftication :Entity
+    public class AddNofticationResponse
     {
-        public Noftication() : base()
-        {
-            Content = new PostContent();
-        }
-        
-        [BsonElement("author_id")]
+        public string Id { get; set; }
+
         [JsonPropertyName("author_id")]
         public string AuthorId { get; set; }
 
-        [BsonElement("owner_id")]
         [JsonPropertyName("owner_id")]
         public string OwnerId { get; set; }
 
-        [BsonElement("content")]
         public PostContent Content { get; set; }
 
-        [BsonElement("created_date")]
         [JsonPropertyName("created_date")]
         public DateTime CreatedDate { get; set; }
 
-        [BsonElement("modified_date")]
         [JsonPropertyName("modified_date")]
         public DateTime ModifiedDate { get; set; }
 
-        [BsonElement("status")]
         [JsonPropertyName("status")]
         public ItemStatus Status { get; set; }
     }
