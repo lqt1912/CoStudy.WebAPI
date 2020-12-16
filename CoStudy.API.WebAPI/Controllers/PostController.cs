@@ -1,13 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using CoStudy.API.Infrastructure.Identity.Helpers;
-using CoStudy.API.Infrastructure.Shared.Models.Request.PostRequest;
+﻿using CoStudy.API.Infrastructure.Shared.Models.Request.PostRequest;
 using CoStudy.API.Infrastructure.Shared.Services.PostServices;
 using CoStudy.API.WebAPI.Middlewares;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Threading.Tasks;
 
 namespace CoStudy.API.WebAPI.Controllers
 {
@@ -26,15 +21,15 @@ namespace CoStudy.API.WebAPI.Controllers
 
         [HttpPost]
         [Route("add")]
-        public  async Task<IActionResult> AddPost(AddPostRequest request)
+        public async Task<IActionResult> AddPost(AddPostRequest request)
         {
-            var data =await  postService.AddPost(request);
+            var data = await postService.AddPost(request);
             return Ok(new ApiOkResponse(data));
         }
 
         [HttpPost]
         [Route("media/add")]
-        public async Task<IActionResult> AddMedia([FromForm]AddMediaRequest request)
+        public async Task<IActionResult> AddMedia([FromForm] AddMediaRequest request)
         {
             var data = await postService.AddMedia(request);
             return Ok(new ApiOkResponse(data));
@@ -66,7 +61,7 @@ namespace CoStudy.API.WebAPI.Controllers
 
         [HttpGet]
         [Route("get/user/{userId}")]
-        public IActionResult GetByUserId(string userId )
+        public IActionResult GetByUserId(string userId)
         {
             var data = postService.GetPostByUserId(userId);
             return Ok(new ApiOkResponse(data));

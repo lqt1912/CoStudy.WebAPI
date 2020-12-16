@@ -6,9 +6,9 @@ using System.Text.Json.Serialization;
 
 namespace CoStudy.API.Domain.Entities.Application
 {
-    public class Image:Entity
+    public class Image : Entity
     {
-        public Image():base()
+        public Image() : base()
         {
 
         }

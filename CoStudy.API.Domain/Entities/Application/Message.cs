@@ -2,11 +2,12 @@
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 using System;
+using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
 namespace CoStudy.API.Domain.Entities.Application
 {
-    public class Message:Entity
+    public class Message : Entity
     {
 
         public Message() : base()
@@ -14,22 +15,24 @@ namespace CoStudy.API.Domain.Entities.Application
 
         }
 
-        [BsonElement("author_id")]
-        [JsonPropertyName("author_id")]
-        public string AuthorId { get; set; }
+        [BsonElement("sender_id")]
+        [JsonPropertyName("sender_id")]
+        public string SenderId { get; set; }
 
-        [BsonElement("is_read_by_author")]
-        [JsonPropertyName("is_read_by_author")]
-        public bool IsReadByAuthor { get; set; }
 
-        [BsonElement("is_read_by_guest")]
-        [JsonPropertyName("is_read_by_guest")]
-        public bool IsReadByGuest { get; set; }
+        [BsonElement("conversation_id")]
+        [JsonPropertyName("conversation_id")]
+        public string ConversationId { get; set; }
 
 
         [BsonElement("media_content")]
         [JsonPropertyName("media_content")]
-        public MediaContent Content { get; set; }
+        public Image MediaContent { get; set; }
+
+        [BsonElement("string_content")]
+        [JsonPropertyName("string_content")]
+        public string StringContent { get; set; }
+
 
         /// <summary>
         /// Delete or not ?

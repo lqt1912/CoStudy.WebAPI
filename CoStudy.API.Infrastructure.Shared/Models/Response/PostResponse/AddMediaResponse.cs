@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
 
 namespace CoStudy.API.Infrastructure.Shared.Models.Response.PostResponse
 {
@@ -15,6 +12,6 @@ namespace CoStudy.API.Infrastructure.Shared.Models.Response.PostResponse
         public string MediaUrl { get; set; }
 
         [JsonPropertyName("discription")]
-        public string  Discription { get; set; }
+        public string Discription { get; set; }
     }
 }

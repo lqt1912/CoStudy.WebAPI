@@ -1,10 +1,8 @@
-﻿using CoStudy.API.Infrastructure.Shared.Services.NofticationServices;
+﻿using CoStudy.API.Infrastructure.Shared.Services.MessageServices;
+using CoStudy.API.Infrastructure.Shared.Services.NofticationServices;
 using CoStudy.API.Infrastructure.Shared.Services.PostServices;
 using CoStudy.API.Infrastructure.Shared.Services.UserServices;
 using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace CoStudy.API.Infrastructure.Shared.Services
 {
@@ -16,6 +14,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services
 
             services.AddTransient<IPostService, PostService>();
             services.AddTransient<INofticationService, NofticationService>();
+            services.AddTransient<IMessageService, MessageService>();
         }
     }
 }

@@ -2,10 +2,7 @@
 using MongoDB.Bson;
 using MongoDB.Driver;
 using MongoDB.Driver.Linq;
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace CoStudy.API.Infrastructure.Persistence.Repositories
@@ -106,6 +103,6 @@ namespace CoStudy.API.Infrastructure.Persistence.Repositories
 
         }
 
-    
+
     }
 }

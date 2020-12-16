@@ -1,7 +1,6 @@
 ﻿using CoStudy.API.Domain.Entities.Application;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Text.Json.Serialization;
 
 namespace CoStudy.API.Infrastructure.Shared.Models.Response.UserResponse
@@ -52,6 +51,9 @@ namespace CoStudy.API.Infrastructure.Shared.Models.Response.UserResponse
         /// 
         [JsonPropertyName("posts")]
         public List<Post> Posts { get; set; }
+
+        [JsonPropertyName("post_count")]
+        public int PostCount { get; set; }
 
         [JsonPropertyName("noftications")]
         public List<Noftication> Noftications { get; set; }

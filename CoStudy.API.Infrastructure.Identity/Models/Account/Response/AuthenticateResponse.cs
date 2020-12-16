@@ -5,7 +5,7 @@ namespace CoStudy.API.Infrastructure.Identity.Models.Account.Response
 {
     public class AuthenticateResponse
     {
-        
+
         public string Id { get; set; }
         public string Email { get; set; }
         public string Role { get; set; }

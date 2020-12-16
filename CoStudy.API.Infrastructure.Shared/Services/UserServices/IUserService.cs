@@ -1,9 +1,5 @@
-﻿using CoStudy.API.Domain.Entities.Application;
-using CoStudy.API.Infrastructure.Shared.Models.Request.UserRequest;
+﻿using CoStudy.API.Infrastructure.Shared.Models.Request.UserRequest;
 using CoStudy.API.Infrastructure.Shared.Models.Response.UserResponse;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
@@ -22,7 +18,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
 
         Task<AddFieldResponse> AddFieldAsync(AddFieldRequest request);
 
-        Task<GetUserByIdResponse> GetUserById(string    id);
+        Task<GetUserByIdResponse> GetUserById(string id);
         Task SyncPost();
         GetUserByIdResponse GetCurrentUser();
     }

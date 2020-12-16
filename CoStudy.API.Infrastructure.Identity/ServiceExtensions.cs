@@ -1,12 +1,10 @@
 ﻿using AutoMapper;
-using CoStudy.API.Infrastructure.Identity.Contexts;
 using CoStudy.API.Infrastructure.Identity.Helpers;
 using CoStudy.API.Infrastructure.Identity.Repositories.AccountRepository;
 using CoStudy.API.Infrastructure.Identity.Services.AccountService;
 using CoStudy.API.Infrastructure.Identity.Services.Implements;
 using CoStudy.API.Infrastructure.Identity.Services.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
-using System.Configuration;
 
 namespace CoStudy.API.Infrastructure.Identity
 {
@@ -32,7 +30,7 @@ namespace CoStudy.API.Infrastructure.Identity
             //    option.SendGridUser = "Costudy.API";
             //    option.SendGridKey = "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";
             //});
-            
+
         }
     }
 }

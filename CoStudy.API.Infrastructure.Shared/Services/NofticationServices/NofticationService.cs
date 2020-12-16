@@ -5,19 +5,17 @@ using CoStudy.API.Infrastructure.Shared.Adapters;
 using CoStudy.API.Infrastructure.Shared.Models.Request.NofticationRequest;
 using CoStudy.API.Infrastructure.Shared.Models.Response.NofticationResponse;
 using Microsoft.AspNetCore.Http;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace CoStudy.API.Infrastructure.Shared.Services.NofticationServices
 {
-    public class NofticationService: INofticationService
+    public class NofticationService : INofticationService
     {
         INofticationRepository nofticationRepository;
         IUserRepository userRepository;
-         IHttpContextAccessor contextAccessor;
+        IHttpContextAccessor contextAccessor;
 
         public NofticationService(INofticationRepository nofticationRepository, IUserRepository userRepository, IHttpContextAccessor contextAccessor)
         {

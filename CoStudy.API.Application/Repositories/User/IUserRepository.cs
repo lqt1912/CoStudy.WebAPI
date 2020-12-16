@@ -1,8 +1,5 @@
-﻿using CoStudy.API.Infrastructure.Persistence.Repositories;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using CoStudy.API.Domain.Entities.Application;
+﻿using CoStudy.API.Domain.Entities.Application;
+using CoStudy.API.Infrastructure.Persistence.Repositories;
 
 namespace CoStudy.API.Application.Repositories
 {

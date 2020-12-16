@@ -1,14 +1,11 @@
-﻿using CoStudy.API.Domain.Entities.Identity;
-using CoStudy.API.Domain.Entities.Identity.MongoAuthen;
-using System;
+﻿using CoStudy.API.Domain.Entities.Identity.MongoAuthen;
 using System.ComponentModel.DataAnnotations;
-using System.Text.Json.Serialization;
 
 namespace CoStudy.API.Infrastructure.Identity.Models.Account.Request
 {
     public class CreateRequest
     {
-       
+
 
         [Required]
         [EnumDataType(typeof(Role))]

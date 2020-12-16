@@ -1,11 +1,8 @@
 ﻿using AutoMapper;
-using CoStudy.API.Domain.Entities.Identity;
 using CoStudy.API.Domain.Entities.Identity.MongoAuthen;
-using CoStudy.API.Infrastructure.Identity.Helpers;
 using CoStudy.API.Infrastructure.Identity.Models.Account.Request;
 using CoStudy.API.Infrastructure.Identity.Models.Account.Response;
 using CoStudy.API.Infrastructure.Identity.Services.AccountService;
-using CoStudy.API.Infrastructure.Identity.Services.Interfaces;
 using CoStudy.API.WebAPI.Middlewares;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -24,7 +21,7 @@ namespace CoStudy.API.WebAPI.Controllers
         private readonly IHttpContextAccessor httpContextAccessor;
         public AccountsController(
             IAccountService accountService,
-            IMapper mapper,  IHttpContextAccessor httpContextAccessor)
+            IMapper mapper, IHttpContextAccessor httpContextAccessor)
         {
             _accountService = accountService;
             _mapper = mapper;
@@ -63,7 +60,7 @@ namespace CoStudy.API.WebAPI.Controllers
                 return Unauthorized(new { message = "Unauthorized" });
 
             _accountService.RevokeToken(token, ipAddress());
-            return Ok(new ApiOkResponse( "Token revoked" ));
+            return Ok(new ApiOkResponse("Token revoked"));
         }
 
         //[HttpPost("register")]
@@ -77,7 +74,7 @@ namespace CoStudy.API.WebAPI.Controllers
         public IActionResult VerifyEmail(string token)
         {
             _accountService.VerifyEmail(token);
-            return Ok(new ApiOkResponse("Verification successful, you can now login" ));
+            return Ok(new ApiOkResponse("Verification successful, you can now login"));
         }
 
         [HttpPost("forgot-password")]
@@ -85,21 +82,21 @@ namespace CoStudy.API.WebAPI.Controllers
         {
             await _accountService.ForgotPassword(model, GetHostUrl());
 
-            return Ok(new ApiOkResponse(  "Please check your email for password reset instructions" ));
+            return Ok(new ApiOkResponse("Please check your email for password reset instructions"));
         }
 
         [HttpPost("validate-reset-token")]
         public IActionResult ValidateResetToken(ValidateResetTokenRequest model)
         {
             _accountService.ValidateResetToken(model);
-            return Ok(new ApiOkResponse( "Token is valid" ));
+            return Ok(new ApiOkResponse("Token is valid"));
         }
 
         [HttpPost("reset-password")]
         public IActionResult ResetPassword(ResetPasswordRequest model)
         {
             _accountService.ResetPassword(model);
-            return Ok(new ApiOkResponse("Password reset successful, you can now login" ));
+            return Ok(new ApiOkResponse("Password reset successful, you can now login"));
         }
 
         [Authorize(Role.Admin)]
@@ -146,7 +143,7 @@ namespace CoStudy.API.WebAPI.Controllers
             return Ok(new ApiOkResponse(account));
         }
 
-       // [Authorize]
+        // [Authorize]
         [HttpDelete("{id}")]
         public IActionResult Delete(string id)
         {
@@ -155,7 +152,7 @@ namespace CoStudy.API.WebAPI.Controllers
             //    return Unauthorized(new { message = "Unauthorized" });
 
             _accountService.Delete(id);
-            return Ok(new ApiOkResponse("Account deleted successfully" ));
+            return Ok(new ApiOkResponse("Account deleted successfully"));
         }
 
         // helper methods

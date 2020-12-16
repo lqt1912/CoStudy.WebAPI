@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
 namespace CoStudy.API.Infrastructure.Shared.Models.Request.UserRequest
@@ -12,7 +10,7 @@ namespace CoStudy.API.Infrastructure.Shared.Models.Request.UserRequest
             Followers = new List<string>();
         }
 
-     
+
 
         [JsonPropertyName("followers")]
         public List<string> Followers { get; set; }

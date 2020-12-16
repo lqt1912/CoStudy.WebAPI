@@ -10,7 +10,6 @@ using MongoDB.Bson;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
@@ -43,6 +42,9 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
             {
                 var comment = PostAdapter.FromRequest(request, currentUser.Id.ToString());
 
+                currentPost.CommentCount++;
+                await postRepository.UpdateAsync(currentPost, currentPost.Id);
+
                 await commentRepository.AddAsync(comment);
                 //Update again
                 return PostAdapter.ToResponse(comment, request.PostId);
@@ -69,6 +71,10 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
         {
 
             var currentUser = Feature.CurrentUser(httpContextAccessor, userRepository);
+
+            currentUser.PostCount++;
+            await userRepository.UpdateAsync(currentUser, currentUser.Id);
+
             var post = PostAdapter.FromRequest(request);
             post.AuthorId = currentUser.Id.ToString();
             await postRepository.AddAsync(post);
@@ -84,7 +90,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
             return PostAdapter.ToResponse(post);
         }
 
-        public  GetPostsByUserIdResponse GetPostByUserId(string userId)
+        public GetPostsByUserIdResponse GetPostByUserId(string userId)
         {
 
             var result = postRepository.GetAll().Where(x => x.AuthorId == userId).ToList();
@@ -142,7 +148,6 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
                     post.Comments.AddRange(latestComments);
                     await postRepository.UpdateAsync(post, post.Id);
                 }
-
             }
             catch (Exception)
             {

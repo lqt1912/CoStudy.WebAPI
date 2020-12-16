@@ -4,8 +4,6 @@ using CoStudy.API.Infrastructure.Shared.Models.Request.PostRequest;
 using CoStudy.API.Infrastructure.Shared.Models.Response.PostResponse;
 using Microsoft.AspNetCore.Http;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace CoStudy.API.Infrastructure.Shared.Adapters
 {
@@ -37,15 +35,15 @@ namespace CoStudy.API.Infrastructure.Shared.Adapters
             return new AddPostResponse()
             {
                 Post = post,
-                UserId= UserId
+                UserId = UserId
             };
         }
 
         public static Image FromRequest(AddMediaRequest request, IHttpContextAccessor httpContextAccessor)
         {
-            var url = Feature.SaveImage(request.Image, httpContextAccessor,"PostImage");
+            var url = Feature.SaveImage(request.Image, httpContextAccessor, "PostImage");
 
-            return  new Image()
+            return new Image()
             {
                 Discription = request.Discription,
                 ImageUrl = url,
@@ -54,11 +52,11 @@ namespace CoStudy.API.Infrastructure.Shared.Adapters
             };
         }
 
-        public static AddMediaResponse ToResponse(Image image, string postId )
+        public static AddMediaResponse ToResponse(Image image, string postId)
         {
             return new AddMediaResponse()
             {
-                PostId= postId,
+                PostId = postId,
                 MediaUrl = image.ImageUrl,
                 Discription = image.Discription
             };
@@ -76,7 +74,7 @@ namespace CoStudy.API.Infrastructure.Shared.Adapters
                 ModifiedDate = DateTime.Now
             };
         }
-        
+
 
         public static AddCommentResponse ToResponse(Comment comment, string postId)
         {
@@ -93,8 +91,8 @@ namespace CoStudy.API.Infrastructure.Shared.Adapters
             return new ReplyComment()
             {
                 AuthorId = UserId,
-                
-                ParentId =request.ParentCommentId,
+
+                ParentId = request.ParentCommentId,
                 Content = request.Content,
                 Status = ItemStatus.Active,
                 CreatedDate = DateTime.Now,
@@ -126,7 +124,7 @@ namespace CoStudy.API.Infrastructure.Shared.Adapters
                 ModifiedDate = post.ModifiedDate,
                 StringContents = post.StringContents,
                 MediaContents = post.MediaContents,
-                Comments =post.Comments,
+                Comments = post.Comments,
                 Fields = post.Fields
             };
         }

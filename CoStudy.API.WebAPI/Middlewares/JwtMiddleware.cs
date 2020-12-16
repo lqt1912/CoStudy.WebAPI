@@ -1,5 +1,4 @@
-﻿using CoStudy.API.Infrastructure.Identity.Contexts;
-using CoStudy.API.Infrastructure.Identity.Helpers;
+﻿using CoStudy.API.Infrastructure.Identity.Helpers;
 using CoStudy.API.Infrastructure.Identity.Repositories.AccountRepository;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
@@ -17,7 +16,7 @@ namespace CoStudy.API.WebAPI.Middlewares
     {
         private readonly RequestDelegate _next;
         private readonly AppSettings _appSettings;
-       
+
 
         public JwtMiddleware(RequestDelegate next, IOptions<AppSettings> appSettings)
         {
@@ -35,7 +34,7 @@ namespace CoStudy.API.WebAPI.Middlewares
             await _next(context);
         }
 
-        private async Task attachAccountToContext(HttpContext context,  string token, IAccountRepository accountRepository)
+        private async Task attachAccountToContext(HttpContext context, string token, IAccountRepository accountRepository)
         {
             try
             {

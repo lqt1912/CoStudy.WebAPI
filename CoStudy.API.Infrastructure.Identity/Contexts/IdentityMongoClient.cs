@@ -1,7 +1,4 @@
 ﻿using MongoDB.Driver;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace CoStudy.API.Infrastructure.Identity.Contexts
 {

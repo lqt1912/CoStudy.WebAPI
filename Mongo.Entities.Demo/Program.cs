@@ -2,10 +2,7 @@
 using Mongo.Entities.Demo.BookRepository1;
 using Mongo.Entities.Demo.BookServices;
 using MongoDB.Bson;
-using MongoDB.Bson.Serialization;
-using MongoDB.Driver;
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace Mongo.Entities.Demo
@@ -57,7 +54,7 @@ namespace Mongo.Entities.Demo
 
             var bookCollection = new CustomMongoClient().GetDatabase().GetCollection<Book>("Book");
             var bookRepository = new BookRepository().GetAll();
-           
+
         }
     }
 }

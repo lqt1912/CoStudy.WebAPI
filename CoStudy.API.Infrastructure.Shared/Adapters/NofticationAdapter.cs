@@ -2,8 +2,6 @@
 using CoStudy.API.Infrastructure.Shared.Models.Request.NofticationRequest;
 using CoStudy.API.Infrastructure.Shared.Models.Response.NofticationResponse;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace CoStudy.API.Infrastructure.Shared.Adapters
 {
@@ -13,7 +11,7 @@ namespace CoStudy.API.Infrastructure.Shared.Adapters
         {
             return new Noftication()
             {
-                AuthorId = request.AuthorId,    
+                AuthorId = request.AuthorId,
                 OwnerId = request.OwnerId,
                 Content = request.Content,
                 CreatedDate = DateTime.Now,

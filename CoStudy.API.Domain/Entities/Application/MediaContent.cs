@@ -5,9 +5,9 @@ using System;
 
 namespace CoStudy.API.Domain.Entities.Application
 {
-    public class MediaContent :Entity
+    public class MediaContent : Entity
     {
-        public MediaContent():base()
+        public MediaContent() : base()
         {
 
         }

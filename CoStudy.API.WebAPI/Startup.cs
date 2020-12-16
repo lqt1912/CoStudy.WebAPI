@@ -1,6 +1,5 @@
 using CoStudy.API.Application.Repositories;
 using CoStudy.API.Infrastructure.Identity;
-using CoStudy.API.Infrastructure.Identity.Contexts;
 using CoStudy.API.Infrastructure.Identity.Helpers;
 using CoStudy.API.Infrastructure.Identity.Services.Implements;
 using CoStudy.API.Infrastructure.Shared.Services;
@@ -10,7 +9,6 @@ using CoStudy.API.WebAPI.Middlewares;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -59,7 +57,7 @@ namespace CoStudy.API.WebAPI
         {
 
             // migrate database changes on startup (includes initial db creation)
-           // context.Database.Migrate();
+            // context.Database.Migrate();
 
             if (env.IsDevelopment())
             {

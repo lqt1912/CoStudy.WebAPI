@@ -6,7 +6,7 @@ using System.Text.Json.Serialization;
 
 namespace CoStudy.API.Domain.Entities.Application
 {
-    public class Field:Entity
+    public class Field : Entity
     {
         public Field() : base()
         {

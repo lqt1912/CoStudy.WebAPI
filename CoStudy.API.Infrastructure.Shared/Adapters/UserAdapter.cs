@@ -1,10 +1,8 @@
-﻿using AutoMapper;
-using CoStudy.API.Application.Features;
+﻿using CoStudy.API.Application.Features;
 using CoStudy.API.Domain.Entities.Application;
 using CoStudy.API.Infrastructure.Shared.Models.Request.UserRequest;
 using CoStudy.API.Infrastructure.Shared.Models.Response.UserResponse;
 using Microsoft.AspNetCore.Http;
-using MongoDB.Bson;
 using System;
 using System.Collections.Generic;
 
@@ -23,7 +21,8 @@ namespace CoStudy.API.Infrastructure.Shared.Adapters
                 PhoneNumber = request.PhoneNumber,
                 Address = request.Address,
                 CreatedDate = DateTime.Now,
-                ModifiedDate = DateTime.Now
+                ModifiedDate = DateTime.Now,
+                PostCount = 0
             };
         }
 
@@ -31,7 +30,7 @@ namespace CoStudy.API.Infrastructure.Shared.Adapters
         {
             return new AddUserResponse()
             {
-                Id =user.Id,
+                Id = user.Id,
                 FisrtName = user.FirstName,
                 LastName = user.LastName,
                 DateOfBirth = user.DateOfBirth,
@@ -72,11 +71,12 @@ namespace CoStudy.API.Infrastructure.Shared.Adapters
             foreach (var item in request.AdditionalInfos)
             {
                 result.Add(
-                    new AdditionalInfo() { 
-                    InfoValue = item.InfoValue,
-                    InfoType = item.InfoType,
-                    CreatedDate =DateTime.Now,
-                    ModifiedDate = DateTime.Now
+                    new AdditionalInfo()
+                    {
+                        InfoValue = item.InfoValue,
+                        InfoType = item.InfoType,
+                        CreatedDate = DateTime.Now,
+                        ModifiedDate = DateTime.Now
                     });
             }
             return request.AdditionalInfos;
@@ -85,9 +85,9 @@ namespace CoStudy.API.Infrastructure.Shared.Adapters
         public static AddAdditionalInfoResponse ToResponse(List<AdditionalInfo> info, string id)
         {
             return new AddAdditionalInfoResponse()
-            { 
-                UserId =id,
-                AdditionalInfos =info
+            {
+                UserId = id,
+                AdditionalInfos = info
             };
         }
 
@@ -101,12 +101,12 @@ namespace CoStudy.API.Infrastructure.Shared.Adapters
                 CreatedDate = DateTime.Now,
                 ModifiedDate = DateTime.Now,
                 Discription = request.UserField
-            
+
             };
             return new Field()
             {
-                Value= request.UserField,
-                ThumbnailImage=image,
+                Value = request.UserField,
+                ThumbnailImage = image,
                 CreatedDate = DateTime.Now,
                 ModifiedDate = DateTime.Now
             };
@@ -117,8 +117,8 @@ namespace CoStudy.API.Infrastructure.Shared.Adapters
             return new AddFieldResponse()
             {
                 UserId = id,
-                Value= field.Value,
-                Image=field.ThumbnailImage.ImageUrl
+                Value = field.Value,
+                Image = field.ThumbnailImage.ImageUrl
             };
         }
 
@@ -135,9 +135,11 @@ namespace CoStudy.API.Infrastructure.Shared.Adapters
                 Address = user1.Address,
                 Avatar = user1.Avatar,
                 Status = user1.Status,
+
                 CreatedDate = user1.CreatedDate,
                 ModifiedDate = user1.ModifiedDate,
                 Posts = user1.Posts,
+                PostCount = user1.PostCount,
                 Noftications = user1.Noftications,
                 Followers = user1.Followers,
                 Following = user1.Following,

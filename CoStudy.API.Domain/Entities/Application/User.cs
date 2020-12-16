@@ -7,7 +7,7 @@ using System.Text.Json.Serialization;
 
 namespace CoStudy.API.Domain.Entities.Application
 {
-    public class User :Entity
+    public class User : Entity
     {
         [BsonElement("first_name")]
         [JsonPropertyName("first_name")]
@@ -57,20 +57,23 @@ namespace CoStudy.API.Domain.Entities.Application
         /// </summary>
         [BsonElement("posts")]
         [JsonPropertyName("posts")]
-        public  List<Post> Posts { get; set; }
+        public List<Post> Posts { get; set; }
 
 
         [BsonElement("noftications")]
         [JsonPropertyName("noftications")]
-        public  List<Noftication> Noftications { get; set; }
+        public List<Noftication> Noftications { get; set; }
 
+        [BsonElement("post_count")]
+        [JsonPropertyName("post_count")]
+        public int PostCount { get; set; }
 
         /// <summary>
         /// List id of follower
         /// </summary>
         [BsonElement("followers")]
         [JsonPropertyName("followers")]
-        public  List<string> Followers { get; set; }
+        public List<string> Followers { get; set; }
 
 
         /// <summary>
@@ -78,7 +81,7 @@ namespace CoStudy.API.Domain.Entities.Application
         /// </summary>
         [BsonElement("followings")]
         [JsonPropertyName("followings")]
-        public  List<string> Following { get; set; }
+        public List<string> Following { get; set; }
 
         /// <summary>
         /// Thông tin thêm
@@ -86,7 +89,7 @@ namespace CoStudy.API.Domain.Entities.Application
         /// 
         [BsonElement("additional_infos")]
         [JsonPropertyName("additional_infos")]
-        public  List<AdditionalInfo> AdditionalInfos { get; set; }
+        public List<AdditionalInfo> AdditionalInfos { get; set; }
 
         /// <summary>
         /// Sở trường
@@ -94,7 +97,7 @@ namespace CoStudy.API.Domain.Entities.Application
         /// 
         [BsonElement("fortes")]
         [JsonPropertyName("fortes")]
-        public  List<Field> Fortes { get; set; }
+        public List<Field> Fortes { get; set; }
 
         public User() : base()
         {

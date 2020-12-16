@@ -1,13 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Security.Cryptography;
-using System.Text;
 
 namespace CoStudy.API.Infrastructure.Identity.Helpers
 {
     public static class Extension
     {
-        public static  string randomTokenString()
+        public static string randomTokenString()
         {
             using var rngCryptoServiceProvider = new RNGCryptoServiceProvider();
             var randomBytes = new byte[40];
@@ -24,6 +22,6 @@ namespace CoStudy.API.Infrastructure.Identity.Helpers
             // convert random bytes to hex string
             return BitConverter.ToString(randomBytes).Replace("-", "");
         }
-       
+
     }
 }

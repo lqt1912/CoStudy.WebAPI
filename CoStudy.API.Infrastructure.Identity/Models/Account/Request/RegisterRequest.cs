@@ -5,7 +5,7 @@ namespace CoStudy.API.Infrastructure.Identity.Models.Account.Request
 {
     public class RegisterRequest
     {
-       
+
 
         [Required]
         [EmailAddress]

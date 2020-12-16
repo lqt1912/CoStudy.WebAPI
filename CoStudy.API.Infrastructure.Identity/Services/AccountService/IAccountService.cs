@@ -1,8 +1,6 @@
 ﻿using CoStudy.API.Infrastructure.Identity.Models.Account.Request;
 using CoStudy.API.Infrastructure.Identity.Models.Account.Response;
-using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace CoStudy.API.Infrastructure.Identity.Services.AccountService

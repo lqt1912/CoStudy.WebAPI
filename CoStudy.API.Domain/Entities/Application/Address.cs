@@ -1,7 +1,5 @@
-﻿using CoStudy.API.Domain.Entities.BaseEntity;
-using MongoDB.Bson;
+﻿using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
-using System;
 using System.Text.Json.Serialization;
 
 namespace CoStudy.API.Domain.Entities.Application
@@ -21,7 +19,7 @@ namespace CoStudy.API.Domain.Entities.Application
         [JsonPropertyName("detail")]
         public string Detail { get; set; }
 
-     
+
         [BsonElement("longtitude")]
         [JsonPropertyName("longtitude")]
         public string Longtitude { get; set; }

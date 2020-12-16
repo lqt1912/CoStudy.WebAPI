@@ -3,10 +3,8 @@ using CoStudy.API.Domain.Entities.Application;
 using CoStudy.API.Domain.Entities.Identity.MongoAuthen;
 using Microsoft.AspNetCore.Http;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 
 namespace CoStudy.API.Application.Features
 {
@@ -53,7 +51,7 @@ namespace CoStudy.API.Application.Features
             var imageFolder = $"{folder}/";
             var location = $"{scheme}://{host}{pathBase}/{imageFolder}";
 
-            var target = Path.Combine(Directory.GetCurrentDirectory(), $"wwwroot\\{folder}\\" );
+            var target = Path.Combine(Directory.GetCurrentDirectory(), $"wwwroot\\{folder}\\");
 
             Directory.CreateDirectory(target);
 
@@ -78,7 +76,7 @@ namespace CoStudy.API.Application.Features
             return location;
         }
 
-        public static  User CurrentUser(IHttpContextAccessor _httpContextAccessor,IUserRepository userRepository)
+        public static User CurrentUser(IHttpContextAccessor _httpContextAccessor, IUserRepository userRepository)
         {
             var currentAccount = (Account)_httpContextAccessor.HttpContext.Items["Account"];
 

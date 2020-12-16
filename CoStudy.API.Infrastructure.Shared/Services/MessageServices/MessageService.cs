@@ -1,0 +1,88 @@
+﻿using CoStudy.API.Application.Features;
+using CoStudy.API.Application.Repositories;
+using CoStudy.API.Domain.Entities.Application;
+using CoStudy.API.Infrastructure.Shared.Adapters;
+using CoStudy.API.Infrastructure.Shared.Models.Request.MessageRequest;
+using CoStudy.API.Infrastructure.Shared.Models.Response.MessageResponse;
+using Microsoft.AspNetCore.Http;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace CoStudy.API.Infrastructure.Shared.Services.MessageServices
+{
+    public class MessageService : IMessageService
+    {
+        IMessageRepository messageRepository;
+        IConversationRepository conversationRepository;
+        IUserRepository userRepository;
+        IHttpContextAccessor httpContextAccessor;
+
+        public MessageService(IMessageRepository messageRepository,
+            IConversationRepository conversationRepository,
+            IUserRepository userRepository,
+            IHttpContextAccessor httpContextAccessor)
+        {
+            this.messageRepository = messageRepository;
+            this.conversationRepository = conversationRepository;
+            this.userRepository = userRepository;
+            this.httpContextAccessor = httpContextAccessor;
+        }
+
+        public async Task<AddConversationResponse> AddConversation(AddConversationRequest request)
+        {
+
+            var currentUser = Feature.CurrentUser(httpContextAccessor, userRepository);
+            request.Participants.Add(currentUser.Id.ToString());
+            var conversation = MessageAdapter.FromRequest(request);
+
+            await conversationRepository.AddAsync(conversation);
+            return MessageAdapter.ToResponse(conversation);
+        }
+
+        public async Task<AddMessageResponse> AddMessage(AddMessageRequest request)
+        {
+            var message = MessageAdapter.FromRequest(request, httpContextAccessor, userRepository);
+
+            await messageRepository.AddAsync(message);
+
+            return MessageAdapter.ToResponse(message);
+        }
+
+
+
+        public GetMessageByConversationIdResponse GetMessageByConversationId(string conversationId, int limit)
+        {
+            var messages = messageRepository.GetAll().Where(x => x.ConversationId == conversationId).Take(limit).ToList();
+            return new GetMessageByConversationIdResponse()
+            {
+                Id = conversationId,
+                Messages = messages
+            };
+        }
+        public GetConversationByUserIdResponse GetConversationByUserId()
+        {
+            var currentUser = Feature.CurrentUser(httpContextAccessor, userRepository);
+            if (currentUser == null)
+                throw new Exception("User not found");
+            var result = new List<Tuple<Conversation, Message>>();
+            var conversations = conversationRepository.GetAll().Where(x => x.Participants.Contains(currentUser.Id.ToString()));
+            foreach (var conversation in conversations)
+            {
+                var recentMessage = messageRepository.GetAll().Where(x => x.ConversationId == conversation.Id.ToString()).OrderByDescending(x => x.CreatedDate).FirstOrDefault();
+                if (recentMessage == null)
+                    recentMessage = new Message();
+                var item = new Tuple<Conversation, Message>(conversation, recentMessage);
+                result.Add(item);
+            }
+            return new GetConversationByUserIdResponse()
+            {
+                Conversations = result
+            };
+        }
+
+    }
+}
+

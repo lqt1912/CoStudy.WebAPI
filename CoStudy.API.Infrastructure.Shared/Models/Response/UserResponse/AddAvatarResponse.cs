@@ -1,7 +1,5 @@
 ﻿using MongoDB.Bson;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Text.Json.Serialization;
 
 namespace CoStudy.API.Infrastructure.Shared.Models.Response.UserResponse
@@ -20,7 +18,7 @@ namespace CoStudy.API.Infrastructure.Shared.Models.Response.UserResponse
         [JsonPropertyName("image_url")]
         public string ImageUrl { get; set; }
 
-    
+
 
         [JsonPropertyName("created_date")]
         public DateTime CreatedDate { get; set; }

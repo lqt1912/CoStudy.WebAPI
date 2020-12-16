@@ -1,5 +1,4 @@
-﻿using CoStudy.API.Infrastructure.Identity.Helpers;
-using CoStudy.API.WebAPI.Middlewares;
+﻿using CoStudy.API.WebAPI.Middlewares;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CoStudy.API.WebAPI.Controllers

@@ -7,7 +7,7 @@ using System.Text.Json.Serialization;
 
 namespace CoStudy.API.Domain.Entities.Application
 {
-    public class Post :Entity
+    public class Post : Entity
     {
         public Post() : base()
         {
@@ -15,6 +15,7 @@ namespace CoStudy.API.Domain.Entities.Application
             MediaContents = new List<Image>();
             Comments = new List<Comment>();
             Fields = new List<Field>();
+            CommentCount = 0;
         }
 
         [BsonElement("title")]
@@ -46,7 +47,7 @@ namespace CoStudy.API.Domain.Entities.Application
         /// </summary>
         [BsonElement("string_contents")]
         [JsonPropertyName("string_contents")]
-        public  List<PostContent> StringContents { get; set; }
+        public List<PostContent> StringContents { get; set; }
 
 
         /// <summary>
@@ -62,14 +63,19 @@ namespace CoStudy.API.Domain.Entities.Application
         /// 
         [BsonElement("comments")]
         [JsonPropertyName("comments")]
-        public  List<Comment> Comments { get; set; }
+        public List<Comment> Comments { get; set; }
 
+
+        [BsonElement("comments_count")]
+        [JsonPropertyName("comments_countd")]
+        public int CommentCount { get; set; }
+        
         /// <summary>
         /// Lĩnh vực của bài post
         /// </summary>
         /// 
         [BsonElement("fields")]
         [JsonPropertyName("fields")]
-        public  List<Field> Fields { get; set; }
+        public List<Field> Fields { get; set; }
     }
 }

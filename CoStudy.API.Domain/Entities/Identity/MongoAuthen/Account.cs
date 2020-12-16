@@ -1,15 +1,12 @@
 ﻿using CoStudy.API.Domain.Entities.BaseEntity;
-using MongoDB.Bson;
-using MongoDB.Bson.Serialization.Attributes;
 using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace CoStudy.API.Domain.Entities.Identity.MongoAuthen
 {
     public class Account : Entity
     {
-        public Account():base()
+        public Account() : base()
         {
             RefreshTokens = new List<RefreshToken>();
         }

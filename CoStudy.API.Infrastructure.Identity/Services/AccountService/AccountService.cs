@@ -1,6 +1,4 @@
 ﻿using AutoMapper;
-using CoStudy.API.Application.Repositories;
-using CoStudy.API.Domain.Entities.Application;
 using CoStudy.API.Domain.Entities.Identity.MongoAuthen;
 using CoStudy.API.Infrastructure.Identity.Helpers;
 using CoStudy.API.Infrastructure.Identity.Models.Account.Request;
@@ -70,7 +68,7 @@ namespace CoStudy.API.Infrastructure.Identity.Services.AccountService
         {
 
 
-            var account = accountRepository.GetAll().SingleOrDefault(x=>x.Email == model.Email);
+            var account = accountRepository.GetAll().SingleOrDefault(x => x.Email == model.Email);
             if (account == null || !account.IsVerified)
                 throw new Exception("Email or password incorrect");
 
@@ -136,7 +134,7 @@ namespace CoStudy.API.Infrastructure.Identity.Services.AccountService
             return mapper.Map<IList<AccountResponse>>(accounts);
         }
 
-   
+
 
         public AuthenticateResponse RefreshToken(string token, string ipAddress)
         {
@@ -162,9 +160,9 @@ namespace CoStudy.API.Infrastructure.Identity.Services.AccountService
             return response;
         }
 
-        public async  Task Register(RegisterRequest model, string origin)
+        public async Task Register(RegisterRequest model, string origin)
         {
-            if(accountRepository.GetAll().SingleOrDefault(x=>x.Email == model.Email)!=null)
+            if (accountRepository.GetAll().SingleOrDefault(x => x.Email == model.Email) != null)
             {
                 await sendAlreadyRegisteredEmail(model.Email, origin);
                 return;
@@ -188,8 +186,8 @@ namespace CoStudy.API.Infrastructure.Identity.Services.AccountService
         {
 
             var account = accountRepository.GetAll().SingleOrDefault(
-                x=>x.ResetToken == model.Token &&
-                x.ResetTokenExpires >DateTime.UtcNow
+                x => x.ResetToken == model.Token &&
+                x.ResetTokenExpires > DateTime.UtcNow
                 );
             if (account == null)
                 throw new AppException("Invalid token");
@@ -219,9 +217,9 @@ namespace CoStudy.API.Infrastructure.Identity.Services.AccountService
         {
             var account = accountRepository.GetById(ObjectId.Parse(id));
 
-            if(account.Email!=model.Email 
-                && accountRepository.GetAll().SingleOrDefault(x=>x.Email ==model.Email)!=null )
-            throw new NotImplementedException();
+            if (account.Email != model.Email
+                && accountRepository.GetAll().SingleOrDefault(x => x.Email == model.Email) != null)
+                throw new NotImplementedException();
             {
                 throw new Exception($"Email {model.Email} has been taken");
             }
@@ -241,7 +239,7 @@ namespace CoStudy.API.Infrastructure.Identity.Services.AccountService
         public void ValidateResetToken(ValidateResetTokenRequest model)
         {
 
-            var account = accountRepository.GetAll().SingleOrDefault(x=>x.ResetToken == model.Token && x.ResetTokenExpires >DateTime.UtcNow);
+            var account = accountRepository.GetAll().SingleOrDefault(x => x.ResetToken == model.Token && x.ResetTokenExpires > DateTime.UtcNow);
             if (account == null)
                 throw new Exception("Invalid Token! ");
         }
@@ -249,7 +247,7 @@ namespace CoStudy.API.Infrastructure.Identity.Services.AccountService
         public void VerifyEmail(string token)
         {
 
-            var account = accountRepository.GetAll().SingleOrDefault(x=>x.VerificationToken ==token);
+            var account = accountRepository.GetAll().SingleOrDefault(x => x.VerificationToken == token);
 
             if (account == null)
                 throw new Exception("Verfication failed! ");

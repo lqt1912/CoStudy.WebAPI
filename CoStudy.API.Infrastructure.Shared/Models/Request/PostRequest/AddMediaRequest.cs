@@ -1,8 +1,4 @@
 ﻿using Microsoft.AspNetCore.Http;
-using MongoDB.Bson;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Text.Json.Serialization;
 
 namespace CoStudy.API.Infrastructure.Shared.Models.Request.PostRequest

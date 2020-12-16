@@ -7,25 +7,25 @@ using System.Text.Json.Serialization;
 
 namespace CoStudy.API.Domain.Entities.Application
 {
-    public class Conversation:Entity
+    public class Conversation : Entity
     {
-        public Conversation():base()
+        public Conversation() : base()
         {
-            Messages = new List<Message>();
+          //  Messages = new List<string>();
+            Participants = new List<string>();
         }
 
-        [BsonElement("host_id")]
-        [JsonPropertyName("host_id")]
-        public string HostId { get; set; }
+        [BsonElement("name")]
+        [JsonPropertyName("name")]
+        public string Name { get; set; }
 
-        [BsonElement("guest_id")]
-        [JsonPropertyName("guest_id")]
-        public string GuestId { get; set; }
+        [BsonElement("participants")]
+        [JsonPropertyName("participants")]
+        public List<string> Participants { get; set; }
 
-
-        [BsonElement("messages")]
-        [JsonPropertyName("messages")]
-        public  List<Message> Messages { get; set; }
+        //[BsonElement("messages")]
+        //[JsonPropertyName("messages")]
+        //public List<string> Messages { get; set; }
 
         [BsonElement("status")]
         [JsonPropertyName("status")]

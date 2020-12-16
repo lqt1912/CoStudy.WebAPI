@@ -1,24 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using CoStudy.API.Application.Features;
-using CoStudy.API.Domain.Entities.Application;
-using CoStudy.API.Infrastructure.Identity.Helpers;
+﻿using CoStudy.API.Application.Features;
 using CoStudy.API.Infrastructure.Identity.Models.Account.Request;
 using CoStudy.API.Infrastructure.Identity.Services.AccountService;
-using CoStudy.API.Infrastructure.Identity.Services.Interfaces;
 using CoStudy.API.Infrastructure.Shared.Models.Request.UserRequest;
 using CoStudy.API.Infrastructure.Shared.Services.UserServices;
 using CoStudy.API.WebAPI.Middlewares;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Threading.Tasks;
 
 namespace CoStudy.API.WebAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
- 
+
     public class UserController : ControllerBase
     {
         private readonly IUserService userService;
@@ -57,11 +51,11 @@ namespace CoStudy.API.WebAPI.Controllers
 
         [HttpPost]
         [Route("avatar")]
-        public async Task<IActionResult> UploadAvatar([FromForm]AddAvatarRequest request)
+        public async Task<IActionResult> UploadAvatar([FromForm] AddAvatarRequest request)
         {
             var data = await userService.AddAvatarAsync(request);
 
-            return Ok(new ApiOkResponse(data));    
+            return Ok(new ApiOkResponse(data));
         }
 
         [HttpPost]
@@ -90,7 +84,7 @@ namespace CoStudy.API.WebAPI.Controllers
 
         [HttpPost]
         [Route("field")]
-        public async Task<IActionResult> AddField([FromForm]AddFieldRequest request)
+        public async Task<IActionResult> AddField([FromForm] AddFieldRequest request)
         {
             var data = await userService.AddFieldAsync(request);
             return Ok(new ApiOkResponse(data));
@@ -103,7 +97,7 @@ namespace CoStudy.API.WebAPI.Controllers
             var data = await userService.GetUserById(id);
             return Ok(new ApiOkResponse(data));
         }
-        [HttpGet] 
+        [HttpGet]
         [Route("current")]
         public IActionResult GetCurrentUser()
         {

@@ -1,5 +1,4 @@
-﻿using CoStudy.API.Domain.Entities.Application;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 
 namespace CoStudy.API.Application.Repositories
 {

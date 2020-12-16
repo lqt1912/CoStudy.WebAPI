@@ -6,13 +6,13 @@ using System.Text.Json.Serialization;
 
 namespace CoStudy.API.Domain.Entities.Application
 {
-    public class Noftication :Entity
+    public class Noftication : Entity
     {
         public Noftication() : base()
         {
             Content = new PostContent();
         }
-        
+
         [BsonElement("author_id")]
         [JsonPropertyName("author_id")]
         public string AuthorId { get; set; }

@@ -1,5 +1,4 @@
-﻿using CoStudy.API.Domain.Entities.Identity;
-using CoStudy.API.Domain.Entities.Identity.MongoAuthen;
+﻿using CoStudy.API.Domain.Entities.Identity.MongoAuthen;
 using System.ComponentModel.DataAnnotations;
 
 namespace CoStudy.API.Infrastructure.Identity.Models.Account.Request
@@ -11,7 +10,7 @@ namespace CoStudy.API.Infrastructure.Identity.Models.Account.Request
         private string _role;
         private string _email;
 
-     
+
 
         [EnumDataType(typeof(Role))]
         public string Role

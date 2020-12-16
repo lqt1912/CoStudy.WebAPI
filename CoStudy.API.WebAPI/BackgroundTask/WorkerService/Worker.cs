@@ -1,9 +1,6 @@
 ﻿using CoStudy.API.Infrastructure.Shared.Services.PostServices;
 using CoStudy.API.Infrastructure.Shared.Services.UserServices;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 

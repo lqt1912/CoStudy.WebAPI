@@ -7,9 +7,9 @@ using System.Text.Json.Serialization;
 
 namespace CoStudy.API.Domain.Entities.Application
 {
-    public class Comment :Entity
+    public class Comment : Entity
     {
-        public Comment():base()
+        public Comment() : base()
         {
             Replies = new List<ReplyComment>();
         }
@@ -41,7 +41,7 @@ namespace CoStudy.API.Domain.Entities.Application
 
         [BsonElement("replies")]
         [JsonPropertyName("replies")]
-        public  List<ReplyComment> Replies { get; set; }
-       
+        public List<ReplyComment> Replies { get; set; }
+
     }
 }

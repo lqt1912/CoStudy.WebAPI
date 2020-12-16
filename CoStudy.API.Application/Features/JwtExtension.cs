@@ -2,16 +2,15 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System;
-using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Text;
 
 namespace CoStudy.API.Application.Features
 {
-    public static  class JwtExtension
+    public static class JwtExtension
     {
-        public static string GetIdFromJwt(IHttpContextAccessor context,IConfiguration configuration)
+        public static string GetIdFromJwt(IHttpContextAccessor context, IConfiguration configuration)
         {
             var token = context.HttpContext.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
             if (token != null)
