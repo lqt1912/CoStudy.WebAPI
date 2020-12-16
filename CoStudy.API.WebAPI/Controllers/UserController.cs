@@ -49,6 +49,16 @@ namespace CoStudy.API.WebAPI.Controllers
             return Ok(new ApiOkResponse(response));
         }
 
+        [HttpPut]
+        [Route("update")]
+        [Authorize]
+        public async Task<IActionResult> UpdateUser(UpdateUserRequest request)
+        {
+            var data = await userService.UpdateUserAsync(request);
+            return Ok(new ApiOkResponse(data));
+        }
+
+        [Authorize]
         [HttpPost]
         [Route("avatar")]
         public async Task<IActionResult> UploadAvatar([FromForm] AddAvatarRequest request)
@@ -58,22 +68,25 @@ namespace CoStudy.API.WebAPI.Controllers
             return Ok(new ApiOkResponse(data));
         }
 
+        [Authorize]
         [HttpPost]
-        [Route("followers")]
-        public async Task<IActionResult> AddFollowers([FromBody] AddFollowerRequest request)
+        [Route("avatar/update")]
+        public async Task<IActionResult> UpdateAvatar([FromForm] AddAvatarRequest request)
         {
-            var data = await userService.AddFollowersAsync(request);
+            var data = await userService.UpdateAvatarAsync(request);
             return Ok(new ApiOkResponse(data));
         }
 
+        [Authorize]
         [HttpPost]
-        [Route("followings")]
+        [Route("following")]
         public async Task<IActionResult> AddFollowings([FromBody] AddFollowerRequest request)
         {
             var data = await userService.AddFollowingsAsync(request);
             return Ok(new ApiOkResponse(data));
         }
 
+        [Authorize]
         [HttpPost]
         [Route("additionalinfos")]
         public async Task<IActionResult> AddAdditionalInfos(AddAdditionalInfoRequest request)
@@ -82,6 +95,7 @@ namespace CoStudy.API.WebAPI.Controllers
             return Ok(new ApiOkResponse(data));
         }
 
+        [Authorize]
         [HttpPost]
         [Route("field")]
         public async Task<IActionResult> AddField([FromForm] AddFieldRequest request)
@@ -90,6 +104,7 @@ namespace CoStudy.API.WebAPI.Controllers
             return Ok(new ApiOkResponse(data));
         }
 
+        [Authorize]
         [HttpGet]
         [Route("get/{id}")]
         public async Task<IActionResult> GetById(string id)
@@ -97,11 +112,22 @@ namespace CoStudy.API.WebAPI.Controllers
             var data = await userService.GetUserById(id);
             return Ok(new ApiOkResponse(data));
         }
+
+        [Authorize]
         [HttpGet]
         [Route("current")]
         public IActionResult GetCurrentUser()
         {
             var data = userService.GetCurrentUser();
+            return Ok(new ApiOkResponse(data));
+        }
+
+        [Authorize]
+        [HttpPost]
+        [Route("following/remove")]
+        public async Task<IActionResult> Unfollow(string followingId)
+        {
+            var data =await  userService.RemoveFollowing(followingId);
             return Ok(new ApiOkResponse(data));
         }
     }

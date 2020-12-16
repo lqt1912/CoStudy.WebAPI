@@ -8,7 +8,6 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
 {
     public interface IPostService
     {
-
         Task<AddPostResponse> AddPost(AddPostRequest request);
 
         Task<AddMediaResponse> AddMedia(AddMediaRequest request);
@@ -24,5 +23,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
 
         GetPostsByUserIdResponse GetPostByUserId(string userId);
         List<Post> GetPostTimeline();
+        List<Comment> GetCommentByPostId(string postId);
+        List<ReplyComment> GetReplyCommentByCommentId(string commentId);
     }
 }

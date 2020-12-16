@@ -74,5 +74,21 @@ namespace CoStudy.API.WebAPI.Controllers
             var data = postService.GetPostTimeline();
             return Ok(new ApiOkResponse(data));
         }
+
+        [HttpGet]
+        [Route("comments/{postId}")]
+        public IActionResult GetCommentByPostId(string postId)
+        {
+            var data = postService.GetCommentByPostId(postId);
+            return Ok(new ApiOkResponse(data));
+        }
+
+        [HttpGet]
+        [Route("replies/{commentId}")]
+        public IActionResult GetReplyByCommentId(string commentId)
+        {
+            var data = postService.GetReplyCommentByCommentId(commentId);
+            return Ok(new ApiOkResponse(data));
+        }
     }
 }

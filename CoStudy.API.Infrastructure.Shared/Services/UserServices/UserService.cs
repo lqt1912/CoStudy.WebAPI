@@ -110,6 +110,16 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
 
             await userRepository.UpdateAsync(currentUser, currentUser.Id);
 
+            foreach (var item in request.Followers)
+            {
+                var user = await userRepository.GetByIdAsync(ObjectId.Parse(item));
+                if (user != null)
+                { 
+                    user.Followers.Add(currentUser.Id.ToString());
+                    await userRepository.UpdateAsync(user, user.Id);
+                }
+            }
+
             return new AddFollowerResponse()
             {
                 UserId = currentUser.Id.ToString(),
@@ -173,7 +183,6 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
             return UserAdapter.ToResponse1(user);
         }
 
-        [Authorize]
         public GetUserByIdResponse GetCurrentUser()
         {
             try
@@ -188,6 +197,52 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
             {
                 throw new Exception("Không tìm thấy user");
             }
+        }
+
+        public async Task<User> RemoveFollowing(string followerId)
+        {
+            var currentUser = Feature.CurrentUser(_httpContextAccessor, userRepository);
+
+            if (currentUser.Following.Contains(followerId))
+            { 
+                currentUser.Following.Remove(followerId);
+                var user = await userRepository.GetByIdAsync(ObjectId.Parse(followerId));
+                if(user!=null)
+                {
+                    user.Followers.Remove(currentUser.Id.ToString());
+                    await userRepository.UpdateAsync(user, user.Id);
+                }    
+            }
+            await userRepository.UpdateAsync(currentUser, currentUser.Id);
+            return currentUser;
+        }
+
+        public async Task<User> UpdateUserAsync(UpdateUserRequest request)
+        {
+            var currentUser = Feature.CurrentUser(_httpContextAccessor, userRepository);
+            currentUser.Address = request.Address;
+            currentUser.FirstName = request.FisrtName;
+            currentUser.LastName = request.LastName;
+            currentUser.PhoneNumber = request.PhoneNumber;
+            currentUser.DateOfBirth = request.DateOfBirth;
+            await userRepository.UpdateAsync(currentUser, currentUser.Id);
+
+            return currentUser;
+        }
+
+        public async Task<User> UpdateAvatarAsync(AddAvatarRequest request)
+        {
+            var avatar = UserAdapter.FromRequest(request, _httpContextAccessor);
+
+            var currentUser = CurrentUser();
+
+            currentUser.Avatar = avatar;
+
+            currentUser.ModifiedDate = DateTime.Now;
+
+            await userRepository.UpdateAsync(currentUser, currentUser.Id);
+
+            return currentUser;
         }
     }
 }

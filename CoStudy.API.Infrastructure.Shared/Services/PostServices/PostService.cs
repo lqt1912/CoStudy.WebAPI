@@ -82,6 +82,14 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
             return PostAdapter.ToResponse(post, currentUser.Id.ToString());
         }
 
+        public List<Comment> GetCommentByPostId(string postId)
+        {
+            var comments = commentRepository.GetAll().Where(x => x.PostId == postId).ToList();
+            if (comments != null)
+                return comments;
+            return null;
+        }
+
         public async Task<GetPostByIdResponse> GetPostById(string postId)
         {
             var post = await postRepository.GetByIdAsync(ObjectId.Parse(postId));
@@ -115,6 +123,14 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
                     result.Add(post);
             }
             return result;
+        }
+
+        public List<ReplyComment> GetReplyCommentByCommentId(string commentId)
+        {
+            var comments = replyCommentRepository.GetAll().Where(x => x.ParentId == commentId).ToList();
+            if (comments != null)
+                return comments;
+            return null;
         }
 
         public async Task<ReplyCommentResponse> ReplyComment(ReplyCommentRequest request)
