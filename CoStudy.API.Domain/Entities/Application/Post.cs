@@ -77,5 +77,10 @@ namespace CoStudy.API.Domain.Entities.Application
         [BsonElement("fields")]
         [JsonPropertyName("fields")]
         public List<Field> Fields { get; set; }
+
+
+        [BsonElement("status")]
+        [JsonPropertyName("status")]
+        public ItemStatus Status { get; set; }
     }
 }

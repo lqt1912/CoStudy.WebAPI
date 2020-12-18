@@ -25,5 +25,10 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
         List<Post> GetPostTimeline();
         List<Comment> GetCommentByPostId(string postId);
         List<ReplyComment> GetReplyCommentByCommentId(string commentId);
+
+        Task<string> DeleteComment(string commentId);
+
+        Task<string> DeleteReply(string replyId);
     }
+
 }

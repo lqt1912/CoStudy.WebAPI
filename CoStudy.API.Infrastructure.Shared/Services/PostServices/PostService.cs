@@ -82,9 +82,37 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
             return PostAdapter.ToResponse(post, currentUser.Id.ToString());
         }
 
+        public async Task<string> DeleteComment(string commentId)
+        {
+            var currentComment = await commentRepository.GetByIdAsync(ObjectId.Parse(commentId));
+            if (currentComment != null)
+            {
+                currentComment.Status = ItemStatus.Deleted;
+                await commentRepository.UpdateAsync(currentComment, currentComment.Id);
+
+                var currentPost = await postRepository.GetByIdAsync(ObjectId.Parse(currentComment.PostId));
+                currentPost.CommentCount--;
+                await postRepository.UpdateAsync(currentPost, currentPost.Id);
+                return "Xóa bình luận thành công";
+            }
+            else throw new Exception("Comment không tồn tại hoặc đã bị xóa");
+        }
+
+        public async Task<string> DeleteReply(string replyId)
+        {
+            var currentReply = await replyCommentRepository.GetByIdAsync(ObjectId.Parse(replyId));
+            if (currentReply != null)
+            {
+                currentReply.Status = ItemStatus.Deleted;
+                await replyCommentRepository.UpdateAsync(currentReply, currentReply.Id);
+                return "Xóa câu trả lời thành công";
+            }
+            else throw new Exception("Câu rả lời không tồn tại hoặc đã bị xóa");
+        }
+
         public List<Comment> GetCommentByPostId(string postId)
         {
-            var comments = commentRepository.GetAll().Where(x => x.PostId == postId).ToList();
+            var comments = commentRepository.GetAll().Where(x => x.PostId == postId && x.Status == ItemStatus.Active).ToList();
             if (comments != null)
                 return comments;
             return null;
@@ -93,7 +121,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
         public async Task<GetPostByIdResponse> GetPostById(string postId)
         {
             var post = await postRepository.GetByIdAsync(ObjectId.Parse(postId));
-            if (post == null)
+            if (post == null || post.Status !=ItemStatus.Active)
                 throw new Exception("Không tìm thấy bài viết ");
             return PostAdapter.ToResponse(post);
         }
@@ -101,7 +129,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
         public GetPostsByUserIdResponse GetPostByUserId(string userId)
         {
 
-            var result = postRepository.GetAll().Where(x => x.AuthorId == userId).ToList();
+            var result = postRepository.GetAll().Where(x => x.AuthorId == userId && x.Status == ItemStatus.Active).ToList();
             if (result != null)
                 return new GetPostsByUserIdResponse()
                 {
@@ -119,7 +147,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
             var result = new List<Post>();
             foreach (var post in postRepository.GetAll())
             {
-                if (listAuthor.Contains(post.AuthorId))
+                if (listAuthor.Contains(post.AuthorId) && post.Status == ItemStatus.Active)
                     result.Add(post);
             }
             return result;
@@ -127,7 +155,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
 
         public List<ReplyComment> GetReplyCommentByCommentId(string commentId)
         {
-            var comments = replyCommentRepository.GetAll().Where(x => x.ParentId == commentId).ToList();
+            var comments = replyCommentRepository.GetAll().Where(x => x.ParentId == commentId && x.Status == ItemStatus.Active).ToList();
             if (comments != null)
                 return comments;
             return null;
@@ -140,7 +168,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
             var replyComment = PostAdapter.FromRequest(request, currentUser.Id.ToString());
             //Check commenr exist 
             var comment = await commentRepository.GetByIdAsync(ObjectId.Parse(request.ParentCommentId));
-            if (comment != null)
+            if (comment != null && comment.Status == ItemStatus.Active)
             {
                 await replyCommentRepository.AddAsync(replyComment);
 
@@ -154,10 +182,10 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
         {
             try
             {
-                var posts = postRepository.GetAll();
+                var posts = postRepository.GetAll().Where(x=>x.Status == ItemStatus.Active).ToList() ;
                 foreach (var post in posts)
                 {
-                    var latestComments = commentRepository.GetAll().OrderByDescending(x => x.CreatedDate).Where(x => x.PostId == post.Id.ToString());
+                    var latestComments = commentRepository.GetAll().OrderByDescending(x => x.CreatedDate).Where(x => x.PostId == post.Id.ToString() && x.Status == ItemStatus.Active);
                     if (latestComments.Count() > 3)
                         latestComments = latestComments.Take(3);
                     post.Comments.Clear();
@@ -176,10 +204,10 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
         {
             try
             {
-                var comments = commentRepository.GetAll();
+                var comments = commentRepository.GetAll().Where(x=>x.Status == ItemStatus.Active).ToList();
                 foreach (var comment in comments)
                 {
-                    var latestReplies = replyCommentRepository.GetAll().OrderByDescending(x => x.CreatedDate).Where(x => x.ParentId == comment.Id.ToString());
+                    var latestReplies = replyCommentRepository.GetAll().OrderByDescending(x => x.CreatedDate).Where(x => x.ParentId == comment.Id.ToString() && x.Status == ItemStatus.Active);
                     if (latestReplies.Count() > 3)
                         latestReplies = latestReplies.Take(3);
                     comment.Replies.Clear();

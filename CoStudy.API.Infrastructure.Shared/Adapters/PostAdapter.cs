@@ -18,7 +18,7 @@ namespace CoStudy.API.Infrastructure.Shared.Adapters
             post.Downvote = 0;
             post.CreatedDate = DateTime.Now;
             post.ModifiedDate = DateTime.Now;
-
+            post.Status = ItemStatus.Active;
             foreach (var content in request.StringContents)
             {
                 PostContent postContent = new PostContent();

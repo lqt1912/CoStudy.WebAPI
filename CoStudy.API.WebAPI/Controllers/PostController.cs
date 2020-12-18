@@ -21,7 +21,7 @@ namespace CoStudy.API.WebAPI.Controllers
 
         [HttpPost]
         [Route("add")]
-        public async Task<IActionResult> AddPost(AddPostRequest request)
+        public async Task<IActionResult> AddPost([FromForm]AddPostRequest request)
         {
             var data = await postService.AddPost(request);
             return Ok(new ApiOkResponse(data));
@@ -88,6 +88,22 @@ namespace CoStudy.API.WebAPI.Controllers
         public IActionResult GetReplyByCommentId(string commentId)
         {
             var data = postService.GetReplyCommentByCommentId(commentId);
+            return Ok(new ApiOkResponse(data));
+        }
+
+        [HttpDelete]
+        [Route("comment/{id}")]
+        public async Task<IActionResult> DeleteCommentById(string id)
+        {
+            var data =await postService.DeleteComment(id);
+            return Ok(new ApiOkResponse(data));
+        }
+
+        [HttpDelete]
+        [Route("reply/{id}")]
+        public async Task<IActionResult> DeleteReply(string id)
+        {
+            var data = await postService.DeleteReply(id);
             return Ok(new ApiOkResponse(data));
         }
     }
