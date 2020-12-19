@@ -23,13 +23,13 @@ namespace CoStudy.API.Domain.Entities.Application
         [JsonPropertyName("participants")]
         public List<string> Participants { get; set; }
 
-        //[BsonElement("messages")]
-        //[JsonPropertyName("messages")]
-        //public List<string> Messages { get; set; }
-
         [BsonElement("status")]
         [JsonPropertyName("status")]
         public ItemStatus Status { get; set; }
+
+        [BsonElement("client_group_id")]
+        [JsonPropertyName("client_group_id")]
+        public string ClientGroupId { get; set; }
 
         [BsonElement("created_date")]
         [JsonPropertyName("created_date")]

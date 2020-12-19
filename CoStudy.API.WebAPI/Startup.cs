@@ -45,11 +45,13 @@ namespace CoStudy.API.WebAPI
 
             services.AddHttpContextAccessor();
             // configure strongly typed settings object
-
+           
             services.AddSingleton<IWorker, Worker>();
+
             services.AddCors();
 
-            services.AddSignalR().AddAzureSignalR("Endpoint=https://costudyapi.service.signalr.net;AccessKey=UcJix08gpVsZOZ3X6aNPu0PXeKUiFnKZzWaylJceavI=;Version=1.0;");
+           //services.SignalRConfigs();
+            // services.AddSignalR().AddAzureSignalR("Endpoint=https://costudyapi.service.signalr.net;AccessKey=UcJix08gpVsZOZ3X6aNPu0PXeKUiFnKZzWaylJceavI=;Version=1.0;");
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -68,10 +70,15 @@ namespace CoStudy.API.WebAPI
 
             app.UseRouting();
 
+
+           
+
             app.UseAuthorization();
+
             app.UseCustomAuthentication();
+
             app.UseSwaggerExtension();
-            app.UseErrorHandlingMiddleware();
+   
             app.UseStaticFiles();
             app.UseMiddleware(middleware: typeof(ErrorWrappingMiddleware));
             app.Use(async (context, next) =>
@@ -87,11 +94,13 @@ namespace CoStudy.API.WebAPI
                  .AllowCredentials()); // allow credentials
             // custom jwt auth middleware
             app.UseMiddleware<JwtMiddleware>();
-
+            app.UseErrorHandlingMiddleware();
+        
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
             });
+         //   app.SignalRConfigs();
         }
     }
 }

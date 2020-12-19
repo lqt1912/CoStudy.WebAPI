@@ -10,6 +10,7 @@ namespace CoStudy.API.Infrastructure.Shared.Models.Response.PostResponse
 
 
         public string Id { get; set; }
+
         [JsonPropertyName("title")]
         public string Title { get; set; }
 

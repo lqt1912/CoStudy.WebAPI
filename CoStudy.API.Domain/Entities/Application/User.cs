@@ -99,6 +99,10 @@ namespace CoStudy.API.Domain.Entities.Application
         [JsonPropertyName("fortes")]
         public List<Field> Fortes { get; set; }
 
+        [BsonElement("client_connections_id")]
+        [JsonPropertyName("client_connections_id")]
+        public string ClientConnectionsId { get; set; }
+
         public User() : base()
         {
             Avatar = new Image();

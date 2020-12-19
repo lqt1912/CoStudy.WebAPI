@@ -24,17 +24,20 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
         IHttpContextAccessor _httpContextAccessor;
         IConfiguration _configuration;
         IPostRepository postRepository;
-
+        IClientConnectionsRepository clientConnectionsRepository;
+        IClientGroupRepository clientGroupRepository;
         public UserService(IUserRepository userRepository,
             IHttpContextAccessor httpContextAccessor,
             IConfiguration configuration,
-            IAccountRepository accountRepository, IPostRepository postRepository)
+            IAccountRepository accountRepository, IPostRepository postRepository, IClientConnectionsRepository clientConnectionsRepository, IClientGroupRepository clientGroupRepository)
         {
             this.userRepository = userRepository;
             _httpContextAccessor = httpContextAccessor;
             _configuration = configuration;
             this.accountRepository = accountRepository;
             this.postRepository = postRepository;
+            this.clientConnectionsRepository = clientConnectionsRepository;
+            this.clientGroupRepository = clientGroupRepository;
         }
 
         public async Task<AddAdditionalInfoResponse> AddAdditonalInfoAsync(AddAdditionalInfoRequest request)
@@ -129,9 +132,14 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
 
         public async Task<AddUserResponse> AddUserAsync(AddUserRequest entity)
         {
+            var clientConnection = new ClientConnections();
+
             var user = UserAdapter.FromRequest(entity);
+            user.ClientConnectionsId = clientConnection.Id.ToString();
 
             await userRepository.AddAsync(user);
+
+            await clientConnectionsRepository.AddAsync(clientConnection);
 
             return UserAdapter.ToResponse(user);
         }
@@ -176,6 +184,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
         }
 
         public async Task<GetUserByIdResponse> GetUserById(string id)
+
         {
             var user = await userRepository.GetByIdAsync(ObjectId.Parse(id));
             if (user == null)

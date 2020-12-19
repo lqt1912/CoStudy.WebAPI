@@ -2,6 +2,7 @@ using CoStudy.API.WebAPI.BackgroundTask;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 
 namespace CoStudy.API.WebAPI
 {
@@ -17,6 +18,10 @@ namespace CoStudy.API.WebAPI
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();
+                }).ConfigureLogging(logging =>
+                {
+                    logging.AddFilter("Microsoft.AspNetCore.SignalR", LogLevel.Debug);
+                    logging.AddFilter("Microsoft.AspNetCore.Http.Connections", LogLevel.Debug);
                 }).ConfigureServices(services =>
                     services.AddHostedService<DerivedBackgroundPrinter>());
     }

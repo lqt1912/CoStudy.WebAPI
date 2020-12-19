@@ -5,6 +5,8 @@ using CoStudy.API.Infrastructure.Shared.Adapters;
 using CoStudy.API.Infrastructure.Shared.Models.Request.MessageRequest;
 using CoStudy.API.Infrastructure.Shared.Models.Response.MessageResponse;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.SignalR;
+using MongoDB.Bson;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,17 +21,35 @@ namespace CoStudy.API.Infrastructure.Shared.Services.MessageServices
         IConversationRepository conversationRepository;
         IUserRepository userRepository;
         IHttpContextAccessor httpContextAccessor;
+        public IClientConnectionsRepository clientConnectionsRepository { get; }
+        public IClientGroupRepository clientGroupRepository { get; }
 
-        public MessageService(IMessageRepository messageRepository,
-            IConversationRepository conversationRepository,
-            IUserRepository userRepository,
-            IHttpContextAccessor httpContextAccessor)
+        public MessageService(IMessageRepository messageRepository, IConversationRepository conversationRepository, IUserRepository userRepository, IHttpContextAccessor httpContextAccessor, IClientConnectionsRepository clientConnectionsRepository, IClientGroupRepository clientGroupRepository)
         {
             this.messageRepository = messageRepository;
             this.conversationRepository = conversationRepository;
             this.userRepository = userRepository;
             this.httpContextAccessor = httpContextAccessor;
+            this.clientConnectionsRepository = clientConnectionsRepository;
+            this.clientGroupRepository = clientGroupRepository;
         }
+
+
+
+        //IHubContext<BaseHub<Message>, IBaseHub<Message>> messageHub;
+        //public MessageService(IMessageRepository messageRepository,
+        //    IConversationRepository conversationRepository,
+        //    IUserRepository userRepository,
+        //    IHttpContextAccessor httpContextAccessor, IHubContext<BaseHub<Message>, IBaseHub<Message>> messageHub, IClientConnectionsRepository clientConnectionsRepository, IClientGroupRepository clientGroupRepository)
+        //{
+        //    this.messageRepository = messageRepository;
+        //    this.conversationRepository = conversationRepository;
+        //    this.userRepository = userRepository;
+        //    this.httpContextAccessor = httpContextAccessor;
+        //    this.messageHub = messageHub;
+        //    this.clientConnectionsRepository = clientConnectionsRepository;
+        //    this.clientGroupRepository = clientGroupRepository;
+        //}
 
         public async Task<AddConversationResponse> AddConversation(AddConversationRequest request)
         {
@@ -42,12 +62,29 @@ namespace CoStudy.API.Infrastructure.Shared.Services.MessageServices
             return MessageAdapter.ToResponse(conversation);
         }
 
+
         public async Task<AddMessageResponse> AddMessage(AddMessageRequest request)
         {
             var message = MessageAdapter.FromRequest(request, httpContextAccessor, userRepository);
 
             await messageRepository.AddAsync(message);
 
+            try
+            {
+                var currentConversation = await conversationRepository.GetByIdAsync(ObjectId.Parse(request.ConversationId));
+                var clientGroup = await clientGroupRepository.GetByIdAsync(ObjectId.Parse(currentConversation.ClientGroupId));
+
+                foreach (var clientConnectionsId in clientGroup.ConnectionGroupIds)
+                {
+                    var clientConnections = await clientConnectionsRepository.GetByIdAsync(ObjectId.Parse(clientConnectionsId));
+                    //await messageHub.Clients.Clients(clientConnections.ClientConnection).BroadCast(message);
+                }
+            }
+            catch (Exception)
+            {
+                //do nothing
+            }
+          //  await messageHub.Clients.All.BroadCast(message);
             return MessageAdapter.ToResponse(message);
         }
 
@@ -83,6 +120,10 @@ namespace CoStudy.API.Infrastructure.Shared.Services.MessageServices
             };
         }
 
+        public  List<Message> GetAll()
+        {
+            return messageRepository.GetAll().ToList();
+        }
     }
 }
 

@@ -12,7 +12,7 @@ namespace CoStudy.API.WebAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
+    
     public class MessageController : ControllerBase
     {
         IMessageService messageService;
@@ -38,7 +38,7 @@ namespace CoStudy.API.WebAPI.Controllers
             return Ok(new ApiOkResponse(data));
         }
 
-
+        //[Authorize]
         [HttpPost]
         [Route("message/add")]
         public async Task<IActionResult> AddMessage([FromForm]AddMessageRequest request)
@@ -56,6 +56,11 @@ namespace CoStudy.API.WebAPI.Controllers
             return Ok(new ApiOkResponse(data));
         }
 
-
+        [HttpGet]
+        [Route("all")]
+        public IActionResult GetAll()
+        {
+            return Ok(messageService.GetAll());
+        }
     }
 }
