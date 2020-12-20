@@ -21,19 +21,19 @@ namespace CoStudy.API.WebAPI.Controllers
 
         [HttpPost]
         [Route("add")]
-        public async Task<IActionResult> AddPost([FromForm]AddPostRequest request)
+        public async Task<IActionResult> AddPost(AddPostRequest request)
         {
             var data = await postService.AddPost(request);
             return Ok(new ApiOkResponse(data));
         }
 
-        [HttpPost]
-        [Route("media/add")]
-        public async Task<IActionResult> AddMedia([FromForm] AddMediaRequest request)
-        {
-            var data = await postService.AddMedia(request);
-            return Ok(new ApiOkResponse(data));
-        }
+        //[HttpPost]
+        //[Route("media/add")]
+        //public async Task<IActionResult> AddMedia([FromForm] AddMediaRequest request)
+        //{
+        //    var data = await postService.AddMedia(request);
+        //    return Ok(new ApiOkResponse(data));
+        //}
 
         [HttpPost]
         [Route("comment/add")]
@@ -104,6 +104,22 @@ namespace CoStudy.API.WebAPI.Controllers
         public async Task<IActionResult> DeleteReply(string id)
         {
             var data = await postService.DeleteReply(id);
+            return Ok(new ApiOkResponse(data));
+        }
+
+        [HttpPost]
+        [Route("post/upvote/{id}")]
+        public async Task<IActionResult> Upvote(string id)
+        {
+            var data = await postService.Upvote(id);
+            return Ok(new ApiOkResponse(data));
+        }
+
+        [HttpPost]
+        [Route("post/downvote/{id}")]
+        public async Task<IActionResult> Downvote(string id)
+        {
+            var data = await postService.Downvote( id);
             return Ok(new ApiOkResponse(data));
         }
     }

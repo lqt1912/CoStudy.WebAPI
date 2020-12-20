@@ -27,6 +27,14 @@ namespace CoStudy.API.Infrastructure.Shared.Adapters
                 post.StringContents.Add(postContent);
             }
 
+            foreach (var content in request.MediaContents)
+            {
+                Image postContent = new Image();
+                postContent.ImageHash = content.ImageHash;
+                postContent.Discription = content.Discription;
+                post.MediaContents.Add(postContent);
+            }
+
             return post;
         }
 
@@ -71,7 +79,8 @@ namespace CoStudy.API.Infrastructure.Shared.Adapters
                 Content = request.Content,
                 Status = ItemStatus.Active,
                 CreatedDate = DateTime.Now,
-                ModifiedDate = DateTime.Now
+                ModifiedDate = DateTime.Now,
+                Image = request.Image
             };
         }
 
@@ -80,8 +89,7 @@ namespace CoStudy.API.Infrastructure.Shared.Adapters
         {
             return new AddCommentResponse()
             {
-                Content = comment.Content,
-                AuthorId = comment.AuthorId,
+               Comment = comment,
                 PostId = postId
             };
         }

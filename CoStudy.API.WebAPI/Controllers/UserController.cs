@@ -61,7 +61,7 @@ namespace CoStudy.API.WebAPI.Controllers
         [Authorize]
         [HttpPost]
         [Route("avatar")]
-        public async Task<IActionResult> UploadAvatar([FromForm] AddAvatarRequest request)
+        public async Task<IActionResult> UploadAvatar( AddAvatarRequest request)
         {
             var data = await userService.AddAvatarAsync(request);
 
@@ -71,7 +71,7 @@ namespace CoStudy.API.WebAPI.Controllers
         [Authorize]
         [HttpPost]
         [Route("avatar/update")]
-        public async Task<IActionResult> UpdateAvatar([FromForm] AddAvatarRequest request)
+        public async Task<IActionResult> UpdateAvatar(AddAvatarRequest request)
         {
             var data = await userService.UpdateAvatarAsync(request);
             return Ok(new ApiOkResponse(data));
@@ -98,7 +98,7 @@ namespace CoStudy.API.WebAPI.Controllers
         [Authorize]
         [HttpPost]
         [Route("field")]
-        public async Task<IActionResult> AddField([FromForm] AddFieldRequest request)
+        public async Task<IActionResult> AddField( AddFieldRequest request)
         {
             var data = await userService.AddFieldAsync(request);
             return Ok(new ApiOkResponse(data));

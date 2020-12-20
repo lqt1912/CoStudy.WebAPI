@@ -42,11 +42,12 @@ namespace CoStudy.API.Infrastructure.Shared.Adapters
 
         public static Image FromRequest(AddAvatarRequest request, IHttpContextAccessor context)
         {
-            var url = Feature.SaveImageToUrl(request.Image, context);
+           // var url = Feature.SaveImageToUrl(request.Image, context);
             return new Image()
             {
                 Discription = request.Discription,
-                ImageUrl = url,
+                ImageUrl = "",
+                ImageHash = request.AvatarHash,
                 CreatedDate = DateTime.Now,
                 ModifiedDate = DateTime.Now,
             };
@@ -61,7 +62,8 @@ namespace CoStudy.API.Infrastructure.Shared.Adapters
                 Discription = image.Discription,
                 ImageUrl = image.ImageUrl,
                 CreatedDate = image.CreatedDate,
-                ModifiedDate = image.ModifiedDate
+                ModifiedDate = image.ModifiedDate,
+                AvatarHash =image.ImageHash
             };
         }
 
@@ -94,19 +96,21 @@ namespace CoStudy.API.Infrastructure.Shared.Adapters
         public static Field FromRequest(AddFieldRequest request, IHttpContextAccessor context)
         {
 
-            var url = Feature.SaveImageToUrl(request.Image, context);
+           // var url = Feature.SaveImageToUrl(request.Image, context);
             var image = new Image()
             {
-                ImageUrl = url,
+                ImageUrl = "",
                 CreatedDate = DateTime.Now,
                 ModifiedDate = DateTime.Now,
-                Discription = request.UserField
-
+                Discription = request.UserField,
+                ImageHash = request.ImageHash
+                
             };
             return new Field()
             {
                 Value = request.UserField,
                 ThumbnailImage = image,
+               ThumbnailImageHash = image.ImageHash,
                 CreatedDate = DateTime.Now,
                 ModifiedDate = DateTime.Now
             };
@@ -117,8 +121,7 @@ namespace CoStudy.API.Infrastructure.Shared.Adapters
             return new AddFieldResponse()
             {
                 UserId = id,
-                Value = field.Value,
-                Image = field.ThumbnailImage.ImageUrl
+              Field =  field
             };
         }
 
@@ -135,7 +138,7 @@ namespace CoStudy.API.Infrastructure.Shared.Adapters
                 Address = user1.Address,
                 Avatar = user1.Avatar,
                 Status = user1.Status,
-
+                
                 CreatedDate = user1.CreatedDate,
                 ModifiedDate = user1.ModifiedDate,
                 Posts = user1.Posts,
@@ -144,7 +147,8 @@ namespace CoStudy.API.Infrastructure.Shared.Adapters
                 Followers = user1.Followers,
                 Following = user1.Following,
                 AdditionalInfos = user1.AdditionalInfos,
-                Fortes = user1.Fortes
+                Fortes = user1.Fortes,
+                ImageHash = user1.AvatarHash
             };
             return result;
         }

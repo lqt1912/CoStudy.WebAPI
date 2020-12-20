@@ -61,9 +61,14 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
             var currentUser = CurrentUser();
 
             currentUser.Avatar = avatar;
-
+            currentUser.AvatarHash = avatar.ImageHash;
             currentUser.ModifiedDate = DateTime.Now;
 
+            foreach (var post in postRepository.GetAll().Where(x=>x.AuthorId == currentUser.Id.ToString() ||x.Status ==ItemStatus.Active))
+            {
+                post.AuthorAvatar = avatar.ImageHash;
+                await postRepository.UpdateAsync(post, post.Id);
+            }
             await userRepository.UpdateAsync(currentUser, currentUser.Id);
 
             return UserAdapter.ToResponse(avatar, currentUser.Id.ToString());
@@ -246,6 +251,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
             var currentUser = CurrentUser();
 
             currentUser.Avatar = avatar;
+            currentUser.AvatarHash = request.AvatarHash;
 
             currentUser.ModifiedDate = DateTime.Now;
 

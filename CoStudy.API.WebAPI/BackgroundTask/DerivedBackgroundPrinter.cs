@@ -16,7 +16,7 @@ namespace CoStudy.API.WebAPI.BackgroundTask
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            await worker.DoWork(stoppingToken);
+           await worker.DoWork(stoppingToken);
         }
     }
 }

@@ -9,6 +9,7 @@ namespace CoStudy.API.Domain.Entities.BaseEntity
         [BsonId]
         public ObjectId Id { get; set; }
 
+        [JsonPropertyName("oid")]
         public string OId { get; set; }
         public Entity()
         {

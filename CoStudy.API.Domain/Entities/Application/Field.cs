@@ -22,6 +22,10 @@ namespace CoStudy.API.Domain.Entities.Application
         public Image ThumbnailImage { get; set; }
 
 
+        [BsonElement("thumbnail_image_hash")]
+        [JsonPropertyName("thumbnail_image_hash")]
+        public string ThumbnailImageHash { get; set; }
+
         [BsonElement("created_date")]
         [JsonPropertyName("created_date")]
         public DateTime CreatedDate { get; set; }

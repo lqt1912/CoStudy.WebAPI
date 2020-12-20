@@ -87,5 +87,7 @@ namespace CoStudy.API.Infrastructure.Shared.Models.Response.UserResponse
         /// 
         [JsonPropertyName("fortes")]
         public List<Field> Fortes { get; set; }
+        [JsonPropertyName("avatar_hash")]
+        public string ImageHash { get; set; }
     }
 }

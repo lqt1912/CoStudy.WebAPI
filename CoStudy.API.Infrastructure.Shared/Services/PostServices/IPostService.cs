@@ -29,6 +29,10 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
         Task<string> DeleteComment(string commentId);
 
         Task<string> DeleteReply(string replyId);
+
+        Task<string> Upvote(string postId);
+        Task<string> Downvote(string postId);
+
     }
 
 }

@@ -2,14 +2,19 @@
 using CoStudy.API.Domain.Entities.Application;
 using CoStudy.API.Domain.Entities.Identity.MongoAuthen;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
 using System;
+using System.IdentityModel.Tokens.Jwt;
 using System.IO;
 using System.Linq;
+using System.Text;
 
 namespace CoStudy.API.Application.Features
 {
     public static class Feature
     {
+
         public static string SaveImageToUrl(IFormFile image, IHttpContextAccessor accessor)
         {
             if (image == null)
@@ -79,9 +84,16 @@ namespace CoStudy.API.Application.Features
         public static User CurrentUser(IHttpContextAccessor _httpContextAccessor, IUserRepository userRepository)
         {
             var currentAccount = (Account)_httpContextAccessor.HttpContext.Items["Account"];
-
-            var user = userRepository.GetAll().SingleOrDefault(x => x.Email == currentAccount.Email);
-            return user;
+           
+            if (currentAccount != null)
+            {
+                
+                var user = userRepository.GetAll().SingleOrDefault(x => x.Email == currentAccount.Email);
+                return user;
+            }
+            else return null;
+    
+           
         }
 
     }

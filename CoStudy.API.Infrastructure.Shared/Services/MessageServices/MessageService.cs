@@ -77,14 +77,14 @@ namespace CoStudy.API.Infrastructure.Shared.Services.MessageServices
                 foreach (var clientConnectionsId in clientGroup.ConnectionGroupIds)
                 {
                     var clientConnections = await clientConnectionsRepository.GetByIdAsync(ObjectId.Parse(clientConnectionsId));
-                    //await messageHub.Clients.Clients(clientConnections.ClientConnection).BroadCast(message);
+                   // await messageHub.Clients.Clients(clientConnections.ClientConnection).BroadCast(message);
                 }
             }
             catch (Exception)
             {
                 //do nothing
             }
-          //  await messageHub.Clients.All.BroadCast(message);
+           // await messageHub.Clients.All.BroadCast(message);
             return MessageAdapter.ToResponse(message);
         }
 

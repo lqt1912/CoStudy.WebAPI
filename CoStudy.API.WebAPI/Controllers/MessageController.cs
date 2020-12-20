@@ -3,10 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using CoStudy.API.Infrastructure.Shared.Models.Request.MessageRequest;
+using CoStudy.API.Infrastructure.Shared.Models.Response.MessageResponse;
 using CoStudy.API.Infrastructure.Shared.Services.MessageServices;
 using CoStudy.API.WebAPI.Middlewares;
+using CoStudy.API.WebAPI.SignalR;
+using CoStudy.API.WebAPI.SignalR.DI.Message;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 
 namespace CoStudy.API.WebAPI.Controllers
 {
@@ -16,10 +20,11 @@ namespace CoStudy.API.WebAPI.Controllers
     public class MessageController : ControllerBase
     {
         IMessageService messageService;
-
-        public MessageController(IMessageService messageService)
+        IMessageHub messageHub;
+        public MessageController(IMessageService messageService, IMessageHub messagetHub)
         {
             this.messageService = messageService;
+            this.messageHub = messagetHub;
         }
 
         [HttpPost]
@@ -38,12 +43,13 @@ namespace CoStudy.API.WebAPI.Controllers
             return Ok(new ApiOkResponse(data));
         }
 
-        //[Authorize]
+        [Authorize]
         [HttpPost]
         [Route("message/add")]
         public async Task<IActionResult> AddMessage([FromForm]AddMessageRequest request)
         {
             var data = await messageService.AddMessage(request);
+            await messageHub.SendGlobal(data);
             return Ok(new ApiOkResponse(data));
         }
 

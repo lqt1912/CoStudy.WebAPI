@@ -1,17 +1,26 @@
 using CoStudy.API.Application.Repositories;
+using CoStudy.API.Domain.Entities.Application;
 using CoStudy.API.Infrastructure.Identity;
 using CoStudy.API.Infrastructure.Identity.Helpers;
 using CoStudy.API.Infrastructure.Identity.Services.Implements;
+using CoStudy.API.Infrastructure.Shared.Models.Response.MessageResponse;
 using CoStudy.API.Infrastructure.Shared.Services;
 using CoStudy.API.WebAPI.BackgroundTask.WorkerService;
 using CoStudy.API.WebAPI.Extensions;
 using CoStudy.API.WebAPI.Middlewares;
+using CoStudy.API.WebAPI.SignalR;
+using CoStudy.API.WebAPI.SignalR.DI;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Primitives;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace CoStudy.API.WebAPI
 {
@@ -44,22 +53,26 @@ namespace CoStudy.API.WebAPI
             services.ConfigureApiAuthentication();
 
             services.AddHttpContextAccessor();
-            // configure strongly typed settings object
-           
+
             services.AddSingleton<IWorker, Worker>();
 
             services.AddCors();
 
-           //services.SignalRConfigs();
-            // services.AddSignalR().AddAzureSignalR("Endpoint=https://costudyapi.service.signalr.net;AccessKey=UcJix08gpVsZOZ3X6aNPu0PXeKUiFnKZzWaylJceavI=;Version=1.0;");
+
+            services.ConfigureSignalRHub();
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
 
-            // migrate database changes on startup (includes initial db creation)
-            // context.Database.Migrate();
+
+            app.UseCors(x => x
+                .AllowAnyMethod()
+                .AllowAnyHeader()
+                .SetIsOriginAllowed(origin => true) // allow any origin
+                .AllowCredentials()); // allow credentials
 
             if (env.IsDevelopment())
             {
@@ -67,40 +80,28 @@ namespace CoStudy.API.WebAPI
             }
 
             app.UseHttpsRedirection();
-
             app.UseRouting();
 
+            app.UseSwaggerExtension();
 
-           
+            app.UseStaticFiles();
+
+            app.UseMiddleware<JwtMiddleware>();
+            app.UseErrorHandlingMiddleware();
+
 
             app.UseAuthorization();
 
-            app.UseCustomAuthentication();
-
-            app.UseSwaggerExtension();
-   
-            app.UseStaticFiles();
-            app.UseMiddleware(middleware: typeof(ErrorWrappingMiddleware));
-            app.Use(async (context, next) =>
-            {  // <----
-                context.Request.EnableBuffering(); // or .EnableRewind();
-                await next();
-            });
-
-            app.UseCors(x => x
-                 .AllowAnyMethod()
-                 .AllowAnyHeader()
-                 .SetIsOriginAllowed(origin => true) // allow any origin
-                 .AllowCredentials()); // allow credentials
-            // custom jwt auth middleware
-            app.UseMiddleware<JwtMiddleware>();
-            app.UseErrorHandlingMiddleware();
-        
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
             });
-         //   app.SignalRConfigs();
+
+
+            app.COnfigureSignalrApp();
+         
         }
+
+      
     }
 }

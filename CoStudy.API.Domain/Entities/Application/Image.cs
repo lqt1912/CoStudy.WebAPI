@@ -21,6 +21,9 @@ namespace CoStudy.API.Domain.Entities.Application
         [JsonPropertyName("image_url")]
         public string ImageUrl { get; set; }
 
+        [BsonElement("image_hash")]
+        [JsonPropertyName("image_hash")]
+        public string ImageHash{ get; set; }
 
         [BsonElement("created_date")]
         [JsonPropertyName("created_date")]

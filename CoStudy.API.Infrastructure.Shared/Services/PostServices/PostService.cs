@@ -41,6 +41,8 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
             if (currentPost != null)
             {
                 var comment = PostAdapter.FromRequest(request, currentUser.Id.ToString());
+                comment.AuthorAvatar = currentUser.AvatarHash;
+                comment.AuthorName = $"{currentUser.FirstName} {currentUser.LastName}";
 
                 currentPost.CommentCount++;
                 await postRepository.UpdateAsync(currentPost, currentPost.Id);
@@ -77,6 +79,10 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
 
             var post = PostAdapter.FromRequest(request);
             post.AuthorId = currentUser.Id.ToString();
+            post.AuthorAvatar = currentUser.AvatarHash;
+
+            post.AuthorName = $"{currentUser.FirstName} {currentUser.LastName}";
+
             await postRepository.AddAsync(post);
 
             return PostAdapter.ToResponse(post, currentUser.Id.ToString());
@@ -110,6 +116,8 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
             else throw new Exception("Câu rả lời không tồn tại hoặc đã bị xóa");
         }
 
+
+
         public List<Comment> GetCommentByPostId(string postId)
         {
             var comments = commentRepository.GetAll().Where(x => x.PostId == postId && x.Status == ItemStatus.Active).ToList();
@@ -121,7 +129,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
         public async Task<GetPostByIdResponse> GetPostById(string postId)
         {
             var post = await postRepository.GetByIdAsync(ObjectId.Parse(postId));
-            if (post == null || post.Status !=ItemStatus.Active)
+            if (post == null || post.Status != ItemStatus.Active)
                 throw new Exception("Không tìm thấy bài viết ");
             return PostAdapter.ToResponse(post);
         }
@@ -182,7 +190,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
         {
             try
             {
-                var posts = postRepository.GetAll().Where(x=>x.Status == ItemStatus.Active).ToList() ;
+                var posts = postRepository.GetAll().Where(x => x.Status == ItemStatus.Active).ToList();
                 foreach (var post in posts)
                 {
                     var latestComments = commentRepository.GetAll().OrderByDescending(x => x.CreatedDate).Where(x => x.PostId == post.Id.ToString() && x.Status == ItemStatus.Active);
@@ -204,7 +212,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
         {
             try
             {
-                var comments = commentRepository.GetAll().Where(x=>x.Status == ItemStatus.Active).ToList();
+                var comments = commentRepository.GetAll().Where(x => x.Status == ItemStatus.Active).ToList();
                 foreach (var comment in comments)
                 {
                     var latestReplies = replyCommentRepository.GetAll().OrderByDescending(x => x.CreatedDate).Where(x => x.ParentId == comment.Id.ToString() && x.Status == ItemStatus.Active);
@@ -218,6 +226,82 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
             catch (Exception)
             {
                 return;
+            }
+        }
+
+        public async Task<string> Upvote(string postId)
+        {
+            try
+            {
+                var currentUser = Feature.CurrentUser(httpContextAccessor, userRepository);
+                var currentPost = await postRepository.GetByIdAsync(ObjectId.Parse(postId));
+
+                //Chưa unlike
+                if (!currentUser.PostUpvote.Contains(postId))
+                {
+
+                    if (!currentUser.PostDownvote.Contains(postId))
+                    {
+
+                        currentPost.Upvote++;
+                        await postRepository.UpdateAsync(currentPost, currentPost.Id);
+
+                        currentUser.PostUpvote.Add(postId);
+                        await userRepository.UpdateAsync(currentUser, currentUser.Id);
+                    }
+                    else if (currentUser.PostDownvote.Contains(postId))
+                    {
+                        currentPost.Downvote--;
+                        currentPost.Upvote++;
+                        await postRepository.UpdateAsync(currentPost, currentPost.Id);
+
+                        currentUser.PostDownvote.Remove(postId);
+                        currentUser.PostUpvote.Add(postId);
+                        await userRepository.UpdateAsync(currentUser, currentUser.Id);
+                    }
+                }
+                return "Success";
+            }
+            catch (Exception)
+            {
+                throw new Exception("Uncompleted activity");
+            }
+        }
+        public async Task<string> Downvote(string postId)
+        {
+
+            try
+            {
+                var currentUser = Feature.CurrentUser(httpContextAccessor, userRepository);
+                var currentPost = await postRepository.GetByIdAsync(ObjectId.Parse(postId));
+
+                //chưa like
+                if(!currentUser.PostDownvote.Contains(postId))
+                { 
+                if (!currentUser.PostUpvote.Contains(postId))
+                {
+                    currentPost.Downvote++;
+                    await postRepository.UpdateAsync(currentPost, currentPost.Id);
+                    currentUser.PostDownvote.Add(postId);
+                    await userRepository.UpdateAsync(currentUser, currentUser.Id);
+
+                }
+                else if (currentUser.PostUpvote.Contains(postId))
+                {
+                    currentPost.Downvote++;
+                    currentPost.Upvote--;
+                    await postRepository.UpdateAsync(currentPost, currentPost.Id);
+
+                    currentUser.PostUpvote.Remove(postId);
+                    currentUser.PostDownvote.Add(postId);
+                    await userRepository.UpdateAsync(currentUser, currentUser.Id);
+                }
+                }
+                return "Success";
+            }
+            catch (Exception)
+            {
+                throw new Exception("Uncompleted activity");
             }
         }
     }

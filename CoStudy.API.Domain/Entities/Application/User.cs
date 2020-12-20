@@ -35,9 +35,14 @@ namespace CoStudy.API.Domain.Entities.Application
         [JsonPropertyName("address")]
         public Address Address { get; set; }
 
+
         [BsonElement("avatar")]
         [JsonPropertyName("avatar")]
         public Image Avatar { get; set; }
+
+        [BsonElement("avatar_hash")]
+        [JsonPropertyName("avaavatar_hashtar")]
+        public string AvatarHash { get; set; }
 
         [BsonElement("status")]
         [JsonPropertyName("status")]
@@ -103,6 +108,11 @@ namespace CoStudy.API.Domain.Entities.Application
         [JsonPropertyName("client_connections_id")]
         public string ClientConnectionsId { get; set; }
 
+        [BsonElement("post_upvote")]
+        public List<string> PostUpvote { get; set; }
+
+        [BsonElement("post_downvote")]
+        public List<string> PostDownvote { get; set; }
         public User() : base()
         {
             Avatar = new Image();
@@ -110,8 +120,11 @@ namespace CoStudy.API.Domain.Entities.Application
             Noftications = new List<Noftication>();
             Followers = new List<string>();
             Following = new List<string>();
+
             AdditionalInfos = new List<AdditionalInfo>();
             Fortes = new List<Field>();
+            PostDownvote = new List<string>();
+            PostUpvote = new List<string>();
         }
     }
 }

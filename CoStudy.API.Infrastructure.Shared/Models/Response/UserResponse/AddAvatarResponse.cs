@@ -18,6 +18,8 @@ namespace CoStudy.API.Infrastructure.Shared.Models.Response.UserResponse
         [JsonPropertyName("image_url")]
         public string ImageUrl { get; set; }
 
+        [JsonPropertyName("avatar_hash")]
+        public string AvatarHash { get; set; }
 
 
         [JsonPropertyName("created_date")]

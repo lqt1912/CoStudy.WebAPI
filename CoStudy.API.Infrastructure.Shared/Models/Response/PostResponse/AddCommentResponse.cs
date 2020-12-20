@@ -1,4 +1,5 @@
-﻿using System.Text.Json.Serialization;
+﻿using CoStudy.API.Domain.Entities.Application;
+using System.Text.Json.Serialization;
 
 namespace CoStudy.API.Infrastructure.Shared.Models.Response.PostResponse
 {
@@ -7,10 +8,8 @@ namespace CoStudy.API.Infrastructure.Shared.Models.Response.PostResponse
         [JsonPropertyName("post_id")]
         public string PostId { get; set; }
 
-        [JsonPropertyName("author_id")]
-        public string AuthorId { get; set; }
+       [JsonPropertyName("comment")]
+        public Comment Comment { get; set; }
 
-        [JsonPropertyName("content")]
-        public string Content { get; set; }
     }
 }

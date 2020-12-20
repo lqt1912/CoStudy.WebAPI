@@ -22,9 +22,21 @@ namespace CoStudy.API.Domain.Entities.Application
         [JsonPropertyName("content")]
         public string Content { get; set; }
 
+        [BsonElement("image")]
+        [JsonPropertyName("image")]
+        public string Image { get; set; }
+
         [BsonElement("author_id")]
         [JsonPropertyName("author_id")]
         public string AuthorId { get; set; }
+
+        [BsonElement("author_name")]
+        [JsonPropertyName("author_name")]
+        public string AuthorName { get; set; }
+
+        [BsonElement("author_avatar")]
+        [JsonPropertyName("author_avatar")]
+        public string AuthorAvatar { get; set; }
 
         [BsonElement("status")]
         [JsonPropertyName("status")]
