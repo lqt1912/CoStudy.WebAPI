@@ -26,18 +26,25 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
         IPostRepository postRepository;
         IClientConnectionsRepository clientConnectionsRepository;
         IClientGroupRepository clientGroupRepository;
+        IFieldRepository fieldRepository;
+
         public UserService(IUserRepository userRepository,
             IHttpContextAccessor httpContextAccessor,
             IConfiguration configuration,
-            IAccountRepository accountRepository, IPostRepository postRepository, IClientConnectionsRepository clientConnectionsRepository, IClientGroupRepository clientGroupRepository)
+            IAccountRepository accountRepository,
+            IPostRepository postRepository,
+            IClientConnectionsRepository clientConnectionsRepository,
+            IClientGroupRepository clientGroupRepository, 
+            IFieldRepository fieldRepository)
         {
             this.userRepository = userRepository;
             _httpContextAccessor = httpContextAccessor;
-            _configuration = configuration;
+            _configuration = configuration;             
             this.accountRepository = accountRepository;
             this.postRepository = postRepository;
             this.clientConnectionsRepository = clientConnectionsRepository;
             this.clientGroupRepository = clientGroupRepository;
+            this.fieldRepository = fieldRepository;
         }
 
         public async Task<AddAdditionalInfoResponse> AddAdditonalInfoAsync(AddAdditionalInfoRequest request)
@@ -64,7 +71,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
             currentUser.AvatarHash = avatar.ImageHash;
             currentUser.ModifiedDate = DateTime.Now;
 
-            foreach (var post in postRepository.GetAll().Where(x=>x.AuthorId == currentUser.Id.ToString() ||x.Status ==ItemStatus.Active))
+            foreach (var post in postRepository.GetAll().Where(x => x.AuthorId == currentUser.Id.ToString() || x.Status == ItemStatus.Active))
             {
                 post.AuthorAvatar = avatar.ImageHash;
                 await postRepository.UpdateAsync(post, post.Id);
@@ -75,15 +82,18 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
 
         }
 
-        public async Task<AddFieldResponse> AddFieldAsync(AddFieldRequest request)
+        public async Task<User> AddFieldAsync(AddFieldRequest request)
         {
-            var field = UserAdapter.FromRequest(request, _httpContextAccessor);
-
             var currentUser = CurrentUser();
-            currentUser.Fortes.Add(field);
+            foreach (var fieldId in request.UserField)
+            {
+                var field = await fieldRepository.GetByIdAsync(ObjectId.Parse(fieldId));
+                if(field!=null)
+                    currentUser.Fortes.Add(field);
+            }
             currentUser.ModifiedDate = DateTime.Now;
             await userRepository.UpdateAsync(currentUser, currentUser.Id);
-            return UserAdapter.ToResponse(field, currentUser.Id.ToString());
+            return currentUser;
         }
 
         public async Task<AddFollowerResponse> AddFollowersAsync(AddFollowerRequest request)
@@ -122,7 +132,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
             {
                 var user = await userRepository.GetByIdAsync(ObjectId.Parse(item));
                 if (user != null)
-                { 
+                {
                     user.Followers.Add(currentUser.Id.ToString());
                     await userRepository.UpdateAsync(user, user.Id);
                 }
@@ -218,14 +228,14 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
             var currentUser = Feature.CurrentUser(_httpContextAccessor, userRepository);
 
             if (currentUser.Following.Contains(followerId))
-            { 
+            {
                 currentUser.Following.Remove(followerId);
                 var user = await userRepository.GetByIdAsync(ObjectId.Parse(followerId));
-                if(user!=null)
+                if (user != null)
                 {
                     user.Followers.Remove(currentUser.Id.ToString());
                     await userRepository.UpdateAsync(user, user.Id);
-                }    
+                }
             }
             await userRepository.UpdateAsync(currentUser, currentUser.Id);
             return currentUser;
@@ -253,11 +263,32 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
             currentUser.Avatar = avatar;
             currentUser.AvatarHash = request.AvatarHash;
 
+            foreach (var post in postRepository.GetAll().Where(x => x.AuthorId == currentUser.Id.ToString() || x.Status == ItemStatus.Active))
+            {
+                post.AuthorAvatar = avatar.ImageHash;
+                await postRepository.UpdateAsync(post, post.Id);
+            }
+
             currentUser.ModifiedDate = DateTime.Now;
 
             await userRepository.UpdateAsync(currentUser, currentUser.Id);
 
             return currentUser;
+        }
+
+        public async Task<Field> AddField(string fieldValue)
+        {
+            var field = new Field()
+            {
+                Value = fieldValue
+            };
+            await fieldRepository.AddAsync(field);
+            return field;
+        }
+
+        public List<Field> GetAll()
+        {
+            return fieldRepository.GetAll().ToList();
         }
     }
 }

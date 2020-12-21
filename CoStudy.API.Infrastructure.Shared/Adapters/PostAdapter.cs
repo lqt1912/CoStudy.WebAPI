@@ -35,6 +35,7 @@ namespace CoStudy.API.Infrastructure.Shared.Adapters
                 post.MediaContents.Add(postContent);
             }
 
+
             return post;
         }
 

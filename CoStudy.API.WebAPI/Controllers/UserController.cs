@@ -130,5 +130,21 @@ namespace CoStudy.API.WebAPI.Controllers
             var data =await  userService.RemoveFollowing(followingId);
             return Ok(new ApiOkResponse(data));
         }
+
+        [HttpPost]
+        [Route("field/add/database")]
+        public async Task<IActionResult> AddFields(string field)
+        {
+            var data =await userService.AddField(field);
+            return Ok(new ApiOkResponse(data));
+        }
+
+        [HttpGet]
+        [Route("field/all")]
+        public IActionResult getAllField()
+        {
+            var data = userService.GetAll();
+            return Ok(new ApiOkResponse(data));
+        }
     }
 }

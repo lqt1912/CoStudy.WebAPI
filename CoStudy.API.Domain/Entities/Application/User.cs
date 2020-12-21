@@ -41,7 +41,7 @@ namespace CoStudy.API.Domain.Entities.Application
         public Image Avatar { get; set; }
 
         [BsonElement("avatar_hash")]
-        [JsonPropertyName("avaavatar_hashtar")]
+        [JsonPropertyName("avatar_hash")]
         public string AvatarHash { get; set; }
 
         [BsonElement("status")]

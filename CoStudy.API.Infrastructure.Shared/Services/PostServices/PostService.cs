@@ -22,8 +22,9 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
         IPostRepository postRepository;
         ICommentRepository commentRepository;
         IReplyCommentRepository replyCommentRepository;
+        IFieldRepository fieldRepository;
 
-        public PostService(IHttpContextAccessor httpContextAccessor, IConfiguration configuration, IUserRepository userRepository, IPostRepository postRepository, ICommentRepository commentRepository, IReplyCommentRepository replyCommentRepository)
+        public PostService(IHttpContextAccessor httpContextAccessor, IConfiguration configuration, IUserRepository userRepository, IPostRepository postRepository, ICommentRepository commentRepository, IReplyCommentRepository replyCommentRepository, IFieldRepository fieldRepository)
         {
             this.httpContextAccessor = httpContextAccessor;
             this.configuration = configuration;
@@ -31,6 +32,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
             this.postRepository = postRepository;
             this.commentRepository = commentRepository;
             this.replyCommentRepository = replyCommentRepository;
+            this.fieldRepository = fieldRepository;
         }
 
         public async Task<AddCommentResponse> AddComment(AddCommentRequest request)
@@ -82,6 +84,13 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
             post.AuthorAvatar = currentUser.AvatarHash;
 
             post.AuthorName = $"{currentUser.FirstName} {currentUser.LastName}";
+
+            foreach (var fieldId in request.Fields)
+            {
+                var field = await fieldRepository.GetByIdAsync(ObjectId.Parse(fieldId));
+                if (field != null)
+                    post.Fields.Add(field);
+            }
 
             await postRepository.AddAsync(post);
 
