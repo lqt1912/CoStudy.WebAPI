@@ -11,7 +11,7 @@ namespace CoStudy.API.Domain.Entities.Application
     {
         public Conversation() : base()
         {
-          //  Messages = new List<string>();
+            //  Messages = new List<string>();
             Participants = new List<string>();
         }
 

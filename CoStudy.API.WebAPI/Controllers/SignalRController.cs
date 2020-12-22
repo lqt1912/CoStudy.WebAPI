@@ -1,12 +1,7 @@
 ﻿using CoStudy.API.Domain.Entities.Application;
 using CoStudy.API.WebAPI.SignalR;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace CoStudy.API.WebAPI.Controllers
 {
@@ -21,7 +16,7 @@ namespace CoStudy.API.WebAPI.Controllers
             _signalrHub = signalrHub;
         }
 
-        [HttpPost] 
+        [HttpPost]
         public IActionResult Post(Message msg)
         {
             _signalrHub.Clients.All.SendNofti(msg);

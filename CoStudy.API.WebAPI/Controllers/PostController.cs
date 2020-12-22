@@ -95,7 +95,7 @@ namespace CoStudy.API.WebAPI.Controllers
         [Route("comment/{id}")]
         public async Task<IActionResult> DeleteCommentById(string id)
         {
-            var data =await postService.DeleteComment(id);
+            var data = await postService.DeleteComment(id);
             return Ok(new ApiOkResponse(data));
         }
 
@@ -119,7 +119,15 @@ namespace CoStudy.API.WebAPI.Controllers
         [Route("post/downvote/{id}")]
         public async Task<IActionResult> Downvote(string id)
         {
-            var data = await postService.Downvote( id);
+            var data = await postService.Downvote(id);
+            return Ok(new ApiOkResponse(data));
+        }
+
+        [HttpPut]
+        [Route("post/update")]
+        public async Task<IActionResult> Update(UpdatePostRequest request)
+        {
+            var data = await postService.UpdatePost(request);
             return Ok(new ApiOkResponse(data));
         }
     }

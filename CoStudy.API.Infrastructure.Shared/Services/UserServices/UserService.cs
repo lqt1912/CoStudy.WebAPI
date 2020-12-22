@@ -6,7 +6,6 @@ using CoStudy.API.Infrastructure.Identity.Repositories.AccountRepository;
 using CoStudy.API.Infrastructure.Shared.Adapters;
 using CoStudy.API.Infrastructure.Shared.Models.Request.UserRequest;
 using CoStudy.API.Infrastructure.Shared.Models.Response.UserResponse;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using MongoDB.Bson;
@@ -34,12 +33,12 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
             IAccountRepository accountRepository,
             IPostRepository postRepository,
             IClientConnectionsRepository clientConnectionsRepository,
-            IClientGroupRepository clientGroupRepository, 
+            IClientGroupRepository clientGroupRepository,
             IFieldRepository fieldRepository)
         {
             this.userRepository = userRepository;
             _httpContextAccessor = httpContextAccessor;
-            _configuration = configuration;             
+            _configuration = configuration;
             this.accountRepository = accountRepository;
             this.postRepository = postRepository;
             this.clientConnectionsRepository = clientConnectionsRepository;
@@ -88,7 +87,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
             foreach (var fieldId in request.UserField)
             {
                 var field = await fieldRepository.GetByIdAsync(ObjectId.Parse(fieldId));
-                if(field!=null)
+                if (field != null)
                     currentUser.Fortes.Add(field);
             }
             currentUser.ModifiedDate = DateTime.Now;

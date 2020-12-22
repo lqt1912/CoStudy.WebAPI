@@ -8,7 +8,7 @@ namespace CoStudy.API.Infrastructure.Shared.Models.Response.PostResponse
         [JsonPropertyName("post_id")]
         public string PostId { get; set; }
 
-       [JsonPropertyName("comment")]
+        [JsonPropertyName("comment")]
         public Comment Comment { get; set; }
 
     }

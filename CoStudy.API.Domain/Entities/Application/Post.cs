@@ -78,7 +78,7 @@ namespace CoStudy.API.Domain.Entities.Application
         [BsonElement("comments_count")]
         [JsonPropertyName("comments_countd")]
         public int CommentCount { get; set; }
-        
+
         /// <summary>
         /// Lĩnh vực của bài post
         /// </summary>

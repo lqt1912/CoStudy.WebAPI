@@ -33,6 +33,8 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
         Task<string> Upvote(string postId);
         Task<string> Downvote(string postId);
 
+        Task<Post> UpdatePost(UpdatePostRequest request);
+
     }
 
 }

@@ -61,7 +61,7 @@ namespace CoStudy.API.WebAPI.Controllers
         [Authorize]
         [HttpPost]
         [Route("avatar")]
-        public async Task<IActionResult> UploadAvatar( AddAvatarRequest request)
+        public async Task<IActionResult> UploadAvatar(AddAvatarRequest request)
         {
             var data = await userService.AddAvatarAsync(request);
 
@@ -98,7 +98,7 @@ namespace CoStudy.API.WebAPI.Controllers
         [Authorize]
         [HttpPost]
         [Route("field")]
-        public async Task<IActionResult> AddField( AddFieldRequest request)
+        public async Task<IActionResult> AddField(AddFieldRequest request)
         {
             var data = await userService.AddFieldAsync(request);
             return Ok(new ApiOkResponse(data));
@@ -113,7 +113,7 @@ namespace CoStudy.API.WebAPI.Controllers
             return Ok(new ApiOkResponse(data));
         }
 
-      //  [Authorize]
+        //  [Authorize]
         [HttpGet]
         [Route("current")]
         public IActionResult GetCurrentUser()
@@ -127,7 +127,7 @@ namespace CoStudy.API.WebAPI.Controllers
         [Route("following/remove")]
         public async Task<IActionResult> Unfollow(string followingId)
         {
-            var data =await  userService.RemoveFollowing(followingId);
+            var data = await userService.RemoveFollowing(followingId);
             return Ok(new ApiOkResponse(data));
         }
 
@@ -135,7 +135,7 @@ namespace CoStudy.API.WebAPI.Controllers
         [Route("field/add/database")]
         public async Task<IActionResult> AddFields(string field)
         {
-            var data =await userService.AddField(field);
+            var data = await userService.AddField(field);
             return Ok(new ApiOkResponse(data));
         }
 

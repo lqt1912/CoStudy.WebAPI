@@ -2,14 +2,10 @@
 using CoStudy.API.WebAPI.SignalR.DI.Message;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace CoStudy.API.WebAPI.SignalR.DI
 {
-    public static  class SignalRExtension
+    public static class SignalRExtension
     {
         public static void ConfigureSignalRHub(this IServiceCollection services)
         {
