@@ -5,8 +5,6 @@ using CoStudy.API.Infrastructure.Shared.Models.Request.MessageRequest;
 using CoStudy.API.Infrastructure.Shared.Models.Response.MessageResponse;
 using Microsoft.AspNetCore.Http;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace CoStudy.API.Infrastructure.Shared.Adapters
 {
@@ -31,7 +29,7 @@ namespace CoStudy.API.Infrastructure.Shared.Adapters
                     ConversationId = request.ConversationId,
                     StringContent = request.Content,
                     Status = ItemStatus.Active,
-                    CreatedDate =DateTime.Now,
+                    CreatedDate = DateTime.Now,
                     ModifiedDate = DateTime.Now
                 };
             }
@@ -60,7 +58,7 @@ namespace CoStudy.API.Infrastructure.Shared.Adapters
                 StringContent = message.StringContent,
                 Status = message.Status,
                 CreatedDate = message.CreatedDate,
-                ModifiedDate= message.ModifiedDate,
+                ModifiedDate = message.ModifiedDate,
                 ConversationId = message.ConversationId,
                 Id = message.Id.ToString()
             };
@@ -71,7 +69,7 @@ namespace CoStudy.API.Infrastructure.Shared.Adapters
             return new Conversation()
             {
                 Name = request.Name,
-                Participants  = request.Participants,
+                Participants = request.Participants,
                 Status = ItemStatus.Active,
                 CreatedDate = DateTime.Now,
                 ModifiedDate = DateTime.Now

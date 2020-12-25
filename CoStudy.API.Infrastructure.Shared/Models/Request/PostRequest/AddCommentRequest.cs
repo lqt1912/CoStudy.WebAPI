@@ -14,7 +14,7 @@ namespace CoStudy.API.Infrastructure.Shared.Models.Request.PostRequest
 
         public string PostId { get; set; }
 
- 
+
 
 
     }

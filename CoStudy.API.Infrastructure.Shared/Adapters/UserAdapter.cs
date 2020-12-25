@@ -1,5 +1,4 @@
-﻿using CoStudy.API.Application.Features;
-using CoStudy.API.Domain.Entities.Application;
+﻿using CoStudy.API.Domain.Entities.Application;
 using CoStudy.API.Infrastructure.Shared.Models.Request.UserRequest;
 using CoStudy.API.Infrastructure.Shared.Models.Response.UserResponse;
 using Microsoft.AspNetCore.Http;
@@ -42,7 +41,7 @@ namespace CoStudy.API.Infrastructure.Shared.Adapters
 
         public static Image FromRequest(AddAvatarRequest request, IHttpContextAccessor context)
         {
-           // var url = Feature.SaveImageToUrl(request.Image, context);
+            // var url = Feature.SaveImageToUrl(request.Image, context);
             return new Image()
             {
                 Discription = request.Discription,
@@ -63,7 +62,7 @@ namespace CoStudy.API.Infrastructure.Shared.Adapters
                 ImageUrl = image.ImageUrl,
                 CreatedDate = image.CreatedDate,
                 ModifiedDate = image.ModifiedDate,
-                AvatarHash =image.ImageHash
+                AvatarHash = image.ImageHash
             };
         }
 
@@ -107,7 +106,7 @@ namespace CoStudy.API.Infrastructure.Shared.Adapters
                 Address = user1.Address,
                 Avatar = user1.Avatar,
                 Status = user1.Status,
-                
+
                 CreatedDate = user1.CreatedDate,
                 ModifiedDate = user1.ModifiedDate,
                 Posts = user1.Posts,

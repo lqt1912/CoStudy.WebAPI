@@ -5,12 +5,10 @@ using CoStudy.API.Infrastructure.Shared.Adapters;
 using CoStudy.API.Infrastructure.Shared.Models.Request.MessageRequest;
 using CoStudy.API.Infrastructure.Shared.Models.Response.MessageResponse;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.SignalR;
 using MongoDB.Bson;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace CoStudy.API.Infrastructure.Shared.Services.MessageServices
@@ -77,14 +75,14 @@ namespace CoStudy.API.Infrastructure.Shared.Services.MessageServices
                 foreach (var clientConnectionsId in clientGroup.ConnectionGroupIds)
                 {
                     var clientConnections = await clientConnectionsRepository.GetByIdAsync(ObjectId.Parse(clientConnectionsId));
-                   // await messageHub.Clients.Clients(clientConnections.ClientConnection).BroadCast(message);
+                    // await messageHub.Clients.Clients(clientConnections.ClientConnection).BroadCast(message);
                 }
             }
             catch (Exception)
             {
                 //do nothing
             }
-           // await messageHub.Clients.All.BroadCast(message);
+            // await messageHub.Clients.All.BroadCast(message);
             return MessageAdapter.ToResponse(message);
         }
 
@@ -120,7 +118,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.MessageServices
             };
         }
 
-        public  List<Message> GetAll()
+        public List<Message> GetAll()
         {
             return messageRepository.GetAll().ToList();
         }

@@ -1,26 +1,17 @@
 using CoStudy.API.Application.Repositories;
-using CoStudy.API.Domain.Entities.Application;
 using CoStudy.API.Infrastructure.Identity;
 using CoStudy.API.Infrastructure.Identity.Helpers;
 using CoStudy.API.Infrastructure.Identity.Services.Implements;
-using CoStudy.API.Infrastructure.Shared.Models.Response.MessageResponse;
 using CoStudy.API.Infrastructure.Shared.Services;
 using CoStudy.API.WebAPI.BackgroundTask.WorkerService;
 using CoStudy.API.WebAPI.Extensions;
 using CoStudy.API.WebAPI.Middlewares;
-using CoStudy.API.WebAPI.SignalR;
 using CoStudy.API.WebAPI.SignalR.DI;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Primitives;
-using System;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace CoStudy.API.WebAPI
 {
@@ -99,9 +90,9 @@ namespace CoStudy.API.WebAPI
 
 
             app.COnfigureSignalrApp();
-         
+
         }
 
-      
+
     }
 }

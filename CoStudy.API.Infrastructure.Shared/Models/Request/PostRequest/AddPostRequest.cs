@@ -1,5 +1,4 @@
 ﻿using CoStudy.API.Domain.Entities.Application;
-using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
 

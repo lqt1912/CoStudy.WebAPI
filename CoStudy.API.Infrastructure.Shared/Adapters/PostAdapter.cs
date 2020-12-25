@@ -90,7 +90,7 @@ namespace CoStudy.API.Infrastructure.Shared.Adapters
         {
             return new AddCommentResponse()
             {
-               Comment = comment,
+                Comment = comment,
                 PostId = postId
             };
         }

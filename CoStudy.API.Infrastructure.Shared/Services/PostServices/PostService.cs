@@ -285,26 +285,26 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
                 var currentPost = await postRepository.GetByIdAsync(ObjectId.Parse(postId));
 
                 //chưa like
-                if(!currentUser.PostDownvote.Contains(postId))
-                { 
-                if (!currentUser.PostUpvote.Contains(postId))
+                if (!currentUser.PostDownvote.Contains(postId))
                 {
-                    currentPost.Downvote++;
-                    await postRepository.UpdateAsync(currentPost, currentPost.Id);
-                    currentUser.PostDownvote.Add(postId);
-                    await userRepository.UpdateAsync(currentUser, currentUser.Id);
+                    if (!currentUser.PostUpvote.Contains(postId))
+                    {
+                        currentPost.Downvote++;
+                        await postRepository.UpdateAsync(currentPost, currentPost.Id);
+                        currentUser.PostDownvote.Add(postId);
+                        await userRepository.UpdateAsync(currentUser, currentUser.Id);
 
-                }
-                else if (currentUser.PostUpvote.Contains(postId))
-                {
-                    currentPost.Downvote++;
-                    currentPost.Upvote--;
-                    await postRepository.UpdateAsync(currentPost, currentPost.Id);
+                    }
+                    else if (currentUser.PostUpvote.Contains(postId))
+                    {
+                        currentPost.Downvote++;
+                        currentPost.Upvote--;
+                        await postRepository.UpdateAsync(currentPost, currentPost.Id);
 
-                    currentUser.PostUpvote.Remove(postId);
-                    currentUser.PostDownvote.Add(postId);
-                    await userRepository.UpdateAsync(currentUser, currentUser.Id);
-                }
+                        currentUser.PostUpvote.Remove(postId);
+                        currentUser.PostDownvote.Add(postId);
+                        await userRepository.UpdateAsync(currentUser, currentUser.Id);
+                    }
                 }
                 return "Success";
             }

@@ -1,22 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using CoStudy.API.Infrastructure.Shared.Models.Request.MessageRequest;
-using CoStudy.API.Infrastructure.Shared.Models.Response.MessageResponse;
+﻿using CoStudy.API.Infrastructure.Shared.Models.Request.MessageRequest;
 using CoStudy.API.Infrastructure.Shared.Services.MessageServices;
 using CoStudy.API.WebAPI.Middlewares;
-using CoStudy.API.WebAPI.SignalR;
 using CoStudy.API.WebAPI.SignalR.DI.Message;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.SignalR;
+using System.Threading.Tasks;
 
 namespace CoStudy.API.WebAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    
+
     public class MessageController : ControllerBase
     {
         IMessageService messageService;
@@ -46,7 +39,7 @@ namespace CoStudy.API.WebAPI.Controllers
         [Authorize]
         [HttpPost]
         [Route("message/add")]
-        public async Task<IActionResult> AddMessage([FromForm]AddMessageRequest request)
+        public async Task<IActionResult> AddMessage([FromForm] AddMessageRequest request)
         {
             var data = await messageService.AddMessage(request);
             await messageHub.SendGlobal(data);
