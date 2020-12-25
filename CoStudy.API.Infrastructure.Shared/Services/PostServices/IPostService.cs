@@ -34,6 +34,10 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
         Task<string> Downvote(string postId);
 
         Task<Post> UpdatePost(UpdatePostRequest request);
+        Task<Post> SavePost(string id);
+        Task<List<Post>> GetSavedPost(int skip, int count);
+
+        List<Post> Filter(FilterRequest filterRequest);
 
     }
 

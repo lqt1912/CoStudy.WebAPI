@@ -112,7 +112,6 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
             }
             else throw new Exception("Comment không tồn tại hoặc đã bị xóa");
         }
-
         public async Task<string> DeleteReply(string replyId)
         {
             var currentReply = await replyCommentRepository.GetByIdAsync(ObjectId.Parse(replyId));
@@ -124,9 +123,6 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
             }
             else throw new Exception("Câu rả lời không tồn tại hoặc đã bị xóa");
         }
-
-
-
         public List<Comment> GetCommentByPostId(string postId)
         {
             var comments = commentRepository.GetAll().Where(x => x.PostId == postId && x.Status == ItemStatus.Active).ToList();
@@ -167,7 +163,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
                 if (listAuthor.Contains(post.AuthorId) && post.Status == ItemStatus.Active)
                     result.Add(post);
             }
-            return result.Skip(skip).Take(count).OrderByDescending(x=>x.CreatedDate).ToList();
+            return result.Skip(skip).Take(count).OrderByDescending(x => x.CreatedDate).ToList();
         }
 
         public List<ReplyComment> GetReplyCommentByCommentId(string commentId)
@@ -328,6 +324,100 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
                 await postRepository.UpdateAsync(currentPost, currentPost.Id);
             }
             return currentPost;
+        }
+
+        public async Task<Post> SavePost(string id)
+        {
+            var currentUser = Feature.CurrentUser(httpContextAccessor, userRepository);
+            var post = await postRepository.GetByIdAsync(ObjectId.Parse(id));
+            if (post != null)
+            {
+                if (!currentUser.PostSaved.Contains(id))
+                {
+                    currentUser.PostSaved.Add(id);
+                    await userRepository.UpdateAsync(currentUser, currentUser.Id);
+                    return post;
+                }
+                else
+                {
+                    currentUser.PostSaved.Remove(id);
+                    await userRepository.UpdateAsync(currentUser, currentUser.Id);
+                    return post;
+                }
+            }
+            else throw new Exception("Bài viết không tồn tại hoặc đã bị xóa. ");
+
+        }
+
+        public async Task<List<Post>> GetSavedPost(int skip, int count)
+        {
+            var currentUser = Feature.CurrentUser(httpContextAccessor, userRepository);
+            List<Post> result = new List<Post>();
+            foreach (var postId in currentUser.PostSaved)
+            {
+                var post = await postRepository.GetByIdAsync(ObjectId.Parse(postId));
+                if (post != null)
+                    result.Add(post);
+            }
+            return result.Skip(skip).Take(count).ToList();
+        }
+
+        public List<Post> Filter(FilterRequest filterRequest)
+        {
+            var currentUser = Feature.CurrentUser(httpContextAccessor, userRepository);
+            var listAuthor = currentUser.Followers;
+            listAuthor.Add(currentUser.Id.ToString());
+            var timelines  = new List<Post>();
+            foreach (var post in postRepository.GetAll())
+            {
+                if (listAuthor.Contains(post.AuthorId) && post.Status == ItemStatus.Active)
+                    timelines.Add(post);
+            }
+            var queryable = timelines.AsQueryable();
+
+         
+
+            if (filterRequest.FromDate != null)
+                queryable = queryable.Where(x => x.CreatedDate >= filterRequest.FromDate);
+            if (filterRequest.ToDate != null)
+                queryable = queryable.Where(x => x.CreatedDate <= filterRequest.ToDate);
+            if(!String.IsNullOrEmpty(filterRequest.Field))
+            {
+                var field = fieldRepository.GetById(ObjectId.Parse(filterRequest.Field));
+                queryable = queryable.Where(x => x.Fields.Contains(field));
+            }
+
+            switch(filterRequest.OrderBy)
+            {
+                case PostOrder.CreatedDate:
+                    {
+                        if (filterRequest.OrderType == OrderType.Ascending)
+                            queryable = queryable.OrderBy(x => x.CreatedDate);
+                        else queryable = queryable.OrderByDescending(x => x.CreatedDate);
+                        break;
+                    }
+                case PostOrder.Comment:
+                    {
+                        if (filterRequest.OrderType == OrderType.Ascending)
+                            queryable = queryable.OrderBy(x => x.CreatedDate);
+                        else queryable = queryable.OrderByDescending(x => x.CreatedDate);
+                        break;
+                    }
+                case PostOrder.Upvote:
+                    {
+                        if (filterRequest.OrderType == OrderType.Ascending)
+                            queryable = queryable.OrderBy(x => x.Upvote);
+                        else queryable = queryable.OrderByDescending(x => x.Upvote);
+                        break;
+                    }
+                default:
+                    break;
+
+            }
+            if (filterRequest.Skip.HasValue && filterRequest.Count.HasValue)
+                queryable = queryable.Skip(filterRequest.Skip.Value).Take(filterRequest.Count.Value);
+            return queryable.ToList();
+
         }
     }
 }

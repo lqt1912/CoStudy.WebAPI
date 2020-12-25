@@ -67,22 +67,6 @@ namespace CoStudy.API.Infrastructure.Shared.Services.MessageServices
 
             await messageRepository.AddAsync(message);
 
-            try
-            {
-                var currentConversation = await conversationRepository.GetByIdAsync(ObjectId.Parse(request.ConversationId));
-                var clientGroup = await clientGroupRepository.GetByIdAsync(ObjectId.Parse(currentConversation.ClientGroupId));
-
-                foreach (var clientConnectionsId in clientGroup.ConnectionGroupIds)
-                {
-                    var clientConnections = await clientConnectionsRepository.GetByIdAsync(ObjectId.Parse(clientConnectionsId));
-                    // await messageHub.Clients.Clients(clientConnections.ClientConnection).BroadCast(message);
-                }
-            }
-            catch (Exception)
-            {
-                //do nothing
-            }
-            // await messageHub.Clients.All.BroadCast(message);
             return MessageAdapter.ToResponse(message);
         }
 

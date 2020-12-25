@@ -130,5 +130,28 @@ namespace CoStudy.API.WebAPI.Controllers
             var data = await postService.UpdatePost(request);
             return Ok(new ApiOkResponse(data));
         }
+
+        [HttpPost]
+        [Route("post/save/{id}")]
+        public async Task<IActionResult> SavePost(string id)
+        {
+            var data = await postService.SavePost(id);
+            return Ok(new ApiOkResponse(data));
+        }
+
+        [HttpGet]
+        [Route("post/save")]
+        public async Task<IActionResult> GetSavedPost(int skip, int count)
+        {
+            var data = await postService.GetSavedPost(skip, count);
+            return Ok(new ApiOkResponse(data));
+        }
+        [HttpPost]
+        [Route("post/filter")]
+        public IActionResult FilterPost(FilterRequest request)
+        {
+            var data = postService.Filter(request);
+            return Ok(new ApiOkResponse(data));
+        }
     }
 }

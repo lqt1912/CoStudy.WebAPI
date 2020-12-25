@@ -113,6 +113,9 @@ namespace CoStudy.API.Domain.Entities.Application
 
         [BsonElement("post_downvote")]
         public List<string> PostDownvote { get; set; }
+
+        [BsonElement("post_saved")]
+        public List<string> PostSaved { get; set; }
         public User() : base()
         {
             Avatar = new Image();
@@ -125,6 +128,7 @@ namespace CoStudy.API.Domain.Entities.Application
             Fortes = new List<Field>();
             PostDownvote = new List<string>();
             PostUpvote = new List<string>();
+            PostSaved = new List<string>();
         }
     }
 }
