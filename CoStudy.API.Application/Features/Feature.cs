@@ -83,6 +83,9 @@ namespace CoStudy.API.Application.Features
 
             if (currentAccount != null)
             {
+                //var cacheduser = CacheHelper.GetValue($"CurrentUser-{currentAccount.Email}") as User;
+                //if (cacheduser != null)
+                //    return cacheduser;
 
                 var user = userRepository.GetAll().SingleOrDefault(x => x.Email == currentAccount.Email);
                 return user;

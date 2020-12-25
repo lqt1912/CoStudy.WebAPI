@@ -175,21 +175,21 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
         {
             try
             {
-                var users = userRepository.GetAll();
-                int c = 0;
-                foreach (var user in users)
-                {
+                //var users = userRepository.GetAll();
+                //int c = 0;
+                //foreach (var user in users)
+                //{
 
-                    var latestUserPosts = postRepository.GetAll().Where(x => x.AuthorId == user.Id.ToString());
-                    if (latestUserPosts.Count() > 10)
-                        latestUserPosts = latestUserPosts.Take(10);
+                //    var latestUserPosts = postRepository.GetAll().Where(x => x.AuthorId == user.Id.ToString());
+                //    if (latestUserPosts.Count() > 1)
+                //        latestUserPosts = latestUserPosts.Take(1);
 
-                    user.Posts.Clear();
-                    user.Posts.AddRange(latestUserPosts);
-                    user.ModifiedDate = DateTime.Now;
-                    await userRepository.UpdateAsync(user, user.Id);
-                    c = latestUserPosts.Count();
-                }
+                //    user.Posts.Clear();
+                //    user.Posts.AddRange(latestUserPosts);
+                //    user.ModifiedDate = DateTime.Now;
+                //    await userRepository.UpdateAsync(user, user.Id);
+                //    c = latestUserPosts.Count();
+                //}
             }
             catch (Exception)
             {

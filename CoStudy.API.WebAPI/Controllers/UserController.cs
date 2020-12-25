@@ -1,4 +1,6 @@
 ﻿using CoStudy.API.Application.Features;
+using CoStudy.API.Domain.Entities.Application;
+using CoStudy.API.Domain.Entities.Identity.MongoAuthen;
 using CoStudy.API.Infrastructure.Identity.Models.Account.Request;
 using CoStudy.API.Infrastructure.Identity.Services.AccountService;
 using CoStudy.API.Infrastructure.Shared.Models.Request.UserRequest;
@@ -144,6 +146,14 @@ namespace CoStudy.API.WebAPI.Controllers
         public IActionResult getAllField()
         {
             var data = userService.GetAll();
+            return Ok(new ApiOkResponse(data));
+        }
+
+        [Route("cache/get")]
+        [HttpGet]
+        public IActionResult GetCache(string email)
+        {
+            var data = CacheHelper.GetValue($"CurrentAccount-{email}") as Account;
             return Ok(new ApiOkResponse(data));
         }
     }

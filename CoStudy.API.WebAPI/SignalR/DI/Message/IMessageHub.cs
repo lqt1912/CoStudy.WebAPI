@@ -6,5 +6,7 @@ namespace CoStudy.API.WebAPI.SignalR.DI.Message
     public interface IMessageHub
     {
         Task SendGlobal(AddMessageResponse addMessageResponse);
+        Task SendConversation(string conversationId, AddMessageResponse addMessageResponse);
+
     }
 }

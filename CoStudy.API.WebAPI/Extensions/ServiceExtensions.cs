@@ -16,7 +16,7 @@ namespace CoStudy.API.WebAPI.Extensions
                 c.SwaggerDoc("v1", new OpenApiInfo
                 {
                     Version = "v1",
-                    Title = "CoStudy's api",
+                    Title = "CoStudy's API",
                     Description = "Study Communication system backend API",
                     TermsOfService = new Uri("https://example.com/terms"),
                     Contact = new OpenApiContact

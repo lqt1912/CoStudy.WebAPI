@@ -89,5 +89,12 @@ namespace CoStudy.API.Infrastructure.Shared.Models.Response.UserResponse
         public List<Field> Fortes { get; set; }
         [JsonPropertyName("avatar_hash")]
         public string ImageHash { get; set; }
+
+        [JsonPropertyName("post_upvote")]
+        public List<string> PostUpvote { get; set; }
+
+        [JsonPropertyName("post_downvote")]
+        public List<string> PostDownvote { get; set; }
+
     }
 }

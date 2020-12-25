@@ -68,10 +68,10 @@ namespace CoStudy.API.WebAPI.Controllers
         }
 
         [HttpGet]
-        [Route("timeline")]
-        public IActionResult GetPostTimeline()
+        [Route("timeline/skip/{skip}/count/{count}")]
+        public IActionResult GetPostTimeline(int skip, int count)
         {
-            var data = postService.GetPostTimeline();
+            var data = postService.GetPostTimeline(skip,  count);
             return Ok(new ApiOkResponse(data));
         }
 

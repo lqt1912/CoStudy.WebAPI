@@ -42,6 +42,8 @@ namespace CoStudy.API.WebAPI.Controllers
         public async Task<IActionResult> AddMessage([FromForm] AddMessageRequest request)
         {
             var data = await messageService.AddMessage(request);
+
+            //await messageHub.SendConversation(request.ConversationId,data);
             await messageHub.SendGlobal(data);
             return Ok(new ApiOkResponse(data));
         }
