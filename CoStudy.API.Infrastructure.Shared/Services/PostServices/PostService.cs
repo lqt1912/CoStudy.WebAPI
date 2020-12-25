@@ -150,13 +150,13 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
             if (result != null)
                 return new GetPostsByUserIdResponse()
                 {
-                    Posts = result
+                    Posts = result.ToList()
                 };
             else throw new Exception("Người dùng chưa có bài viết nào");
 
         }
 
-        public List<Post> GetPostTimeline()
+        public List<Post> GetPostTimeline(int skip, int count)
         {
             var currentUser = Feature.CurrentUser(httpContextAccessor, userRepository);
             var listAuthor = currentUser.Followers;
@@ -167,7 +167,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
                 if (listAuthor.Contains(post.AuthorId) && post.Status == ItemStatus.Active)
                     result.Add(post);
             }
-            return result;
+            return result.Skip(skip).Take(count).OrderByDescending(x=>x.CreatedDate).ToList();
         }
 
         public List<ReplyComment> GetReplyCommentByCommentId(string commentId)
@@ -312,6 +312,22 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
             {
                 throw new Exception("Uncompleted activity");
             }
+        }
+
+        public async Task<Post> UpdatePost(UpdatePostRequest request)
+        {
+            var currentPost = await postRepository.GetByIdAsync(ObjectId.Parse(request.PostId));
+
+            if (currentPost != null)
+            {
+                currentPost.StringContents = request.StringContents;
+                currentPost.MediaContents = request.MediaContents;
+                currentPost.Title = request.Title;
+                currentPost.Fields = request.Fields;
+                currentPost.ModifiedDate = DateTime.Now;
+                await postRepository.UpdateAsync(currentPost, currentPost.Id);
+            }
+            return currentPost;
         }
     }
 }

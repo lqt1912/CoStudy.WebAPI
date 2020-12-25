@@ -22,7 +22,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
         Task<GetPostByIdResponse> GetPostById(string postId);
 
         GetPostsByUserIdResponse GetPostByUserId(string userId);
-        List<Post> GetPostTimeline();
+        List<Post> GetPostTimeline(int skip, int count);
         List<Comment> GetCommentByPostId(string postId);
         List<ReplyComment> GetReplyCommentByCommentId(string commentId);
 
@@ -32,6 +32,8 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
 
         Task<string> Upvote(string postId);
         Task<string> Downvote(string postId);
+
+        Task<Post> UpdatePost(UpdatePostRequest request);
 
     }
 

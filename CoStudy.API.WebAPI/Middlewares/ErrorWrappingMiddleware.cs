@@ -1,7 +1,11 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using CoStudy.API.Application.Repositories;
+using CoStudy.API.Domain.Entities.Application;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using Serilog.Events;
 using System;
+using System.Diagnostics;
 using System.Threading.Tasks;
 
 namespace CoStudy.API.WebAPI.Middlewares
@@ -17,16 +21,18 @@ namespace CoStudy.API.WebAPI.Middlewares
         /// </summary>
         private readonly ILogger<ErrorWrappingMiddleware> _logger;
 
+        private readonly ILoggingRepository loggingRepository;
         /// <summary>
         /// Initializes a new instance of the <see cref="ErrorWrappingMiddleware" /> class.
         /// </summary>
         /// <param name="next">The next.</param>
         /// <param name="logger">The logger.</param>
         /// <exception cref="ArgumentNullException">logger</exception>
-        public ErrorWrappingMiddleware(RequestDelegate next, ILogger<ErrorWrappingMiddleware> logger)
+        public ErrorWrappingMiddleware(RequestDelegate next, ILogger<ErrorWrappingMiddleware> logger, ILoggingRepository loggingRepository)
         {
             _next = next;
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            this.loggingRepository = loggingRepository;
         }
 
         /// <summary>
@@ -37,9 +43,28 @@ namespace CoStudy.API.WebAPI.Middlewares
         {
             bool success = true;
             var message = string.Empty;
+
+            var sw = Stopwatch.StartNew();
             try
             {
                 await _next.Invoke(context);
+                sw.Stop();
+
+                var statusCode = context.Response?.StatusCode;
+
+                var level = statusCode > 499 ? LogEventLevel.Error : LogEventLevel.Information;
+
+                if (level == LogEventLevel.Information)
+                {
+                    var logging = new Logging();
+                    logging.RequestMethod = context.Request.Method;
+                    logging.Location = $"{context.Request.Scheme}://{context.Request.Host}";
+                    logging.RequestPath = context.Request.Path.ToString();
+                    logging.StatusCode = statusCode.Value;
+                    logging.TimeElapsed = sw.Elapsed.TotalMilliseconds;
+                    logging.Message = "Request success";
+                    await loggingRepository.AddAsync(logging);
+                }
             }
             catch (Exception ex)
             {
@@ -50,6 +75,15 @@ namespace CoStudy.API.WebAPI.Middlewares
                 context.Response.StatusCode = 400;
 
                 success = false;
+
+                var logging = new Logging();
+                logging.RequestMethod = context.Request.Method;
+                logging.Location = $"{context.Request.Scheme}://{context.Request.Host}";
+                logging.RequestPath = context.Request.Path.ToString();
+                logging.StatusCode = 400;
+                logging.TimeElapsed = sw.Elapsed.TotalMilliseconds;
+                logging.Message = message;
+                await loggingRepository.AddAsync(logging);
             }
 
             if (!context.Response.HasStarted)
@@ -78,5 +112,7 @@ namespace CoStudy.API.WebAPI.Middlewares
             exceptionMessageModel.Message = messageException;
             return exceptionMessageModel;
         }
+
+     
     }
 }

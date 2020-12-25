@@ -24,9 +24,9 @@ namespace CoStudy.API.WebAPI.BackgroundTask.WorkerService
         {
             while (!cancellationToken.IsCancellationRequested)
             {
-                await userService.SyncPost();
-                await postService.SyncComment();
-                await postService.SyncReply();
+                //await userService.SyncPost();
+                //await postService.SyncComment();
+                //await postService.SyncReply();
 
                 logger.LogInformation($"Syncing");
 

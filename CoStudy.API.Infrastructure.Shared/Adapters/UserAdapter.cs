@@ -109,14 +109,16 @@ namespace CoStudy.API.Infrastructure.Shared.Adapters
 
                 CreatedDate = user1.CreatedDate,
                 ModifiedDate = user1.ModifiedDate,
-                Posts = user1.Posts,
+             //   Posts = user1.Posts,
                 PostCount = user1.PostCount,
                 Noftications = user1.Noftications,
                 Followers = user1.Followers,
                 Following = user1.Following,
                 AdditionalInfos = user1.AdditionalInfos,
                 Fortes = user1.Fortes,
-                ImageHash = user1.AvatarHash
+                ImageHash = user1.AvatarHash,
+                PostDownvote = user1.PostDownvote,
+                PostUpvote = user1.PostUpvote
             };
             return result;
         }

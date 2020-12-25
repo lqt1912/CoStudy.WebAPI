@@ -36,6 +36,7 @@ namespace CoStudy.API.Application.Repositories
             services.AddTransient<IClientConnectionsRepository, ClientConnectionsRepository>();
 
             services.AddTransient<IClientGroupRepository, ClientGroupRepository>();
+            services.AddTransient<ILoggingRepository, LoggingRepository>();
         }
 
     }

@@ -84,6 +84,7 @@ namespace CoStudy.API.Application.Features
             if (currentAccount != null)
             {
 
+
                 var user = userRepository.GetAll().SingleOrDefault(x => x.Email == currentAccount.Email);
                 return user;
             }
