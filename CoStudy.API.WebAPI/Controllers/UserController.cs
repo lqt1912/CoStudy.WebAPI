@@ -142,6 +142,22 @@ namespace CoStudy.API.WebAPI.Controllers
         }
 
         [HttpGet]
+        [Route("follower/user/{userId}/skip/{skip}/count/{count}")]
+        public async Task<IActionResult> GetFollower(string userId, int skip, int count)
+        {
+            var data = await userService.GetFollower(userId, skip, count);
+            return Ok(new ApiOkResponse(data));
+        }
+
+        [HttpGet]
+        [Route("following/user/{userId}/skip/{skip}/count/{count}")]
+        public async Task<IActionResult> GetFollowing(string userId, int skip, int count)
+        {
+            var data = await userService.GetFollowing(userId, skip, count);
+            return Ok(new ApiOkResponse(data));
+        }
+
+        [HttpGet]
         [Route("field/all")]
         public IActionResult getAllField()
         {

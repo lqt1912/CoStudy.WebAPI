@@ -27,6 +27,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
         IClientGroupRepository clientGroupRepository;
         IFieldRepository fieldRepository;
 
+
         public UserService(IUserRepository userRepository,
             IHttpContextAccessor httpContextAccessor,
             IConfiguration configuration,
@@ -288,6 +289,50 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
         public List<Field> GetAll()
         {
             return fieldRepository.GetAll().ToList();
+        }
+
+        public async Task<IEnumerable<GetFollowerResponse>> GetFollower(string userId, int skip, int count)
+        {
+            var user =await  userRepository.GetByIdAsync(ObjectId.Parse(userId));
+            var result = new List<GetFollowerResponse>();
+            if (user != null)
+            {
+                foreach (var follower in user.Followers.Skip(skip).Take(count))
+                {
+                    var a =await userRepository.GetByIdAsync(ObjectId.Parse(follower));
+                    if (a != null)
+                        result.Add(new GetFollowerResponse()
+                        {
+                            Id = a.OId,
+                            Name = $"{a.FirstName} {a.LastName}",
+                            Avatar = a.Avatar
+                        });
+                }
+            }
+            return result;
+
+        }
+
+        public async Task<List<GetFollowerResponse>> GetFollowing(string userId, int skip, int count)
+        {
+            var user = await userRepository.GetByIdAsync(ObjectId.Parse(userId));
+            var result = new List<GetFollowerResponse>();
+            if (user != null)
+            {
+                foreach (var follower in user.Following)
+                {
+                    var a = await userRepository.GetByIdAsync(ObjectId.Parse(follower));
+                    if (a != null)
+                        result.Add(new GetFollowerResponse()
+                        {
+                            Id = a.OId,
+                            Name = $"{a.FirstName} {a.LastName}",
+                            Avatar = a.Avatar
+                        });
+                }
+            }
+            return result.Skip(skip).Take(count).ToList();
+
         }
     }
 }

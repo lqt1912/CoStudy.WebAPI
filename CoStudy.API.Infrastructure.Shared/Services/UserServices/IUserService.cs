@@ -31,5 +31,9 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
         Task<User> RemoveFollowing(string followerId);
 
         List<Field> GetAll();
+
+        Task<IEnumerable<GetFollowerResponse>> GetFollower(string userId, int skip, int count);
+
+        Task<List<GetFollowerResponse>> GetFollowing(string userId, int skip, int count);
     }
 }

@@ -184,7 +184,8 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
             if (comment != null && comment.Status == ItemStatus.Active)
             {
                 await replyCommentRepository.AddAsync(replyComment);
-
+                comment.RepliesCount++;
+                await commentRepository.UpdateAsync(comment, comment.Id);
                 return PostAdapter.ToResponseReply(replyComment);
             }
             else throw new Exception("Bình luận đã bị xóa");
@@ -374,9 +375,6 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
                     timelines.Add(post);
             }
             var queryable = timelines.AsQueryable();
-
-         
-
             if (filterRequest.FromDate != null)
                 queryable = queryable.Where(x => x.CreatedDate >= filterRequest.FromDate);
             if (filterRequest.ToDate != null)
@@ -412,12 +410,12 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
                     }
                 default:
                     break;
-
             }
             if (filterRequest.Skip.HasValue && filterRequest.Count.HasValue)
                 queryable = queryable.Skip(filterRequest.Skip.Value).Take(filterRequest.Count.Value);
             return queryable.ToList();
 
         }
+        
     }
 }

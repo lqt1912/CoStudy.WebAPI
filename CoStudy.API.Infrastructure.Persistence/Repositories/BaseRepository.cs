@@ -79,6 +79,7 @@ namespace CoStudy.API.Infrastructure.Persistence.Repositories
         public Task<T> GetByIdAsync(ObjectId id)
         {
             var findFilter = Builders<T>.Filter.Eq("_id", id);
+
             return _collection.Find(findFilter).FirstOrDefaultAsync();
         }
 

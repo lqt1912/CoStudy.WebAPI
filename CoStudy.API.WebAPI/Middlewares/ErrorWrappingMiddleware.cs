@@ -63,6 +63,7 @@ namespace CoStudy.API.WebAPI.Middlewares
                     logging.StatusCode = statusCode.Value;
                     logging.TimeElapsed = sw.Elapsed.TotalMilliseconds;
                     logging.Message = "Request success";
+                    logging.CreatedDate = DateTime.Now;
                     await loggingRepository.AddAsync(logging);
                 }
             }
@@ -83,6 +84,7 @@ namespace CoStudy.API.WebAPI.Middlewares
                 logging.StatusCode = 400;
                 logging.TimeElapsed = sw.Elapsed.TotalMilliseconds;
                 logging.Message = message;
+                logging.CreatedDate = DateTime.Now;
                 await loggingRepository.AddAsync(logging);
             }
 
