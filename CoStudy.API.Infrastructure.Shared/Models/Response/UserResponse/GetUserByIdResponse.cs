@@ -64,7 +64,7 @@ namespace CoStudy.API.Infrastructure.Shared.Models.Response.UserResponse
         /// </summary>
         /// 
         [JsonPropertyName("followers")]
-        public List<string> Followers { get; set; }
+        public int Followers { get; set; }
 
 
         /// <summary>

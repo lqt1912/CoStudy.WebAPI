@@ -10,5 +10,6 @@ namespace CoStudy.API.Domain.Entities.Application
         public int StatusCode { get; set; }
         public double TimeElapsed { get; set; }
         public string Message { get; set; }
+        public DateTime? CreatedDate { get; set; }
     }
 }

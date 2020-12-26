@@ -36,7 +36,14 @@ namespace CoStudy.API.Application.Repositories
             services.AddTransient<IClientConnectionsRepository, ClientConnectionsRepository>();
 
             services.AddTransient<IClientGroupRepository, ClientGroupRepository>();
+
             services.AddTransient<ILoggingRepository, LoggingRepository>();
+
+            services.AddTransient<IFollowRepository, FollowRepository>();
+
+            services.AddTransient<IDownVoteRepository, DownVoteRepository>();
+
+            services.AddTransient<IUpVoteRepository, UpVoteRepository>();
         }
 
     }

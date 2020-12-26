@@ -78,7 +78,7 @@ namespace CoStudy.API.Domain.Entities.Application
         /// </summary>
         [BsonElement("followers")]
         [JsonPropertyName("followers")]
-        public List<string> Followers { get; set; }
+        public int Followers { get; set; }
 
 
         /// <summary>
@@ -86,7 +86,7 @@ namespace CoStudy.API.Domain.Entities.Application
         /// </summary>
         [BsonElement("followings")]
         [JsonPropertyName("followings")]
-        public List<string> Following { get; set; }
+        public int Following { get; set; }
 
         /// <summary>
         /// Thông tin thêm
@@ -109,22 +109,27 @@ namespace CoStudy.API.Domain.Entities.Application
         public string ClientConnectionsId { get; set; }
 
         [BsonElement("post_upvote")]
+        [JsonPropertyName("post_upvote")]
         public List<string> PostUpvote { get; set; }
 
         [BsonElement("post_downvote")]
+        [JsonPropertyName("post_downvote")]
         public List<string> PostDownvote { get; set; }
+
+        [BsonElement("post_saved")]
+        [JsonPropertyName("post_saved")]
+        public List<string> PostSaved { get; set; }
         public User() : base()
         {
             Avatar = new Image();
             Posts = new List<Post>();
             Noftications = new List<Noftication>();
-            Followers = new List<string>();
-            Following = new List<string>();
 
             AdditionalInfos = new List<AdditionalInfo>();
             Fortes = new List<Field>();
             PostDownvote = new List<string>();
             PostUpvote = new List<string>();
+            PostSaved = new List<string>();
         }
     }
 }

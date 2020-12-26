@@ -2,6 +2,7 @@
 using MongoDB.Bson;
 using MongoDB.Driver;
 using MongoDB.Driver.Linq;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -79,6 +80,7 @@ namespace CoStudy.API.Infrastructure.Persistence.Repositories
         public Task<T> GetByIdAsync(ObjectId id)
         {
             var findFilter = Builders<T>.Filter.Eq("_id", id);
+
             return _collection.Find(findFilter).FirstOrDefaultAsync();
         }
 
@@ -103,6 +105,9 @@ namespace CoStudy.API.Infrastructure.Persistence.Repositories
 
         }
 
-
+        public async Task<List<T>> FindListAsync(FilterDefinition<T> match)
+        {
+            return await _collection.Find(match).ToListAsync();
+        }
     }
 }

@@ -55,5 +55,17 @@ namespace CoStudy.API.Domain.Entities.Application
         [JsonPropertyName("replies")]
         public List<ReplyComment> Replies { get; set; }
 
+        [BsonElement("replies_count")]
+        [JsonPropertyName("replies_count")]
+        public int RepliesCount { get; set; }
+
+        [BsonElement("upvote_count")]
+        [JsonPropertyName("upvote_count")]
+        public int UpvoteCount { get; set; }
+
+        [BsonElement("downvote_count")]
+        [JsonPropertyName("downvote_count")]
+        public int DownvoteCount { get; set; }
+        
     }
 }

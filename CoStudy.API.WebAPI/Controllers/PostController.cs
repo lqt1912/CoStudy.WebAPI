@@ -27,14 +27,6 @@ namespace CoStudy.API.WebAPI.Controllers
             return Ok(new ApiOkResponse(data));
         }
 
-        //[HttpPost]
-        //[Route("media/add")]
-        //public async Task<IActionResult> AddMedia([FromForm] AddMediaRequest request)
-        //{
-        //    var data = await postService.AddMedia(request);
-        //    return Ok(new ApiOkResponse(data));
-        //}
-
         [HttpPost]
         [Route("comment/add")]
         public async Task<IActionResult> AddComment(AddCommentRequest request)
@@ -60,18 +52,18 @@ namespace CoStudy.API.WebAPI.Controllers
         }
 
         [HttpGet]
-        [Route("get/user/{userId}")]
-        public IActionResult GetByUserId(string userId)
+        [Route("get/user/{userId}/skip/{skip}/count/{count}")]
+        public async Task<IActionResult> GetByUserId(string userId, int skip, int count)
         {
-            var data = postService.GetPostByUserId(userId);
+            var data =await  postService.GetPostByUserId(userId, skip, count);
             return Ok(new ApiOkResponse(data));
         }
 
         [HttpGet]
         [Route("timeline/skip/{skip}/count/{count}")]
-        public IActionResult GetPostTimeline(int skip, int count)
+        public async Task<IActionResult> GetPostTimeline(int skip, int count)
         {
-            var data = postService.GetPostTimeline(skip, count);
+            var data =await  postService.GetPostTimelineAsync(skip,  count);
             return Ok(new ApiOkResponse(data));
         }
 
@@ -128,6 +120,46 @@ namespace CoStudy.API.WebAPI.Controllers
         public async Task<IActionResult> Update(UpdatePostRequest request)
         {
             var data = await postService.UpdatePost(request);
+            return Ok(new ApiOkResponse(data));
+        }
+
+        [HttpPost]
+        [Route("post/save/{id}")]
+        public async Task<IActionResult> SavePost(string id)
+        {
+            var data = await postService.SavePost(id);
+            return Ok(new ApiOkResponse(data));
+        }
+
+        [HttpGet]
+        [Route("post/save")]
+        public async Task<IActionResult> GetSavedPost(int skip, int count)
+        {
+            var data = await postService.GetSavedPost(skip, count);
+            return Ok(new ApiOkResponse(data));
+        }
+
+        [HttpPost]
+        [Route("post/filter")]
+        public async Task<IActionResult> FilterPost(FilterRequest request)
+        {
+            var data =await  postService.Filter(request);
+            return Ok(new ApiOkResponse(data));
+        }
+
+        [HttpPost]
+        [Route("comment/upvote/{commentId}")]
+        public async  Task<IActionResult> UpvoteComment(string commentId)
+        {
+             var data =await postService.UpvoteComment(commentId);
+            return Ok(new ApiOkResponse(data));
+        }
+
+        [HttpPost]
+        [Route("comment/downvote/{commentId}")]
+        public async Task<IActionResult> DownvoteComment(string commentId)
+        {
+            var data = await postService.DownvoteComment(commentId);
             return Ok(new ApiOkResponse(data));
         }
     }

@@ -141,6 +141,22 @@ namespace CoStudy.API.WebAPI.Controllers
         }
 
         [HttpGet]
+        [Route("follower")]
+        public async Task<IActionResult> GetFollower([FromQuery]FollowFilterRequest request)
+        {
+            var data = await userService.GetFollower(request);
+            return Ok(new ApiOkResponse(data));
+        }
+
+        [HttpGet]
+        [Route("following")]
+        public async Task<IActionResult> GetFollowing([FromQuery]FollowFilterRequest request)
+        {
+            var data = await userService.GetFollowing(request);
+            return Ok(new ApiOkResponse(data));
+        }
+
+        [HttpGet]
         [Route("field/all")]
         public IActionResult getAllField()
         {
