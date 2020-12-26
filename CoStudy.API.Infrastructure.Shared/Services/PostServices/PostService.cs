@@ -28,7 +28,16 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
         IUpVoteRepository upVoteRepository;
         IDownVoteRepository downVoteRepository;
 
-        public PostService(IHttpContextAccessor httpContextAccessor, IConfiguration configuration, IUserRepository userRepository, IPostRepository postRepository, ICommentRepository commentRepository, IReplyCommentRepository replyCommentRepository, IFieldRepository fieldRepository, IFollowRepository followRepository, IUpVoteRepository upVoteRepository, IDownVoteRepository downVoteRepository)
+        public PostService(IHttpContextAccessor httpContextAccessor, 
+            IConfiguration configuration, 
+            IUserRepository userRepository,
+            IPostRepository postRepository, 
+            ICommentRepository commentRepository, 
+            IReplyCommentRepository replyCommentRepository, 
+            IFieldRepository fieldRepository,
+            IFollowRepository followRepository, 
+            IUpVoteRepository upVoteRepository, 
+            IDownVoteRepository downVoteRepository)
         {
             this.httpContextAccessor = httpContextAccessor;
             this.configuration = configuration;
@@ -397,7 +406,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
 
             foreach (var item in listFollow)
                 listAuthor.Add(item.ToId);
-
+            listAuthor.Add(currentUser.OId);
             var timelines = new List<Post>();
 
             foreach (var author in listAuthor)

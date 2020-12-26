@@ -27,14 +27,6 @@ namespace CoStudy.API.WebAPI.Controllers
             return Ok(new ApiOkResponse(data));
         }
 
-        //[HttpPost]
-        //[Route("media/add")]
-        //public async Task<IActionResult> AddMedia([FromForm] AddMediaRequest request)
-        //{
-        //    var data = await postService.AddMedia(request);
-        //    return Ok(new ApiOkResponse(data));
-        //}
-
         [HttpPost]
         [Route("comment/add")]
         public async Task<IActionResult> AddComment(AddCommentRequest request)
@@ -149,9 +141,9 @@ namespace CoStudy.API.WebAPI.Controllers
 
         [HttpPost]
         [Route("post/filter")]
-        public IActionResult FilterPost(FilterRequest request)
+        public async Task<IActionResult> FilterPost(FilterRequest request)
         {
-            var data = postService.Filter(request);
+            var data =await  postService.Filter(request);
             return Ok(new ApiOkResponse(data));
         }
 
