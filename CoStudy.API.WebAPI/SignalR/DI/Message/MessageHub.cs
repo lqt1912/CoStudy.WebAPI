@@ -15,10 +15,10 @@ namespace CoStudy.API.WebAPI.SignalR.DI.Message
         IUserRepository userRepository;
 
         public MessageHub(
-            IHubContext<SignalRHub<AddMessageResponse>, IHubClient<AddMessageResponse>> signalrHub, 
-            IClientConnectionsRepository clientConnectionsRepository, 
-            IClientGroupRepository clientGroupRepository, 
-            IConversationRepository conversationRepository, 
+            IHubContext<SignalRHub<AddMessageResponse>, IHubClient<AddMessageResponse>> signalrHub,
+            IClientConnectionsRepository clientConnectionsRepository,
+            IClientGroupRepository clientGroupRepository,
+            IConversationRepository conversationRepository,
             IUserRepository userRepository)
         {
             _signalrHub = signalrHub;
@@ -30,19 +30,19 @@ namespace CoStudy.API.WebAPI.SignalR.DI.Message
 
         public async Task SendConversation(string conversationId, AddMessageResponse addMessageResponse)
         {
-            var currentConversation =await conversationRepository.GetByIdAsync(ObjectId.Parse(conversationId));
-            if(currentConversation!=null)
+            var currentConversation = await conversationRepository.GetByIdAsync(ObjectId.Parse(conversationId));
+            if (currentConversation != null)
             {
                 var participants = currentConversation.Participants;
                 foreach (var participant in participants)
                 {
                     var currentUser = await userRepository.GetByIdAsync(ObjectId.Parse(participant));
-                    if(currentUser!=null)
+                    if (currentUser != null)
                     {
                         var clientConnections = await clientConnectionsRepository.GetByIdAsync(ObjectId.Parse(currentUser.ClientConnectionsId));
-                       
+
                         await _signalrHub.Clients.Clients(clientConnections.ClientConnection).SendNofti(addMessageResponse);
-                    }    
+                    }
                 }
             }
             throw new System.NotImplementedException();

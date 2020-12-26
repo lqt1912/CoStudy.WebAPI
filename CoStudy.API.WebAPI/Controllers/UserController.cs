@@ -1,5 +1,4 @@
 ﻿using CoStudy.API.Application.Features;
-using CoStudy.API.Domain.Entities.Application;
 using CoStudy.API.Domain.Entities.Identity.MongoAuthen;
 using CoStudy.API.Infrastructure.Identity.Models.Account.Request;
 using CoStudy.API.Infrastructure.Identity.Services.AccountService;

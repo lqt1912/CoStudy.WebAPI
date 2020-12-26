@@ -14,7 +14,7 @@ namespace CoStudy.API.WebAPI.Middlewares
     public class AuthorizeAttribute : Attribute, IAuthorizationFilter
     {
         private readonly IList<Role> _roles;
-       
+
 
         public AuthorizeAttribute(params Role[] roles)
         {
@@ -40,7 +40,7 @@ namespace CoStudy.API.WebAPI.Middlewares
                 logging.StatusCode = StatusCodes.Status401Unauthorized;
                 logging.Message = "Unauthorized";
                 loggingRepository.Add(logging);
-            } 
+            }
         }
     }
 }

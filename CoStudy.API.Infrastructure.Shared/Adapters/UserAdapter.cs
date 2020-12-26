@@ -109,7 +109,7 @@ namespace CoStudy.API.Infrastructure.Shared.Adapters
 
                 CreatedDate = user1.CreatedDate,
                 ModifiedDate = user1.ModifiedDate,
-             //   Posts = user1.Posts,
+                //   Posts = user1.Posts,
                 PostCount = user1.PostCount,
                 Noftications = user1.Noftications,
                 Followers = user1.Followers,

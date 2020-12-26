@@ -167,7 +167,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
                 if (listAuthor.Contains(post.AuthorId) && post.Status == ItemStatus.Active)
                     result.Add(post);
             }
-            return result.Skip(skip).Take(count).OrderByDescending(x=>x.CreatedDate).ToList();
+            return result.Skip(skip).Take(count).OrderByDescending(x => x.CreatedDate).ToList();
         }
 
         public List<ReplyComment> GetReplyCommentByCommentId(string commentId)
