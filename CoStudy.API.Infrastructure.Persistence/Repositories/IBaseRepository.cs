@@ -1,5 +1,6 @@
 ﻿using MongoDB.Bson;
 using MongoDB.Driver;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -17,7 +18,10 @@ namespace CoStudy.API.Infrastructure.Persistence.Repositories
         Task DeleteAsync(ObjectId id);
         bool Exists(ObjectId id);
         T Find(FilterDefinition<T> match);
+
         Task<T> FindAsync(FilterDefinition<T> match);
+        
+        Task<List<T>> FindListAsync(FilterDefinition<T> match);
 
         IQueryable<T> GetAll();
 

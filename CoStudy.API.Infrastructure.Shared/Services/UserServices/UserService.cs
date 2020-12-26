@@ -4,11 +4,13 @@ using CoStudy.API.Domain.Entities.Application;
 using CoStudy.API.Domain.Entities.Identity.MongoAuthen;
 using CoStudy.API.Infrastructure.Identity.Repositories.AccountRepository;
 using CoStudy.API.Infrastructure.Shared.Adapters;
+using CoStudy.API.Infrastructure.Shared.Models.Request.PostRequest;
 using CoStudy.API.Infrastructure.Shared.Models.Request.UserRequest;
 using CoStudy.API.Infrastructure.Shared.Models.Response.UserResponse;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using MongoDB.Bson;
+using MongoDB.Driver;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,7 +28,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
         IClientConnectionsRepository clientConnectionsRepository;
         IClientGroupRepository clientGroupRepository;
         IFieldRepository fieldRepository;
-
+        IFollowRepository followRepository;
 
         public UserService(IUserRepository userRepository,
             IHttpContextAccessor httpContextAccessor,
@@ -35,7 +37,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
             IPostRepository postRepository,
             IClientConnectionsRepository clientConnectionsRepository,
             IClientGroupRepository clientGroupRepository,
-            IFieldRepository fieldRepository)
+            IFieldRepository fieldRepository, IFollowRepository followRepository)
         {
             this.userRepository = userRepository;
             _httpContextAccessor = httpContextAccessor;
@@ -45,6 +47,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
             this.clientConnectionsRepository = clientConnectionsRepository;
             this.clientGroupRepository = clientGroupRepository;
             this.fieldRepository = fieldRepository;
+            this.followRepository = followRepository;
         }
 
         public async Task<AddAdditionalInfoResponse> AddAdditonalInfoAsync(AddAdditionalInfoRequest request)
@@ -77,7 +80,8 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
                 await postRepository.UpdateAsync(post, post.Id);
             }
             await userRepository.UpdateAsync(currentUser, currentUser.Id);
-
+            CacheHelper.Delete($"CurrentUser-{currentUser.Email}");
+            CacheHelper.Add($"CurrentUser-{currentUser.Email}", currentUser, DateTime.Now.AddDays(10));
             return UserAdapter.ToResponse(avatar, currentUser.Id.ToString());
 
         }
@@ -96,53 +100,30 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
             return currentUser;
         }
 
-        public async Task<AddFollowerResponse> AddFollowersAsync(AddFollowerRequest request)
+
+
+        public async Task<string> AddFollowingsAsync(AddFollowerRequest request)
         {
             var currentUser = CurrentUser();
 
-            currentUser.Followers.AddRange(request.Followers);
-            currentUser.Followers = currentUser.Followers.Distinct().ToList();
-            currentUser.ModifiedDate = DateTime.Now;
-
-            await userRepository.UpdateAsync(currentUser, currentUser.Id);
-
-            return new AddFollowerResponse()
-            {
-                UserId = currentUser.Id.ToString(),
-                Followers = request.Followers.Distinct().ToList()
-            };
-        }
-
-        /// <summary>
-        /// Copy xuống thôi
-        /// </summary>
-        /// <param name="request"></param>
-        /// <returns></returns>
-        public async Task<AddFollowerResponse> AddFollowingsAsync(AddFollowerRequest request)
-        {
-            var currentUser = CurrentUser();
-
-            currentUser.Following.AddRange(request.Followers);
-            currentUser.Following = currentUser.Following.Distinct().ToList();
-            currentUser.ModifiedDate = DateTime.Now;
-
-            await userRepository.UpdateAsync(currentUser, currentUser.Id);
 
             foreach (var item in request.Followers)
             {
                 var user = await userRepository.GetByIdAsync(ObjectId.Parse(item));
                 if (user != null)
                 {
-                    user.Followers.Add(currentUser.Id.ToString());
-                    await userRepository.UpdateAsync(user, user.Id);
+                    var follow = new Follow()
+                    {
+                        FromId = currentUser.OId,
+                        ToId = item,
+                        Avatar = user.Avatar.ImageHash,
+                        FullName = $"{user.FirstName} {user.LastName}",
+                        FollowDate = DateTime.Now
+                    };
+                    await followRepository.AddAsync(follow);
                 }
             }
-
-            return new AddFollowerResponse()
-            {
-                UserId = currentUser.Id.ToString(),
-                Followers = request.Followers.Distinct().ToList()
-            };
+            return "Theo dõi thành công";
         }
 
         public async Task<AddUserResponse> AddUserAsync(AddUserRequest entity)
@@ -162,8 +143,13 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
 
         private User FromAccount(Account account)
         {
-            var user = userRepository.GetAll().SingleOrDefault(x => x.Email == account.Email);
-            return user;
+            var cacheduser = CacheHelper.GetValue($"CurrentUser-{account.Email}") as User;
+
+            if (cacheduser != null)
+                return cacheduser;
+
+            var filter = Builders<User>.Filter.Eq("email", account.Email);
+            return userRepository.Find(filter);
         }
 
         private User CurrentUser()
@@ -172,25 +158,21 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
             return FromAccount(currentAccount);
         }
 
-        public async Task SyncPost()
+        public async Task SyncFollow()
         {
             try
             {
-                //var users = userRepository.GetAll();
-                //int c = 0;
-                //foreach (var user in users)
-                //{
+                var users = userRepository.GetAll();
+                foreach (var user in users)
+                {
+                    var filter = Builders<Follow>.Filter.Eq("from_id", user.Id.ToString());
+                    user.Following = (await followRepository.FindListAsync(filter)).Count();
 
-                //    var latestUserPosts = postRepository.GetAll().Where(x => x.AuthorId == user.Id.ToString());
-                //    if (latestUserPosts.Count() > 1)
-                //        latestUserPosts = latestUserPosts.Take(1);
+                    var filter2 = Builders<Follow>.Filter.Eq("to_id", user.Id.ToString());
+                    user.Followers = (await followRepository.FindListAsync(filter2)).Count();
 
-                //    user.Posts.Clear();
-                //    user.Posts.AddRange(latestUserPosts);
-                //    user.ModifiedDate = DateTime.Now;
-                //    await userRepository.UpdateAsync(user, user.Id);
-                //    c = latestUserPosts.Count();
-                //}
+                    await userRepository.UpdateAsync(user, user.Id);
+                }
             }
             catch (Exception)
             {
@@ -198,16 +180,16 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
             }
         }
 
-        public async Task<GetUserByIdResponse> GetUserById(string id)
+        public async Task<User> GetUserById(string id)
 
         {
             var user = await userRepository.GetByIdAsync(ObjectId.Parse(id));
             if (user == null)
                 throw new Exception("Không tìm thấy user");
-            return UserAdapter.ToResponse1(user);
+            return user;
         }
 
-        public GetUserByIdResponse GetCurrentUser()
+        public User GetCurrentUser()
         {
             try
             {
@@ -215,7 +197,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
 
                 if (user == null)
                     throw new Exception("Không tìm thấy user");
-                return UserAdapter.ToResponse1(user);
+                return user;
             }
             catch (Exception)
             {
@@ -223,22 +205,19 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
             }
         }
 
-        public async Task<User> RemoveFollowing(string followerId)
+        public async Task<string> RemoveFollowing(string toFollowerId)
         {
-            var currentUser = Feature.CurrentUser(_httpContextAccessor, userRepository);
-
-            if (currentUser.Following.Contains(followerId))
+            try
             {
-                currentUser.Following.Remove(followerId);
-                var user = await userRepository.GetByIdAsync(ObjectId.Parse(followerId));
-                if (user != null)
-                {
-                    user.Followers.Remove(currentUser.Id.ToString());
-                    await userRepository.UpdateAsync(user, user.Id);
-                }
+                var findFilter = Builders<Follow>.Filter.Eq("to_id", toFollowerId);
+                var following = await followRepository.FindAsync(findFilter);
+                await followRepository.DeleteAsync(following.Id);
+                return $"Bạn đã bỏ theo dõi người dùng {following.ToId}";
             }
-            await userRepository.UpdateAsync(currentUser, currentUser.Id);
-            return currentUser;
+            catch (Exception)
+            {
+                throw new Exception("Người dùng không tồn tại. Đã có lổi xảy ra");
+            }
         }
 
         public async Task<User> UpdateUserAsync(UpdateUserRequest request)
@@ -250,6 +229,9 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
             currentUser.PhoneNumber = request.PhoneNumber;
             currentUser.DateOfBirth = request.DateOfBirth;
             await userRepository.UpdateAsync(currentUser, currentUser.Id);
+
+            CacheHelper.Delete($"CurrentUser-{currentUser.Email}");
+            CacheHelper.Add($"CurrentUser-{currentUser.Email}", currentUser, DateTime.Now.AddDays(10));
 
             return currentUser;
         }
@@ -273,6 +255,9 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
 
             await userRepository.UpdateAsync(currentUser, currentUser.Id);
 
+            CacheHelper.Delete($"CurrentUser-{currentUser.Email}");
+            CacheHelper.Add($"CurrentUser-{currentUser.Email}", currentUser, DateTime.Now.AddDays(10));
+
             return currentUser;
         }
 
@@ -283,6 +268,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
                 Value = fieldValue
             };
             await fieldRepository.AddAsync(field);
+
             return field;
         }
 
@@ -291,48 +277,40 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
             return fieldRepository.GetAll().ToList();
         }
 
-        public async Task<IEnumerable<GetFollowerResponse>> GetFollower(string userId, int skip, int count)
+        public async Task<IEnumerable<Follow>> GetFollower(FollowFilterRequest request)
         {
-            var user =await  userRepository.GetByIdAsync(ObjectId.Parse(userId));
-            var result = new List<GetFollowerResponse>();
-            if (user != null)
-            {
-                foreach (var follower in user.Followers.Skip(skip).Take(count))
-                {
-                    var a =await userRepository.GetByIdAsync(ObjectId.Parse(follower));
-                    if (a != null)
-                        result.Add(new GetFollowerResponse()
-                        {
-                            Id = a.OId,
-                            Name = $"{a.FirstName} {a.LastName}",
-                            Avatar = a.Avatar
-                        });
-                }
-            }
-            return result;
+            var findFilter = Builders<Follow>.Filter.Eq("to_id", request.UserId);
+            var queryable = (await followRepository.FindListAsync(findFilter)).AsQueryable();
 
+            if (request.FromDate != null)
+                queryable = queryable.Where(x => x.FollowDate >= request.FromDate);
+            if (request.ToDate != null)
+                queryable = queryable.Where(x => x.FollowDate <= request.ToDate);
+
+            if (request.OrderType == OrderType.Ascending)
+                queryable = queryable.OrderBy(x => x.FollowDate);
+            else queryable = queryable.OrderByDescending(x => x.FollowDate);
+            if (request.Skip.HasValue && request.Count.HasValue)
+                queryable = queryable.Skip(request.Skip.Value).Take(request.Count.Value);
+            return queryable;
         }
 
-        public async Task<List<GetFollowerResponse>> GetFollowing(string userId, int skip, int count)
+        public async Task<IEnumerable<Follow>> GetFollowing(FollowFilterRequest request)
         {
-            var user = await userRepository.GetByIdAsync(ObjectId.Parse(userId));
-            var result = new List<GetFollowerResponse>();
-            if (user != null)
-            {
-                foreach (var follower in user.Following)
-                {
-                    var a = await userRepository.GetByIdAsync(ObjectId.Parse(follower));
-                    if (a != null)
-                        result.Add(new GetFollowerResponse()
-                        {
-                            Id = a.OId,
-                            Name = $"{a.FirstName} {a.LastName}",
-                            Avatar = a.Avatar
-                        });
-                }
-            }
-            return result.Skip(skip).Take(count).ToList();
+            var findFilter = Builders<Follow>.Filter.Eq("from_id", request.UserId);
+            var queryable = (await followRepository.FindListAsync(findFilter)).AsQueryable();
 
+            if (request.FromDate != null)
+                queryable = queryable.Where(x => x.FollowDate >= request.FromDate);
+            if (request.ToDate != null)
+                queryable = queryable.Where(x => x.FollowDate <= request.ToDate);
+
+            if (request.OrderType == OrderType.Ascending)
+                queryable = queryable.OrderBy(x => x.FollowDate);
+            else queryable = queryable.OrderByDescending(x => x.FollowDate);
+            if (request.Skip.HasValue && request.Count.HasValue)
+                queryable = queryable.Skip(request.Skip.Value).Take(request.Count.Value);
+            return queryable;
         }
     }
 }

@@ -16,24 +16,24 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
         Task<AddAvatarResponse> AddAvatarAsync(AddAvatarRequest request);
         Task<User> UpdateAvatarAsync(AddAvatarRequest request);
 
-        Task<AddFollowerResponse> AddFollowersAsync(AddFollowerRequest request);
 
-        Task<AddFollowerResponse> AddFollowingsAsync(AddFollowerRequest request);
+        Task<string> AddFollowingsAsync(AddFollowerRequest request);
 
         Task<AddAdditionalInfoResponse> AddAdditonalInfoAsync(AddAdditionalInfoRequest request);
-
         Task<User> AddFieldAsync(AddFieldRequest request);
 
-        Task<GetUserByIdResponse> GetUserById(string id);
-        Task SyncPost();
-        GetUserByIdResponse GetCurrentUser();
+        Task<User> GetUserById(string id);
+        Task SyncFollow();
+        User GetCurrentUser();
 
-        Task<User> RemoveFollowing(string followerId);
+        Task<string> RemoveFollowing(string followerId);
 
         List<Field> GetAll();
 
-        Task<IEnumerable<GetFollowerResponse>> GetFollower(string userId, int skip, int count);
+        Task<IEnumerable<Follow>> GetFollower(FollowFilterRequest request);
 
-        Task<List<GetFollowerResponse>> GetFollowing(string userId, int skip, int count);
+        Task<IEnumerable<Follow>> GetFollowing(FollowFilterRequest request);
+
+
     }
 }

@@ -20,6 +20,9 @@ namespace CoStudy.API.Infrastructure.Shared.Models.Request.PostRequest
 
     public class FilterRequest
     {
+        [JsonPropertyName("keyword")]
+        public string KeyWord { get; set; }
+
         [JsonPropertyName("date_from")]
         public DateTime? FromDate { get; set; }
 

@@ -16,13 +16,11 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
 
         Task<ReplyCommentResponse> ReplyComment(ReplyCommentRequest request);
 
-        Task SyncComment();
-        Task SyncReply();
 
         Task<GetPostByIdResponse> GetPostById(string postId);
 
-        GetPostsByUserIdResponse GetPostByUserId(string userId);
-        List<Post> GetPostTimeline(int skip, int count);
+        Task<IEnumerable<Post>> GetPostByUserId(string userId, int skip, int count);
+        Task<IEnumerable<Post>> GetPostTimelineAsync(int skip, int count);
         List<Comment> GetCommentByPostId(string postId);
         List<ReplyComment> GetReplyCommentByCommentId(string commentId);
 
@@ -37,8 +35,16 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
         Task<Post> SavePost(string id);
         Task<List<Post>> GetSavedPost(int skip, int count);
 
-        List<Post> Filter(FilterRequest filterRequest);
+       Task< IEnumerable<Post>> Filter(FilterRequest filterRequest);
 
+        Task<string> UpvoteComment(string commentId);
+        Task<string> DownvoteComment(string commentId);
+
+        Task SyncComment();
+        Task SyncReply();
+
+        Task SyncVote();
+        Task SyncReplyVote();
     }
 
 }

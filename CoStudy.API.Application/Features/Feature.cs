@@ -2,6 +2,7 @@
 using CoStudy.API.Domain.Entities.Application;
 using CoStudy.API.Domain.Entities.Identity.MongoAuthen;
 using Microsoft.AspNetCore.Http;
+using MongoDB.Driver;
 using System;
 using System.IO;
 using System.Linq;
@@ -83,12 +84,11 @@ namespace CoStudy.API.Application.Features
 
             if (currentAccount != null)
             {
-                //var cacheduser = CacheHelper.GetValue($"CurrentUser-{currentAccount.Email}") as User;
-                //if (cacheduser != null)
-                //    return cacheduser;
-
-                var user = userRepository.GetAll().SingleOrDefault(x => x.Email == currentAccount.Email);
-                return user;
+                var cacheduser = CacheHelper.GetValue($"CurrentUser-{currentAccount.Email}") as User;
+                if (cacheduser != null)
+                    return cacheduser;
+                var filter = Builders<User>.Filter.Eq("email", currentAccount.Email);
+                return  userRepository.Find(filter);
             }
             else return null;
 

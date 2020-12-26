@@ -70,24 +70,24 @@ namespace CoStudy.API.Infrastructure.Identity.Services.AccountService
         }
         public AuthenticateResponse Authenticate(AuthenticateRequest model, string ipAddress)
         {
-            //var cachedAccount = CacheHelper.GetValue($"CurrentAccount-{model.Email}") as Account;
-            //if (cachedAccount != null)
-            //{
-            //    if(cachedAccount.Email == model.Email && BC.Verify(model.Password, cachedAccount.PasswordHash))
-            //    {
-            //        var jwtToken1 = generateJwtToken(cachedAccount);
-            //        var refreshToken1 = generateRefreshToken(ipAddress);
-            //        cachedAccount.RefreshTokens.Add(refreshToken1);
-            //        removeOldRefreshTokens(cachedAccount);
+            var cachedAccount = CacheHelper.GetValue($"CurrentAccount-{model.Email}") as Account;
+            if (cachedAccount != null)
+            {
+                if (cachedAccount.Email == model.Email && BC.Verify(model.Password, cachedAccount.PasswordHash))
+                {
+                    var jwtToken1 = generateJwtToken(cachedAccount);
+                    var refreshToken1 = generateRefreshToken(ipAddress);
+                    cachedAccount.RefreshTokens.Add(refreshToken1);
+                    removeOldRefreshTokens(cachedAccount);
 
-            //        accountRepository.Update(cachedAccount, cachedAccount.Id);
+                    accountRepository.Update(cachedAccount, cachedAccount.Id);
 
-            //        var response1 = mapper.Map<AuthenticateResponse>(cachedAccount);
-            //        response1.JwtToken = jwtToken1;
-            //        response1.RefreshToken = refreshToken1.Token;
-            //        return response1;
-            //    }
-            //}
+                    var response1 = mapper.Map<AuthenticateResponse>(cachedAccount);
+                    response1.JwtToken = jwtToken1;
+                    response1.RefreshToken = refreshToken1.Token;
+                    return response1;
+                }
+            }
 
             var account = accountRepository.GetAll().SingleOrDefault(x => x.Email == model.Email);
             if (account == null || !account.IsVerified)
@@ -107,10 +107,10 @@ namespace CoStudy.API.Infrastructure.Identity.Services.AccountService
             response.JwtToken = jwtToken;
             response.RefreshToken = refreshToken.Token;
 
-            //var currentUser = userRepository.GetAll().SingleOrDefault(x => x.Email == model.Email);
+            var currentUser = userRepository.GetAll().SingleOrDefault(x => x.Email == model.Email);
 
-            //CacheHelper.Add($"CurrentUser-{currentUser.Email}", currentUser, DateTime.Now.AddDays(10));
-            //CacheHelper.Add($"CurrentAccount-{account.Email}", account, DateTime.Now.AddDays(10));
+            CacheHelper.Add($"CurrentUser-{currentUser.Email}", currentUser, DateTime.Now.AddDays(10));
+            CacheHelper.Add($"CurrentAccount-{account.Email}", account, DateTime.Now.AddDays(10));
 
             return response;
         }

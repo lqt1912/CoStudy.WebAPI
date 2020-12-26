@@ -36,5 +36,13 @@ namespace CoStudy.API.Domain.Entities.Application
         [BsonElement("modified_date")]
         [JsonPropertyName("modified_date")]
         public DateTime? ModifiedDate { get; set; }
+
+        [BsonElement("upvote_count")]
+        [JsonPropertyName("upvote_count")]
+        public int UpvoteCount { get; set; }
+
+        [BsonElement("downvote_count")]
+        [JsonPropertyName("downvote_count")]
+        public int DownvoteCount { get; set; }
     }
 }

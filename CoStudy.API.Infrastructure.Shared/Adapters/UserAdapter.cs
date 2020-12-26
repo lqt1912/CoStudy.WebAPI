@@ -112,8 +112,6 @@ namespace CoStudy.API.Infrastructure.Shared.Adapters
              //   Posts = user1.Posts,
                 PostCount = user1.PostCount,
                 Noftications = user1.Noftications,
-                Followers = user1.Followers,
-                Following = user1.Following,
                 AdditionalInfos = user1.AdditionalInfos,
                 Fortes = user1.Fortes,
                 ImageHash = user1.AvatarHash,
