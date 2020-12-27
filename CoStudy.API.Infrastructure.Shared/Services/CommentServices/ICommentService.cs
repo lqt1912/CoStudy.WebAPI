@@ -1,0 +1,28 @@
+﻿using CoStudy.API.Domain.Entities.Application;
+using CoStudy.API.Infrastructure.Shared.Models.Request.PostRequest;
+using CoStudy.API.Infrastructure.Shared.Models.Response.PostResponse;
+using System;
+using System.Collections.Generic;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace CoStudy.API.Infrastructure.Shared.Services
+{
+    public interface ICommentService
+    {
+        Task<AddCommentResponse> AddComment(AddCommentRequest request);
+
+        Task<ReplyCommentResponse> ReplyComment(ReplyCommentRequest request);
+        Task<IEnumerable<Comment>> GetCommentByPostId(string postId, int skip, int count);
+
+       Task<IEnumerable<ReplyComment>> GetReplyCommentByCommentId(string commentId, int skip, int count);
+
+        Task<string> DeleteComment(string commentId);
+
+        Task<string> DeleteReply(string replyId);
+
+        Task<string> UpvoteComment(string commentId);
+        Task<string> DownvoteComment(string commentId);
+
+    }
+}

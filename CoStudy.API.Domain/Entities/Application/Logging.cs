@@ -1,4 +1,5 @@
 ﻿using CoStudy.API.Domain.Entities.BaseEntity;
+using System;
 
 namespace CoStudy.API.Domain.Entities.Application
 {

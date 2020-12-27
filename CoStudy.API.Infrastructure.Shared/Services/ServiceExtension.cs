@@ -11,10 +11,10 @@ namespace CoStudy.API.Infrastructure.Shared.Services
         public static void RegisterCustomService(this IServiceCollection services)
         {
             services.AddTransient<IUserService, UserService>();
-
             services.AddTransient<IPostService, PostService>();
             services.AddTransient<INofticationService, NofticationService>();
             services.AddTransient<IMessageService, MessageService>();
+            services.AddTransient<ICommentService, CommentService>();
         }
     }
 }

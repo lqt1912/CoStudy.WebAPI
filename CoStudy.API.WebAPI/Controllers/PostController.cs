@@ -27,21 +27,7 @@ namespace CoStudy.API.WebAPI.Controllers
             return Ok(new ApiOkResponse(data));
         }
 
-        [HttpPost]
-        [Route("comment/add")]
-        public async Task<IActionResult> AddComment(AddCommentRequest request)
-        {
-            var data = await postService.AddComment(request);
-            return Ok(new ApiOkResponse(data));
-        }
-
-        [HttpPost]
-        [Route("comment/reply")]
-        public async Task<IActionResult> Addreply(ReplyCommentRequest request)
-        {
-            var data = await postService.ReplyComment(request);
-            return Ok(new ApiOkResponse(data));
-        }
+       
 
         [HttpGet]
         [Route("get/{id}")]
@@ -67,37 +53,7 @@ namespace CoStudy.API.WebAPI.Controllers
             return Ok(new ApiOkResponse(data));
         }
 
-        [HttpGet]
-        [Route("comments/{postId}")]
-        public IActionResult GetCommentByPostId(string postId)
-        {
-            var data = postService.GetCommentByPostId(postId);
-            return Ok(new ApiOkResponse(data));
-        }
-
-        [HttpGet]
-        [Route("replies/{commentId}")]
-        public IActionResult GetReplyByCommentId(string commentId)
-        {
-            var data = postService.GetReplyCommentByCommentId(commentId);
-            return Ok(new ApiOkResponse(data));
-        }
-
-        [HttpDelete]
-        [Route("comment/{id}")]
-        public async Task<IActionResult> DeleteCommentById(string id)
-        {
-            var data = await postService.DeleteComment(id);
-            return Ok(new ApiOkResponse(data));
-        }
-
-        [HttpDelete]
-        [Route("reply/{id}")]
-        public async Task<IActionResult> DeleteReply(string id)
-        {
-            var data = await postService.DeleteReply(id);
-            return Ok(new ApiOkResponse(data));
-        }
+        
 
         [HttpPost]
         [Route("post/upvote/{id}")]
@@ -144,22 +100,6 @@ namespace CoStudy.API.WebAPI.Controllers
         public async Task<IActionResult> FilterPost(FilterRequest request)
         {
             var data =await  postService.Filter(request);
-            return Ok(new ApiOkResponse(data));
-        }
-
-        [HttpPost]
-        [Route("comment/upvote/{commentId}")]
-        public async  Task<IActionResult> UpvoteComment(string commentId)
-        {
-             var data =await postService.UpvoteComment(commentId);
-            return Ok(new ApiOkResponse(data));
-        }
-
-        [HttpPost]
-        [Route("comment/downvote/{commentId}")]
-        public async Task<IActionResult> DownvoteComment(string commentId)
-        {
-            var data = await postService.DownvoteComment(commentId);
             return Ok(new ApiOkResponse(data));
         }
     }

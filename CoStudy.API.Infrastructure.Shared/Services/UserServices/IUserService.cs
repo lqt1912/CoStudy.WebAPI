@@ -34,6 +34,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
 
         Task<IEnumerable<Follow>> GetFollowing(FollowFilterRequest request);
 
+        Task<IEnumerable<User>> FilterUser(FilterUserRequest request);
 
     }
 }

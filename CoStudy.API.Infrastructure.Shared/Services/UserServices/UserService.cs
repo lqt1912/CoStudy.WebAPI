@@ -312,5 +312,48 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
                 queryable = queryable.Skip(request.Skip.Value).Take(request.Count.Value);
             return queryable;
         }
+
+        public async Task<IEnumerable<User>> FilterUser(FilterUserRequest request)
+        {
+            var users = userRepository.GetAll().AsQueryable();
+            if (!String.IsNullOrEmpty(request.KeyWord))
+                users = users.Where(x => x.Email.Contains(request.KeyWord)
+                || $"{x.FirstName} {x.LastName}".Contains(request.KeyWord)
+                || x.PhoneNumber.Contains(request.KeyWord));
+
+            if (!string.IsNullOrEmpty(request.Fields))
+            {
+                var tempField = await fieldRepository.GetByIdAsync(ObjectId.Parse(request.Fields));
+                users = users.Where(x => x.Fortes.Contains(tempField));
+            }
+            
+            if(request.FilterType.HasValue && request.OrderType.HasValue)
+            {
+                switch(request.FilterType.Value)
+                {
+                    case UserFilterType.PostCount:
+                        {
+                            if (request.OrderType.Value == OrderTypeUser.Ascending)
+                                users = users.OrderBy(x => x.PostCount);
+                            else users = users.OrderByDescending(x => x.PostCount);
+                            break;
+                        }
+                    case UserFilterType.Follower:
+                        {
+                            if (request.OrderType.Value == OrderTypeUser.Ascending)
+                                users = users.OrderBy(x => x.Followers);
+                            else users = users.OrderByDescending(x => x.Followers);
+                            break;
+                        }
+                    default:
+                        break;
+                }
+            }
+
+            if (request.Skip.HasValue && request.Count.HasValue)
+                users = users.Skip(request.Skip.Value).Take(request.Count.Value);
+            return users;
+        }
     }
 }
+

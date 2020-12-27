@@ -1,7 +1,9 @@
 ﻿using CoStudy.API.Application.Features;
+using CoStudy.API.Domain.Entities.Application;
 using CoStudy.API.Domain.Entities.Identity.MongoAuthen;
 using CoStudy.API.Infrastructure.Identity.Models.Account.Request;
 using CoStudy.API.Infrastructure.Identity.Services.AccountService;
+using CoStudy.API.Infrastructure.Shared.Models.Request.PostRequest;
 using CoStudy.API.Infrastructure.Shared.Models.Request.UserRequest;
 using CoStudy.API.Infrastructure.Shared.Services.UserServices;
 using CoStudy.API.WebAPI.Middlewares;
@@ -164,11 +166,21 @@ namespace CoStudy.API.WebAPI.Controllers
             return Ok(new ApiOkResponse(data));
         }
 
+        [HttpGet]
+        [Route("user/filter")]
+        public  async Task<IActionResult> UserFilter([FromQuery]FilterUserRequest request)
+        {
+            var data = await userService.FilterUser(request);
+            return Ok(new ApiOkResponse(data));
+        }
+
+
+
         [Route("cache/get")]
         [HttpGet]
         public IActionResult GetCache(string email)
         {
-            var data = CacheHelper.GetValue($"CurrentAccount-{email}") as Account;
+            var data = CacheHelper.GetValue($"CurrentUser-{email}") as User;
             return Ok(new ApiOkResponse(data));
         }
     }
