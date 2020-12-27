@@ -63,6 +63,7 @@ namespace CoStudy.API.WebAPI.Middlewares
                     logging.StatusCode = statusCode.Value;
                     logging.TimeElapsed = sw.Elapsed.TotalMilliseconds;
                     logging.Message = "Request success";
+                    logging.Ip = context.Connection.RemoteIpAddress.ToString();
                     logging.CreatedDate = DateTime.Now;
                     await loggingRepository.AddAsync(logging);
                 }
@@ -85,6 +86,7 @@ namespace CoStudy.API.WebAPI.Middlewares
                 logging.TimeElapsed = sw.Elapsed.TotalMilliseconds;
                 logging.Message = message;
                 logging.CreatedDate = DateTime.Now;
+                logging.Ip = context.Connection.RemoteIpAddress.ToString();
                 await loggingRepository.AddAsync(logging);
             }
 

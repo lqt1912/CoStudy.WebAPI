@@ -39,6 +39,7 @@ namespace CoStudy.API.WebAPI.Middlewares
                 logging.RequestPath = context.HttpContext.Request.Path.ToString();
                 logging.StatusCode = StatusCodes.Status401Unauthorized;
                 logging.Message = "Unauthorized";
+             logging.Ip = context.HttpContext.Connection.RemoteIpAddress.ToString();
                 logging.CreatedDate = DateTime.Now;
                 loggingRepository.Add(logging);
             }
