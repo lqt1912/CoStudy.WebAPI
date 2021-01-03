@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using CoStudy.API.Domain.Entities.Application;
+using Microsoft.AspNetCore.Http;
 using System.Text.Json.Serialization;
 
 namespace CoStudy.API.Infrastructure.Shared.Models.Request.MessageRequest
@@ -12,6 +13,6 @@ namespace CoStudy.API.Infrastructure.Shared.Models.Request.MessageRequest
         public string Content { get; set; }
 
         [JsonPropertyName("image")]
-        public IFormFile Image { get; set; }
+        public Image Image { get; set; }
     }
 }
