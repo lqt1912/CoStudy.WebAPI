@@ -1,4 +1,5 @@
-﻿using CoStudy.API.Application.Features;
+﻿using CoStudy.API.Application.FCM;
+using CoStudy.API.Application.Features;
 using CoStudy.API.Application.Repositories;
 using CoStudy.API.Domain.Entities.Application;
 using CoStudy.API.Infrastructure.Shared.Adapters;
@@ -19,35 +20,18 @@ namespace CoStudy.API.Infrastructure.Shared.Services.MessageServices
         IConversationRepository conversationRepository;
         IUserRepository userRepository;
         IHttpContextAccessor httpContextAccessor;
-        public IClientConnectionsRepository clientConnectionsRepository { get; }
+        IFcmRepository fcmRepository;
         public IClientGroupRepository clientGroupRepository { get; }
 
-        public MessageService(IMessageRepository messageRepository, IConversationRepository conversationRepository, IUserRepository userRepository, IHttpContextAccessor httpContextAccessor, IClientConnectionsRepository clientConnectionsRepository, IClientGroupRepository clientGroupRepository)
+        public MessageService(IMessageRepository messageRepository, IConversationRepository conversationRepository, IUserRepository userRepository, IHttpContextAccessor httpContextAccessor, IClientGroupRepository clientGroupRepository, IFcmRepository fcmRepository)
         {
             this.messageRepository = messageRepository;
             this.conversationRepository = conversationRepository;
             this.userRepository = userRepository;
             this.httpContextAccessor = httpContextAccessor;
-            this.clientConnectionsRepository = clientConnectionsRepository;
             this.clientGroupRepository = clientGroupRepository;
+            this.fcmRepository = fcmRepository;
         }
-
-
-
-        //IHubContext<BaseHub<Message>, IBaseHub<Message>> messageHub;
-        //public MessageService(IMessageRepository messageRepository,
-        //    IConversationRepository conversationRepository,
-        //    IUserRepository userRepository,
-        //    IHttpContextAccessor httpContextAccessor, IHubContext<BaseHub<Message>, IBaseHub<Message>> messageHub, IClientConnectionsRepository clientConnectionsRepository, IClientGroupRepository clientGroupRepository)
-        //{
-        //    this.messageRepository = messageRepository;
-        //    this.conversationRepository = conversationRepository;
-        //    this.userRepository = userRepository;
-        //    this.httpContextAccessor = httpContextAccessor;
-        //    this.messageHub = messageHub;
-        //    this.clientConnectionsRepository = clientConnectionsRepository;
-        //    this.clientGroupRepository = clientGroupRepository;
-        //}
 
         public async Task<AddConversationResponse> AddConversation(AddConversationRequest request)
         {
@@ -57,6 +41,13 @@ namespace CoStudy.API.Infrastructure.Shared.Services.MessageServices
             var conversation = MessageAdapter.FromRequest(request);
 
             await conversationRepository.AddAsync(conversation);
+
+            var clientGroup = new ClientGroup()
+            {
+                UserIds = request.Participants,
+                Name =conversation.Id.ToString(),
+            };
+            await clientGroupRepository.AddAsync(clientGroup);
             return MessageAdapter.ToResponse(conversation);
         }
 
@@ -66,6 +57,8 @@ namespace CoStudy.API.Infrastructure.Shared.Services.MessageServices
             var message = MessageAdapter.FromRequest(request, httpContextAccessor, userRepository);
 
             await messageRepository.AddAsync(message);
+
+            await fcmRepository.SendMessage(request.ConversationId,message);
 
             return MessageAdapter.ToResponse(message);
         }

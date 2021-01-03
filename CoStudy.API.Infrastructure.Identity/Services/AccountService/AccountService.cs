@@ -27,7 +27,7 @@ namespace CoStudy.API.Infrastructure.Identity.Services.AccountService
         AppSettings appSettings;
         IEmailService emailService;
         IUserRepository userRepository;
-
+        
         public AccountService(IAccountRepository accountRepository, IMapper mapper, IOptions<AppSettings> appSettings, IEmailService emailService, IUserRepository userRepository)
         {
             this.accountRepository = accountRepository;
@@ -70,24 +70,24 @@ namespace CoStudy.API.Infrastructure.Identity.Services.AccountService
         }
         public AuthenticateResponse Authenticate(AuthenticateRequest model, string ipAddress)
         {
-            var cachedAccount = CacheHelper.GetValue($"CurrentAccount-{model.Email}") as Account;
-            if (cachedAccount != null)
-            {
-                if (cachedAccount.Email == model.Email && BC.Verify(model.Password, cachedAccount.PasswordHash))
-                {
-                    var jwtToken1 = generateJwtToken(cachedAccount);
-                    var refreshToken1 = generateRefreshToken(ipAddress);
-                    cachedAccount.RefreshTokens.Add(refreshToken1);
-                    removeOldRefreshTokens(cachedAccount);
+            //var cachedAccount = CacheHelper.GetValue($"CurrentAccount-{model.Email}") as Account;
+            //if (cachedAccount != null)
+            //{
+            //    if (cachedAccount.Email == model.Email && BC.Verify(model.Password, cachedAccount.PasswordHash))
+            //    {
+            //        var jwtToken1 = generateJwtToken(cachedAccount);
+            //        var refreshToken1 = generateRefreshToken(ipAddress);
+            //        cachedAccount.RefreshTokens.Add(refreshToken1);
+            //        removeOldRefreshTokens(cachedAccount);
 
-                    accountRepository.Update(cachedAccount, cachedAccount.Id);
+            //        accountRepository.Update(cachedAccount, cachedAccount.Id);
 
-                    var response1 = mapper.Map<AuthenticateResponse>(cachedAccount);
-                    response1.JwtToken = jwtToken1;
-                    response1.RefreshToken = refreshToken1.Token;
-                    return response1;
-                }
-            }
+            //        var response1 = mapper.Map<AuthenticateResponse>(cachedAccount);
+            //        response1.JwtToken = jwtToken1;
+            //        response1.RefreshToken = refreshToken1.Token;
+            //        return response1;
+            //    }
+            //}
 
             var account = accountRepository.GetAll().SingleOrDefault(x => x.Email == model.Email);
             if (account == null || !account.IsVerified)
@@ -231,7 +231,6 @@ namespace CoStudy.API.Infrastructure.Identity.Services.AccountService
         public void RevokeToken(string token, string ipAddress)
         {
             var (refreshToken, account) = getRefreshToken(token);
-
             // revoke token and save
             refreshToken.Revoked = DateTime.UtcNow;
             refreshToken.RevokedByIp = ipAddress;
@@ -372,9 +371,13 @@ namespace CoStudy.API.Infrastructure.Identity.Services.AccountService
         private (RefreshToken, Account) getRefreshToken(string token)
         {
             var account = accountRepository.GetAll().SingleOrDefault(u => u.RefreshTokens.Any(t => t.Token == token));
+
             if (account == null) throw new AppException("Invalid token");
+
             var refreshToken = account.RefreshTokens.Single(x => x.Token == token);
+
             if (!refreshToken.IsActive) throw new AppException("Invalid token");
+
             return (refreshToken, account);
         }
 
@@ -383,5 +386,7 @@ namespace CoStudy.API.Infrastructure.Identity.Services.AccountService
             var account = accountRepository.GetById(ObjectId.Parse(id));
             return mapper.Map<AccountResponse>(account);
         }
+
+
     }
 }

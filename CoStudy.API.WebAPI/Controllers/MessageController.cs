@@ -1,7 +1,6 @@
 ﻿using CoStudy.API.Infrastructure.Shared.Models.Request.MessageRequest;
 using CoStudy.API.Infrastructure.Shared.Services.MessageServices;
 using CoStudy.API.WebAPI.Middlewares;
-using CoStudy.API.WebAPI.SignalR.DI.Message;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 
@@ -13,11 +12,9 @@ namespace CoStudy.API.WebAPI.Controllers
     public class MessageController : ControllerBase
     {
         IMessageService messageService;
-        IMessageHub messageHub;
-        public MessageController(IMessageService messageService, IMessageHub messagetHub)
+        public MessageController(IMessageService messageService)
         {
             this.messageService = messageService;
-            this.messageHub = messagetHub;
         }
 
         [HttpPost]
@@ -39,12 +36,10 @@ namespace CoStudy.API.WebAPI.Controllers
         [Authorize]
         [HttpPost]
         [Route("message/add")]
-        public async Task<IActionResult> AddMessage([FromForm] AddMessageRequest request)
+        public async Task<IActionResult> AddMessage(AddMessageRequest request)
         {
             var data = await messageService.AddMessage(request);
 
-            //await messageHub.SendConversation(request.ConversationId,data);
-            await messageHub.SendGlobal(data);
             return Ok(new ApiOkResponse(data));
         }
 

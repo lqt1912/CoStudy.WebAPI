@@ -9,11 +9,17 @@ namespace CoStudy.API.Domain.Entities.Application
     {
         public ClientGroup() : base()
         {
-            ConnectionGroupIds = new List<string>();
+            UserIds = new List<string>();
+        
         }
 
-        [BsonElement("connection_group_ids")]
-        [JsonPropertyName("connection_group_ids")]
-        public List<string> ConnectionGroupIds { get; set; }
+        [BsonElement("name")]
+        [JsonPropertyName("name")]
+        public string Name { get; set; }
+
+
+        [BsonElement("user_ids")]
+        [JsonPropertyName("user_ids")]
+        public List<string> UserIds { get; set; }
     }
 }

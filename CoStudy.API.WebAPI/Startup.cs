@@ -6,7 +6,6 @@ using CoStudy.API.Infrastructure.Shared.Services;
 using CoStudy.API.WebAPI.BackgroundTask.WorkerService;
 using CoStudy.API.WebAPI.Extensions;
 using CoStudy.API.WebAPI.Middlewares;
-using CoStudy.API.WebAPI.SignalR.DI;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -50,7 +49,6 @@ namespace CoStudy.API.WebAPI
             services.AddCors();
 
 
-            services.ConfigureSignalRHub();
 
         }
 
@@ -89,7 +87,6 @@ namespace CoStudy.API.WebAPI
             });
 
 
-            app.COnfigureSignalrApp();
 
         }
 

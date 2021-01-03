@@ -25,7 +25,6 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
         IHttpContextAccessor _httpContextAccessor;
         IConfiguration _configuration;
         IPostRepository postRepository;
-        IClientConnectionsRepository clientConnectionsRepository;
         IClientGroupRepository clientGroupRepository;
         IFieldRepository fieldRepository;
         IFollowRepository followRepository;
@@ -35,7 +34,6 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
             IConfiguration configuration,
             IAccountRepository accountRepository,
             IPostRepository postRepository,
-            IClientConnectionsRepository clientConnectionsRepository,
             IClientGroupRepository clientGroupRepository,
             IFieldRepository fieldRepository, IFollowRepository followRepository)
         {
@@ -44,7 +42,6 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
             _configuration = configuration;
             this.accountRepository = accountRepository;
             this.postRepository = postRepository;
-            this.clientConnectionsRepository = clientConnectionsRepository;
             this.clientGroupRepository = clientGroupRepository;
             this.fieldRepository = fieldRepository;
             this.followRepository = followRepository;
@@ -128,14 +125,11 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
 
         public async Task<AddUserResponse> AddUserAsync(AddUserRequest entity)
         {
-            var clientConnection = new ClientConnections();
 
             var user = UserAdapter.FromRequest(entity);
-            user.ClientConnectionsId = clientConnection.Id.ToString();
 
             await userRepository.AddAsync(user);
 
-            await clientConnectionsRepository.AddAsync(clientConnection);
 
             return UserAdapter.ToResponse(user);
         }
@@ -143,10 +137,10 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
 
         private User FromAccount(Account account)
         {
-            var cacheduser = CacheHelper.GetValue($"CurrentUser-{account.Email}") as User;
+            //var cacheduser = CacheHelper.GetValue($"CurrentUser-{account.Email}") as User;
 
-            if (cacheduser != null)
-                return cacheduser;
+            //if (cacheduser != null)
+            //    return cacheduser;
 
             var filter = Builders<User>.Filter.Eq("email", account.Email);
             return userRepository.Find(filter);
@@ -230,8 +224,8 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
             currentUser.DateOfBirth = request.DateOfBirth;
             await userRepository.UpdateAsync(currentUser, currentUser.Id);
 
-            CacheHelper.Delete($"CurrentUser-{currentUser.Email}");
-            CacheHelper.Add($"CurrentUser-{currentUser.Email}", currentUser, DateTime.Now.AddDays(10));
+            //CacheHelper.Delete($"CurrentUser-{currentUser.Email}");
+            //CacheHelper.Add($"CurrentUser-{currentUser.Email}", currentUser, DateTime.Now.AddDays(10));
 
             return currentUser;
         }
@@ -245,7 +239,9 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
             currentUser.Avatar = avatar;
             currentUser.AvatarHash = request.AvatarHash;
 
-            foreach (var post in postRepository.GetAll().Where(x => x.AuthorId == currentUser.Id.ToString() || x.Status == ItemStatus.Active))
+            foreach (var post in postRepository.GetAll()
+                .Where(x => x.AuthorId == currentUser.Id.ToString() 
+                && x.Status == ItemStatus.Active))
             {
                 post.AuthorAvatar = avatar.ImageHash;
                 await postRepository.UpdateAsync(post, post.Id);
@@ -255,8 +251,8 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
 
             await userRepository.UpdateAsync(currentUser, currentUser.Id);
 
-            CacheHelper.Delete($"CurrentUser-{currentUser.Email}");
-            CacheHelper.Add($"CurrentUser-{currentUser.Email}", currentUser, DateTime.Now.AddDays(10));
+            //CacheHelper.Delete($"CurrentUser-{currentUser.Email}");
+            //CacheHelper.Add($"CurrentUser-{currentUser.Email}", currentUser, DateTime.Now.AddDays(10));
 
             return currentUser;
         }
@@ -318,7 +314,8 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
             var users = userRepository.GetAll().AsQueryable();
             if (!String.IsNullOrEmpty(request.KeyWord))
                 users = users.Where(x => x.Email.Contains(request.KeyWord)
-                || $"{x.FirstName} {x.LastName}".Contains(request.KeyWord)
+                || x.FirstName.Contains(request.KeyWord)
+                ||x.LastName.Contains(request.KeyWord)
                 || x.PhoneNumber.Contains(request.KeyWord));
 
             if (!string.IsNullOrEmpty(request.Fields))

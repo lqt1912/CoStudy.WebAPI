@@ -166,9 +166,9 @@ namespace CoStudy.API.WebAPI.Controllers
             return Ok(new ApiOkResponse(data));
         }
 
-        [HttpGet]
+        [HttpPost]
         [Route("user/filter")]
-        public  async Task<IActionResult> UserFilter([FromQuery]FilterUserRequest request)
+        public  async Task<IActionResult> UserFilter(FilterUserRequest request)
         {
             var data = await userService.FilterUser(request);
             return Ok(new ApiOkResponse(data));

@@ -1,4 +1,7 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using CoStudy.API.Application.FCM;
+using FirebaseAdmin;
+using Google.Apis.Auth.OAuth2;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace CoStudy.API.Application.Repositories
 {
@@ -33,7 +36,6 @@ namespace CoStudy.API.Application.Repositories
 
             services.AddTransient<IClientGroupRepository, ClientGroupRepository>();
 
-            services.AddTransient<IClientConnectionsRepository, ClientConnectionsRepository>();
 
             services.AddTransient<IClientGroupRepository, ClientGroupRepository>();
 
@@ -44,6 +46,13 @@ namespace CoStudy.API.Application.Repositories
             services.AddTransient<IDownVoteRepository, DownVoteRepository>();
 
             services.AddTransient<IUpVoteRepository, UpVoteRepository>();
+
+            services.AddTransient<IFcmInfoRepository, FcmInfoRepository>();
+
+            services.AddTransient<IFcmRepository, FcmRepository>();
+
+            var googleCredential = GoogleCredential.FromFile(@"wwwroot/costudy-c5390-firebase-adminsdk-e63r1-ecea6cdc94.json");
+            FirebaseApp.Create(new AppOptions() { Credential = googleCredential });
         }
 
     }

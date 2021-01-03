@@ -109,7 +109,7 @@ namespace CoStudy.API.WebAPI.Middlewares
             {
                 return JsonConvert.DeserializeObject<ExceptionMessageModel>(messageException);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
 
             }
