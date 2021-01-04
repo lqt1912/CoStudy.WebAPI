@@ -1,5 +1,4 @@
 ﻿using CoStudy.API.Domain.Entities.Application;
-using Microsoft.AspNetCore.Http;
 using System.Text.Json.Serialization;
 
 namespace CoStudy.API.Infrastructure.Shared.Models.Request.MessageRequest

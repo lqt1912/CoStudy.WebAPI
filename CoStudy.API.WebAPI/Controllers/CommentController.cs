@@ -1,11 +1,7 @@
 ﻿using CoStudy.API.Infrastructure.Shared.Models.Request.PostRequest;
 using CoStudy.API.Infrastructure.Shared.Services;
 using CoStudy.API.WebAPI.Middlewares;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace CoStudy.API.WebAPI.Controllers
@@ -47,7 +43,7 @@ namespace CoStudy.API.WebAPI.Controllers
 
         [HttpGet]
         [Route("get/replies/{commentId}")]
-        public async  Task<IActionResult> GetReplyByCommentId(string commentId, int skip, int count)
+        public async Task<IActionResult> GetReplyByCommentId(string commentId, int skip, int count)
         {
             var data = await commentService.GetReplyCommentByCommentId(commentId, skip, count);
             return Ok(new ApiOkResponse(data));

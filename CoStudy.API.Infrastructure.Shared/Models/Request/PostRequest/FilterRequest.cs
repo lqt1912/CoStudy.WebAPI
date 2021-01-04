@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Text.Json.Serialization;
 
 namespace CoStudy.API.Infrastructure.Shared.Models.Request.PostRequest
@@ -30,7 +28,7 @@ namespace CoStudy.API.Infrastructure.Shared.Models.Request.PostRequest
         public DateTime? ToDate { get; set; }
 
         [JsonPropertyName("field")]
-        public string  Field { get; set; }
+        public string Field { get; set; }
 
         [JsonPropertyName("order_by")]
         public PostOrder OrderBy { get; set; }

@@ -19,22 +19,29 @@ namespace CoStudy.API.Infrastructure.Shared.Adapters
             post.CreatedDate = DateTime.Now;
             post.ModifiedDate = DateTime.Now;
             post.Status = ItemStatus.Active;
-            foreach (var content in request.StringContents)
+            if (request.StringContents != null)
             {
-                PostContent postContent = new PostContent();
-                postContent.ContentType = content.ContentType;
-                postContent.Content = content.Content;
-                post.StringContents.Add(postContent);
+                foreach (var content in request.StringContents)
+                {
+                    PostContent postContent = new PostContent();
+                    postContent.ContentType = content.ContentType;
+                    postContent.Content = content.Content;
+                    post.StringContents.Add(postContent);
+                }
             }
 
-            foreach (var content in request.MediaContents)
+            if (request.MediaContents != null)
             {
-                Image postContent = new Image();
-                postContent.ImageHash = content.ImageHash;
-                postContent.Discription = content.Discription;
-                post.MediaContents.Add(postContent);
-            }
 
+
+                foreach (var content in request.MediaContents)
+                {
+                    Image postContent = new Image();
+                    postContent.ImageHash = content.ImageHash;
+                    postContent.Discription = content.Discription;
+                    post.MediaContents.Add(postContent);
+                }
+            }
 
             return post;
         }

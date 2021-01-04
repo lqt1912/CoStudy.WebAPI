@@ -23,7 +23,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
         Task<Post> SavePost(string id);
         Task<List<Post>> GetSavedPost(int skip, int count);
 
-       Task< IEnumerable<Post>> Filter(FilterRequest filterRequest);
+        Task<IEnumerable<Post>> Filter(FilterRequest filterRequest);
         Task SyncComment();
         Task SyncReply();
         Task SyncVote();

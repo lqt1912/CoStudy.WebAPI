@@ -27,7 +27,7 @@ namespace CoStudy.API.WebAPI.Controllers
             return Ok(new ApiOkResponse(data));
         }
 
-       
+
 
         [HttpGet]
         [Route("get/{id}")]
@@ -41,7 +41,7 @@ namespace CoStudy.API.WebAPI.Controllers
         [Route("get/user/{userId}/skip/{skip}/count/{count}")]
         public async Task<IActionResult> GetByUserId(string userId, int skip, int count)
         {
-            var data =await  postService.GetPostByUserId(userId, skip, count);
+            var data = await postService.GetPostByUserId(userId, skip, count);
             return Ok(new ApiOkResponse(data));
         }
 
@@ -49,11 +49,11 @@ namespace CoStudy.API.WebAPI.Controllers
         [Route("timeline/skip/{skip}/count/{count}")]
         public async Task<IActionResult> GetPostTimeline(int skip, int count)
         {
-            var data =await  postService.GetPostTimelineAsync(skip,  count);
+            var data = await postService.GetPostTimelineAsync(skip, count);
             return Ok(new ApiOkResponse(data));
         }
 
-        
+
 
         [HttpPost]
         [Route("post/upvote/{id}")]
@@ -99,7 +99,7 @@ namespace CoStudy.API.WebAPI.Controllers
         [Route("post/filter")]
         public async Task<IActionResult> FilterPost(FilterRequest request)
         {
-            var data =await  postService.Filter(request);
+            var data = await postService.Filter(request);
             return Ok(new ApiOkResponse(data));
         }
     }

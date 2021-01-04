@@ -1,13 +1,10 @@
 ﻿using CoStudy.API.Domain.Entities.BaseEntity;
 using MongoDB.Bson.Serialization.Attributes;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Text.Json.Serialization;
 
 namespace CoStudy.API.Domain.Entities.Application
 {
-    public class UpVote:Entity
+    public class UpVote : Entity
     {
         [BsonElement("object_vote_id")]
         [JsonPropertyName("object_vote_id")]
@@ -17,7 +14,7 @@ namespace CoStudy.API.Domain.Entities.Application
         [JsonPropertyName("upvote_by")]
         public string UpVoteBy { get; set; }
     }
-    
+
     public class DownVote : Entity
     {
         [BsonElement("object_vote_id")]

@@ -8,12 +8,11 @@ namespace CoStudy.API.Infrastructure.Shared.Models.Response.MessageResponse
     {
         public GetMessageByConversationIdResponse()
         {
-            Messages = new List<Message>();
         }
         [JsonPropertyName("id")]
         public string Id { get; set; }
 
         [JsonPropertyName("messages")]
-        public List<Message> Messages { get; set; }
+        public IEnumerable<Message> Messages { get; set; }
     }
 }

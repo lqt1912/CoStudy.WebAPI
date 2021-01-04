@@ -1,9 +1,7 @@
 ﻿using CoStudy.API.Application.Features;
 using CoStudy.API.Domain.Entities.Application;
-using CoStudy.API.Domain.Entities.Identity.MongoAuthen;
 using CoStudy.API.Infrastructure.Identity.Models.Account.Request;
 using CoStudy.API.Infrastructure.Identity.Services.AccountService;
-using CoStudy.API.Infrastructure.Shared.Models.Request.PostRequest;
 using CoStudy.API.Infrastructure.Shared.Models.Request.UserRequest;
 using CoStudy.API.Infrastructure.Shared.Services.UserServices;
 using CoStudy.API.WebAPI.Middlewares;
@@ -144,7 +142,7 @@ namespace CoStudy.API.WebAPI.Controllers
 
         [HttpGet]
         [Route("follower")]
-        public async Task<IActionResult> GetFollower([FromQuery]FollowFilterRequest request)
+        public async Task<IActionResult> GetFollower([FromQuery] FollowFilterRequest request)
         {
             var data = await userService.GetFollower(request);
             return Ok(new ApiOkResponse(data));
@@ -152,7 +150,7 @@ namespace CoStudy.API.WebAPI.Controllers
 
         [HttpGet]
         [Route("following")]
-        public async Task<IActionResult> GetFollowing([FromQuery]FollowFilterRequest request)
+        public async Task<IActionResult> GetFollowing([FromQuery] FollowFilterRequest request)
         {
             var data = await userService.GetFollowing(request);
             return Ok(new ApiOkResponse(data));
@@ -168,7 +166,7 @@ namespace CoStudy.API.WebAPI.Controllers
 
         [HttpPost]
         [Route("user/filter")]
-        public  async Task<IActionResult> UserFilter(FilterUserRequest request)
+        public async Task<IActionResult> UserFilter(FilterUserRequest request)
         {
             var data = await userService.FilterUser(request);
             return Ok(new ApiOkResponse(data));

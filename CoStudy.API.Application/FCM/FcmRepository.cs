@@ -7,7 +7,6 @@ using MongoDB.Driver;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace CoStudy.API.Application.FCM
@@ -51,6 +50,8 @@ namespace CoStudy.API.Application.FCM
             }
         }
 
+        
+
         public async Task<FcmInfo> RevokeFcmInfo(string userId, string deviceToken)
         {
             var builder = Builders<FcmInfo>.Filter;
@@ -77,19 +78,22 @@ namespace CoStudy.API.Application.FCM
                 {
                     var user = Builders<FcmInfo>.Filter.Eq("user_id", item);
                     var token = (await fcmInfoRepository.FindAsync(user)).DeviceToken;
-
+                    var sender = await userRepository.GetByIdAsync(ObjectId.Parse(message.SenderId));
                     var mes = new FirebaseAdmin.Messaging.Message()
                     {
                         Token = token,
+                        
                         Data = new Dictionary<string, string>()
                         {
                             { "message",  JsonConvert.SerializeObject(message) }
 
                         },
+                        
                         Notification = new Notification()
                         {
-                            Title = (await userRepository.GetByIdAsync(ObjectId.Parse(message.SenderId))).LastName,
-                            Body = message.StringContent
+                            Title = sender.LastName,
+                            Body = message.StringContent, 
+                            ImageUrl = sender.AvatarHash
                         }
                     };
                     var response = await FirebaseMessaging.DefaultInstance.SendAsync(mes).ConfigureAwait(true);
@@ -100,6 +104,41 @@ namespace CoStudy.API.Application.FCM
                 //Do nothing
             }
 
+        }
+
+        public async Task PushNotify(string clientGroupName, Noftication noftication)
+        {
+            try
+            {
+                var finder = Builders<ClientGroup>.Filter.Eq("name", clientGroupName);
+                var clientGroup = await clientGroupRepository.FindAsync(finder);
+                foreach (var item in clientGroup.UserIds)
+                {
+                    var user = Builders<FcmInfo>.Filter.Eq("user_id", item);
+                    var token = (await fcmInfoRepository.FindAsync(user)).DeviceToken;
+                    var sender = await userRepository.GetByIdAsync(ObjectId.Parse(noftication.AuthorId));
+                    var mes = new FirebaseAdmin.Messaging.Message()
+                    {
+                        Token = token,
+
+                        Data = new Dictionary<string, string>()
+                        {
+                            { "notification",  JsonConvert.SerializeObject(noftication) }
+                        },
+                        Notification = new Notification()
+                        {
+                            Title = sender.LastName,
+                            Body = noftication.Content,
+                            ImageUrl = sender.AvatarHash
+                        }
+                    };
+                    var response = await FirebaseMessaging.DefaultInstance.SendAsync(mes).ConfigureAwait(true);
+                }
+            }
+            catch (Exception)
+            {
+                //Do nothing
+            }
         }
 
         public async Task<string> SendNotification()

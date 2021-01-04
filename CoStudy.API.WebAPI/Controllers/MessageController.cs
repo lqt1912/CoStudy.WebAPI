@@ -44,11 +44,10 @@ namespace CoStudy.API.WebAPI.Controllers
         }
 
         [HttpGet]
-        [Route("message/get/conversation/{id}/limit/{limit}")]
-        public IActionResult GetMessageByConversationId(string id, int limit)
+        [Route("message/get/conversation/{id}/skip/{skip}/count/{count}")]
+        public async Task<IActionResult> GetMessageByConversationId(string id, int skip, int count)
         {
-            var data = messageService.GetMessageByConversationId(id, limit);
-
+            var data =await  messageService.GetMessageByConversationId(id, skip, count);
             return Ok(new ApiOkResponse(data));
         }
 

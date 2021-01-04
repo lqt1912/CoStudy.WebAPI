@@ -1,4 +1,5 @@
-﻿using CoStudy.API.Application.Features;
+﻿using CoStudy.API.Application.FCM;
+using CoStudy.API.Application.Features;
 using CoStudy.API.Application.Repositories;
 using CoStudy.API.Domain.Entities.Application;
 using CoStudy.API.Infrastructure.Shared.Adapters;
@@ -27,7 +28,9 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
         IFollowRepository followRepository;
         IUpVoteRepository upVoteRepository;
         IDownVoteRepository downVoteRepository;
-
+        IClientGroupRepository clientGroupRepository;
+        IFcmRepository fcmRepository;
+        INofticationRepository nofticationRepository;
         public PostService(
             IHttpContextAccessor httpContextAccessor,
             IConfiguration configuration,
@@ -38,7 +41,10 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
             IFieldRepository fieldRepository,
             IFollowRepository followRepository,
             IUpVoteRepository upVoteRepository,
-            IDownVoteRepository downVoteRepository)
+            IDownVoteRepository downVoteRepository,
+            IClientGroupRepository clientGroupRepository,
+            IFcmRepository fcmRepository,
+            INofticationRepository nofticationRepository)
         {
             this.httpContextAccessor = httpContextAccessor;
             this.configuration = configuration;
@@ -50,6 +56,9 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
             this.followRepository = followRepository;
             this.upVoteRepository = upVoteRepository;
             this.downVoteRepository = downVoteRepository;
+            this.clientGroupRepository = clientGroupRepository;
+            this.fcmRepository = fcmRepository;
+            this.nofticationRepository = nofticationRepository;
         }
 
 
@@ -91,6 +100,14 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
             }
 
             await postRepository.AddAsync(post);
+
+            var clientGroup = new ClientGroup()
+            {
+                Name = post.Id.ToString(),
+
+            };
+            clientGroup.UserIds.Add(post.AuthorId);
+            await clientGroupRepository.AddAsync(clientGroup);
 
             return PostAdapter.ToResponse(post, currentUser.Id.ToString());
         }
@@ -220,6 +237,56 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
                         await userRepository.UpdateAsync(currentUser, currentUser.Id);
                     }
                 }
+                if (currentPost.AuthorId != currentUser.OId)
+                {
+                    var filter = Builders<ClientGroup>.Filter.Eq("name", currentPost.OId);
+                    var clientGroup = await clientGroupRepository.FindAsync(filter);
+                    if (!clientGroup.UserIds.Contains(currentUser.OId))
+                    {
+                        clientGroup.UserIds.Add(currentUser.OId);
+                        await clientGroupRepository.UpdateAsync(clientGroup, clientGroup.Id);
+                    }
+
+
+                    var notify = new Noftication()
+                    {
+                        AuthorId = currentUser.OId,
+                        OwnerId = currentPost.AuthorId,
+                        Content = $"{currentUser.LastName} đã upvote bài viết của {currentPost.AuthorName} ",
+                        AuthorName = currentUser.LastName,
+                        AuthorAvatar = currentUser.AvatarHash,
+                        CreatedDate = DateTime.Now,
+                        ModifiedDate = DateTime.Now
+                    };
+
+                    await fcmRepository.PushNotify(currentPost.OId, notify);
+                    await nofticationRepository.AddAsync(notify);
+                }
+                else
+                {
+                    var filter = Builders<ClientGroup>.Filter.Eq("name", currentPost.OId);
+                    var clientGroup = await clientGroupRepository.FindAsync(filter);
+                    if (!clientGroup.UserIds.Contains(currentUser.OId))
+                    {
+                        clientGroup.UserIds.Add(currentUser.OId);
+                        await clientGroupRepository.UpdateAsync(clientGroup, clientGroup.Id);
+                    }
+
+                    var notify = new Noftication()
+                    {
+                        AuthorId = currentUser.OId,
+                        OwnerId = currentPost.AuthorId,
+                        Content = $"{currentUser.LastName} đã upvote bài viết của bạn ",
+                        AuthorName = currentUser.LastName,
+                        AuthorAvatar = currentUser.AvatarHash,
+                        CreatedDate = DateTime.Now,
+                        ModifiedDate = DateTime.Now
+                    };
+
+                    await fcmRepository.PushNotify(currentPost.OId, notify);
+                    await nofticationRepository.AddAsync(notify);
+                }
+
                 return "Success";
             }
             catch (Exception)

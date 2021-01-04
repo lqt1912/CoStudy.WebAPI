@@ -6,7 +6,7 @@ using CoStudy.API.Infrastructure.Shared.Adapters;
 using CoStudy.API.Infrastructure.Shared.Models.Request.MessageRequest;
 using CoStudy.API.Infrastructure.Shared.Models.Response.MessageResponse;
 using Microsoft.AspNetCore.Http;
-using MongoDB.Bson;
+using MongoDB.Driver;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -37,7 +37,16 @@ namespace CoStudy.API.Infrastructure.Shared.Services.MessageServices
         {
 
             var currentUser = Feature.CurrentUser(httpContextAccessor, userRepository);
+
             request.Participants.Add(currentUser.Id.ToString());
+
+            var existConversation = conversationRepository.GetAll()
+                .Where(x=>x.Participants == request.Participants)
+                .SingleOrDefault();
+
+            if (existConversation != null)
+                return MessageAdapter.ToResponse(existConversation);
+
             var conversation = MessageAdapter.FromRequest(request);
 
             await conversationRepository.AddAsync(conversation);
@@ -45,7 +54,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.MessageServices
             var clientGroup = new ClientGroup()
             {
                 UserIds = request.Participants,
-                Name =conversation.Id.ToString(),
+                Name = conversation.Id.ToString(),
             };
             await clientGroupRepository.AddAsync(clientGroup);
             return MessageAdapter.ToResponse(conversation);
@@ -58,21 +67,31 @@ namespace CoStudy.API.Infrastructure.Shared.Services.MessageServices
 
             await messageRepository.AddAsync(message);
 
-            await fcmRepository.SendMessage(request.ConversationId,message);
+            await fcmRepository.SendMessage(request.ConversationId, message);
 
             return MessageAdapter.ToResponse(message);
         }
 
 
 
-        public GetMessageByConversationIdResponse GetMessageByConversationId(string conversationId, int limit)
+        public async Task<GetMessageByConversationIdResponse> GetMessageByConversationId(string conversationId, int skip, int count)
         {
-            var messages = messageRepository.GetAll().Where(x => x.ConversationId == conversationId).Take(limit).ToList();
-            return new GetMessageByConversationIdResponse()
+            try
             {
-                Id = conversationId,
-                Messages = messages
-            };
+                var finder = Builders<Message>.Filter.Eq("conversation_id", conversationId);
+
+                var messages = (await messageRepository.FindListAsync(finder)).OrderByDescending(x=>x.CreatedDate).Skip(skip).Take(count);
+                return new GetMessageByConversationIdResponse()
+                {
+                    Id = conversationId,
+                    Messages = messages
+                };
+
+            }
+            catch (Exception)
+            {
+                throw new Exception("Đã có lỗi xảy ra.");
+            }
         }
         public GetConversationByUserIdResponse GetConversationByUserId()
         {
@@ -80,6 +99,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.MessageServices
             if (currentUser == null)
                 throw new Exception("User not found");
             var result = new List<Tuple<Conversation, Message>>();
+
             var conversations = conversationRepository.GetAll().Where(x => x.Participants.Contains(currentUser.Id.ToString()));
             foreach (var conversation in conversations)
             {

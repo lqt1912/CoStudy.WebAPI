@@ -14,7 +14,7 @@ namespace CoStudy.API.Infrastructure.Shared.Models.Response.NofticationResponse
         [JsonPropertyName("owner_id")]
         public string OwnerId { get; set; }
 
-        public PostContent Content { get; set; }
+        public string Content { get; set; }
 
         [JsonPropertyName("created_date")]
         public DateTime CreatedDate { get; set; }

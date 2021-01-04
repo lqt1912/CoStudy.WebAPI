@@ -10,7 +10,7 @@ namespace CoStudy.API.Domain.Entities.Application
         public ClientGroup() : base()
         {
             UserIds = new List<string>();
-        
+
         }
 
         [BsonElement("name")]

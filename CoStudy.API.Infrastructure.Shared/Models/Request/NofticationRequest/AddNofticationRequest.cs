@@ -11,6 +11,6 @@ namespace CoStudy.API.Infrastructure.Shared.Models.Request.NofticationRequest
         [JsonPropertyName("owner_id")]
         public string OwnerId { get; set; }
 
-        public PostContent Content { get; set; }
+        public string Content { get; set; }
     }
 }

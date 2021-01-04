@@ -27,7 +27,7 @@ namespace CoStudy.API.Infrastructure.Identity.Services.AccountService
         AppSettings appSettings;
         IEmailService emailService;
         IUserRepository userRepository;
-        
+
         public AccountService(IAccountRepository accountRepository, IMapper mapper, IOptions<AppSettings> appSettings, IEmailService emailService, IUserRepository userRepository)
         {
             this.accountRepository = accountRepository;

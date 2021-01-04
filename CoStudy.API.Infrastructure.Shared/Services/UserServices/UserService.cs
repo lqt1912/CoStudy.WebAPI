@@ -103,12 +103,19 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
         {
             var currentUser = CurrentUser();
 
-
             foreach (var item in request.Followers)
             {
                 var user = await userRepository.GetByIdAsync(ObjectId.Parse(item));
                 if (user != null)
                 {
+                    var filter = Builders<Follow>.Filter;
+                    var finder = filter.Eq("from_id", currentUser.OId) & filter.Eq("to_id", item);
+                    var existFollowing = await followRepository.FindAsync(finder);
+                    if(existFollowing!=null)
+                    {
+                        return "Bạn đã theo dõi người này rồi";
+                    }
+
                     var follow = new Follow()
                     {
                         FromId = currentUser.OId,
@@ -117,6 +124,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
                         FullName = $"{user.FirstName} {user.LastName}",
                         FollowDate = DateTime.Now
                     };
+
                     await followRepository.AddAsync(follow);
                 }
             }
@@ -206,7 +214,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
                 var findFilter = Builders<Follow>.Filter.Eq("to_id", toFollowerId);
                 var following = await followRepository.FindAsync(findFilter);
                 await followRepository.DeleteAsync(following.Id);
-                return $"Bạn đã bỏ theo dõi người dùng {following.ToId}";
+                return $"Bạn đã bỏ theo dõi người dùng {following.FullName}";
             }
             catch (Exception)
             {
@@ -240,7 +248,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
             currentUser.AvatarHash = request.AvatarHash;
 
             foreach (var post in postRepository.GetAll()
-                .Where(x => x.AuthorId == currentUser.Id.ToString() 
+                .Where(x => x.AuthorId == currentUser.Id.ToString()
                 && x.Status == ItemStatus.Active))
             {
                 post.AuthorAvatar = avatar.ImageHash;
@@ -315,7 +323,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
             if (!String.IsNullOrEmpty(request.KeyWord))
                 users = users.Where(x => x.Email.Contains(request.KeyWord)
                 || x.FirstName.Contains(request.KeyWord)
-                ||x.LastName.Contains(request.KeyWord)
+                || x.LastName.Contains(request.KeyWord)
                 || x.PhoneNumber.Contains(request.KeyWord));
 
             if (!string.IsNullOrEmpty(request.Fields))
@@ -323,10 +331,10 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
                 var tempField = await fieldRepository.GetByIdAsync(ObjectId.Parse(request.Fields));
                 users = users.Where(x => x.Fortes.Contains(tempField));
             }
-            
-            if(request.FilterType.HasValue && request.OrderType.HasValue)
+
+            if (request.FilterType.HasValue && request.OrderType.HasValue)
             {
-                switch(request.FilterType.Value)
+                switch (request.FilterType.Value)
                 {
                     case UserFilterType.PostCount:
                         {

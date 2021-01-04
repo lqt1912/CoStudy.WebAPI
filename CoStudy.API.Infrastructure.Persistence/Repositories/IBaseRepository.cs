@@ -20,7 +20,7 @@ namespace CoStudy.API.Infrastructure.Persistence.Repositories
         T Find(FilterDefinition<T> match);
 
         Task<T> FindAsync(FilterDefinition<T> match);
-        
+
         Task<List<T>> FindListAsync(FilterDefinition<T> match);
 
         IQueryable<T> GetAll();

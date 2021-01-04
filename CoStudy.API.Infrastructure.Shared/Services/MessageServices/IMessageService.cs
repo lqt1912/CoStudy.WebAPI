@@ -10,7 +10,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.MessageServices
     {
         Task<AddConversationResponse> AddConversation(AddConversationRequest request);
         Task<AddMessageResponse> AddMessage(AddMessageRequest request);
-        GetMessageByConversationIdResponse GetMessageByConversationId(string conversationId, int limit);
+        Task<GetMessageByConversationIdResponse> GetMessageByConversationId(string conversationId, int skip, int count);
         GetConversationByUserIdResponse GetConversationByUserId();
         List<Message> GetAll();
     }

@@ -8,7 +8,7 @@ namespace CoStudy.API.Infrastructure.Shared.Models.Response.MessageResponse
     public class GetConversationByUserIdResponse
     {
         [JsonPropertyName("conversations")]
-        public List<Tuple<Conversation, Message>> Conversations { get; set; }
+        public IEnumerable<Tuple<Conversation, Message>> Conversations { get; set; }
 
     }
 }

@@ -1,10 +1,6 @@
 ﻿using CoStudy.API.Application.FCM;
 using CoStudy.API.WebAPI.Middlewares;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace CoStudy.API.WebAPI.Controllers
@@ -22,7 +18,7 @@ namespace CoStudy.API.WebAPI.Controllers
 
         [HttpPost]
         [Route("add")]
-        public async Task<IActionResult> AddFcm( string userId,  string token)
+        public async Task<IActionResult> AddFcm(string userId, string token)
         {
             var data = await fcmRepository.AddFcmInfo(userId, token);
             return Ok(new ApiOkResponse(data));
@@ -30,7 +26,7 @@ namespace CoStudy.API.WebAPI.Controllers
 
         [HttpPost]
         [Route("revoke")]
-        public async Task<IActionResult> RevokeFcm(string userId,  string token)
+        public async Task<IActionResult> RevokeFcm(string userId, string token)
         {
             var data = await fcmRepository.RevokeFcmInfo(userId, token);
             return Ok(new ApiOkResponse(data));

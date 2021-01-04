@@ -10,7 +10,6 @@ using MongoDB.Driver;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace CoStudy.API.Infrastructure.Shared.Services
@@ -25,12 +24,12 @@ namespace CoStudy.API.Infrastructure.Shared.Services
         private IDownVoteRepository downVoteRepository;
         private IUpVoteRepository upVoteRepository;
 
-        public CommentService(IHttpContextAccessor httpContextAccessor, 
-            IUserRepository userRepository, 
-            IPostRepository postRepository, 
+        public CommentService(IHttpContextAccessor httpContextAccessor,
+            IUserRepository userRepository,
+            IPostRepository postRepository,
             ICommentRepository commentRepository,
             IReplyCommentRepository replyCommentRepository,
-            IDownVoteRepository downVoteRepository, 
+            IDownVoteRepository downVoteRepository,
             IUpVoteRepository upVoteRepository)
         {
             this.httpContextAccessor = httpContextAccessor;
@@ -92,27 +91,61 @@ namespace CoStudy.API.Infrastructure.Shared.Services
         }
 
 
-        public async  Task<IEnumerable<Comment>> GetCommentByPostId(string postId, int skip, int count)
+        public async Task<IEnumerable<Comment>> GetCommentByPostId(string postId, int skip, int count)
         {
             var builder = Builders<Comment>.Filter;
             var filter = builder.Eq("post_id", postId) & builder.Eq("status", ItemStatus.Active);
+            var currentUser = Feature.CurrentUser(httpContextAccessor, userRepository);
             var comments = await commentRepository.FindListAsync(filter);
             if (comments != null)
-                return comments.Skip(skip).Take(count);
+            {
+               var  cmts =  comments.Skip(skip).Take(count);
+                foreach (var item in cmts)
+                {
+                    var builderUpvote = Builders<UpVote>.Filter;
+                    var finderUpvote = builderUpvote.Eq("object_vote_id", item.OId) & builderUpvote.Eq("upvote_by", currentUser.OId);
+                    var upvote = await upVoteRepository.FindAsync(finderUpvote);
+                    if (upvote != null)
+                        item.IsVoteByCurrent = true;
+
+                    var builderDownvote = Builders<DownVote>.Filter;
+                    var finderDownvote = builderDownvote.Eq("object_vote_id", item.OId) & builderDownvote.Eq("downvote_by", currentUser.OId);
+                    var downvote = await downVoteRepository.FindAsync(finderDownvote);
+                    if (downvote != null)
+                        item.IsDownVoteByCurrent = true;
+                }
+                return cmts;                
+            }
+               
             else throw new Exception("Post không tồn tại hoặc đã bị xóa");
         }
-
-
 
         public async Task<IEnumerable<ReplyComment>> GetReplyCommentByCommentId(string commentId, int skip, int count)
         {
             var builder = Builders<ReplyComment>.Filter;
             var filter = builder.Eq("parent_id", commentId) & builder.Eq("status", ItemStatus.Active);
-
+            var currentUser = Feature.CurrentUser(httpContextAccessor, userRepository);
             var comments = await replyCommentRepository.FindListAsync(filter);
             if (comments != null)
-                return comments.Skip(skip).Take(count);
-            else throw new Exception("Post không tồn tại hoặc đã bị xóa");
+            {
+                var cmts =  comments.Skip(skip).Take(count);
+                foreach (var item in cmts)
+                {
+                    var builderUpvote = Builders<UpVote>.Filter;
+                    var finderUpvote = builderUpvote.Eq("object_vote_id", item.OId) & builderUpvote.Eq("upvote_by", currentUser.OId);
+                    var upvote = await upVoteRepository.FindAsync(finderUpvote);
+                    if (upvote != null)
+                        item.IsVoteByCurrent = true;
+
+                    var builderDownvote = Builders<DownVote>.Filter;
+                    var finderDownvote = builderDownvote.Eq("object_vote_id", item.OId) & builderDownvote.Eq("downvote_by", currentUser.OId);
+                    var downvote = await downVoteRepository.FindAsync(finderDownvote);
+                    if (downvote != null)
+                        item.IsDownVoteByCurrent = true;
+                }
+                return cmts;
+            }
+            else throw new Exception("Bình luận không tồn tại hoặc đã bị xóa");
         }
 
         public async Task<ReplyCommentResponse> ReplyComment(ReplyCommentRequest request)
@@ -195,7 +228,6 @@ namespace CoStudy.API.Infrastructure.Shared.Services
             }
             else return "Bạn đã downvote rồi";
         }
-
-
+       
     }
 }

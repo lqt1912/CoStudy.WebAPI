@@ -15,17 +15,10 @@ namespace CoStudy.API.Infrastructure.Shared.Adapters
 
             if (request.Image != null)
             {
-                var imageUrl = "";
-                var image = new Image();
-                imageUrl = Feature.SaveImage(request.Image, httpContextAccessor, "Message");
-                image.ImageUrl = imageUrl;
-                image.CreatedDate = DateTime.Now;
-                image.ModifiedDate = DateTime.Now;
-
                 return new Message()
                 {
                     SenderId = Feature.CurrentUser(httpContextAccessor, userRepository).Id.ToString(),
-                    MediaContent = image,
+                    MediaContent = request.Image,
                     ConversationId = request.ConversationId,
                     StringContent = request.Content,
                     Status = ItemStatus.Active,
