@@ -50,8 +50,6 @@ namespace CoStudy.API.Application.FCM
             }
         }
 
-        
-
         public async Task<FcmInfo> RevokeFcmInfo(string userId, string deviceToken)
         {
             var builder = Builders<FcmInfo>.Filter;

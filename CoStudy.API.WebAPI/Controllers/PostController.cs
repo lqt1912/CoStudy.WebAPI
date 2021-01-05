@@ -27,8 +27,6 @@ namespace CoStudy.API.WebAPI.Controllers
             return Ok(new ApiOkResponse(data));
         }
 
-
-
         [HttpGet]
         [Route("get/{id}")]
         public async Task<IActionResult> GetById(string id)

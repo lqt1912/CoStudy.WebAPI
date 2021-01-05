@@ -33,7 +33,6 @@ namespace CoStudy.API.Infrastructure.Shared.Adapters
             if (request.MediaContents != null)
             {
 
-
                 foreach (var content in request.MediaContents)
                 {
                     Image postContent = new Image();
