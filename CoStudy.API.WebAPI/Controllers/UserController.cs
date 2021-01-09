@@ -173,6 +173,13 @@ namespace CoStudy.API.WebAPI.Controllers
         }
 
 
+        [HttpGet]
+        [Route("user/revoke-token")]
+        public async Task<IActionResult> GetRefreshToken()
+        {
+            var data = await _accountService.GetCurrentRefreshToken();
+            return Ok(new ApiOkResponse(data));
+        }
 
         [Route("cache/get")]
         [HttpGet]

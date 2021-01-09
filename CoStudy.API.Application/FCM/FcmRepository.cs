@@ -17,7 +17,11 @@ namespace CoStudy.API.Application.FCM
         IClientGroupRepository clientGroupRepository;
         IUserRepository userRepository;
         IHttpContextAccessor httpContextAccessor;
-        public FcmRepository(IFcmInfoRepository fcmInfoRepository, IClientGroupRepository clientGroupRepository, IUserRepository userRepository, IHttpContextAccessor httpContextAccessor)
+
+        public FcmRepository(IFcmInfoRepository fcmInfoRepository, 
+            IClientGroupRepository clientGroupRepository,
+            IUserRepository userRepository, 
+            IHttpContextAccessor httpContextAccessor)
         {
             this.fcmInfoRepository = fcmInfoRepository;
             this.clientGroupRepository = clientGroupRepository;
@@ -80,17 +84,17 @@ namespace CoStudy.API.Application.FCM
                     var mes = new FirebaseAdmin.Messaging.Message()
                     {
                         Token = token,
-                        
+
                         Data = new Dictionary<string, string>()
                         {
                             { "message",  JsonConvert.SerializeObject(message) }
 
                         },
-                        
+
                         Notification = new Notification()
                         {
                             Title = sender.LastName,
-                            Body = message.StringContent, 
+                            Body = message.StringContent,
                             ImageUrl = sender.AvatarHash
                         }
                     };

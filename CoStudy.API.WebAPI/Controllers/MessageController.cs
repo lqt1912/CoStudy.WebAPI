@@ -47,7 +47,24 @@ namespace CoStudy.API.WebAPI.Controllers
         [Route("message/get/conversation/{id}/skip/{skip}/count/{count}")]
         public async Task<IActionResult> GetMessageByConversationId(string id, int skip, int count)
         {
-            var data =await  messageService.GetMessageByConversationId(id, skip, count);
+            var data = await messageService.GetMessageByConversationId(id, skip, count);
+            return Ok(new ApiOkResponse(data));
+        }
+
+
+        [HttpDelete]
+        [Route("conversation/{id}")]
+        public async Task<IActionResult> DeleteConversation(string id)
+        {
+            var data = await messageService.DeleteConversation(id);
+            return Ok(new ApiOkResponse(data));
+        }
+
+        [HttpDelete]
+        [Route("message/{id}")]
+        public async Task<IActionResult> DeleteMessage(string id)
+        {
+            var data = await messageService.DeleteMessage(id);
             return Ok(new ApiOkResponse(data));
         }
 

@@ -1,5 +1,4 @@
-﻿using CoStudy.API.Domain.Entities.Application;
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
 
 namespace CoStudy.API.Infrastructure.Shared.Models.Request.NofticationRequest
 {

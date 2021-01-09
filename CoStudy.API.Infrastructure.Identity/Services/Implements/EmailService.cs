@@ -47,6 +47,7 @@ namespace CoStudy.API.Infrastructure.Identity.Services.Implements
             smtp.Authenticate(_appSettings.SmtpUser, _appSettings.SmtpPass);
             smtp.Send(email);
             smtp.Disconnect(true);
+
         }
 
         public async Task SendEmailAsync(MailRequest mailRequest)

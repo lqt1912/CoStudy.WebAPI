@@ -36,5 +36,6 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
 
         Task<IEnumerable<User>> FilterUser(FilterUserRequest request);
 
+
     }
 }

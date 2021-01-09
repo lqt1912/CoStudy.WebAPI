@@ -111,7 +111,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
                     var filter = Builders<Follow>.Filter;
                     var finder = filter.Eq("from_id", currentUser.OId) & filter.Eq("to_id", item);
                     var existFollowing = await followRepository.FindAsync(finder);
-                    if(existFollowing!=null)
+                    if (existFollowing != null)
                     {
                         return "Bạn đã theo dõi người này rồi";
                     }
@@ -359,6 +359,8 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
                 users = users.Skip(request.Skip.Value).Take(request.Count.Value);
             return users;
         }
+
+       
     }
 }
 

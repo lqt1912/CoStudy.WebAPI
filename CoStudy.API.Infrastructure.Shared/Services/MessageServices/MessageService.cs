@@ -6,6 +6,7 @@ using CoStudy.API.Infrastructure.Shared.Adapters;
 using CoStudy.API.Infrastructure.Shared.Models.Request.MessageRequest;
 using CoStudy.API.Infrastructure.Shared.Models.Response.MessageResponse;
 using Microsoft.AspNetCore.Http;
+using MongoDB.Bson;
 using MongoDB.Driver;
 using System;
 using System.Collections.Generic;
@@ -21,9 +22,15 @@ namespace CoStudy.API.Infrastructure.Shared.Services.MessageServices
         IUserRepository userRepository;
         IHttpContextAccessor httpContextAccessor;
         IFcmRepository fcmRepository;
+
         public IClientGroupRepository clientGroupRepository { get; }
 
-        public MessageService(IMessageRepository messageRepository, IConversationRepository conversationRepository, IUserRepository userRepository, IHttpContextAccessor httpContextAccessor, IClientGroupRepository clientGroupRepository, IFcmRepository fcmRepository)
+        public MessageService(IMessageRepository messageRepository, 
+            IConversationRepository conversationRepository,
+            IUserRepository userRepository,
+            IHttpContextAccessor httpContextAccessor, 
+            IClientGroupRepository clientGroupRepository,
+            IFcmRepository fcmRepository)
         {
             this.messageRepository = messageRepository;
             this.conversationRepository = conversationRepository;
@@ -41,7 +48,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.MessageServices
             request.Participants.Add(currentUser.Id.ToString());
 
             var existConversation = conversationRepository.GetAll()
-                .Where(x=>x.Participants == request.Participants)
+                .Where(x => x.Participants == request.Participants)
                 .SingleOrDefault();
 
             if (existConversation != null)
@@ -60,7 +67,6 @@ namespace CoStudy.API.Infrastructure.Shared.Services.MessageServices
             return MessageAdapter.ToResponse(conversation);
         }
 
-
         public async Task<AddMessageResponse> AddMessage(AddMessageRequest request)
         {
             var message = MessageAdapter.FromRequest(request, httpContextAccessor, userRepository);
@@ -72,15 +78,13 @@ namespace CoStudy.API.Infrastructure.Shared.Services.MessageServices
             return MessageAdapter.ToResponse(message);
         }
 
-
-
         public async Task<GetMessageByConversationIdResponse> GetMessageByConversationId(string conversationId, int skip, int count)
         {
             try
             {
-                var finder = Builders<Message>.Filter.Eq("conversation_id", conversationId);
-
-                var messages = (await messageRepository.FindListAsync(finder)).OrderByDescending(x=>x.CreatedDate).Skip(skip).Take(count);
+                var finder = Builders<Message>.Filter;
+                var filter = finder.Eq("conversation_id", conversationId) & finder.Eq("status", ItemStatus.Active);
+                var messages = (await messageRepository.FindListAsync(filter)).OrderByDescending(x => x.CreatedDate).Skip(skip).Take(count);
                 return new GetMessageByConversationIdResponse()
                 {
                     Id = conversationId,
@@ -93,6 +97,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.MessageServices
                 throw new Exception("Đã có lỗi xảy ra.");
             }
         }
+
         public GetConversationByUserIdResponse GetConversationByUserId()
         {
             var currentUser = Feature.CurrentUser(httpContextAccessor, userRepository);
@@ -118,6 +123,38 @@ namespace CoStudy.API.Infrastructure.Shared.Services.MessageServices
         public List<Message> GetAll()
         {
             return messageRepository.GetAll().ToList();
+        }
+
+        public async Task<string> DeleteConversation(string id)
+        {
+            var exist = await conversationRepository.GetByIdAsync(ObjectId.Parse(id));
+            if (exist != null)
+            {
+                //delete conversation
+                await conversationRepository.DeleteAsync(ObjectId.Parse(id));
+
+                //Delete notification group
+                var finder = Builders<ClientGroup>.Filter.Eq("name", id);
+                var clientGroup = await clientGroupRepository.FindAsync(finder);
+                if (clientGroup != null)
+                    await clientGroupRepository.DeleteAsync(clientGroup.Id);
+
+                return "Xóa cuộc trò chuyện thành công";
+            }
+            else throw new Exception("Đã có lỗi xảy ra");
+        }
+
+        public async Task<string> DeleteMessage(string id)
+        {
+            var existMessage = await messageRepository.GetByIdAsync(ObjectId.Parse(id));
+            var currentUser = Feature.CurrentUser(httpContextAccessor, userRepository);
+            if (existMessage != null && existMessage.SenderId == currentUser.OId)
+            {
+                existMessage.Status = ItemStatus.Deleted;
+                await messageRepository.UpdateAsync(existMessage, existMessage.Id);
+                return "Xóa tin nhắn thành công";
+            }
+            else throw new Exception("Đã có lỗi xảy ra");
         }
     }
 }

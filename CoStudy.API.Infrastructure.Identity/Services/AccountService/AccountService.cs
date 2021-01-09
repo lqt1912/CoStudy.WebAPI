@@ -7,9 +7,11 @@ using CoStudy.API.Infrastructure.Identity.Models.Account.Request;
 using CoStudy.API.Infrastructure.Identity.Models.Account.Response;
 using CoStudy.API.Infrastructure.Identity.Repositories.AccountRepository;
 using CoStudy.API.Infrastructure.Identity.Services.Interfaces;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using MongoDB.Bson;
+using MongoDB.Driver;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
@@ -27,14 +29,16 @@ namespace CoStudy.API.Infrastructure.Identity.Services.AccountService
         AppSettings appSettings;
         IEmailService emailService;
         IUserRepository userRepository;
+        IHttpContextAccessor httpContextAccessor;
 
-        public AccountService(IAccountRepository accountRepository, IMapper mapper, IOptions<AppSettings> appSettings, IEmailService emailService, IUserRepository userRepository)
+        public AccountService(IAccountRepository accountRepository, IMapper mapper, IOptions<AppSettings> appSettings, IEmailService emailService, IUserRepository userRepository, IHttpContextAccessor httpContextAccessor)
         {
             this.accountRepository = accountRepository;
             this.mapper = mapper;
             this.appSettings = appSettings.Value;
             this.emailService = emailService;
             this.userRepository = userRepository;
+            this.httpContextAccessor = httpContextAccessor;
         }
 
         private string generateJwtToken(Account account)
@@ -160,8 +164,6 @@ namespace CoStudy.API.Infrastructure.Identity.Services.AccountService
             return mapper.Map<IList<AccountResponse>>(accounts);
         }
 
-
-
         public AuthenticateResponse RefreshToken(string token, string ipAddress)
         {
             var (refreshToken, account) = getRefreshToken(token);
@@ -281,7 +283,6 @@ namespace CoStudy.API.Infrastructure.Identity.Services.AccountService
             accountRepository.Update(account, account.Id);
         }
 
-
         private async Task sendPasswordResetEmail(Account account, string origin)
         {
             string message;
@@ -380,13 +381,26 @@ namespace CoStudy.API.Infrastructure.Identity.Services.AccountService
 
             return (refreshToken, account);
         }
-
         public AccountResponse GetById(string id)
         {
             var account = accountRepository.GetById(ObjectId.Parse(id));
             return mapper.Map<AccountResponse>(account);
         }
 
-
+        public async Task<string> GetCurrentRefreshToken()
+        {
+            var currentUser = Feature.CurrentUser(httpContextAccessor, userRepository);
+            var filter = Builders<Account>.Filter.Eq("Email", currentUser.Email);
+            var currentAccount = await accountRepository.FindAsync(filter);
+            if (currentAccount != null)
+            {
+                var refreshTokens = currentAccount.RefreshTokens.OrderByDescending(x => x.Created);
+                var latestRefresh = refreshTokens.ElementAt(0);
+                if (!latestRefresh.IsExpired)
+                    return latestRefresh.Token;
+                else throw new Exception("Có lỗi xảy ra");
+            }
+            else throw new Exception("Có lỗi xảy ra");
+        }
     }
 }

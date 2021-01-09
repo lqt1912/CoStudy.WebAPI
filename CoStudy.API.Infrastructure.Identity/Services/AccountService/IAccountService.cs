@@ -20,5 +20,7 @@ namespace CoStudy.API.Infrastructure.Identity.Services.AccountService
         AccountResponse Create(CreateRequest model);
         AccountResponse Update(string id, UpdateRequest model);
         void Delete(string id);
+
+        Task<string> GetCurrentRefreshToken();
     }
 }
