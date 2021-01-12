@@ -1,4 +1,5 @@
-﻿using CoStudy.API.Infrastructure.Shared.Services.MessageServices;
+﻿using CoStudy.API.Infrastructure.Shared.Services.LocationServices;
+using CoStudy.API.Infrastructure.Shared.Services.MessageServices;
 using CoStudy.API.Infrastructure.Shared.Services.NofticationServices;
 using CoStudy.API.Infrastructure.Shared.Services.PostServices;
 using CoStudy.API.Infrastructure.Shared.Services.UserServices;
@@ -15,6 +16,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services
             services.AddTransient<INofticationService, NofticationService>();
             services.AddTransient<IMessageService, MessageService>();
             services.AddTransient<ICommentService, CommentService>();
+            services.AddTransient<ILocationService, LocationService>();
         }
     }
 }

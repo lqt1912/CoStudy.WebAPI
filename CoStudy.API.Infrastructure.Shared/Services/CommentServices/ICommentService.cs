@@ -12,7 +12,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services
 
         Task<ReplyCommentResponse> ReplyComment(ReplyCommentRequest request);
 
-        Task<IEnumerable<Comment>> GetCommentByPostId(string postId, int skip, int count);
+        Task<IEnumerable<Comment>> GetCommentByPostId(CommentFilterRequest request);
 
         Task<IEnumerable<ReplyComment>> GetReplyCommentByCommentId(string commentId, int skip, int count);
 

@@ -94,8 +94,11 @@ namespace CoStudy.API.Infrastructure.Identity.Services.AccountService
             //}
 
             var account = accountRepository.GetAll().SingleOrDefault(x => x.Email == model.Email);
-            if (account == null || !account.IsVerified)
+            if (account == null)
                 throw new Exception("Email or password incorrect");
+
+            if (!account.IsVerified)
+                throw new Exception("Email is not verified");
 
             if (!BC.Verify(model.Password, account.PasswordHash))
                 throw new Exception("Email or password incorrect");
@@ -193,7 +196,7 @@ namespace CoStudy.API.Infrastructure.Identity.Services.AccountService
             if (accountRepository.GetAll().SingleOrDefault(x => x.Email == model.Email) != null)
             {
                 await sendAlreadyRegisteredEmail(model.Email, origin);
-                return;
+                throw new Exception($"Email {model.Email} has been registered");
             }
             var account = mapper.Map<Account>(model);
 
@@ -315,9 +318,7 @@ namespace CoStudy.API.Infrastructure.Identity.Services.AccountService
             string message;
             if (!string.IsNullOrEmpty(origin))
             {
-                var verifyUrl = $"{origin}/api/Accounts/verify-email?token={account.VerificationToken}";
-                message = $@"<p>Please click the below link to verify your email address:</p>
-                             <p><a href=""{verifyUrl}"">{verifyUrl}</a></p>";
+                message = $@"<p>Registeration token: {account.VerificationToken}</p>";
             }
             else
             {

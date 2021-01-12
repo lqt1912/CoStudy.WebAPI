@@ -49,16 +49,17 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
 
         public async Task<AddAdditionalInfoResponse> AddAdditonalInfoAsync(AddAdditionalInfoRequest request)
         {
-            var additionalInfos = UserAdapter.FromRequest(request);
+            //var additionalInfos = UserAdapter.FromRequest(request);
 
-            var currentUser = CurrentUser();
+            //var currentUser = CurrentUser();
 
-            currentUser.AdditionalInfos.AddRange(additionalInfos);
-            currentUser.ModifiedDate = DateTime.Now;
+            //currentUser.AdditionalInfos.AddRange(additionalInfos);
+            //currentUser.ModifiedDate = DateTime.Now;
 
-            await userRepository.UpdateAsync(currentUser, currentUser.Id);
+            //await userRepository.UpdateAsync(currentUser, currentUser.Id);
 
-            return UserAdapter.ToResponse(additionalInfos, currentUser.Id.ToString());
+            //return UserAdapter.ToResponse(additionalInfos, currentUser.Id.ToString());
+            throw new Exception();
         }
 
         public async Task<AddAvatarResponse> AddAvatarAsync(AddAvatarRequest request)
@@ -96,8 +97,6 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
             await userRepository.UpdateAsync(currentUser, currentUser.Id);
             return currentUser;
         }
-
-
 
         public async Task<string> AddFollowingsAsync(AddFollowerRequest request)
         {
@@ -360,7 +359,29 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
             return users;
         }
 
-       
+        public async Task<User> UpdateFieldAsync(AddFieldRequest request)
+        {
+            var currentUser = CurrentUser();
+            currentUser.Fortes.Clear();
+            foreach (var fieldId in request.UserField)
+            {
+                var field = await fieldRepository.GetByIdAsync(ObjectId.Parse(fieldId));
+                if (field != null)
+                    currentUser.Fortes.Add(field);
+            }
+            currentUser.ModifiedDate = DateTime.Now;
+            await userRepository.UpdateAsync(currentUser, currentUser.Id);
+            return currentUser;
+        }
+
+        public async Task<User> AddInfo(List<IDictionary<string, string>> request)
+        {
+            var currentuser = Feature.CurrentUser(_httpContextAccessor, userRepository);
+            currentuser.AdditionalInfos.AddRange(request);
+            await userRepository.UpdateAsync(currentuser, currentuser.Id);
+
+            return currentuser;
+        }
     }
 }
 

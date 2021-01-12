@@ -79,7 +79,7 @@ namespace CoStudy.API.Infrastructure.Shared.Models.Response.UserResponse
         /// </summary>
         /// 
         [JsonPropertyName("additional_infos")]
-        public List<AdditionalInfo> AdditionalInfos { get; set; }
+        public List<IDictionary<string, string>> AdditionalInfos { get; set; }
 
         /// <summary>
         /// Sở trường

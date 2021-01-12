@@ -34,10 +34,10 @@ namespace CoStudy.API.WebAPI.Controllers
         }
 
         [HttpGet]
-        [Route("get/{postId}/skip/{skip}/count/{count}")]
-        public async Task<IActionResult> GetCommentByPostId(string postId, int skip, int count)
+        [Route("get/post")]
+        public async Task<IActionResult> GetCommentByPostId([FromQuery]CommentFilterRequest request)
         {
-            var data = await commentService.GetCommentByPostId(postId, skip, count);
+            var data = await commentService.GetCommentByPostId( request);
             return Ok(new ApiOkResponse(data));
         }
 

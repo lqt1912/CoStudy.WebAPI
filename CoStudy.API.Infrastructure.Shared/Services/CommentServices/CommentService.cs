@@ -155,15 +155,50 @@ namespace CoStudy.API.Infrastructure.Shared.Services
         }
 
 
-        public async Task<IEnumerable<Comment>> GetCommentByPostId(string postId, int skip, int count)
+        public async Task<IEnumerable<Comment>> GetCommentByPostId(CommentFilterRequest request)
         {
+            if (String.IsNullOrEmpty(request.PostId))
+                throw new Exception("Không tồn tại bài post");
+
             var builder = Builders<Comment>.Filter;
-            var filter = builder.Eq("post_id", postId) & builder.Eq("status", ItemStatus.Active);
+            var filter = builder.Eq("post_id", request.PostId) & builder.Eq("status", ItemStatus.Active);
+
             var currentUser = Feature.CurrentUser(httpContextAccessor, userRepository);
             var comments = await commentRepository.FindListAsync(filter);
             if (comments != null)
             {
-                var cmts = comments.Skip(skip).Take(count);
+                var cmts = comments.AsEnumerable(); 
+
+                if(request.Skip.HasValue && request.Count.HasValue)
+                    cmts = cmts.Skip(request.Skip.Value).Take(request.Count.Value);
+
+                if(request.Filter.HasValue && request.ArrangeType.HasValue)
+                {
+                    switch (request.Filter.Value)
+                    {
+                        case CommentFilterType.CreatedDate:
+                            {
+                                if (request.ArrangeType.Value == ArrangeType.Ascending)
+                                    cmts = cmts.OrderBy(x => x.CreatedDate);
+                                else cmts = cmts.OrderByDescending(x => x.CreatedDate);
+                                break;
+                            }
+                        case CommentFilterType.Upvote:
+                            {
+                                if (request.ArrangeType.Value == ArrangeType.Ascending)
+                                    cmts = cmts.OrderBy(x => x.UpvoteCount);
+                                else cmts = cmts.OrderByDescending(x => x.UpvoteCount);
+                                break;
+                            }
+                        default:
+                            cmts = cmts.OrderBy(x => x.CreatedDate);
+                            break;
+                    }
+                }
+
+                if (!String.IsNullOrEmpty(request.Keyword))
+                    cmts = cmts.Where(x => x.Content.Contains(request.Keyword));
+
                 foreach (var item in cmts)
                 {
                     var builderUpvote = Builders<UpVote>.Filter;

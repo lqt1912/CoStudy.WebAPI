@@ -94,7 +94,7 @@ namespace CoStudy.API.Domain.Entities.Application
         /// 
         [BsonElement("additional_infos")]
         [JsonPropertyName("additional_infos")]
-        public List<AdditionalInfo> AdditionalInfos { get; set; }
+        public List<IDictionary<string, string>> AdditionalInfos { get; set; }
 
         /// <summary>
         /// Sở trường
@@ -125,7 +125,7 @@ namespace CoStudy.API.Domain.Entities.Application
             Posts = new List<Post>();
             Noftications = new List<Noftication>();
 
-            AdditionalInfos = new List<AdditionalInfo>();
+            AdditionalInfos = new List<IDictionary<string, string>>();
             Fortes = new List<Field>();
             PostDownvote = new List<string>();
             PostUpvote = new List<string>();

@@ -7,6 +7,7 @@ using CoStudy.API.Infrastructure.Shared.Services.UserServices;
 using CoStudy.API.WebAPI.Middlewares;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace CoStudy.API.WebAPI.Controllers
@@ -90,9 +91,9 @@ namespace CoStudy.API.WebAPI.Controllers
         [Authorize]
         [HttpPost]
         [Route("additionalinfos")]
-        public async Task<IActionResult> AddAdditionalInfos(AddAdditionalInfoRequest request)
+        public async Task<IActionResult> AddAdditionalInfos(List<IDictionary<string, string>> request)
         {
-            var data = await userService.AddAdditonalInfoAsync(request);
+            var data = await userService.AddInfo(request);
             return Ok(new ApiOkResponse(data));
         }
 
@@ -102,6 +103,15 @@ namespace CoStudy.API.WebAPI.Controllers
         public async Task<IActionResult> AddField(AddFieldRequest request)
         {
             var data = await userService.AddFieldAsync(request);
+            return Ok(new ApiOkResponse(data));
+        }
+
+        [Authorize]
+        [HttpPut]
+        [Route("field")]
+        public async Task<IActionResult> UpdateField(AddFieldRequest request)
+        {
+            var data = await userService.UpdateFieldAsync(request);
             return Ok(new ApiOkResponse(data));
         }
 
