@@ -4,6 +4,7 @@ using CoStudy.API.Domain.Entities.Identity.MongoAuthen;
 using Microsoft.AspNetCore.Http;
 using MongoDB.Driver;
 using System;
+using System.Collections.Generic;
 using System.IO;
 
 namespace CoStudy.API.Application.Features
@@ -95,6 +96,20 @@ namespace CoStudy.API.Application.Features
 
         }
 
+        public static bool IsEqual(List<string> listA, List<string> listB)
+        {
+            if (listA.Count == listB.Count)
+            {
+                foreach (var item in listB)
+                {
+                    if (!listA.Contains(item))
+                        return false;
+                }
+                return true;
+            }
+            else return false;
+
+        }
 
     }
 }

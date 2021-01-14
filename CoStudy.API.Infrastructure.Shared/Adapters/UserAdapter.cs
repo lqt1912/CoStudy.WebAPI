@@ -2,6 +2,7 @@
 using CoStudy.API.Infrastructure.Shared.Models.Request.UserRequest;
 using CoStudy.API.Infrastructure.Shared.Models.Response.UserResponse;
 using Microsoft.AspNetCore.Http;
+using MongoDB.Bson;
 using System;
 using System.Collections.Generic;
 
@@ -11,6 +12,8 @@ namespace CoStudy.API.Infrastructure.Shared.Adapters
     {
         public static User FromRequest(AddUserRequest request)
         {
+            var id = ObjectId.GenerateNewId();
+
             return new User()
             {
                 FirstName = request.FisrtName,
@@ -21,7 +24,17 @@ namespace CoStudy.API.Infrastructure.Shared.Adapters
                 Address = request.Address,
                 CreatedDate = DateTime.Now,
                 ModifiedDate = DateTime.Now,
-                PostCount = 0
+                PostCount = 0,
+                Avatar = new Image()
+                {
+                     CreatedDate= DateTime.Now,
+                      Discription ="",
+                       Id = id,
+                       OId = id.ToString(),
+                        ImageHash = "https://via.placeholder.com/150",
+                         ImageUrl= "https://via.placeholder.com/150",
+                          ModifiedDate = DateTime.Now,
+                }
             };
         }
 

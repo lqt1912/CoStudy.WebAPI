@@ -47,11 +47,18 @@ namespace CoStudy.API.Infrastructure.Shared.Services.MessageServices
 
             request.Participants.Add(currentUser.Id.ToString());
 
-            var existConversation = conversationRepository.GetAll()
-                .Where(x => x.Participants == request.Participants)
-                .SingleOrDefault();
+            var existConversation = new Conversation() { Participants = new List<string>() };
+                
+            foreach (var conver in conversationRepository.GetAll())
+            {
+                if (Feature.IsEqual(conver.Participants, request.Participants) == true)
+                {
+                    existConversation = conver;
+                    break;
+                }
+            }
 
-            if (existConversation != null)
+            if (existConversation.Participants.Count !=0)
                 return MessageAdapter.ToResponse(existConversation);
 
             var conversation = MessageAdapter.FromRequest(request);
