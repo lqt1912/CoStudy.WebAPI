@@ -163,6 +163,18 @@ namespace CoStudy.API.Infrastructure.Shared.Services.MessageServices
             }
             else throw new Exception("Đã có lỗi xảy ra");
         }
+
+        public async Task<Message> EditMessage(UpdateMessageRequest request)
+        {
+            var message =await  messageRepository.GetByIdAsync(ObjectId.Parse(request.Id));
+            if (message == null)
+                throw new Exception("Tin nhắn không tìm thấy");
+            message.MediaContent = request.Image;
+            message.StringContent = request.Content;
+            message.IsEdited = true;
+            await messageRepository.UpdateAsync(message, message.Id);
+            return message;
+        }
     }
 }
 

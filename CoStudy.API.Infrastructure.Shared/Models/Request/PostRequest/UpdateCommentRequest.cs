@@ -1,8 +1,11 @@
-﻿using System.Text.Json.Serialization;
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+using System.Text.Json.Serialization;
 
 namespace CoStudy.API.Infrastructure.Shared.Models.Request.PostRequest
 {
-    public class AddCommentRequest
+    public class UpdateCommentRequest
     {
         [JsonPropertyName("content")]
         public string Content { get; set; }
@@ -10,9 +13,8 @@ namespace CoStudy.API.Infrastructure.Shared.Models.Request.PostRequest
         [JsonPropertyName("image_hash")]
         public string Image { get; set; }
 
-        [JsonPropertyName("post_id")]
+        [JsonPropertyName("id")]
 
-        public string PostId { get; set; }
-
+        public string Id { get; set; }
     }
 }

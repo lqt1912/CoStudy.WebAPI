@@ -9,6 +9,10 @@ namespace CoStudy.API.Infrastructure.Shared.Services.NofticationServices
     public interface INofticationService
     {
         Task<AddNofticationResponse> AddNoftication(AddNofticationRequest request);
-        List<Noftication> GetCurrentUserNoftication();
+       Task<IEnumerable<Noftication>> GetCurrentUserNoftication(int? skip, int? count);
+
+        Task<string> DeleteNotification(string id);
+
+        Task<string> MarkAsRead(string id);
     }
 }

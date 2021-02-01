@@ -154,7 +154,6 @@ namespace CoStudy.API.Infrastructure.Shared.Services
             else throw new Exception("Câu rả lời không tồn tại hoặc đã bị xóa");
         }
 
-
         public async Task<IEnumerable<Comment>> GetCommentByPostId(CommentFilterRequest request)
         {
             if (String.IsNullOrEmpty(request.PostId))
@@ -327,5 +326,30 @@ namespace CoStudy.API.Infrastructure.Shared.Services
             else return "Bạn đã downvote rồi";
         }
 
+        public async Task<Comment> UpdateComment(UpdateCommentRequest request)
+        {
+            var comment =await  commentRepository.GetByIdAsync(ObjectId.Parse(request.Id));
+            if (comment == null)
+                throw new Exception("Không tìm thấy bình luận");
+
+            comment.Content = request.Content;
+            comment.Image = request.Image;
+            comment.ModifiedDate = DateTime.Now;
+            comment.IsEdited = true;
+            await commentRepository.UpdateAsync(comment, comment.Id);
+            return comment;
+        }
+
+        public async Task<ReplyComment> UpdateReply(UpdateReplyRequest request)
+        {
+            var reply = await replyCommentRepository.GetByIdAsync(ObjectId.Parse(request.Id));
+            if (reply == null)
+                throw new Exception("Không tìm thấy câu trả lời");
+            reply.Content = request.Content;
+            reply.IsEdited = true;
+            reply.ModifiedDate = DateTime.Now;
+            await replyCommentRepository.UpdateAsync(reply, reply.Id);
+            return reply;
+        }
     }
 }

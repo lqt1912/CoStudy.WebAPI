@@ -13,6 +13,9 @@ namespace CoStudy.API.Infrastructure.Shared.Services.MessageServices
         Task<GetMessageByConversationIdResponse> GetMessageByConversationId(string conversationId, int skip, int count);
         GetConversationByUserIdResponse GetConversationByUserId();
         List<Message> GetAll();
+
+        Task<Message> EditMessage(UpdateMessageRequest request);
+
         Task<string> DeleteConversation(string id);
         Task<string> DeleteMessage(string id);
 

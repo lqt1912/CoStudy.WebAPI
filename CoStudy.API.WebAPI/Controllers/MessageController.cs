@@ -68,6 +68,14 @@ namespace CoStudy.API.WebAPI.Controllers
             return Ok(new ApiOkResponse(data));
         }
 
+        [HttpPut]
+        [Route("update")]
+        public async Task<IActionResult> EditMessage(UpdateMessageRequest request)
+        {
+            var data = await messageService.EditMessage(request);
+            return Ok(new ApiOkResponse(data));
+        }
+
         [HttpGet]
         [Route("all")]
         public IActionResult GetAll()

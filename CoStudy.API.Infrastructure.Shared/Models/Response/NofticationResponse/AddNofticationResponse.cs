@@ -24,5 +24,8 @@ namespace CoStudy.API.Infrastructure.Shared.Models.Response.NofticationResponse
 
         [JsonPropertyName("status")]
         public ItemStatus Status { get; set; }
+
+        [JsonPropertyName("is_read")]
+        public bool? IsRead { get; set; }
     }
 }

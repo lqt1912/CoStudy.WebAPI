@@ -80,5 +80,21 @@ namespace CoStudy.API.WebAPI.Controllers
             var data = await commentService.DownvoteComment(commentId);
             return Ok(new ApiOkResponse(data));
         }
+
+        [HttpPut]
+        [Route("comment/update")]
+        public async Task<IActionResult> UpdateComment(UpdateCommentRequest request)
+        {
+            var data = await commentService.UpdateComment(request);
+            return Ok(new ApiOkResponse(data));
+        }
+
+        [HttpPut]
+        [Route("reply/update")]
+        public async Task<IActionResult> UpdateReply(UpdateReplyRequest request)
+        {
+            var data = await commentService.UpdateReply(request);
+            return Ok(new ApiOkResponse(data));
+        }
     }
 }

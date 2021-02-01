@@ -42,5 +42,9 @@ namespace CoStudy.API.Domain.Entities.Application
         [BsonElement("status")]
         [JsonPropertyName("status")]
         public ItemStatus Status { get; set; }
+
+        [BsonElement("is_read")]
+        [JsonPropertyName("is_read")]
+        public bool? IsRead { get; set; }
     }
 }

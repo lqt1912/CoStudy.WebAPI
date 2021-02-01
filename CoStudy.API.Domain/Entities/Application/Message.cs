@@ -32,6 +32,11 @@ namespace CoStudy.API.Domain.Entities.Application
         [JsonPropertyName("string_content")]
         public string StringContent { get; set; }
 
+        [BsonElement("is_edited")]
+        [JsonPropertyName("is_edited")]
+        public bool? IsEdited { get; set; }
+
+
 
         /// <summary>
         /// Delete or not ?

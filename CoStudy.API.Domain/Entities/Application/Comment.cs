@@ -67,6 +67,9 @@ namespace CoStudy.API.Domain.Entities.Application
         [JsonPropertyName("downvote_count")]
         public int DownvoteCount { get; set; }
 
+        [BsonElement("is_edited")]
+        [JsonPropertyName("is_edited")]
+        public bool? IsEdited { get; set; }
         /// <summary>
         /// Use for response
         /// </summary>

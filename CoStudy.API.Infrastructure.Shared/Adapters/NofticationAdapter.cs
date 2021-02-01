@@ -16,7 +16,8 @@ namespace CoStudy.API.Infrastructure.Shared.Adapters
                 Content = request.Content,
                 CreatedDate = DateTime.Now,
                 ModifiedDate = DateTime.Now,
-                Status = ItemStatus.Active
+                Status = ItemStatus.Active,
+                IsRead = false
             };
         }
 
@@ -30,7 +31,8 @@ namespace CoStudy.API.Infrastructure.Shared.Adapters
                 Content = noftication.Content,
                 CreatedDate = noftication.CreatedDate,
                 ModifiedDate = noftication.ModifiedDate,
-                Status = noftication.Status
+                Status = noftication.Status,
+                IsRead = noftication.IsRead
             };
         }
     }

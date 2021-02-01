@@ -44,6 +44,12 @@ namespace CoStudy.API.Domain.Entities.Application
         [BsonElement("downvote_count")]
         [JsonPropertyName("downvote_count")]
         public int DownvoteCount { get; set; }
+
+
+        [BsonElement("is_edited")]
+        [JsonPropertyName("is_edited")]
+        public bool? IsEdited { get; set; }
+
         [JsonPropertyName("is_vote_by_current")]
         [BsonElement("is_vote_by_current")]
         public bool? IsVoteByCurrent { get; set; }

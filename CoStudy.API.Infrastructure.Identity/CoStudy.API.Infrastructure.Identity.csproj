@@ -6,18 +6,17 @@
 
   <ItemGroup>
     <Compile Remove="Migrations\**" />
+    <Compile Remove="Seeds\**" />
     <EmbeddedResource Remove="Migrations\**" />
+    <EmbeddedResource Remove="Seeds\**" />
     <None Remove="Migrations\**" />
+    <None Remove="Seeds\**" />
   </ItemGroup>
 
   <ItemGroup>
     <Compile Remove="Contexts\IdentityContext.cs" />
     <Compile Remove="Services\Implements\AccountService.cs" />
     <Compile Remove="Services\Interfaces\IAccountService.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Seeds\" />
   </ItemGroup>
 
   <ItemGroup>
