@@ -19,9 +19,6 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
 
         Task<string> AddFollowingsAsync(AddFollowerRequest request);
 
-        Task<AddAdditionalInfoResponse> AddAdditonalInfoAsync(AddAdditionalInfoRequest request);
-        Task<User> AddFieldAsync(AddFieldRequest request);
-        Task<User> UpdateFieldAsync(AddFieldRequest request);
 
         Task<User> GetUserById(string id);
         Task SyncFollow();

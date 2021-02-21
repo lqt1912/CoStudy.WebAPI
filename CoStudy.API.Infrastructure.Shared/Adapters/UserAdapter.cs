@@ -124,9 +124,7 @@ namespace CoStudy.API.Infrastructure.Shared.Adapters
                 ModifiedDate = user1.ModifiedDate,
                 //   Posts = user1.Posts,
                 PostCount = user1.PostCount,
-                Noftications = user1.Noftications,
                 AdditionalInfos = user1.AdditionalInfos,
-                Fortes = user1.Fortes,
                 ImageHash = user1.AvatarHash,
                 PostDownvote = user1.PostDownvote,
                 PostUpvote = user1.PostUpvote

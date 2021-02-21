@@ -7,6 +7,7 @@ namespace CoStudy.API.WebAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class FcmController : ControllerBase
     {
         IFcmRepository fcmRepository;
@@ -31,6 +32,5 @@ namespace CoStudy.API.WebAPI.Controllers
             var data = await fcmRepository.RevokeFcmInfo(userId, token);
             return Ok(new ApiOkResponse(data));
         }
-
     }
 }

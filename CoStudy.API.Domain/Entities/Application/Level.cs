@@ -7,7 +7,7 @@ using System.Text.Json.Serialization;
 
 namespace CoStudy.API.Domain.Entities.Application
 {
-    public class Level :Entity
+    public class Level : Entity
     {
         [BsonElement("name")]
         [JsonPropertyName("name")]
@@ -17,8 +17,26 @@ namespace CoStudy.API.Domain.Entities.Application
         [JsonPropertyName("description")]
         public string Description { get; set; }
 
-        [BsonElement("ison")]
+        [BsonElement("order")]
+        [JsonPropertyName("order")]
+        public int? Order { get; set; }
+
+
+        [BsonElement("icon")]
         [JsonPropertyName("icon")]
         public string Icon { get; set; }
+
+        [BsonElement("created_date")]
+        [JsonPropertyName("created_date")]
+        public DateTime? CreatedDate { get; set; } = DateTime.Now;
+
+
+        [BsonElement("modified_date")]
+        [JsonPropertyName("modified_date")]
+        public DateTime? ModifiedDate { get; set; } = DateTime.Now;
+
+        [BsonElement("is_active")]
+        [JsonPropertyName("is_active")]
+        public bool? IsActive { get; set; } = true;
     }
 }

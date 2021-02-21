@@ -47,8 +47,18 @@ namespace CoStudy.API.WebAPI.Middlewares
             var sw = Stopwatch.StartNew();
             try
             {
+                context.Response.OnStarting(() => {
+                    // Stop the timer information and calculate the time   
+                    sw.Stop();
+                    var responseTimeForCompleteRequest = sw.ElapsedMilliseconds;
+                    // Add the Response time information in the Response headers.   
+                    context.Response.Headers["X-Response-Time-ms"] = responseTimeForCompleteRequest.ToString();
+                    return Task.CompletedTask;
+                });
+
+
                 await _next.Invoke(context);
-                sw.Stop();
+              //  sw.Stop();
 
                 var statusCode = context.Response?.StatusCode;
 

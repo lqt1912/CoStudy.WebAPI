@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using AspNetCoreRateLimit;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
 using System;
@@ -82,6 +84,14 @@ namespace CoStudy.API.WebAPI.Extensions
         public static void ConfigureApiAuthentication(this IServiceCollection services)
         {
 
+        }
+
+        public static void ConfigIpRateLimit(this IServiceCollection services, IConfiguration configuration)
+        {
+            services.Configure<IpRateLimitOptions>(configuration.GetSection("IpRateLimit"));
+            services.AddSingleton<IIpPolicyStore, MemoryCacheIpPolicyStore>();
+            services.AddSingleton<IRateLimitCounterStore, MemoryCacheRateLimitCounterStore>();
+            services.AddSingleton<IRateLimitConfiguration, RateLimitConfiguration>();
         }
     }
 }

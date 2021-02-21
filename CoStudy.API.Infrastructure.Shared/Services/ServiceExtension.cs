@@ -17,6 +17,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services
             services.AddTransient<IMessageService, MessageService>();
             services.AddTransient<ICommentService, CommentService>();
             services.AddTransient<ILocationService, LocationService>();
+            services.AddTransient<ILevelService, LevelService>();
         }
     }
 }

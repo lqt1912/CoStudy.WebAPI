@@ -47,20 +47,6 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
             this.followRepository = followRepository;
         }
 
-        public async Task<AddAdditionalInfoResponse> AddAdditonalInfoAsync(AddAdditionalInfoRequest request)
-        {
-            //var additionalInfos = UserAdapter.FromRequest(request);
-
-            //var currentUser = CurrentUser();
-
-            //currentUser.AdditionalInfos.AddRange(additionalInfos);
-            //currentUser.ModifiedDate = DateTime.Now;
-
-            //await userRepository.UpdateAsync(currentUser, currentUser.Id);
-
-            //return UserAdapter.ToResponse(additionalInfos, currentUser.Id.ToString());
-            throw new Exception();
-        }
 
         public async Task<AddAvatarResponse> AddAvatarAsync(AddAvatarRequest request)
         {
@@ -84,19 +70,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
 
         }
 
-        public async Task<User> AddFieldAsync(AddFieldRequest request)
-        {
-            var currentUser = CurrentUser();
-            foreach (var fieldId in request.UserField)
-            {
-                var field = await fieldRepository.GetByIdAsync(ObjectId.Parse(fieldId));
-                if (field != null)
-                    currentUser.Fortes.Add(field);
-            }
-            currentUser.ModifiedDate = DateTime.Now;
-            await userRepository.UpdateAsync(currentUser, currentUser.Id);
-            return currentUser;
-        }
+        
 
         public async Task<string> AddFollowingsAsync(AddFollowerRequest request)
         {
@@ -325,11 +299,11 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
                 || x.LastName.Contains(request.KeyWord)
                 || x.PhoneNumber.Contains(request.KeyWord));
 
-            if (!string.IsNullOrEmpty(request.Fields))
-            {
-                var tempField = await fieldRepository.GetByIdAsync(ObjectId.Parse(request.Fields));
-                users = users.Where(x => x.Fortes.Contains(tempField));
-            }
+            //if (!string.IsNullOrEmpty(request.Fields))
+            //{
+            //    var tempField = await fieldRepository.GetByIdAsync(ObjectId.Parse(request.Fields));
+            //    users = users.Where(x => x.Fortes.Contains(tempField));
+            //}
 
             if (request.FilterType.HasValue && request.OrderType.HasValue)
             {
@@ -359,20 +333,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
             return users;
         }
 
-        public async Task<User> UpdateFieldAsync(AddFieldRequest request)
-        {
-            var currentUser = CurrentUser();
-            currentUser.Fortes.Clear();
-            foreach (var fieldId in request.UserField)
-            {
-                var field = await fieldRepository.GetByIdAsync(ObjectId.Parse(fieldId));
-                if (field != null)
-                    currentUser.Fortes.Add(field);
-            }
-            currentUser.ModifiedDate = DateTime.Now;
-            await userRepository.UpdateAsync(currentUser, currentUser.Id);
-            return currentUser;
-        }
+       
 
         public async Task<User> AddInfo(List<IDictionary<string, string>> request)
         {

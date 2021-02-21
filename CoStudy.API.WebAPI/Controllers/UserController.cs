@@ -97,23 +97,6 @@ namespace CoStudy.API.WebAPI.Controllers
             return Ok(new ApiOkResponse(data));
         }
 
-        [Authorize]
-        [HttpPost]
-        [Route("field")]
-        public async Task<IActionResult> AddField(AddFieldRequest request)
-        {
-            var data = await userService.AddFieldAsync(request);
-            return Ok(new ApiOkResponse(data));
-        }
-
-        [Authorize]
-        [HttpPut]
-        [Route("field")]
-        public async Task<IActionResult> UpdateField(AddFieldRequest request)
-        {
-            var data = await userService.UpdateFieldAsync(request);
-            return Ok(new ApiOkResponse(data));
-        }
 
         [Authorize]
         [HttpGet]

@@ -16,4 +16,8 @@
     <ProjectReference Include="..\CoStudy.API.Infrastructure.Identity\CoStudy.API.Infrastructure.Identity.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Models\Request\LevelRequest\" />
+  </ItemGroup>
+
 </Project>
