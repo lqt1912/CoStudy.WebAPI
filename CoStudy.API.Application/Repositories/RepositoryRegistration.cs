@@ -53,8 +53,9 @@ namespace CoStudy.API.Application.Repositories
             services.AddTransient<IProvinceRepository, ProvinceRepository>();
             services.AddTransient<IDistrictRepository, DistrictRepository>();
             services.AddTransient<IWardRepository, WardRepository>();
-
-            GoogleCredential googleCredential = GoogleCredential.FromFile(@"wwwroot/costudy-c5390-firebase-adminsdk-e63r1-4405752328.json");
+            services.AddTransient<ILevelRepository, LevelRepository>();
+            services.AddTransient<IObjectLevelRepository, ObjectLevelRepository>();
+            var googleCredential = GoogleCredential.FromFile(@"wwwroot/costudy-c5390-firebase-adminsdk-e63r1-4405752328.json");
             FirebaseApp.Create(new AppOptions() { Credential = googleCredential });
         }
 

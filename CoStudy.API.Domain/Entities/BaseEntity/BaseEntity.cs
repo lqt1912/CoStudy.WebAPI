@@ -6,6 +6,7 @@ namespace CoStudy.API.Domain.Entities.BaseEntity
 {
     public class Entity
     {
+        [JsonIgnore]
         [BsonId]
         public ObjectId Id { get; set; }
 

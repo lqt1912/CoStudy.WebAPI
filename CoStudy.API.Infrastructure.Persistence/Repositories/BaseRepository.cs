@@ -1,4 +1,5 @@
 ﻿using CoStudy.API.Infrastructure.Persistence.Contexts;
+using Microsoft.Extensions.Configuration;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using MongoDB.Driver.Linq;
@@ -12,11 +13,13 @@ namespace CoStudy.API.Infrastructure.Persistence.Repositories
     {
         protected CustomMongoClient _client;
         protected IMongoCollection<T> _collection { get; set; }
+        IConfiguration configuration;
 
-        protected BaseRepository(string alias)
+        public BaseRepository(string alias, IConfiguration configuration)
         {
-            _client = new CustomMongoClient();
+            _client = new CustomMongoClient(configuration);
             _collection = _client.GetDatabase().GetCollection<T>(alias);
+            this.configuration = configuration;
         }
 
         public async Task AddAsync(T entity)

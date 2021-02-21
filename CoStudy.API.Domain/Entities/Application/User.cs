@@ -57,17 +57,7 @@ namespace CoStudy.API.Domain.Entities.Application
         public DateTime ModifiedDate { get; set; }
 
 
-        /// <summary>
-        /// List id of post written by this id
-        /// </summary>
-        [BsonElement("posts")]
-        [JsonPropertyName("posts")]
-        public List<Post> Posts { get; set; }
 
-
-        [BsonElement("noftications")]
-        [JsonPropertyName("noftications")]
-        public List<Noftication> Noftications { get; set; }
 
         [BsonElement("post_count")]
         [JsonPropertyName("post_count")]
@@ -96,17 +86,12 @@ namespace CoStudy.API.Domain.Entities.Application
         [JsonPropertyName("additional_infos")]
         public List<IDictionary<string, string>> AdditionalInfos { get; set; }
 
-        /// <summary>
-        /// Sở trường
-        /// </summary>
-        /// 
-        [BsonElement("fortes")]
-        [JsonPropertyName("fortes")]
-        public List<Field> Fortes { get; set; }
 
-        [BsonElement("client_connections_id")]
-        [JsonPropertyName("client_connections_id")]
-        public string ClientConnectionsId { get; set; }
+        [BsonElement("fields")]
+        [JsonPropertyName("fields")]
+        public List<string> Fields { get; set; }
+
+
 
         [BsonElement("post_upvote")]
         [JsonPropertyName("post_upvote")]
@@ -122,14 +107,12 @@ namespace CoStudy.API.Domain.Entities.Application
         public User() : base()
         {
             Avatar = new Image();
-            Posts = new List<Post>();
-            Noftications = new List<Noftication>();
 
             AdditionalInfos = new List<IDictionary<string, string>>();
-            Fortes = new List<Field>();
             PostDownvote = new List<string>();
             PostUpvote = new List<string>();
             PostSaved = new List<string>();
+            Fields = new List<string>();
         }
     }
 }

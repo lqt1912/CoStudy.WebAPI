@@ -1,3 +1,4 @@
+using AspNetCoreRateLimit;
 using CoStudy.API.Application.Repositories;
 using CoStudy.API.Infrastructure.Identity;
 using CoStudy.API.Infrastructure.Identity.Helpers;
@@ -31,6 +32,10 @@ namespace CoStudy.API.WebAPI
 
             //Config identity
             services.ConfigureIdentity();
+
+            services.AddOptions();
+            services.AddMemoryCache();
+            services.ConfigIpRateLimit(Configuration);
 
             services.RegisterCustomRepository();
             services.RegisterCustomService();
@@ -67,7 +72,7 @@ namespace CoStudy.API.WebAPI
             {
                 app.UseDeveloperExceptionPage();
             }
-
+            app.UseIpRateLimiting();
             app.UseHttpsRedirection();
             app.UseRouting();
 
