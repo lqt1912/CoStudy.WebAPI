@@ -14,12 +14,12 @@ namespace CoStudy.API.Infrastructure.Identity
         public static void ConfigureIdentity(this IServiceCollection services)
         {
 
-            var config = new MapperConfiguration(cfg =>
+            MapperConfiguration config = new MapperConfiguration(cfg =>
             {
                 cfg.AddProfile(new AutoMapperProfile());
             });
 
-            var mapper = config.CreateMapper();
+            IMapper mapper = config.CreateMapper();
             services.AddSingleton(mapper);
             services.AddTransient<IAccountRepository, AccountRepository>();
             services.AddTransient<IAccountService, AccountService>();

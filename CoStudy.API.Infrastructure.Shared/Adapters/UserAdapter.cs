@@ -12,7 +12,7 @@ namespace CoStudy.API.Infrastructure.Shared.Adapters
     {
         public static User FromRequest(AddUserRequest request)
         {
-            var id = ObjectId.GenerateNewId();
+            ObjectId id = ObjectId.GenerateNewId();
 
             return new User()
             {
@@ -27,13 +27,13 @@ namespace CoStudy.API.Infrastructure.Shared.Adapters
                 PostCount = 0,
                 Avatar = new Image()
                 {
-                     CreatedDate= DateTime.Now,
-                      Discription ="",
-                       Id = id,
-                       OId = id.ToString(),
-                        ImageHash = "https://via.placeholder.com/150",
-                         ImageUrl= "https://via.placeholder.com/150",
-                          ModifiedDate = DateTime.Now,
+                    CreatedDate = DateTime.Now,
+                    Discription = "",
+                    Id = id,
+                    OId = id.ToString(),
+                    ImageHash = "https://via.placeholder.com/150",
+                    ImageUrl = "https://via.placeholder.com/150",
+                    ModifiedDate = DateTime.Now,
                 }
             };
         }
@@ -81,8 +81,8 @@ namespace CoStudy.API.Infrastructure.Shared.Adapters
 
         public static List<AdditionalInfo> FromRequest(AddAdditionalInfoRequest request)
         {
-            var result = new List<AdditionalInfo>();
-            foreach (var item in request.AdditionalInfos)
+            List<AdditionalInfo> result = new List<AdditionalInfo>();
+            foreach (AdditionalInfo item in request.AdditionalInfos)
             {
                 result.Add(
                     new AdditionalInfo()
@@ -108,7 +108,7 @@ namespace CoStudy.API.Infrastructure.Shared.Adapters
 
         public static GetUserByIdResponse ToResponse1(User user1)
         {
-            var result = new GetUserByIdResponse()
+            GetUserByIdResponse result = new GetUserByIdResponse()
             {
                 UserId = user1.Id.ToString(),
                 FirstName = user1.FirstName,

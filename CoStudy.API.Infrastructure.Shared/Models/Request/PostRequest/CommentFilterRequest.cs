@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
 
 namespace CoStudy.API.Infrastructure.Shared.Models.Request.PostRequest
 {
@@ -17,14 +14,14 @@ namespace CoStudy.API.Infrastructure.Shared.Models.Request.PostRequest
         Upvote
     }
 
-   public class CommentFilterRequest
+    public class CommentFilterRequest
     {
 
         [JsonPropertyName("post_id")]
         public string PostId { get; set; }
 
         [JsonPropertyName("filter")]
-        public CommentFilterType? Filter  { get; set; }
+        public CommentFilterType? Filter { get; set; }
 
         [JsonPropertyName("arrange_type")]
         public ArrangeType? ArrangeType { get; set; }

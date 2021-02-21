@@ -42,21 +42,21 @@ namespace CoStudy.API.WebAPI.Middlewares
         public async Task Invoke(HttpContext context)
         {
             bool success = true;
-            var message = string.Empty;
+            string message = string.Empty;
 
-            var sw = Stopwatch.StartNew();
+            Stopwatch sw = Stopwatch.StartNew();
             try
             {
                 await _next.Invoke(context);
                 sw.Stop();
 
-                var statusCode = context.Response?.StatusCode;
+                int? statusCode = context.Response?.StatusCode;
 
-                var level = statusCode > 499 ? LogEventLevel.Error : LogEventLevel.Information;
+                LogEventLevel level = statusCode > 499 ? LogEventLevel.Error : LogEventLevel.Information;
 
                 if (level == LogEventLevel.Information)
                 {
-                    var logging = new Logging();
+                    Logging logging = new Logging();
                     logging.RequestMethod = context.Request.Method;
                     logging.Location = $"{context.Request.Scheme}://{context.Request.Host}";
                     logging.RequestPath = context.Request.Path.ToString();
@@ -70,7 +70,7 @@ namespace CoStudy.API.WebAPI.Middlewares
             }
             catch (Exception ex)
             {
-                var messageDetail = ReadException(ex.Message);
+                ExceptionMessageModel messageDetail = ReadException(ex.Message);
                 _logger.LogError(10000, ex, ex.Message);
                 message = messageDetail.Message;
 
@@ -78,7 +78,7 @@ namespace CoStudy.API.WebAPI.Middlewares
 
                 success = false;
 
-                var logging = new Logging();
+                Logging logging = new Logging();
                 logging.RequestMethod = context.Request.Method;
                 logging.Location = $"{context.Request.Scheme}://{context.Request.Host}";
                 logging.RequestPath = context.Request.Path.ToString();
@@ -94,9 +94,9 @@ namespace CoStudy.API.WebAPI.Middlewares
             {
                 context.Response.ContentType = "application/json";
 
-                var response = new ApiResponse(success, context.Response.StatusCode, message);
+                ApiResponse response = new ApiResponse(success, context.Response.StatusCode, message);
 
-                var json = JsonConvert.SerializeObject(response);
+                string json = JsonConvert.SerializeObject(response);
 
                 await context.Response.WriteAsync(json);
             }

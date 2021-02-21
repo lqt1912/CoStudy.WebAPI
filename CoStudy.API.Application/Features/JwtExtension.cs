@@ -12,11 +12,11 @@ namespace CoStudy.API.Application.Features
     {
         public static string GetIdFromJwt(IHttpContextAccessor context, IConfiguration configuration)
         {
-            var token = context.HttpContext.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
+            string token = context.HttpContext.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
             if (token != null)
             {
-                var tokenHandler = new JwtSecurityTokenHandler();
-                var key = Encoding.ASCII.GetBytes(configuration["AppSettings:Secret"].ToString());
+                JwtSecurityTokenHandler tokenHandler = new JwtSecurityTokenHandler();
+                byte[] key = Encoding.ASCII.GetBytes(configuration["AppSettings:Secret"].ToString());
                 tokenHandler.ValidateToken(token, new TokenValidationParameters
                 {
                     ValidateIssuerSigningKey = true,
@@ -26,8 +26,8 @@ namespace CoStudy.API.Application.Features
                     // set clockskew to zero so tokens expire exactly at token expiration time (instead of 5 minutes later)
                     ClockSkew = TimeSpan.Zero
                 }, out SecurityToken validatedToken);
-                var jwtToken = (JwtSecurityToken)validatedToken;
-                var accountId = jwtToken.Claims.First(x => x.Type == "_id").Value;
+                JwtSecurityToken jwtToken = (JwtSecurityToken)validatedToken;
+                string accountId = jwtToken.Claims.First(x => x.Type == "_id").Value;
                 return accountId;
             }
             else throw new Exception("Unauthorized");

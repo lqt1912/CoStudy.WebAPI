@@ -31,7 +31,7 @@ namespace CoStudy.API.WebAPI.Controllers
         [Route("register")]
         public async Task<IActionResult> AddUser(AddUserRequest user)
         {
-            var registerRequest = new RegisterRequest()
+            RegisterRequest registerRequest = new RegisterRequest()
             {
                 Email = user.Email,
                 Password = user.Password,
@@ -40,7 +40,7 @@ namespace CoStudy.API.WebAPI.Controllers
             };
 
             await _accountService.Register(registerRequest, Feature.GetHostUrl(httpContextAccessor));
-            var data = await userService.AddUserAsync(user);
+            Infrastructure.Shared.Models.Response.UserResponse.AddUserResponse data = await userService.AddUserAsync(user);
 
             var response = new
             {
@@ -56,7 +56,7 @@ namespace CoStudy.API.WebAPI.Controllers
         [Authorize]
         public async Task<IActionResult> UpdateUser(UpdateUserRequest request)
         {
-            var data = await userService.UpdateUserAsync(request);
+            User data = await userService.UpdateUserAsync(request);
             return Ok(new ApiOkResponse(data));
         }
 
@@ -65,7 +65,7 @@ namespace CoStudy.API.WebAPI.Controllers
         [Route("avatar")]
         public async Task<IActionResult> UploadAvatar(AddAvatarRequest request)
         {
-            var data = await userService.AddAvatarAsync(request);
+            Infrastructure.Shared.Models.Response.UserResponse.AddAvatarResponse data = await userService.AddAvatarAsync(request);
 
             return Ok(new ApiOkResponse(data));
         }
@@ -75,7 +75,7 @@ namespace CoStudy.API.WebAPI.Controllers
         [Route("avatar/update")]
         public async Task<IActionResult> UpdateAvatar(AddAvatarRequest request)
         {
-            var data = await userService.UpdateAvatarAsync(request);
+            User data = await userService.UpdateAvatarAsync(request);
             return Ok(new ApiOkResponse(data));
         }
 
@@ -84,7 +84,7 @@ namespace CoStudy.API.WebAPI.Controllers
         [Route("following")]
         public async Task<IActionResult> AddFollowings([FromBody] AddFollowerRequest request)
         {
-            var data = await userService.AddFollowingsAsync(request);
+            string data = await userService.AddFollowingsAsync(request);
             return Ok(new ApiOkResponse(data));
         }
 
@@ -93,7 +93,7 @@ namespace CoStudy.API.WebAPI.Controllers
         [Route("additionalinfos")]
         public async Task<IActionResult> AddAdditionalInfos(List<IDictionary<string, string>> request)
         {
-            var data = await userService.AddInfo(request);
+            User data = await userService.AddInfo(request);
             return Ok(new ApiOkResponse(data));
         }
 
@@ -102,7 +102,7 @@ namespace CoStudy.API.WebAPI.Controllers
         [Route("field")]
         public async Task<IActionResult> AddField(AddFieldRequest request)
         {
-            var data = await userService.AddFieldAsync(request);
+            User data = await userService.AddFieldAsync(request);
             return Ok(new ApiOkResponse(data));
         }
 
@@ -111,7 +111,7 @@ namespace CoStudy.API.WebAPI.Controllers
         [Route("field")]
         public async Task<IActionResult> UpdateField(AddFieldRequest request)
         {
-            var data = await userService.UpdateFieldAsync(request);
+            User data = await userService.UpdateFieldAsync(request);
             return Ok(new ApiOkResponse(data));
         }
 
@@ -120,7 +120,7 @@ namespace CoStudy.API.WebAPI.Controllers
         [Route("get/{id}")]
         public async Task<IActionResult> GetById(string id)
         {
-            var data = await userService.GetUserById(id);
+            User data = await userService.GetUserById(id);
             return Ok(new ApiOkResponse(data));
         }
 
@@ -129,7 +129,7 @@ namespace CoStudy.API.WebAPI.Controllers
         [Route("current")]
         public IActionResult GetCurrentUser()
         {
-            var data = userService.GetCurrentUser();
+            User data = userService.GetCurrentUser();
             return Ok(new ApiOkResponse(data));
         }
 
@@ -138,7 +138,7 @@ namespace CoStudy.API.WebAPI.Controllers
         [Route("following/remove")]
         public async Task<IActionResult> Unfollow(string followingId)
         {
-            var data = await userService.RemoveFollowing(followingId);
+            string data = await userService.RemoveFollowing(followingId);
             return Ok(new ApiOkResponse(data));
         }
 
@@ -146,7 +146,7 @@ namespace CoStudy.API.WebAPI.Controllers
         [Route("field/add/database")]
         public async Task<IActionResult> AddFields(string field)
         {
-            var data = await userService.AddField(field);
+            Field data = await userService.AddField(field);
             return Ok(new ApiOkResponse(data));
         }
 
@@ -154,7 +154,7 @@ namespace CoStudy.API.WebAPI.Controllers
         [Route("follower")]
         public async Task<IActionResult> GetFollower([FromQuery] FollowFilterRequest request)
         {
-            var data = await userService.GetFollower(request);
+            IEnumerable<Follow> data = await userService.GetFollower(request);
             return Ok(new ApiOkResponse(data));
         }
 
@@ -162,7 +162,7 @@ namespace CoStudy.API.WebAPI.Controllers
         [Route("following")]
         public async Task<IActionResult> GetFollowing([FromQuery] FollowFilterRequest request)
         {
-            var data = await userService.GetFollowing(request);
+            IEnumerable<Follow> data = await userService.GetFollowing(request);
             return Ok(new ApiOkResponse(data));
         }
 
@@ -170,7 +170,7 @@ namespace CoStudy.API.WebAPI.Controllers
         [Route("field/all")]
         public IActionResult getAllField()
         {
-            var data = userService.GetAll();
+            List<Field> data = userService.GetAll();
             return Ok(new ApiOkResponse(data));
         }
 
@@ -178,7 +178,7 @@ namespace CoStudy.API.WebAPI.Controllers
         [Route("user/filter")]
         public async Task<IActionResult> UserFilter(FilterUserRequest request)
         {
-            var data = await userService.FilterUser(request);
+            IEnumerable<User> data = await userService.FilterUser(request);
             return Ok(new ApiOkResponse(data));
         }
 
@@ -187,7 +187,7 @@ namespace CoStudy.API.WebAPI.Controllers
         [Route("user/revoke-token")]
         public async Task<IActionResult> GetRefreshToken()
         {
-            var data = await _accountService.GetCurrentRefreshToken();
+            string data = await _accountService.GetCurrentRefreshToken();
             return Ok(new ApiOkResponse(data));
         }
 
@@ -195,7 +195,7 @@ namespace CoStudy.API.WebAPI.Controllers
         [HttpGet]
         public IActionResult GetCache(string email)
         {
-            var data = CacheHelper.GetValue($"CurrentUser-{email}") as User;
+            User data = CacheHelper.GetValue($"CurrentUser-{email}") as User;
             return Ok(new ApiOkResponse(data));
         }
     }

@@ -30,16 +30,16 @@ namespace CoStudy.API.Infrastructure.Shared.Services.NofticationServices
         public async Task<AddNofticationResponse> AddNoftication(AddNofticationRequest request)
         {
 
-            var noftication = NofticationAdapter.FromRequest(request);
+            Noftication noftication = NofticationAdapter.FromRequest(request);
             await nofticationRepository.AddAsync(noftication);
             return NofticationAdapter.ToResponse(noftication);
         }
 
         public async Task<IEnumerable<Noftication>> GetCurrentUserNoftication(int? skip, int? count)
         {
-            var currentUser = Feature.CurrentUser(contextAccessor, userRepository);
-            var builder = Builders<Noftication>.Filter.Eq("owner_id", currentUser.OId);
-            var result = (await nofticationRepository.FindListAsync(builder)).AsEnumerable();
+            User currentUser = Feature.CurrentUser(contextAccessor, userRepository);
+            FilterDefinition<Noftication> builder = Builders<Noftication>.Filter.Eq("owner_id", currentUser.OId);
+            IEnumerable<Noftication> result = (await nofticationRepository.FindListAsync(builder)).AsEnumerable();
             if (skip.HasValue && count.HasValue)
                 result = result.Skip(skip.Value).Take(count.Value);
             return result;
@@ -60,9 +60,9 @@ namespace CoStudy.API.Infrastructure.Shared.Services.NofticationServices
 
         public async Task<string> MarkAsRead(string id)
         {
-            if(!string.IsNullOrEmpty(id))
+            if (!string.IsNullOrEmpty(id))
             {
-                var notification = await nofticationRepository.GetByIdAsync(ObjectId.Parse(id));
+                Noftication notification = await nofticationRepository.GetByIdAsync(ObjectId.Parse(id));
                 if (notification == null)
                     throw new Exception("Không tìm thấy thông báo");
                 notification.IsRead = true;
@@ -72,11 +72,11 @@ namespace CoStudy.API.Infrastructure.Shared.Services.NofticationServices
             }
             else
             {
-                var currentUser = Feature.CurrentUser(contextAccessor, userRepository);
-                var builder = Builders<Noftication>.Filter; 
-                var finder = builder.Eq("owner_id", currentUser.OId)  & builder.Eq("is_read", false) & builder.Eq("status", ItemStatus.Active);
-                var notis = await nofticationRepository.FindListAsync(finder);
-                foreach (var noti in notis)
+                User currentUser = Feature.CurrentUser(contextAccessor, userRepository);
+                FilterDefinitionBuilder<Noftication> builder = Builders<Noftication>.Filter;
+                FilterDefinition<Noftication> finder = builder.Eq("owner_id", currentUser.OId) & builder.Eq("is_read", false) & builder.Eq("status", ItemStatus.Active);
+                List<Noftication> notis = await nofticationRepository.FindListAsync(finder);
+                foreach (Noftication noti in notis)
                 {
                     noti.IsRead = true;
                     await nofticationRepository.UpdateAsync(noti, noti.Id);

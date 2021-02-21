@@ -46,13 +46,13 @@ namespace CoStudy.API.Application.Features
         public static bool IsImage(Stream stream, out string type, IConfiguration configuration)
         {
             _allowImageType = new List<Tuple<string, string>>();
-            var listImageTypeString = configuration.GetSection("FileSettings:AllowedTypes").Get<string[]>();
-            var listAllowedTypeBit = configuration.GetSection("FileSettings:AllowedTypeBits").Get<string[]>();
+            string[] listImageTypeString = configuration.GetSection("FileSettings:AllowedTypes").Get<string[]>();
+            string[] listAllowedTypeBit = configuration.GetSection("FileSettings:AllowedTypeBits").Get<string[]>();
             int i = 0;
             try
             {
                 //Duyệt hết list image type hỗ trợ
-                foreach (var imageType in listImageTypeString)
+                foreach (string imageType in listImageTypeString)
                 {
                     if (!String.IsNullOrEmpty(imageType))
                     {
@@ -73,12 +73,12 @@ namespace CoStudy.API.Application.Features
             try
             {
                 //Duyệt hết định dạng mà appsetting có 
-                foreach (var t in listImageTypeString)
+                foreach (string t in listImageTypeString)
                 {
-                    var bitValue = configuration.GetSection($"FileSettings:TypeBitComparers:{t}").Get<string[]>();
+                    string[] bitValue = configuration.GetSection($"FileSettings:TypeBitComparers:{t}").Get<string[]>();
 
                     //Lấy danh sách bit để so sánh tương tướng
-                    var listBitComparer = bitValue.Where(x => x != String.Empty).ToList();
+                    List<string> listBitComparer = bitValue.Where(x => x != String.Empty).ToList();
 
                     //Add vô dưới dạng tuple
                     _bitComparer.Add(new Tuple<string, List<string>>(t, listBitComparer));
@@ -97,12 +97,12 @@ namespace CoStudy.API.Application.Features
             stream.Seek(0, SeekOrigin.Begin);
             //hexa bit đầu tiên
             string bit = stream.ReadByte().ToString("X2");
-            foreach (var item in _allowImageType)
+            foreach (Tuple<string, string> item in _allowImageType)
             {
                 //Khớp bit đầu tính tiếp 
                 if (item.Item2 == bit)
                 {
-                    foreach (var item2 in _bitComparer)
+                    foreach (Tuple<string, List<string>> item2 in _bitComparer)
                     {
                         //Khớp loại file => Lấy danh sách bit ra so sánh 
                         if (item2.Item1 == item.Item1)
@@ -129,13 +129,13 @@ namespace CoStudy.API.Application.Features
         public static string IsImageAndType(Stream stream, out string type, IConfiguration configuration)
         {
             _allowImageType = new List<Tuple<string, string>>();
-            var listImageTypeString = configuration.GetSection("FileSettings:AllowedTypes").Get<string[]>();
-            var listAllowedTypeBit = configuration.GetSection("FileSettings:AllowedTypeBits").Get<string[]>();
+            string[] listImageTypeString = configuration.GetSection("FileSettings:AllowedTypes").Get<string[]>();
+            string[] listAllowedTypeBit = configuration.GetSection("FileSettings:AllowedTypeBits").Get<string[]>();
             int i = 0;
             try
             {
                 //Duyệt hết list image type hỗ trợ
-                foreach (var imageType in listImageTypeString)
+                foreach (string imageType in listImageTypeString)
                 {
                     if (!String.IsNullOrEmpty(imageType))
                     {
@@ -156,12 +156,12 @@ namespace CoStudy.API.Application.Features
             try
             {
                 //Duyệt hết định dạng mà appsetting có 
-                foreach (var t in listImageTypeString)
+                foreach (string t in listImageTypeString)
                 {
-                    var bitValue = configuration.GetSection($"FileSettings:TypeBitComparers:{t}").Get<string[]>();
+                    string[] bitValue = configuration.GetSection($"FileSettings:TypeBitComparers:{t}").Get<string[]>();
 
                     //Lấy danh sách bit để so sánh tương tướng
-                    var listBitComparer = bitValue.Where(x => x != String.Empty).ToList();
+                    List<string> listBitComparer = bitValue.Where(x => x != String.Empty).ToList();
 
                     //Add vô dưới dạng tuple
                     _bitComparer.Add(new Tuple<string, List<string>>(t, listBitComparer));
@@ -180,12 +180,12 @@ namespace CoStudy.API.Application.Features
             stream.Seek(0, SeekOrigin.Begin);
             //hexa bit đầu tiên
             string bit = stream.ReadByte().ToString("X2");
-            foreach (var item in _allowImageType)
+            foreach (Tuple<string, string> item in _allowImageType)
             {
                 //Khớp bit đầu tính tiếp 
                 if (item.Item2 == bit)
                 {
-                    foreach (var item2 in _bitComparer)
+                    foreach (Tuple<string, List<string>> item2 in _bitComparer)
                     {
                         //Khớp loại file => Lấy danh sách bit ra so sánh 
                         if (item2.Item1 == item.Item1)

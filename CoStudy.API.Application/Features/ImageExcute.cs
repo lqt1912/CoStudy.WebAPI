@@ -21,14 +21,14 @@ namespace CoStudy.API.Application.Features
     {
         public Tuple<byte[], string> GetImageExtensionNullable(string url, int? posiX, int? posiY, int? width, int? height, bool? flipX, bool? flipY, float? rotate, IConfiguration configuration)
         {
-            var webClient = new WebClient();
+            WebClient webClient = new WebClient();
             byte[] b = webClient.DownloadData(url);
-            var memoryStream = new MemoryStream(b);
+            MemoryStream memoryStream = new MemoryStream(b);
             string imageType;
-            var isImage = ImageValidator.IsImage(memoryStream, out imageType, configuration);
+            bool isImage = ImageValidator.IsImage(memoryStream, out imageType, configuration);
             if (!isImage)
                 throw new Exception("Lỗi định dạng");
-            var tempImage = System.Drawing.Image.FromStream(memoryStream);
+            System.Drawing.Image tempImage = System.Drawing.Image.FromStream(memoryStream);
 
 
 
@@ -36,8 +36,8 @@ namespace CoStudy.API.Application.Features
             {
                 if (!posiX.HasValue && !posiY.HasValue)
                 {
-                    var w1 = tempImage.Width;
-                    var h1 = tempImage.Height;
+                    int w1 = tempImage.Width;
+                    int h1 = tempImage.Height;
 
                     if (width.HasValue)
                         w1 = width.Value;
@@ -48,16 +48,16 @@ namespace CoStudy.API.Application.Features
                 }
                 else
                 {
-                    var x = 0;
-                    var y = 0;
+                    int x = 0;
+                    int y = 0;
 
                     if (posiX.HasValue)
                         x = posiX.Value;
                     if (posiY.HasValue)
                         y = posiY.Value;
 
-                    var w = tempImage.Width;
-                    var h = tempImage.Height;
+                    int w = tempImage.Width;
+                    int h = tempImage.Height;
 
                     if (width.HasValue)
                         w = width.Value;
@@ -81,11 +81,11 @@ namespace CoStudy.API.Application.Features
                 tempImage = ImageExtension.RotateImage(tempImage, rotate.Value);
             }
 
-            var newStream = new MemoryStream();
+            MemoryStream newStream = new MemoryStream();
 
             tempImage.Save(newStream, ImageExtension.ParseImageFormat(imageType.Replace(".", String.Empty).ToLower()));
 
-            var fileType = $"image/{imageType.Replace(".", String.Empty).ToLower()}";
+            string fileType = $"image/{imageType.Replace(".", String.Empty).ToLower()}";
 
             return new Tuple<byte[], string>(newStream.ToArray(), fileType);
         }

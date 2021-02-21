@@ -65,10 +65,10 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
 
         public async Task<AddMediaResponse> AddMedia(AddMediaRequest request)
         {
-            var currentPost = await postRepository.GetByIdAsync(ObjectId.Parse(request.PostId));
+            Post currentPost = await postRepository.GetByIdAsync(ObjectId.Parse(request.PostId));
             if (currentPost != null)
             {
-                var image = PostAdapter.FromRequest(request, httpContextAccessor);
+                Image image = PostAdapter.FromRequest(request, httpContextAccessor);
                 currentPost.MediaContents.Add(image);
                 currentPost.ModifiedDate = DateTime.Now;
                 await postRepository.UpdateAsync(currentPost, currentPost.Id);
@@ -81,27 +81,27 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
         public async Task<AddPostResponse> AddPost(AddPostRequest request)
         {
 
-            var currentUser = Feature.CurrentUser(httpContextAccessor, userRepository);
+            User currentUser = Feature.CurrentUser(httpContextAccessor, userRepository);
 
             currentUser.PostCount++;
             await userRepository.UpdateAsync(currentUser, currentUser.Id);
 
-            var post = PostAdapter.FromRequest(request);
+            Post post = PostAdapter.FromRequest(request);
             post.AuthorId = currentUser.Id.ToString();
             post.AuthorAvatar = currentUser.AvatarHash;
 
             post.AuthorName = $"{currentUser.FirstName} {currentUser.LastName}";
 
-            foreach (var fieldId in request.Fields)
+            foreach (string fieldId in request.Fields)
             {
-                var field = await fieldRepository.GetByIdAsync(ObjectId.Parse(fieldId));
+                Field field = await fieldRepository.GetByIdAsync(ObjectId.Parse(fieldId));
                 if (field != null)
                     post.Fields.Add(field);
             }
 
             await postRepository.AddAsync(post);
 
-            var clientGroup = new ClientGroup()
+            ClientGroup clientGroup = new ClientGroup()
             {
                 Name = post.Id.ToString(),
 
@@ -115,7 +115,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
 
         public async Task<GetPostByIdResponse> GetPostById(string postId)
         {
-            var post = await postRepository.GetByIdAsync(ObjectId.Parse(postId));
+            Post post = await postRepository.GetByIdAsync(ObjectId.Parse(postId));
             if (post == null || post.Status != ItemStatus.Active)
                 throw new Exception("Không tìm thấy bài viết ");
             return PostAdapter.ToResponse(post);
@@ -125,8 +125,8 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
         {
             try
             {
-                var filter = Builders<Post>.Filter;
-                var match = filter.Eq("author_id", userId) & filter.Eq("status", ItemStatus.Active);
+                FilterDefinitionBuilder<Post> filter = Builders<Post>.Filter;
+                FilterDefinition<Post> match = filter.Eq("author_id", userId) & filter.Eq("status", ItemStatus.Active);
 
                 return (await postRepository.FindListAsync(match)).Skip(skip).Take(count);
             }
@@ -140,23 +140,23 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
 
         public async Task<IEnumerable<Post>> GetPostTimelineAsync(int skip, int count)
         {
-            var currentUser = Feature.CurrentUser(httpContextAccessor, userRepository);
+            User currentUser = Feature.CurrentUser(httpContextAccessor, userRepository);
 
-            var findFilter = Builders<Follow>.Filter.Eq("from_id", currentUser.OId);
+            FilterDefinition<Follow> findFilter = Builders<Follow>.Filter.Eq("from_id", currentUser.OId);
 
-            var listFollow = await followRepository.FindListAsync(findFilter);
+            List<Follow> listFollow = await followRepository.FindListAsync(findFilter);
 
-            var listAuthor = new List<string>();
+            List<string> listAuthor = new List<string>();
             listAuthor.Add(currentUser.Id.ToString());
-            foreach (var item in listFollow)
+            foreach (Follow item in listFollow)
                 listAuthor.Add(item.ToId);
 
-            var result = new List<Post>();
+            List<Post> result = new List<Post>();
 
-            foreach (var author in listAuthor)
+            foreach (string author in listAuthor)
             {
-                var builder = Builders<Post>.Filter;
-                var postFindFilter = builder.Eq("author_id", author) & builder.Eq("status", ItemStatus.Active);
+                FilterDefinitionBuilder<Post> builder = Builders<Post>.Filter;
+                FilterDefinition<Post> postFindFilter = builder.Eq("author_id", author) & builder.Eq("status", ItemStatus.Active);
                 result.AddRange(await postRepository.FindListAsync(postFindFilter));
             }
             return result.Skip(skip).Take(count).OrderByDescending(x => x.CreatedDate).ToList();
@@ -167,10 +167,10 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
         {
             try
             {
-                var posts = postRepository.GetAll().Where(x => x.Status == ItemStatus.Active).ToList();
-                foreach (var post in posts)
+                List<Post> posts = postRepository.GetAll().Where(x => x.Status == ItemStatus.Active).ToList();
+                foreach (Post post in posts)
                 {
-                    var latestComments = commentRepository.GetAll().OrderByDescending(x => x.CreatedDate).Where(x => x.PostId == post.Id.ToString() && x.Status == ItemStatus.Active);
+                    IQueryable<Comment> latestComments = commentRepository.GetAll().OrderByDescending(x => x.CreatedDate).Where(x => x.PostId == post.Id.ToString() && x.Status == ItemStatus.Active);
                     if (latestComments.Count() > 3)
                         latestComments = latestComments.Take(3);
                     post.Comments.Clear();
@@ -189,10 +189,10 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
         {
             try
             {
-                var comments = commentRepository.GetAll().Where(x => x.Status == ItemStatus.Active).ToList();
-                foreach (var comment in comments)
+                List<Comment> comments = commentRepository.GetAll().Where(x => x.Status == ItemStatus.Active).ToList();
+                foreach (Comment comment in comments)
                 {
-                    var latestReplies = replyCommentRepository.GetAll().OrderByDescending(x => x.CreatedDate).Where(x => x.ParentId == comment.Id.ToString() && x.Status == ItemStatus.Active);
+                    IQueryable<ReplyComment> latestReplies = replyCommentRepository.GetAll().OrderByDescending(x => x.CreatedDate).Where(x => x.ParentId == comment.Id.ToString() && x.Status == ItemStatus.Active);
                     if (latestReplies.Count() > 3)
                         latestReplies = latestReplies.Take(3);
                     comment.Replies.Clear();
@@ -210,8 +210,8 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
         {
             try
             {
-                var currentUser = Feature.CurrentUser(httpContextAccessor, userRepository);
-                var currentPost = await postRepository.GetByIdAsync(ObjectId.Parse(postId));
+                User currentUser = Feature.CurrentUser(httpContextAccessor, userRepository);
+                Post currentPost = await postRepository.GetByIdAsync(ObjectId.Parse(postId));
 
                 //Chưa unlike
                 if (!currentUser.PostUpvote.Contains(postId))
@@ -238,8 +238,8 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
                     }
                 }
 
-                var filter = Builders<ClientGroup>.Filter.Eq("name", currentPost.OId);
-                var clientGroup = await clientGroupRepository.FindAsync(filter);
+                FilterDefinition<ClientGroup> filter = Builders<ClientGroup>.Filter.Eq("name", currentPost.OId);
+                ClientGroup clientGroup = await clientGroupRepository.FindAsync(filter);
 
                 if (!clientGroup.UserIds.Contains(currentUser.OId))
                 {
@@ -249,7 +249,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
 
                 if (currentPost.AuthorId != currentUser.OId) //Cùng tác giả
                 {
-                    var notify = new Noftication()
+                    Noftication notify = new Noftication()
                     {
                         AuthorId = currentUser.OId,
                         OwnerId = currentPost.AuthorId,
@@ -265,7 +265,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
                 }
                 else //Khác tác giả
                 {
-                    var notify = new Noftication()
+                    Noftication notify = new Noftication()
                     {
                         AuthorId = currentUser.OId,
                         OwnerId = currentPost.AuthorId,
@@ -292,8 +292,8 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
 
             try
             {
-                var currentUser = Feature.CurrentUser(httpContextAccessor, userRepository);
-                var currentPost = await postRepository.GetByIdAsync(ObjectId.Parse(postId));
+                User currentUser = Feature.CurrentUser(httpContextAccessor, userRepository);
+                Post currentPost = await postRepository.GetByIdAsync(ObjectId.Parse(postId));
 
                 //chưa like
                 if (!currentUser.PostDownvote.Contains(postId))
@@ -318,8 +318,8 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
                     }
                 }
 
-                var filter = Builders<ClientGroup>.Filter.Eq("name", currentPost.OId);
-                var clientGroup = await clientGroupRepository.FindAsync(filter);
+                FilterDefinition<ClientGroup> filter = Builders<ClientGroup>.Filter.Eq("name", currentPost.OId);
+                ClientGroup clientGroup = await clientGroupRepository.FindAsync(filter);
 
                 if (!clientGroup.UserIds.Contains(currentUser.OId))
                 {
@@ -329,7 +329,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
 
                 if (currentPost.AuthorId != currentUser.OId) //Cùng tác giả
                 {
-                    var notify = new Noftication()
+                    Noftication notify = new Noftication()
                     {
                         AuthorId = currentUser.OId,
                         OwnerId = currentPost.AuthorId,
@@ -345,7 +345,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
                 }
                 else //Khác tác giả
                 {
-                    var notify = new Noftication()
+                    Noftication notify = new Noftication()
                     {
                         AuthorId = currentUser.OId,
                         OwnerId = currentPost.AuthorId,
@@ -370,7 +370,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
 
         public async Task<Post> UpdatePost(UpdatePostRequest request)
         {
-            var currentPost = await postRepository.GetByIdAsync(ObjectId.Parse(request.PostId));
+            Post currentPost = await postRepository.GetByIdAsync(ObjectId.Parse(request.PostId));
 
             if (currentPost != null)
             {
@@ -386,8 +386,8 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
 
         public async Task<Post> SavePost(string id)
         {
-            var currentUser = Feature.CurrentUser(httpContextAccessor, userRepository);
-            var post = await postRepository.GetByIdAsync(ObjectId.Parse(id));
+            User currentUser = Feature.CurrentUser(httpContextAccessor, userRepository);
+            Post post = await postRepository.GetByIdAsync(ObjectId.Parse(id));
             if (post != null)
             {
                 if (!currentUser.PostSaved.Contains(id))
@@ -409,11 +409,11 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
 
         public async Task<List<Post>> GetSavedPost(int skip, int count)
         {
-            var currentUser = Feature.CurrentUser(httpContextAccessor, userRepository);
+            User currentUser = Feature.CurrentUser(httpContextAccessor, userRepository);
             List<Post> result = new List<Post>();
-            foreach (var postId in currentUser.PostSaved)
+            foreach (string postId in currentUser.PostSaved)
             {
-                var post = await postRepository.GetByIdAsync(ObjectId.Parse(postId));
+                Post post = await postRepository.GetByIdAsync(ObjectId.Parse(postId));
                 if (post != null)
                     result.Add(post);
             }
@@ -422,27 +422,27 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
 
         public async Task<IEnumerable<Post>> Filter(FilterRequest filterRequest)
         {
-            var currentUser = Feature.CurrentUser(httpContextAccessor, userRepository);
+            User currentUser = Feature.CurrentUser(httpContextAccessor, userRepository);
 
-            var findFilter = Builders<Follow>.Filter.Eq("from_id", currentUser.OId);
+            FilterDefinition<Follow> findFilter = Builders<Follow>.Filter.Eq("from_id", currentUser.OId);
 
-            var listFollow = await followRepository.FindListAsync(findFilter);
+            List<Follow> listFollow = await followRepository.FindListAsync(findFilter);
 
-            var listAuthor = new List<string>();
+            List<string> listAuthor = new List<string>();
 
-            foreach (var item in listFollow)
+            foreach (Follow item in listFollow)
                 listAuthor.Add(item.ToId);
             listAuthor.Add(currentUser.OId);
-            var timelines = new List<Post>();
+            List<Post> timelines = new List<Post>();
 
-            foreach (var author in listAuthor)
+            foreach (string author in listAuthor)
             {
-                var builder = Builders<Post>.Filter;
-                var postFindFilter = builder.Eq("author_id", author) & builder.Eq("status", ItemStatus.Active);
+                FilterDefinitionBuilder<Post> builder = Builders<Post>.Filter;
+                FilterDefinition<Post> postFindFilter = builder.Eq("author_id", author) & builder.Eq("status", ItemStatus.Active);
                 timelines.AddRange(await postRepository.FindListAsync(postFindFilter));
             }
 
-            var queryable = timelines.AsQueryable();
+            IQueryable<Post> queryable = timelines.AsQueryable();
 
             if (!String.IsNullOrEmpty(filterRequest.KeyWord))
                 queryable = queryable.Where(x => x.Title.ToLower().Contains(filterRequest.KeyWord.ToLower()));
@@ -452,7 +452,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
                 queryable = queryable.Where(x => x.CreatedDate <= filterRequest.ToDate);
             if (!String.IsNullOrEmpty(filterRequest.Field))
             {
-                var field = fieldRepository.GetById(ObjectId.Parse(filterRequest.Field));
+                Field field = fieldRepository.GetById(ObjectId.Parse(filterRequest.Field));
                 queryable = queryable.Where(x => x.Fields.Contains(field));
             }
 
@@ -493,14 +493,14 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
         {
             try
             {
-                var comments = commentRepository.GetAll().Where(x => x.Status == ItemStatus.Active);
-                foreach (var comment in comments)
+                IQueryable<Comment> comments = commentRepository.GetAll().Where(x => x.Status == ItemStatus.Active);
+                foreach (Comment comment in comments)
                 {
-                    var upvoteBuilder = Builders<UpVote>.Filter.Eq("object_vote_id", comment.OId);
+                    FilterDefinition<UpVote> upvoteBuilder = Builders<UpVote>.Filter.Eq("object_vote_id", comment.OId);
                     comment.UpvoteCount = (await upVoteRepository.FindListAsync(upvoteBuilder)).Count;
                     await commentRepository.UpdateAsync(comment, comment.Id);
 
-                    var downVoteBuilder = Builders<DownVote>.Filter.Eq("object_vote_id", comment.OId);
+                    FilterDefinition<DownVote> downVoteBuilder = Builders<DownVote>.Filter.Eq("object_vote_id", comment.OId);
                     comment.DownvoteCount = (await downVoteRepository.FindListAsync(downVoteBuilder)).Count;
                     await commentRepository.UpdateAsync(comment, comment.Id);
                 }
@@ -515,14 +515,14 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
         {
             try
             {
-                var comments = replyCommentRepository.GetAll().Where(x => x.Status == ItemStatus.Active);
-                foreach (var comment in comments)
+                IQueryable<ReplyComment> comments = replyCommentRepository.GetAll().Where(x => x.Status == ItemStatus.Active);
+                foreach (ReplyComment comment in comments)
                 {
-                    var upvoteBuilder = Builders<UpVote>.Filter.Eq("object_vote_id", comment.OId);
+                    FilterDefinition<UpVote> upvoteBuilder = Builders<UpVote>.Filter.Eq("object_vote_id", comment.OId);
                     comment.UpvoteCount = (await upVoteRepository.FindListAsync(upvoteBuilder)).Count;
                     await replyCommentRepository.UpdateAsync(comment, comment.Id);
 
-                    var downVoteBuilder = Builders<DownVote>.Filter.Eq("object_vote_id", comment.OId);
+                    FilterDefinition<DownVote> downVoteBuilder = Builders<DownVote>.Filter.Eq("object_vote_id", comment.OId);
                     comment.DownvoteCount = (await downVoteRepository.FindListAsync(downVoteBuilder)).Count;
                     await replyCommentRepository.UpdateAsync(comment, comment.Id);
                 }

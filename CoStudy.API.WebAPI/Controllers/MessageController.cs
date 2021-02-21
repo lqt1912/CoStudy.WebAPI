@@ -21,7 +21,7 @@ namespace CoStudy.API.WebAPI.Controllers
         [Route("conversation/add")]
         public async Task<IActionResult> AddConversation(AddConversationRequest request)
         {
-            var data = await messageService.AddConversation(request);
+            Infrastructure.Shared.Models.Response.MessageResponse.AddConversationResponse data = await messageService.AddConversation(request);
             return Ok(new ApiOkResponse(data));
         }
 
@@ -29,7 +29,7 @@ namespace CoStudy.API.WebAPI.Controllers
         [Route("conversation/current")]
         public IActionResult GetCurrentConversationList()
         {
-            var data = messageService.GetConversationByUserId();
+            Infrastructure.Shared.Models.Response.MessageResponse.GetConversationByUserIdResponse data = messageService.GetConversationByUserId();
             return Ok(new ApiOkResponse(data));
         }
 
@@ -38,7 +38,7 @@ namespace CoStudy.API.WebAPI.Controllers
         [Route("message/add")]
         public async Task<IActionResult> AddMessage(AddMessageRequest request)
         {
-            var data = await messageService.AddMessage(request);
+            Infrastructure.Shared.Models.Response.MessageResponse.AddMessageResponse data = await messageService.AddMessage(request);
 
             return Ok(new ApiOkResponse(data));
         }
@@ -47,7 +47,7 @@ namespace CoStudy.API.WebAPI.Controllers
         [Route("message/get/conversation/{id}/skip/{skip}/count/{count}")]
         public async Task<IActionResult> GetMessageByConversationId(string id, int skip, int count)
         {
-            var data = await messageService.GetMessageByConversationId(id, skip, count);
+            Infrastructure.Shared.Models.Response.MessageResponse.GetMessageByConversationIdResponse data = await messageService.GetMessageByConversationId(id, skip, count);
             return Ok(new ApiOkResponse(data));
         }
 
@@ -56,7 +56,7 @@ namespace CoStudy.API.WebAPI.Controllers
         [Route("conversation/{id}")]
         public async Task<IActionResult> DeleteConversation(string id)
         {
-            var data = await messageService.DeleteConversation(id);
+            string data = await messageService.DeleteConversation(id);
             return Ok(new ApiOkResponse(data));
         }
 
@@ -64,7 +64,7 @@ namespace CoStudy.API.WebAPI.Controllers
         [Route("message/{id}")]
         public async Task<IActionResult> DeleteMessage(string id)
         {
-            var data = await messageService.DeleteMessage(id);
+            string data = await messageService.DeleteMessage(id);
             return Ok(new ApiOkResponse(data));
         }
 
@@ -72,7 +72,7 @@ namespace CoStudy.API.WebAPI.Controllers
         [Route("update")]
         public async Task<IActionResult> EditMessage(UpdateMessageRequest request)
         {
-            var data = await messageService.EditMessage(request);
+            Domain.Entities.Application.Message data = await messageService.EditMessage(request);
             return Ok(new ApiOkResponse(data));
         }
 

@@ -12,7 +12,7 @@ namespace CoStudy.API.Infrastructure.Shared.Adapters
         public static Post FromRequest(AddPostRequest request)
         {
 
-            var post = new Post();
+            Post post = new Post();
             post.Title = request.Title;
             post.Upvote = 0;
             post.Downvote = 0;
@@ -21,7 +21,7 @@ namespace CoStudy.API.Infrastructure.Shared.Adapters
             post.Status = ItemStatus.Active;
             if (request.StringContents != null)
             {
-                foreach (var content in request.StringContents)
+                foreach (PostContent content in request.StringContents)
                 {
                     PostContent postContent = new PostContent();
                     postContent.ContentType = content.ContentType;
@@ -33,7 +33,7 @@ namespace CoStudy.API.Infrastructure.Shared.Adapters
             if (request.MediaContents != null)
             {
 
-                foreach (var content in request.MediaContents)
+                foreach (Image content in request.MediaContents)
                 {
                     Image postContent = new Image();
                     postContent.ImageHash = content.ImageHash;
@@ -56,7 +56,7 @@ namespace CoStudy.API.Infrastructure.Shared.Adapters
 
         public static Image FromRequest(AddMediaRequest request, IHttpContextAccessor httpContextAccessor)
         {
-            var url = Feature.SaveImage(request.Image, httpContextAccessor, "PostImage");
+            string url = Feature.SaveImage(request.Image, httpContextAccessor, "PostImage");
 
             return new Image()
             {

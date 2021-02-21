@@ -22,15 +22,15 @@ namespace CoStudy.API.WebAPI.Controllers
         [Route("add")]
         public async Task<IActionResult> AddNoftication(AddNofticationRequest request)
         {
-            var data = await nofticationService.AddNoftication(request);
+            Infrastructure.Shared.Models.Response.NofticationResponse.AddNofticationResponse data = await nofticationService.AddNoftication(request);
             return Ok(new ApiOkResponse(data));
         }
-       
+
         [HttpGet]
         [Route("current")]
         public async Task<IActionResult> GetCurrentUserNoftication(int? skip, int? count)
         {
-            var data = await nofticationService.GetCurrentUserNoftication(skip, count);
+            System.Collections.Generic.IEnumerable<Domain.Entities.Application.Noftication> data = await nofticationService.GetCurrentUserNoftication(skip, count);
             return Ok(new ApiOkResponse(data));
         }
 
@@ -38,7 +38,7 @@ namespace CoStudy.API.WebAPI.Controllers
         [Route("{id}")]
         public async Task<IActionResult> Delete(string id)
         {
-            var data = await nofticationService.DeleteNotification(id);
+            string data = await nofticationService.DeleteNotification(id);
             return Ok(new ApiOkResponse(data));
         }
 
@@ -46,7 +46,7 @@ namespace CoStudy.API.WebAPI.Controllers
         [Route("read")]
         public async Task<IActionResult> MarkAsRead(string id)
         {
-            var data = await nofticationService.MarkAsRead(id);
+            string data = await nofticationService.MarkAsRead(id);
             return Ok(new ApiOkResponse(data));
         }
     }

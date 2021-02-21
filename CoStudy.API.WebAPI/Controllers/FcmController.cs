@@ -20,7 +20,7 @@ namespace CoStudy.API.WebAPI.Controllers
         [Route("add")]
         public async Task<IActionResult> AddFcm(string userId, string token)
         {
-            var data = await fcmRepository.AddFcmInfo(userId, token);
+            Domain.Entities.Application.FcmInfo data = await fcmRepository.AddFcmInfo(userId, token);
             return Ok(new ApiOkResponse(data));
         }
 
@@ -28,7 +28,7 @@ namespace CoStudy.API.WebAPI.Controllers
         [Route("revoke")]
         public async Task<IActionResult> RevokeFcm(string userId, string token)
         {
-            var data = await fcmRepository.RevokeFcmInfo(userId, token);
+            Domain.Entities.Application.FcmInfo data = await fcmRepository.RevokeFcmInfo(userId, token);
             return Ok(new ApiOkResponse(data));
         }
 

@@ -25,10 +25,10 @@ namespace CoStudy.API.Infrastructure.Shared.Services.MessageServices
 
         public IClientGroupRepository clientGroupRepository { get; }
 
-        public MessageService(IMessageRepository messageRepository, 
+        public MessageService(IMessageRepository messageRepository,
             IConversationRepository conversationRepository,
             IUserRepository userRepository,
-            IHttpContextAccessor httpContextAccessor, 
+            IHttpContextAccessor httpContextAccessor,
             IClientGroupRepository clientGroupRepository,
             IFcmRepository fcmRepository)
         {
@@ -43,13 +43,13 @@ namespace CoStudy.API.Infrastructure.Shared.Services.MessageServices
         public async Task<AddConversationResponse> AddConversation(AddConversationRequest request)
         {
 
-            var currentUser = Feature.CurrentUser(httpContextAccessor, userRepository);
+            User currentUser = Feature.CurrentUser(httpContextAccessor, userRepository);
 
             request.Participants.Add(currentUser.Id.ToString());
 
-            var existConversation = new Conversation() { Participants = new List<string>() };
-                
-            foreach (var conver in conversationRepository.GetAll())
+            Conversation existConversation = new Conversation() { Participants = new List<string>() };
+
+            foreach (Conversation conver in conversationRepository.GetAll())
             {
                 if (Feature.IsEqual(conver.Participants, request.Participants) == true)
                 {
@@ -58,14 +58,14 @@ namespace CoStudy.API.Infrastructure.Shared.Services.MessageServices
                 }
             }
 
-            if (existConversation.Participants.Count !=0)
+            if (existConversation.Participants.Count != 0)
                 return MessageAdapter.ToResponse(existConversation);
 
-            var conversation = MessageAdapter.FromRequest(request);
+            Conversation conversation = MessageAdapter.FromRequest(request);
 
             await conversationRepository.AddAsync(conversation);
 
-            var clientGroup = new ClientGroup()
+            ClientGroup clientGroup = new ClientGroup()
             {
                 UserIds = request.Participants,
                 Name = conversation.Id.ToString(),
@@ -76,7 +76,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.MessageServices
 
         public async Task<AddMessageResponse> AddMessage(AddMessageRequest request)
         {
-            var message = MessageAdapter.FromRequest(request, httpContextAccessor, userRepository);
+            Message message = MessageAdapter.FromRequest(request, httpContextAccessor, userRepository);
 
             await messageRepository.AddAsync(message);
 
@@ -89,9 +89,9 @@ namespace CoStudy.API.Infrastructure.Shared.Services.MessageServices
         {
             try
             {
-                var finder = Builders<Message>.Filter;
-                var filter = finder.Eq("conversation_id", conversationId) & finder.Eq("status", ItemStatus.Active);
-                var messages = (await messageRepository.FindListAsync(filter)).OrderByDescending(x => x.CreatedDate).Skip(skip).Take(count);
+                FilterDefinitionBuilder<Message> finder = Builders<Message>.Filter;
+                FilterDefinition<Message> filter = finder.Eq("conversation_id", conversationId) & finder.Eq("status", ItemStatus.Active);
+                IEnumerable<Message> messages = (await messageRepository.FindListAsync(filter)).OrderByDescending(x => x.CreatedDate).Skip(skip).Take(count);
                 return new GetMessageByConversationIdResponse()
                 {
                     Id = conversationId,
@@ -107,18 +107,18 @@ namespace CoStudy.API.Infrastructure.Shared.Services.MessageServices
 
         public GetConversationByUserIdResponse GetConversationByUserId()
         {
-            var currentUser = Feature.CurrentUser(httpContextAccessor, userRepository);
+            User currentUser = Feature.CurrentUser(httpContextAccessor, userRepository);
             if (currentUser == null)
                 throw new Exception("User not found");
-            var result = new List<Tuple<Conversation, Message>>();
+            List<Tuple<Conversation, Message>> result = new List<Tuple<Conversation, Message>>();
 
-            var conversations = conversationRepository.GetAll().Where(x => x.Participants.Contains(currentUser.Id.ToString()));
-            foreach (var conversation in conversations)
+            IQueryable<Conversation> conversations = conversationRepository.GetAll().Where(x => x.Participants.Contains(currentUser.Id.ToString()));
+            foreach (Conversation conversation in conversations)
             {
-                var recentMessage = messageRepository.GetAll().Where(x => x.ConversationId == conversation.Id.ToString()).OrderByDescending(x => x.CreatedDate).FirstOrDefault();
+                Message recentMessage = messageRepository.GetAll().Where(x => x.ConversationId == conversation.Id.ToString()).OrderByDescending(x => x.CreatedDate).FirstOrDefault();
                 if (recentMessage == null)
                     recentMessage = new Message();
-                var item = new Tuple<Conversation, Message>(conversation, recentMessage);
+                Tuple<Conversation, Message> item = new Tuple<Conversation, Message>(conversation, recentMessage);
                 result.Add(item);
             }
             return new GetConversationByUserIdResponse()
@@ -134,15 +134,15 @@ namespace CoStudy.API.Infrastructure.Shared.Services.MessageServices
 
         public async Task<string> DeleteConversation(string id)
         {
-            var exist = await conversationRepository.GetByIdAsync(ObjectId.Parse(id));
+            Conversation exist = await conversationRepository.GetByIdAsync(ObjectId.Parse(id));
             if (exist != null)
             {
                 //delete conversation
                 await conversationRepository.DeleteAsync(ObjectId.Parse(id));
 
                 //Delete notification group
-                var finder = Builders<ClientGroup>.Filter.Eq("name", id);
-                var clientGroup = await clientGroupRepository.FindAsync(finder);
+                FilterDefinition<ClientGroup> finder = Builders<ClientGroup>.Filter.Eq("name", id);
+                ClientGroup clientGroup = await clientGroupRepository.FindAsync(finder);
                 if (clientGroup != null)
                     await clientGroupRepository.DeleteAsync(clientGroup.Id);
 
@@ -153,8 +153,8 @@ namespace CoStudy.API.Infrastructure.Shared.Services.MessageServices
 
         public async Task<string> DeleteMessage(string id)
         {
-            var existMessage = await messageRepository.GetByIdAsync(ObjectId.Parse(id));
-            var currentUser = Feature.CurrentUser(httpContextAccessor, userRepository);
+            Message existMessage = await messageRepository.GetByIdAsync(ObjectId.Parse(id));
+            User currentUser = Feature.CurrentUser(httpContextAccessor, userRepository);
             if (existMessage != null && existMessage.SenderId == currentUser.OId)
             {
                 existMessage.Status = ItemStatus.Deleted;
@@ -166,7 +166,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.MessageServices
 
         public async Task<Message> EditMessage(UpdateMessageRequest request)
         {
-            var message =await  messageRepository.GetByIdAsync(ObjectId.Parse(request.Id));
+            Message message = await messageRepository.GetByIdAsync(ObjectId.Parse(request.Id));
             if (message == null)
                 throw new Exception("Tin nhắn không tìm thấy");
             message.MediaContent = request.Image;

@@ -26,7 +26,7 @@ namespace CoStudy.API.WebAPI.Middlewares
 
         public async Task Invoke(HttpContext context, IAccountRepository accountRepository)
         {
-            var token = context.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
+            string token = context.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
 
             if (token != null)
                 await attachAccountToContext(context, token, accountRepository);
@@ -38,8 +38,8 @@ namespace CoStudy.API.WebAPI.Middlewares
         {
             try
             {
-                var tokenHandler = new JwtSecurityTokenHandler();
-                var key = Encoding.ASCII.GetBytes(_appSettings.Secret);
+                JwtSecurityTokenHandler tokenHandler = new JwtSecurityTokenHandler();
+                byte[] key = Encoding.ASCII.GetBytes(_appSettings.Secret);
                 tokenHandler.ValidateToken(token, new TokenValidationParameters
                 {
                     ValidateIssuerSigningKey = true,
@@ -50,8 +50,8 @@ namespace CoStudy.API.WebAPI.Middlewares
                     ClockSkew = TimeSpan.Zero
                 }, out SecurityToken validatedToken);
 
-                var jwtToken = (JwtSecurityToken)validatedToken;
-                var accountId = jwtToken.Claims.First(x => x.Type == "_id").Value;
+                JwtSecurityToken jwtToken = (JwtSecurityToken)validatedToken;
+                string accountId = jwtToken.Claims.First(x => x.Type == "_id").Value;
 
                 // attach account to context on successful jwt validation
                 context.Items["Account"] = await accountRepository.GetByIdAsync(ObjectId.Parse(accountId));

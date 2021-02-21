@@ -142,7 +142,7 @@ namespace CoStudy.API.Application.Features
         /// <returns></returns>
         public static Image ToBlackAndWhite(Image imgPhoto)
         {
-            var bmp = new Bitmap(imgPhoto);
+            Bitmap bmp = new Bitmap(imgPhoto);
             int rgb;
             Color c;
 

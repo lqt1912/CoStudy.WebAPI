@@ -23,17 +23,17 @@ namespace CoStudy.API.WebAPI.Middlewares
 
         public void OnAuthorization(AuthorizationFilterContext context)
         {
-            var account = (Account)context.HttpContext.Items["Account"];
+            Account account = (Account)context.HttpContext.Items["Account"];
 
             ILoggingRepository loggingRepository = (ILoggingRepository)context.HttpContext.RequestServices.GetService(typeof(ILoggingRepository));
 
             if (account == null || (_roles.Any() && !_roles.Contains(account.Role)))
             {
-                var response = new ApiResponse(false, StatusCodes.Status401Unauthorized, "Unauthorized");
+                ApiResponse response = new ApiResponse(false, StatusCodes.Status401Unauthorized, "Unauthorized");
                 // not logged in or role not authorized
                 context.Result = new JsonResult(response);
 
-                var logging = new Logging();
+                Logging logging = new Logging();
                 logging.Location = $"{context.HttpContext.Request.Scheme}://{context.HttpContext.Request.Host}";
                 logging.RequestMethod = context.HttpContext.Request.Method;
                 logging.RequestPath = context.HttpContext.Request.Path.ToString();

@@ -31,7 +31,7 @@ namespace CoStudy.API.WebAPI.Controllers
         [HttpPost("login")]
         public ActionResult<AuthenticateResponse> Authenticate(AuthenticateRequest model)
         {
-            var response = _accountService.Authenticate(model, ipAddress());
+            AuthenticateResponse response = _accountService.Authenticate(model, ipAddress());
             setTokenCookie(response.RefreshToken);
             return Ok(new ApiOkResponse(response));
         }
@@ -39,8 +39,8 @@ namespace CoStudy.API.WebAPI.Controllers
         [HttpPost("refresh-token")]
         public ActionResult<AuthenticateResponse> RefreshToken()
         {
-            var refreshToken = Request.Cookies["refreshToken"];
-            var response = _accountService.RefreshToken(refreshToken, ipAddress());
+            string refreshToken = Request.Cookies["refreshToken"];
+            AuthenticateResponse response = _accountService.RefreshToken(refreshToken, ipAddress());
             setTokenCookie(response.RefreshToken);
             return Ok(new ApiOkResponse(response));
         }
@@ -50,7 +50,7 @@ namespace CoStudy.API.WebAPI.Controllers
         public IActionResult RevokeToken(RevokeTokenRequest model)
         {
             // accept token from request body or cookie
-            var token = model.Token ?? Request.Cookies["refreshToken"];
+            string token = model.Token ?? Request.Cookies["refreshToken"];
 
             if (string.IsNullOrEmpty(token))
                 return BadRequest(new { message = "Token is required" });
@@ -103,7 +103,7 @@ namespace CoStudy.API.WebAPI.Controllers
         [HttpGet]
         public ActionResult<IEnumerable<AccountResponse>> GetAll()
         {
-            var accounts = _accountService.GetAll();
+            IEnumerable<AccountResponse> accounts = _accountService.GetAll();
             return Ok(new ApiOkResponse(accounts));
         }
 
@@ -115,7 +115,7 @@ namespace CoStudy.API.WebAPI.Controllers
             if (id != Account.Id.ToString() && Account.Role != Role.Admin)
                 return Unauthorized(new { message = "Unauthorized" });
 
-            var account = _accountService.GetById(id);
+            AccountResponse account = _accountService.GetById(id);
             return Ok(new ApiOkResponse(account));
         }
 
@@ -123,7 +123,7 @@ namespace CoStudy.API.WebAPI.Controllers
         [HttpPost]
         public ActionResult<AccountResponse> Create(CreateRequest model)
         {
-            var account = _accountService.Create(model);
+            AccountResponse account = _accountService.Create(model);
             return Ok(new ApiOkResponse(account));
         }
 
@@ -139,7 +139,7 @@ namespace CoStudy.API.WebAPI.Controllers
             if (Account.Role != Role.Admin)
                 model.Role = null;
 
-            var account = _accountService.Update(id, model);
+            AccountResponse account = _accountService.Update(id, model);
             return Ok(new ApiOkResponse(account));
         }
 
@@ -160,7 +160,7 @@ namespace CoStudy.API.WebAPI.Controllers
 
         private void setTokenCookie(string token)
         {
-            var cookieOptions = new CookieOptions
+            CookieOptions cookieOptions = new CookieOptions
             {
                 HttpOnly = true,
                 Expires = DateTime.UtcNow.AddDays(7)
@@ -178,10 +178,10 @@ namespace CoStudy.API.WebAPI.Controllers
 
         private string GetHostUrl()
         {
-            var scheme = httpContextAccessor.HttpContext.Request.Scheme;
-            var host = httpContextAccessor.HttpContext.Request.Host;
-            var pathBase = httpContextAccessor.HttpContext.Request.PathBase;
-            var location = $"{scheme}://{host}{pathBase}";
+            string scheme = httpContextAccessor.HttpContext.Request.Scheme;
+            HostString host = httpContextAccessor.HttpContext.Request.Host;
+            PathString pathBase = httpContextAccessor.HttpContext.Request.PathBase;
+            string location = $"{scheme}://{host}{pathBase}";
             return location;
         }
     }

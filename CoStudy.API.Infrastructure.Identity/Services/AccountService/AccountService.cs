@@ -43,15 +43,15 @@ namespace CoStudy.API.Infrastructure.Identity.Services.AccountService
 
         private string generateJwtToken(Account account)
         {
-            var tokenHandler = new JwtSecurityTokenHandler();
-            var key = Encoding.ASCII.GetBytes(appSettings.Secret);
-            var tokenDescriptor = new SecurityTokenDescriptor
+            JwtSecurityTokenHandler tokenHandler = new JwtSecurityTokenHandler();
+            byte[] key = Encoding.ASCII.GetBytes(appSettings.Secret);
+            SecurityTokenDescriptor tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(new[] { new Claim("_id", account.Id.ToString()) }),
                 Expires = DateTime.UtcNow.AddHours(2),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             };
-            var token = tokenHandler.CreateToken(tokenDescriptor);
+            SecurityToken token = tokenHandler.CreateToken(tokenDescriptor);
             return tokenHandler.WriteToken(token);
         }
 
@@ -93,7 +93,7 @@ namespace CoStudy.API.Infrastructure.Identity.Services.AccountService
             //    }
             //}
 
-            var account = accountRepository.GetAll().SingleOrDefault(x => x.Email == model.Email);
+            Account account = accountRepository.GetAll().SingleOrDefault(x => x.Email == model.Email);
             if (account == null)
                 throw new Exception("Email or password incorrect");
 
@@ -103,18 +103,18 @@ namespace CoStudy.API.Infrastructure.Identity.Services.AccountService
             if (!BC.Verify(model.Password, account.PasswordHash))
                 throw new Exception("Email or password incorrect");
 
-            var jwtToken = generateJwtToken(account);
-            var refreshToken = generateRefreshToken(ipAddress);
+            string jwtToken = generateJwtToken(account);
+            RefreshToken refreshToken = generateRefreshToken(ipAddress);
             account.RefreshTokens.Add(refreshToken);
             removeOldRefreshTokens(account);
 
             accountRepository.Update(account, account.Id);
 
-            var response = mapper.Map<AuthenticateResponse>(account);
+            AuthenticateResponse response = mapper.Map<AuthenticateResponse>(account);
             response.JwtToken = jwtToken;
             response.RefreshToken = refreshToken.Token;
 
-            var currentUser = userRepository.GetAll().SingleOrDefault(x => x.Email == model.Email);
+            Domain.Entities.Application.User currentUser = userRepository.GetAll().SingleOrDefault(x => x.Email == model.Email);
 
             CacheHelper.Add($"CurrentUser-{currentUser.Email}", currentUser, DateTime.Now.AddDays(10));
             CacheHelper.Add($"CurrentAccount-{account.Email}", account, DateTime.Now.AddDays(10));
@@ -124,11 +124,11 @@ namespace CoStudy.API.Infrastructure.Identity.Services.AccountService
 
         public AccountResponse Create(CreateRequest model)
         {
-            var currentAccount = accountRepository.GetAll().SingleOrDefault(x => x.Email == model.Email);
+            Account currentAccount = accountRepository.GetAll().SingleOrDefault(x => x.Email == model.Email);
             if (currentAccount != null)
                 throw new Exception($"Email {model.Email} has been registered");
 
-            var account = mapper.Map<Account>(model);
+            Account account = mapper.Map<Account>(model);
             account.Created = DateTime.UtcNow;
             account.Verified = DateTime.UtcNow;
             account.PasswordHash = BC.HashPassword(model.Password);
@@ -144,7 +144,7 @@ namespace CoStudy.API.Infrastructure.Identity.Services.AccountService
         public async Task ForgotPassword(ForgotPasswordRequest model, string origin)
         {
 
-            var account = accountRepository.GetAll().SingleOrDefault(x => x.Email == model.Email);
+            Account account = accountRepository.GetAll().SingleOrDefault(x => x.Email == model.Email);
 
             // always return ok response to prevent email enumeration
             if (account == null) return;
@@ -163,16 +163,16 @@ namespace CoStudy.API.Infrastructure.Identity.Services.AccountService
 
         public IEnumerable<AccountResponse> GetAll()
         {
-            var accounts = accountRepository.GetAll();
+            IQueryable<Account> accounts = accountRepository.GetAll();
             return mapper.Map<IList<AccountResponse>>(accounts);
         }
 
         public AuthenticateResponse RefreshToken(string token, string ipAddress)
         {
-            var (refreshToken, account) = getRefreshToken(token);
+            (RefreshToken refreshToken, Account account) = getRefreshToken(token);
 
             // replace old refresh token with a new one and save
-            var newRefreshToken = generateRefreshToken(ipAddress);
+            RefreshToken newRefreshToken = generateRefreshToken(ipAddress);
             refreshToken.Revoked = DateTime.UtcNow;
             refreshToken.RevokedByIp = ipAddress;
             refreshToken.ReplacedByToken = newRefreshToken.Token;
@@ -183,9 +183,9 @@ namespace CoStudy.API.Infrastructure.Identity.Services.AccountService
             accountRepository.Update(account, account.Id);
 
             // generate new jwt
-            var jwtToken = generateJwtToken(account);
+            string jwtToken = generateJwtToken(account);
 
-            var response = mapper.Map<AuthenticateResponse>(account);
+            AuthenticateResponse response = mapper.Map<AuthenticateResponse>(account);
             response.JwtToken = jwtToken;
             response.RefreshToken = newRefreshToken.Token;
             return response;
@@ -198,9 +198,9 @@ namespace CoStudy.API.Infrastructure.Identity.Services.AccountService
                 await sendAlreadyRegisteredEmail(model.Email, origin);
                 throw new Exception($"Email {model.Email} has been registered");
             }
-            var account = mapper.Map<Account>(model);
+            Account account = mapper.Map<Account>(model);
 
-            var isFirstAccount = accountRepository.GetAll().Count() == 0;
+            bool isFirstAccount = accountRepository.GetAll().Count() == 0;
             account.Role = isFirstAccount ? Role.Admin : Role.User;
             account.Created = DateTime.UtcNow;
             account.VerificationToken = Extension.randomOTPString();
@@ -216,7 +216,7 @@ namespace CoStudy.API.Infrastructure.Identity.Services.AccountService
         public void ResetPassword(ResetPasswordRequest model)
         {
 
-            var account = accountRepository.GetAll().SingleOrDefault(
+            Account account = accountRepository.GetAll().SingleOrDefault(
                 x => x.ResetToken == model.Token &&
                 x.ResetTokenExpires > DateTime.UtcNow
                 );
@@ -235,7 +235,7 @@ namespace CoStudy.API.Infrastructure.Identity.Services.AccountService
 
         public void RevokeToken(string token, string ipAddress)
         {
-            var (refreshToken, account) = getRefreshToken(token);
+            (RefreshToken refreshToken, Account account) = getRefreshToken(token);
             // revoke token and save
             refreshToken.Revoked = DateTime.UtcNow;
             refreshToken.RevokedByIp = ipAddress;
@@ -245,7 +245,7 @@ namespace CoStudy.API.Infrastructure.Identity.Services.AccountService
 
         public AccountResponse Update(string id, UpdateRequest model)
         {
-            var account = accountRepository.GetById(ObjectId.Parse(id));
+            Account account = accountRepository.GetById(ObjectId.Parse(id));
 
             if (account.Email != model.Email
                 && accountRepository.GetAll().SingleOrDefault(x => x.Email == model.Email) != null)
@@ -269,7 +269,7 @@ namespace CoStudy.API.Infrastructure.Identity.Services.AccountService
         public void ValidateResetToken(ValidateResetTokenRequest model)
         {
 
-            var account = accountRepository.GetAll().SingleOrDefault(x => x.ResetToken == model.Token && x.ResetTokenExpires > DateTime.UtcNow);
+            Account account = accountRepository.GetAll().SingleOrDefault(x => x.ResetToken == model.Token && x.ResetTokenExpires > DateTime.UtcNow);
             if (account == null)
                 throw new Exception("Invalid Token! ");
         }
@@ -277,7 +277,7 @@ namespace CoStudy.API.Infrastructure.Identity.Services.AccountService
         public void VerifyEmail(string token)
         {
 
-            var account = accountRepository.GetAll().SingleOrDefault(x => x.VerificationToken == token);
+            Account account = accountRepository.GetAll().SingleOrDefault(x => x.VerificationToken == token);
 
             if (account == null)
                 throw new Exception("Verfication failed! ");
@@ -291,7 +291,7 @@ namespace CoStudy.API.Infrastructure.Identity.Services.AccountService
             string message;
             if (!string.IsNullOrEmpty(origin))
             {
-                var resetUrl = $"{origin}/account/reset-password?token={account.ResetToken}";
+                string resetUrl = $"{origin}/account/reset-password?token={account.ResetToken}";
                 message = $@"<p>Please click the below link to reset your password, the link will be valid for 1 day:</p>
                              <p><a href=""{resetUrl}"">{resetUrl}</a></p>";
             }
@@ -372,11 +372,11 @@ namespace CoStudy.API.Infrastructure.Identity.Services.AccountService
 
         private (RefreshToken, Account) getRefreshToken(string token)
         {
-            var account = accountRepository.GetAll().SingleOrDefault(u => u.RefreshTokens.Any(t => t.Token == token));
+            Account account = accountRepository.GetAll().SingleOrDefault(u => u.RefreshTokens.Any(t => t.Token == token));
 
             if (account == null) throw new AppException("Invalid token");
 
-            var refreshToken = account.RefreshTokens.Single(x => x.Token == token);
+            RefreshToken refreshToken = account.RefreshTokens.Single(x => x.Token == token);
 
             if (!refreshToken.IsActive) throw new AppException("Invalid token");
 
@@ -384,19 +384,19 @@ namespace CoStudy.API.Infrastructure.Identity.Services.AccountService
         }
         public AccountResponse GetById(string id)
         {
-            var account = accountRepository.GetById(ObjectId.Parse(id));
+            Account account = accountRepository.GetById(ObjectId.Parse(id));
             return mapper.Map<AccountResponse>(account);
         }
 
         public async Task<string> GetCurrentRefreshToken()
         {
-            var currentUser = Feature.CurrentUser(httpContextAccessor, userRepository);
-            var filter = Builders<Account>.Filter.Eq("Email", currentUser.Email);
-            var currentAccount = await accountRepository.FindAsync(filter);
+            Domain.Entities.Application.User currentUser = Feature.CurrentUser(httpContextAccessor, userRepository);
+            FilterDefinition<Account> filter = Builders<Account>.Filter.Eq("Email", currentUser.Email);
+            Account currentAccount = await accountRepository.FindAsync(filter);
             if (currentAccount != null)
             {
-                var refreshTokens = currentAccount.RefreshTokens.OrderByDescending(x => x.Created);
-                var latestRefresh = refreshTokens.ElementAt(0);
+                IOrderedEnumerable<RefreshToken> refreshTokens = currentAccount.RefreshTokens.OrderByDescending(x => x.Created);
+                RefreshToken latestRefresh = refreshTokens.ElementAt(0);
                 if (!latestRefresh.IsExpired)
                     return latestRefresh.Token;
                 else throw new Exception("Có lỗi xảy ra");

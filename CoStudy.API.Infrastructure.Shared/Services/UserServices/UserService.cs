@@ -64,15 +64,15 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
 
         public async Task<AddAvatarResponse> AddAvatarAsync(AddAvatarRequest request)
         {
-            var avatar = UserAdapter.FromRequest(request, _httpContextAccessor);
+            Image avatar = UserAdapter.FromRequest(request, _httpContextAccessor);
 
-            var currentUser = CurrentUser();
+            User currentUser = CurrentUser();
 
             currentUser.Avatar = avatar;
             currentUser.AvatarHash = avatar.ImageHash;
             currentUser.ModifiedDate = DateTime.Now;
 
-            foreach (var post in postRepository.GetAll().Where(x => x.AuthorId == currentUser.Id.ToString() || x.Status == ItemStatus.Active))
+            foreach (Post post in postRepository.GetAll().Where(x => x.AuthorId == currentUser.Id.ToString() || x.Status == ItemStatus.Active))
             {
                 post.AuthorAvatar = avatar.ImageHash;
                 await postRepository.UpdateAsync(post, post.Id);
@@ -86,10 +86,10 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
 
         public async Task<User> AddFieldAsync(AddFieldRequest request)
         {
-            var currentUser = CurrentUser();
-            foreach (var fieldId in request.UserField)
+            User currentUser = CurrentUser();
+            foreach (string fieldId in request.UserField)
             {
-                var field = await fieldRepository.GetByIdAsync(ObjectId.Parse(fieldId));
+                Field field = await fieldRepository.GetByIdAsync(ObjectId.Parse(fieldId));
                 if (field != null)
                     currentUser.Fortes.Add(field);
             }
@@ -100,22 +100,22 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
 
         public async Task<string> AddFollowingsAsync(AddFollowerRequest request)
         {
-            var currentUser = CurrentUser();
+            User currentUser = CurrentUser();
 
-            foreach (var item in request.Followers)
+            foreach (string item in request.Followers)
             {
-                var user = await userRepository.GetByIdAsync(ObjectId.Parse(item));
+                User user = await userRepository.GetByIdAsync(ObjectId.Parse(item));
                 if (user != null)
                 {
-                    var filter = Builders<Follow>.Filter;
-                    var finder = filter.Eq("from_id", currentUser.OId) & filter.Eq("to_id", item);
-                    var existFollowing = await followRepository.FindAsync(finder);
+                    FilterDefinitionBuilder<Follow> filter = Builders<Follow>.Filter;
+                    FilterDefinition<Follow> finder = filter.Eq("from_id", currentUser.OId) & filter.Eq("to_id", item);
+                    Follow existFollowing = await followRepository.FindAsync(finder);
                     if (existFollowing != null)
                     {
                         return "Bạn đã theo dõi người này rồi";
                     }
 
-                    var follow = new Follow()
+                    Follow follow = new Follow()
                     {
                         FromId = currentUser.OId,
                         ToId = item,
@@ -133,7 +133,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
         public async Task<AddUserResponse> AddUserAsync(AddUserRequest entity)
         {
 
-            var user = UserAdapter.FromRequest(entity);
+            User user = UserAdapter.FromRequest(entity);
 
             await userRepository.AddAsync(user);
 
@@ -149,13 +149,13 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
             //if (cacheduser != null)
             //    return cacheduser;
 
-            var filter = Builders<User>.Filter.Eq("email", account.Email);
+            FilterDefinition<User> filter = Builders<User>.Filter.Eq("email", account.Email);
             return userRepository.Find(filter);
         }
 
         private User CurrentUser()
         {
-            var currentAccount = (Account)_httpContextAccessor.HttpContext.Items["Account"];
+            Account currentAccount = (Account)_httpContextAccessor.HttpContext.Items["Account"];
             return FromAccount(currentAccount);
         }
 
@@ -163,13 +163,13 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
         {
             try
             {
-                var users = userRepository.GetAll();
-                foreach (var user in users)
+                IQueryable<User> users = userRepository.GetAll();
+                foreach (User user in users)
                 {
-                    var filter = Builders<Follow>.Filter.Eq("from_id", user.Id.ToString());
+                    FilterDefinition<Follow> filter = Builders<Follow>.Filter.Eq("from_id", user.Id.ToString());
                     user.Following = (await followRepository.FindListAsync(filter)).Count();
 
-                    var filter2 = Builders<Follow>.Filter.Eq("to_id", user.Id.ToString());
+                    FilterDefinition<Follow> filter2 = Builders<Follow>.Filter.Eq("to_id", user.Id.ToString());
                     user.Followers = (await followRepository.FindListAsync(filter2)).Count();
 
                     await userRepository.UpdateAsync(user, user.Id);
@@ -184,7 +184,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
         public async Task<User> GetUserById(string id)
 
         {
-            var user = await userRepository.GetByIdAsync(ObjectId.Parse(id));
+            User user = await userRepository.GetByIdAsync(ObjectId.Parse(id));
             if (user == null)
                 throw new Exception("Không tìm thấy user");
             return user;
@@ -194,7 +194,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
         {
             try
             {
-                var user = Feature.CurrentUser(_httpContextAccessor, userRepository);
+                User user = Feature.CurrentUser(_httpContextAccessor, userRepository);
 
                 if (user == null)
                     throw new Exception("Không tìm thấy user");
@@ -210,8 +210,8 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
         {
             try
             {
-                var findFilter = Builders<Follow>.Filter.Eq("to_id", toFollowerId);
-                var following = await followRepository.FindAsync(findFilter);
+                FilterDefinition<Follow> findFilter = Builders<Follow>.Filter.Eq("to_id", toFollowerId);
+                Follow following = await followRepository.FindAsync(findFilter);
                 await followRepository.DeleteAsync(following.Id);
                 return $"Bạn đã bỏ theo dõi người dùng {following.FullName}";
             }
@@ -223,7 +223,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
 
         public async Task<User> UpdateUserAsync(UpdateUserRequest request)
         {
-            var currentUser = Feature.CurrentUser(_httpContextAccessor, userRepository);
+            User currentUser = Feature.CurrentUser(_httpContextAccessor, userRepository);
             currentUser.Address = request.Address;
             currentUser.FirstName = request.FisrtName;
             currentUser.LastName = request.LastName;
@@ -239,14 +239,14 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
 
         public async Task<User> UpdateAvatarAsync(AddAvatarRequest request)
         {
-            var avatar = UserAdapter.FromRequest(request, _httpContextAccessor);
+            Image avatar = UserAdapter.FromRequest(request, _httpContextAccessor);
 
-            var currentUser = CurrentUser();
+            User currentUser = CurrentUser();
 
             currentUser.Avatar = avatar;
             currentUser.AvatarHash = request.AvatarHash;
 
-            foreach (var post in postRepository.GetAll()
+            foreach (Post post in postRepository.GetAll()
                 .Where(x => x.AuthorId == currentUser.Id.ToString()
                 && x.Status == ItemStatus.Active))
             {
@@ -266,7 +266,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
 
         public async Task<Field> AddField(string fieldValue)
         {
-            var field = new Field()
+            Field field = new Field()
             {
                 Value = fieldValue
             };
@@ -282,8 +282,8 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
 
         public async Task<IEnumerable<Follow>> GetFollower(FollowFilterRequest request)
         {
-            var findFilter = Builders<Follow>.Filter.Eq("to_id", request.UserId);
-            var queryable = (await followRepository.FindListAsync(findFilter)).AsQueryable();
+            FilterDefinition<Follow> findFilter = Builders<Follow>.Filter.Eq("to_id", request.UserId);
+            IQueryable<Follow> queryable = (await followRepository.FindListAsync(findFilter)).AsQueryable();
 
             if (request.FromDate != null)
                 queryable = queryable.Where(x => x.FollowDate >= request.FromDate);
@@ -300,8 +300,8 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
 
         public async Task<IEnumerable<Follow>> GetFollowing(FollowFilterRequest request)
         {
-            var findFilter = Builders<Follow>.Filter.Eq("from_id", request.UserId);
-            var queryable = (await followRepository.FindListAsync(findFilter)).AsQueryable();
+            FilterDefinition<Follow> findFilter = Builders<Follow>.Filter.Eq("from_id", request.UserId);
+            IQueryable<Follow> queryable = (await followRepository.FindListAsync(findFilter)).AsQueryable();
 
             if (request.FromDate != null)
                 queryable = queryable.Where(x => x.FollowDate >= request.FromDate);
@@ -318,7 +318,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
 
         public async Task<IEnumerable<User>> FilterUser(FilterUserRequest request)
         {
-            var users = userRepository.GetAll().AsQueryable();
+            IQueryable<User> users = userRepository.GetAll().AsQueryable();
             if (!String.IsNullOrEmpty(request.KeyWord))
                 users = users.Where(x => x.Email.Contains(request.KeyWord)
                 || x.FirstName.Contains(request.KeyWord)
@@ -327,7 +327,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
 
             if (!string.IsNullOrEmpty(request.Fields))
             {
-                var tempField = await fieldRepository.GetByIdAsync(ObjectId.Parse(request.Fields));
+                Field tempField = await fieldRepository.GetByIdAsync(ObjectId.Parse(request.Fields));
                 users = users.Where(x => x.Fortes.Contains(tempField));
             }
 
@@ -361,11 +361,11 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
 
         public async Task<User> UpdateFieldAsync(AddFieldRequest request)
         {
-            var currentUser = CurrentUser();
+            User currentUser = CurrentUser();
             currentUser.Fortes.Clear();
-            foreach (var fieldId in request.UserField)
+            foreach (string fieldId in request.UserField)
             {
-                var field = await fieldRepository.GetByIdAsync(ObjectId.Parse(fieldId));
+                Field field = await fieldRepository.GetByIdAsync(ObjectId.Parse(fieldId));
                 if (field != null)
                     currentUser.Fortes.Add(field);
             }
@@ -376,7 +376,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
 
         public async Task<User> AddInfo(List<IDictionary<string, string>> request)
         {
-            var currentuser = Feature.CurrentUser(_httpContextAccessor, userRepository);
+            User currentuser = Feature.CurrentUser(_httpContextAccessor, userRepository);
             currentuser.AdditionalInfos.AddRange(request);
             await userRepository.UpdateAsync(currentuser, currentuser.Id);
 

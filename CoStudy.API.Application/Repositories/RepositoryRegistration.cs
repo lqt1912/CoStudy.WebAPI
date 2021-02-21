@@ -54,7 +54,7 @@ namespace CoStudy.API.Application.Repositories
             services.AddTransient<IDistrictRepository, DistrictRepository>();
             services.AddTransient<IWardRepository, WardRepository>();
 
-            var googleCredential = GoogleCredential.FromFile(@"wwwroot/costudy-c5390-firebase-adminsdk-e63r1-4405752328.json");
+            GoogleCredential googleCredential = GoogleCredential.FromFile(@"wwwroot/costudy-c5390-firebase-adminsdk-e63r1-4405752328.json");
             FirebaseApp.Create(new AppOptions() { Credential = googleCredential });
         }
 

@@ -22,7 +22,7 @@ namespace Mongo.Entities.Demo.BookServices
 
         public async Task AddAuthor(ObjectId id, Author entity)
         {
-            var currentBook = await _bookRepository.GetByIdAsync(id);
+            Book currentBook = await _bookRepository.GetByIdAsync(id);
             currentBook.Authors.Add(entity);
             await _bookRepository.UpdateAsync(currentBook, id);
         }

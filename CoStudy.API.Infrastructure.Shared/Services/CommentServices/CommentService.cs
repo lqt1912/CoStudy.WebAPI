@@ -53,12 +53,12 @@ namespace CoStudy.API.Infrastructure.Shared.Services
 
         public async Task<AddCommentResponse> AddComment(AddCommentRequest request)
         {
-            var currentUser = Feature.CurrentUser(httpContextAccessor, userRepository);
+            User currentUser = Feature.CurrentUser(httpContextAccessor, userRepository);
 
-            var currentPost = await postRepository.GetByIdAsync(ObjectId.Parse(request.PostId));
+            Post currentPost = await postRepository.GetByIdAsync(ObjectId.Parse(request.PostId));
             if (currentPost != null)
             {
-                var comment = PostAdapter.FromRequest(request, currentUser.Id.ToString());
+                Comment comment = PostAdapter.FromRequest(request, currentUser.Id.ToString());
                 comment.AuthorAvatar = currentUser.AvatarHash;
                 comment.AuthorName = $"{currentUser.FirstName} {currentUser.LastName}";
 
@@ -68,8 +68,8 @@ namespace CoStudy.API.Infrastructure.Shared.Services
                 await commentRepository.AddAsync(comment);
 
                 #region Notification
-                var filter = Builders<ClientGroup>.Filter.Eq("name", currentPost.OId);
-                var clientGroup = await clientGroupRepository.FindAsync(filter);
+                FilterDefinition<ClientGroup> filter = Builders<ClientGroup>.Filter.Eq("name", currentPost.OId);
+                ClientGroup clientGroup = await clientGroupRepository.FindAsync(filter);
 
                 if (!clientGroup.UserIds.Contains(currentUser.OId))
                 {
@@ -79,7 +79,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services
 
                 if (currentPost.AuthorId != currentUser.OId) //Cùng tác giả
                 {
-                    var notify = new Noftication()
+                    Noftication notify = new Noftication()
                     {
                         AuthorId = currentUser.OId,
                         OwnerId = currentPost.AuthorId,
@@ -95,7 +95,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services
                 }
                 else //Khác tác giả
                 {
-                    var notify = new Noftication()
+                    Noftication notify = new Noftication()
                     {
                         AuthorId = currentUser.OId,
                         OwnerId = currentPost.AuthorId,
@@ -111,7 +111,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services
                 }
 
                 //Tạo clientGroup cho comment
-                var commentClientGroup = new ClientGroup()
+                ClientGroup commentClientGroup = new ClientGroup()
                 {
                     Name = comment.Id.ToString()
                 };
@@ -128,13 +128,13 @@ namespace CoStudy.API.Infrastructure.Shared.Services
 
         public async Task<string> DeleteComment(string commentId)
         {
-            var currentComment = await commentRepository.GetByIdAsync(ObjectId.Parse(commentId));
+            Comment currentComment = await commentRepository.GetByIdAsync(ObjectId.Parse(commentId));
             if (currentComment != null)
             {
                 currentComment.Status = ItemStatus.Deleted;
                 await commentRepository.UpdateAsync(currentComment, currentComment.Id);
 
-                var currentPost = await postRepository.GetByIdAsync(ObjectId.Parse(currentComment.PostId));
+                Post currentPost = await postRepository.GetByIdAsync(ObjectId.Parse(currentComment.PostId));
                 currentPost.CommentCount--;
                 await postRepository.UpdateAsync(currentPost, currentPost.Id);
                 return "Xóa bình luận thành công";
@@ -144,7 +144,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services
 
         public async Task<string> DeleteReply(string replyId)
         {
-            var currentReply = await replyCommentRepository.GetByIdAsync(ObjectId.Parse(replyId));
+            ReplyComment currentReply = await replyCommentRepository.GetByIdAsync(ObjectId.Parse(replyId));
             if (currentReply != null)
             {
                 currentReply.Status = ItemStatus.Deleted;
@@ -159,19 +159,19 @@ namespace CoStudy.API.Infrastructure.Shared.Services
             if (String.IsNullOrEmpty(request.PostId))
                 throw new Exception("Không tồn tại bài post");
 
-            var builder = Builders<Comment>.Filter;
-            var filter = builder.Eq("post_id", request.PostId) & builder.Eq("status", ItemStatus.Active);
+            FilterDefinitionBuilder<Comment> builder = Builders<Comment>.Filter;
+            FilterDefinition<Comment> filter = builder.Eq("post_id", request.PostId) & builder.Eq("status", ItemStatus.Active);
 
-            var currentUser = Feature.CurrentUser(httpContextAccessor, userRepository);
-            var comments = await commentRepository.FindListAsync(filter);
+            User currentUser = Feature.CurrentUser(httpContextAccessor, userRepository);
+            List<Comment> comments = await commentRepository.FindListAsync(filter);
             if (comments != null)
             {
-                var cmts = comments.AsEnumerable(); 
+                IEnumerable<Comment> cmts = comments.AsEnumerable();
 
-                if(request.Skip.HasValue && request.Count.HasValue)
+                if (request.Skip.HasValue && request.Count.HasValue)
                     cmts = cmts.Skip(request.Skip.Value).Take(request.Count.Value);
 
-                if(request.Filter.HasValue && request.ArrangeType.HasValue)
+                if (request.Filter.HasValue && request.ArrangeType.HasValue)
                 {
                     switch (request.Filter.Value)
                     {
@@ -198,17 +198,17 @@ namespace CoStudy.API.Infrastructure.Shared.Services
                 if (!String.IsNullOrEmpty(request.Keyword))
                     cmts = cmts.Where(x => x.Content.Contains(request.Keyword));
 
-                foreach (var item in cmts)
+                foreach (Comment item in cmts)
                 {
-                    var builderUpvote = Builders<UpVote>.Filter;
-                    var finderUpvote = builderUpvote.Eq("object_vote_id", item.OId) & builderUpvote.Eq("upvote_by", currentUser.OId);
-                    var upvote = await upVoteRepository.FindAsync(finderUpvote);
+                    FilterDefinitionBuilder<UpVote> builderUpvote = Builders<UpVote>.Filter;
+                    FilterDefinition<UpVote> finderUpvote = builderUpvote.Eq("object_vote_id", item.OId) & builderUpvote.Eq("upvote_by", currentUser.OId);
+                    UpVote upvote = await upVoteRepository.FindAsync(finderUpvote);
                     if (upvote != null)
                         item.IsVoteByCurrent = true;
 
-                    var builderDownvote = Builders<DownVote>.Filter;
-                    var finderDownvote = builderDownvote.Eq("object_vote_id", item.OId) & builderDownvote.Eq("downvote_by", currentUser.OId);
-                    var downvote = await downVoteRepository.FindAsync(finderDownvote);
+                    FilterDefinitionBuilder<DownVote> builderDownvote = Builders<DownVote>.Filter;
+                    FilterDefinition<DownVote> finderDownvote = builderDownvote.Eq("object_vote_id", item.OId) & builderDownvote.Eq("downvote_by", currentUser.OId);
+                    DownVote downvote = await downVoteRepository.FindAsync(finderDownvote);
                     if (downvote != null)
                         item.IsDownVoteByCurrent = true;
                 }
@@ -218,24 +218,24 @@ namespace CoStudy.API.Infrastructure.Shared.Services
         }
         public async Task<IEnumerable<ReplyComment>> GetReplyCommentByCommentId(string commentId, int skip, int count)
         {
-            var builder = Builders<ReplyComment>.Filter;
-            var filter = builder.Eq("parent_id", commentId) & builder.Eq("status", ItemStatus.Active);
-            var currentUser = Feature.CurrentUser(httpContextAccessor, userRepository);
-            var comments = await replyCommentRepository.FindListAsync(filter);
+            FilterDefinitionBuilder<ReplyComment> builder = Builders<ReplyComment>.Filter;
+            FilterDefinition<ReplyComment> filter = builder.Eq("parent_id", commentId) & builder.Eq("status", ItemStatus.Active);
+            User currentUser = Feature.CurrentUser(httpContextAccessor, userRepository);
+            List<ReplyComment> comments = await replyCommentRepository.FindListAsync(filter);
             if (comments != null)
             {
-                var cmts = comments.Skip(skip).Take(count);
-                foreach (var item in cmts)
+                IEnumerable<ReplyComment> cmts = comments.Skip(skip).Take(count);
+                foreach (ReplyComment item in cmts)
                 {
-                    var builderUpvote = Builders<UpVote>.Filter;
-                    var finderUpvote = builderUpvote.Eq("object_vote_id", item.OId) & builderUpvote.Eq("upvote_by", currentUser.OId);
-                    var upvote = await upVoteRepository.FindAsync(finderUpvote);
+                    FilterDefinitionBuilder<UpVote> builderUpvote = Builders<UpVote>.Filter;
+                    FilterDefinition<UpVote> finderUpvote = builderUpvote.Eq("object_vote_id", item.OId) & builderUpvote.Eq("upvote_by", currentUser.OId);
+                    UpVote upvote = await upVoteRepository.FindAsync(finderUpvote);
                     if (upvote != null)
                         item.IsVoteByCurrent = true;
 
-                    var builderDownvote = Builders<DownVote>.Filter;
-                    var finderDownvote = builderDownvote.Eq("object_vote_id", item.OId) & builderDownvote.Eq("downvote_by", currentUser.OId);
-                    var downvote = await downVoteRepository.FindAsync(finderDownvote);
+                    FilterDefinitionBuilder<DownVote> builderDownvote = Builders<DownVote>.Filter;
+                    FilterDefinition<DownVote> finderDownvote = builderDownvote.Eq("object_vote_id", item.OId) & builderDownvote.Eq("downvote_by", currentUser.OId);
+                    DownVote downvote = await downVoteRepository.FindAsync(finderDownvote);
                     if (downvote != null)
                         item.IsDownVoteByCurrent = true;
                 }
@@ -246,11 +246,11 @@ namespace CoStudy.API.Infrastructure.Shared.Services
 
         public async Task<ReplyCommentResponse> ReplyComment(ReplyCommentRequest request)
         {
-            var currentUser = Feature.CurrentUser(httpContextAccessor, userRepository);
+            User currentUser = Feature.CurrentUser(httpContextAccessor, userRepository);
 
             ReplyComment replyComment = PostAdapter.FromRequest(request, currentUser.Id.ToString());
             //Check commenr exist 
-            var comment = await commentRepository.GetByIdAsync(ObjectId.Parse(request.ParentCommentId));
+            Comment comment = await commentRepository.GetByIdAsync(ObjectId.Parse(request.ParentCommentId));
             if (comment != null && comment.Status == ItemStatus.Active)
             {
                 await replyCommentRepository.AddAsync(replyComment);
@@ -264,23 +264,23 @@ namespace CoStudy.API.Infrastructure.Shared.Services
         }
         public async Task<string> UpvoteComment(string commentId)
         {
-            var currentUser = Feature.CurrentUser(httpContextAccessor, userRepository);
+            User currentUser = Feature.CurrentUser(httpContextAccessor, userRepository);
 
-            var builder = Builders<DownVote>.Filter;
+            FilterDefinitionBuilder<DownVote> builder = Builders<DownVote>.Filter;
 
-            var downvoteFinder = builder.Eq("object_vote_id", commentId) & builder.Eq("downvote_by", currentUser.OId);
+            FilterDefinition<DownVote> downvoteFinder = builder.Eq("object_vote_id", commentId) & builder.Eq("downvote_by", currentUser.OId);
 
-            var existDownvote = await downVoteRepository.FindAsync(downvoteFinder);
+            DownVote existDownvote = await downVoteRepository.FindAsync(downvoteFinder);
             if (existDownvote != null)
                 await downVoteRepository.DeleteAsync(existDownvote.Id);
 
-            var upvotebuilder = Builders<UpVote>.Filter;
-            var upvoteFinder = upvotebuilder.Eq("object_vote_id", commentId) & upvotebuilder.Eq("upvote_by", currentUser.OId);
-            var existUpvote = await upVoteRepository.FindAsync(upvoteFinder);
+            FilterDefinitionBuilder<UpVote> upvotebuilder = Builders<UpVote>.Filter;
+            FilterDefinition<UpVote> upvoteFinder = upvotebuilder.Eq("object_vote_id", commentId) & upvotebuilder.Eq("upvote_by", currentUser.OId);
+            UpVote existUpvote = await upVoteRepository.FindAsync(upvoteFinder);
 
             if (existUpvote == null)
             {
-                var upvote = new UpVote()
+                UpVote upvote = new UpVote()
                 {
                     UpVoteBy = currentUser.OId,
                     ObjectVoteId = commentId,
@@ -296,25 +296,25 @@ namespace CoStudy.API.Infrastructure.Shared.Services
         public async Task<string> DownvoteComment(string commentId)
         {
 
-            var currentUser = Feature.CurrentUser(httpContextAccessor, userRepository);
+            User currentUser = Feature.CurrentUser(httpContextAccessor, userRepository);
 
-            var builder = Builders<UpVote>.Filter;
-            var finder = builder.Eq("object_vote_id", commentId) & builder.Eq("upvote_by", currentUser.OId);
-            var existUpvote = await upVoteRepository.FindAsync(finder);
+            FilterDefinitionBuilder<UpVote> builder = Builders<UpVote>.Filter;
+            FilterDefinition<UpVote> finder = builder.Eq("object_vote_id", commentId) & builder.Eq("upvote_by", currentUser.OId);
+            UpVote existUpvote = await upVoteRepository.FindAsync(finder);
 
             if (existUpvote != null)
                 await upVoteRepository.DeleteAsync(existUpvote.Id);
 
 
-            var builderDownVote = Builders<DownVote>.Filter;
+            FilterDefinitionBuilder<DownVote> builderDownVote = Builders<DownVote>.Filter;
 
-            var downvoteFinder = builderDownVote.Eq("object_vote_id", commentId) & builderDownVote.Eq("downvote_by", currentUser.OId);
+            FilterDefinition<DownVote> downvoteFinder = builderDownVote.Eq("object_vote_id", commentId) & builderDownVote.Eq("downvote_by", currentUser.OId);
 
-            var existDownvote = await downVoteRepository.FindAsync(downvoteFinder);
+            DownVote existDownvote = await downVoteRepository.FindAsync(downvoteFinder);
 
             if (existDownvote == null)
             {
-                var downVote = new DownVote()
+                DownVote downVote = new DownVote()
                 {
                     DownVoteBy = currentUser.OId,
                     ObjectVoteId = commentId,
@@ -328,7 +328,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services
 
         public async Task<Comment> UpdateComment(UpdateCommentRequest request)
         {
-            var comment =await  commentRepository.GetByIdAsync(ObjectId.Parse(request.Id));
+            Comment comment = await commentRepository.GetByIdAsync(ObjectId.Parse(request.Id));
             if (comment == null)
                 throw new Exception("Không tìm thấy bình luận");
 
@@ -342,7 +342,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services
 
         public async Task<ReplyComment> UpdateReply(UpdateReplyRequest request)
         {
-            var reply = await replyCommentRepository.GetByIdAsync(ObjectId.Parse(request.Id));
+            ReplyComment reply = await replyCommentRepository.GetByIdAsync(ObjectId.Parse(request.Id));
             if (reply == null)
                 throw new Exception("Không tìm thấy câu trả lời");
             reply.Content = request.Content;

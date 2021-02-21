@@ -20,19 +20,19 @@ namespace CoStudy.API.Application.Features
             }
 
 
-            var scheme = accessor.HttpContext.Request.Scheme;
-            var host = accessor.HttpContext.Request.Host;
-            var pathBase = accessor.HttpContext.Request.PathBase;
-            var imageFolder = @"UserAvatar/";
-            var location = $"{scheme}://{host}{pathBase}/{imageFolder}";
+            string scheme = accessor.HttpContext.Request.Scheme;
+            HostString host = accessor.HttpContext.Request.Host;
+            PathString pathBase = accessor.HttpContext.Request.PathBase;
+            string imageFolder = @"UserAvatar/";
+            string location = $"{scheme}://{host}{pathBase}/{imageFolder}";
 
-            var target = Path.Combine(Directory.GetCurrentDirectory(), @"wwwroot\UserAvatar\");
+            string target = Path.Combine(Directory.GetCurrentDirectory(), @"wwwroot\UserAvatar\");
             Directory.CreateDirectory(target);
 
-            var extension = Path.GetExtension(image.FileName);
-            var name = Guid.NewGuid();
-            var fileName = name + extension;
-            var filePath = Path.Combine(target, fileName);
+            string extension = Path.GetExtension(image.FileName);
+            Guid name = Guid.NewGuid();
+            string fileName = name + extension;
+            string filePath = Path.Combine(target, fileName);
 
             image.CopyTo(new FileStream(filePath, FileMode.Create));
 
@@ -47,20 +47,20 @@ namespace CoStudy.API.Application.Features
             }
 
 
-            var scheme = accessor.HttpContext.Request.Scheme;
-            var host = accessor.HttpContext.Request.Host;
-            var pathBase = accessor.HttpContext.Request.PathBase;
-            var imageFolder = $"{folder}/";
-            var location = $"{scheme}://{host}{pathBase}/{imageFolder}";
+            string scheme = accessor.HttpContext.Request.Scheme;
+            HostString host = accessor.HttpContext.Request.Host;
+            PathString pathBase = accessor.HttpContext.Request.PathBase;
+            string imageFolder = $"{folder}/";
+            string location = $"{scheme}://{host}{pathBase}/{imageFolder}";
 
-            var target = Path.Combine(Directory.GetCurrentDirectory(), $"wwwroot\\{folder}\\");
+            string target = Path.Combine(Directory.GetCurrentDirectory(), $"wwwroot\\{folder}\\");
 
             Directory.CreateDirectory(target);
 
-            var extension = Path.GetExtension(image.FileName);
-            var name = Guid.NewGuid();
-            var fileName = name + extension;
-            var filePath = Path.Combine(target, fileName);
+            string extension = Path.GetExtension(image.FileName);
+            Guid name = Guid.NewGuid();
+            string fileName = name + extension;
+            string filePath = Path.Combine(target, fileName);
 
             image.CopyTo(new FileStream(filePath, FileMode.Create));
 
@@ -71,16 +71,16 @@ namespace CoStudy.API.Application.Features
 
         public static string GetHostUrl(IHttpContextAccessor httpContextAccessor)
         {
-            var scheme = httpContextAccessor.HttpContext.Request.Scheme;
-            var host = httpContextAccessor.HttpContext.Request.Host;
-            var pathBase = httpContextAccessor.HttpContext.Request.PathBase;
-            var location = $"{scheme}://{host}{pathBase}";
+            string scheme = httpContextAccessor.HttpContext.Request.Scheme;
+            HostString host = httpContextAccessor.HttpContext.Request.Host;
+            PathString pathBase = httpContextAccessor.HttpContext.Request.PathBase;
+            string location = $"{scheme}://{host}{pathBase}";
             return location;
         }
 
         public static User CurrentUser(IHttpContextAccessor _httpContextAccessor, IUserRepository userRepository)
         {
-            var currentAccount = (Account)_httpContextAccessor.HttpContext.Items["Account"];
+            Account currentAccount = (Account)_httpContextAccessor.HttpContext.Items["Account"];
 
             if (currentAccount != null)
             {
@@ -88,7 +88,7 @@ namespace CoStudy.API.Application.Features
                 //var cacheduser = CacheHelper.GetValue($"CurrentUser-{currentAccount.Email}") as User;
                 //if (cacheduser != null)
                 //    return cacheduser;
-                var filter = Builders<User>.Filter.Eq("email", currentAccount.Email);
+                FilterDefinition<User> filter = Builders<User>.Filter.Eq("email", currentAccount.Email);
                 return userRepository.Find(filter);
             }
             else return null;
@@ -100,7 +100,7 @@ namespace CoStudy.API.Application.Features
         {
             if (listA.Count == listB.Count)
             {
-                foreach (var item in listB)
+                foreach (string item in listB)
                 {
                     if (!listA.Contains(item))
                         return false;
