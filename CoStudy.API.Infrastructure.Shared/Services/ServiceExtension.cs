@@ -28,6 +28,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services
             services.AddTransient<IDocumentServices, DocumentServices>();
             services.AddTransient<IReportServices, ReportServices>();
             services.AddTransient<IIdentityService, IdentityService>();
+            services.AddTransient<IReportReasonService, ReportReasonService>();
         }
     }
 }

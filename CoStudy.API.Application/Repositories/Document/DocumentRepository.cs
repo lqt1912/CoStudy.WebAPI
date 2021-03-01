@@ -1,5 +1,4 @@
-﻿using CoStudy.API.Application.Repositoriest;
-using CoStudy.API.Domain.Entities.Application;
+﻿using CoStudy.API.Domain.Entities.Application;
 using CoStudy.API.Infrastructure.Persistence.Repositories;
 using Microsoft.Extensions.Configuration;
 using System;
