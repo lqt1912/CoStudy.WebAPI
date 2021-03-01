@@ -172,10 +172,7 @@ namespace CoStudy.API.Application.Features
             {
                 throw new Exception("Lỗi");
             }
-
-
             _allowImageType.Add(new Tuple<string, string>("NONE", "N/A"));
-
             type = "none";
             stream.Seek(0, SeekOrigin.Begin);
             //hexa bit đầu tiên

@@ -5,14 +5,18 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Entities\Identity\Account.cs" />
-    <Compile Remove="Entities\Identity\RefreshToken.cs" />
-    <Compile Remove="Entities\Identity\Role.cs" />
+    <Compile Remove="Common\**" />
+    <Compile Remove="Settings\**" />
+    <EmbeddedResource Remove="Common\**" />
+    <EmbeddedResource Remove="Settings\**" />
+    <None Remove="Common\**" />
+    <None Remove="Settings\**" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Common\" />
-    <Folder Include="Settings\" />
+    <Compile Remove="Entities\Identity\Account.cs" />
+    <Compile Remove="Entities\Identity\RefreshToken.cs" />
+    <Compile Remove="Entities\Identity\Role.cs" />
   </ItemGroup>
 
   <ItemGroup>

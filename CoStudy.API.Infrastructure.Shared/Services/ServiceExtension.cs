@@ -7,8 +7,15 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace CoStudy.API.Infrastructure.Shared.Services
 {
+    /// <summary>
+    /// Service extension
+    /// </summary>
     public static class ServiceExtension
     {
+        /// <summary>
+        /// Registers the custom service.
+        /// </summary>
+        /// <param name="services">The services.</param>
         public static void RegisterCustomService(this IServiceCollection services)
         {
             services.AddTransient<IUserService, UserService>();
@@ -18,6 +25,9 @@ namespace CoStudy.API.Infrastructure.Shared.Services
             services.AddTransient<ICommentService, CommentService>();
             services.AddTransient<ILocationService, LocationService>();
             services.AddTransient<ILevelService, LevelService>();
+            services.AddTransient<IDocumentServices, DocumentServices>();
+            services.AddTransient<IReportServices, ReportServices>();
+            services.AddTransient<IIdentityService, IdentityService>();
         }
     }
 }

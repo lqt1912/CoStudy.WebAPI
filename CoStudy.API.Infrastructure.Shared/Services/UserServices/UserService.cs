@@ -18,17 +18,56 @@ using System.Threading.Tasks;
 
 namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
 {
+    /// <summary>
+    /// The User Service. 
+    /// </summary>
+    /// <seealso cref="CoStudy.API.Infrastructure.Shared.Services.UserServices.IUserService" />
     public class UserService : IUserService
     {
+        /// <summary>
+        /// The user repository
+        /// </summary>
         IUserRepository userRepository;
+        /// <summary>
+        /// The account repository
+        /// </summary>
         IAccountRepository accountRepository;
+        /// <summary>
+        /// The HTTP context accessor
+        /// </summary>
         IHttpContextAccessor _httpContextAccessor;
+        /// <summary>
+        /// The configuration
+        /// </summary>
         IConfiguration _configuration;
+        /// <summary>
+        /// The post repository
+        /// </summary>
         IPostRepository postRepository;
+        /// <summary>
+        /// The client group repository
+        /// </summary>
         IClientGroupRepository clientGroupRepository;
+        /// <summary>
+        /// The field repository
+        /// </summary>
         IFieldRepository fieldRepository;
+        /// <summary>
+        /// The follow repository
+        /// </summary>
         IFollowRepository followRepository;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="UserService"/> class.
+        /// </summary>
+        /// <param name="userRepository">The user repository.</param>
+        /// <param name="httpContextAccessor">The HTTP context accessor.</param>
+        /// <param name="configuration">The configuration.</param>
+        /// <param name="accountRepository">The account repository.</param>
+        /// <param name="postRepository">The post repository.</param>
+        /// <param name="clientGroupRepository">The client group repository.</param>
+        /// <param name="fieldRepository">The field repository.</param>
+        /// <param name="followRepository">The follow repository.</param>
         public UserService(IUserRepository userRepository,
             IHttpContextAccessor httpContextAccessor,
             IConfiguration configuration,
@@ -48,6 +87,11 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
         }
 
 
+        /// <summary>
+        /// Adds the avatar asynchronous.
+        /// </summary>
+        /// <param name="request">The request.</param>
+        /// <returns></returns>
         public async Task<AddAvatarResponse> AddAvatarAsync(AddAvatarRequest request)
         {
             var avatar = UserAdapter.FromRequest(request, _httpContextAccessor);
@@ -70,8 +114,13 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
 
         }
 
-        
 
+
+        /// <summary>
+        /// Adds the followings asynchronous.
+        /// </summary>
+        /// <param name="request">The request.</param>
+        /// <returns></returns>
         public async Task<string> AddFollowingsAsync(AddFollowerRequest request)
         {
             var currentUser = CurrentUser();
@@ -104,6 +153,11 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
             return "Theo dõi thành công";
         }
 
+        /// <summary>
+        /// Adds the user asynchronous.
+        /// </summary>
+        /// <param name="entity">The entity.</param>
+        /// <returns></returns>
         public async Task<AddUserResponse> AddUserAsync(AddUserRequest entity)
         {
 
@@ -116,6 +170,11 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
         }
 
 
+        /// <summary>
+        /// Froms the account.
+        /// </summary>
+        /// <param name="account">The account.</param>
+        /// <returns></returns>
         private User FromAccount(Account account)
         {
             //var cacheduser = CacheHelper.GetValue($"CurrentUser-{account.Email}") as User;
@@ -127,12 +186,19 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
             return userRepository.Find(filter);
         }
 
+        /// <summary>
+        /// Currents the user.
+        /// </summary>
+        /// <returns></returns>
         private User CurrentUser()
         {
             var currentAccount = (Account)_httpContextAccessor.HttpContext.Items["Account"];
             return FromAccount(currentAccount);
         }
 
+        /// <summary>
+        /// Synchronizes the follow.
+        /// </summary>
         public async Task SyncFollow()
         {
             try
@@ -155,6 +221,12 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
             }
         }
 
+        /// <summary>
+        /// Gets the user by identifier.
+        /// </summary>
+        /// <param name="id">The identifier.</param>
+        /// <returns></returns>
+        /// <exception cref="Exception">Không tìm thấy user</exception>
         public async Task<User> GetUserById(string id)
 
         {
@@ -164,6 +236,15 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
             return user;
         }
 
+        /// <summary>
+        /// Gets the current user.
+        /// </summary>
+        /// <returns></returns>
+        /// <exception cref="Exception">
+        /// Không tìm thấy user
+        /// or
+        /// Không tìm thấy user
+        /// </exception>
         public User GetCurrentUser()
         {
             try
@@ -180,6 +261,12 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
             }
         }
 
+        /// <summary>
+        /// Removes the following.
+        /// </summary>
+        /// <param name="toFollowerId">To follower identifier.</param>
+        /// <returns></returns>
+        /// <exception cref="Exception">Người dùng không tồn tại. Đã có lổi xảy ra</exception>
         public async Task<string> RemoveFollowing(string toFollowerId)
         {
             try
@@ -195,6 +282,11 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
             }
         }
 
+        /// <summary>
+        /// Updates the user asynchronous.
+        /// </summary>
+        /// <param name="request">The request.</param>
+        /// <returns></returns>
         public async Task<User> UpdateUserAsync(UpdateUserRequest request)
         {
             var currentUser = Feature.CurrentUser(_httpContextAccessor, userRepository);
@@ -211,6 +303,11 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
             return currentUser;
         }
 
+        /// <summary>
+        /// Updates the avatar asynchronous.
+        /// </summary>
+        /// <param name="request">The request.</param>
+        /// <returns></returns>
         public async Task<User> UpdateAvatarAsync(AddAvatarRequest request)
         {
             var avatar = UserAdapter.FromRequest(request, _httpContextAccessor);
@@ -238,6 +335,11 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
             return currentUser;
         }
 
+        /// <summary>
+        /// Adds the field.
+        /// </summary>
+        /// <param name="fieldValue">The field value.</param>
+        /// <returns></returns>
         public async Task<Field> AddField(string fieldValue)
         {
             var field = new Field()
@@ -249,11 +351,20 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
             return field;
         }
 
+        /// <summary>
+        /// Gets all.
+        /// </summary>
+        /// <returns></returns>
         public List<Field> GetAll()
         {
             return fieldRepository.GetAll().ToList();
         }
 
+        /// <summary>
+        /// Gets the follower.
+        /// </summary>
+        /// <param name="request">The request.</param>
+        /// <returns></returns>
         public async Task<IEnumerable<Follow>> GetFollower(FollowFilterRequest request)
         {
             var findFilter = Builders<Follow>.Filter.Eq("to_id", request.UserId);
@@ -272,6 +383,11 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
             return queryable;
         }
 
+        /// <summary>
+        /// Gets the following.
+        /// </summary>
+        /// <param name="request">The request.</param>
+        /// <returns></returns>
         public async Task<IEnumerable<Follow>> GetFollowing(FollowFilterRequest request)
         {
             var findFilter = Builders<Follow>.Filter.Eq("from_id", request.UserId);
@@ -290,6 +406,11 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
             return queryable;
         }
 
+        /// <summary>
+        /// Filters the user.
+        /// </summary>
+        /// <param name="request">The request.</param>
+        /// <returns></returns>
         public async Task<IEnumerable<User>> FilterUser(FilterUserRequest request)
         {
             var users = userRepository.GetAll().AsQueryable();
@@ -333,8 +454,13 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
             return users;
         }
 
-       
 
+
+        /// <summary>
+        /// Adds the information.
+        /// </summary>
+        /// <param name="request">The request.</param>
+        /// <returns></returns>
         public async Task<User> AddInfo(List<IDictionary<string, string>> request)
         {
             var currentuser = Feature.CurrentUser(_httpContextAccessor, userRepository);

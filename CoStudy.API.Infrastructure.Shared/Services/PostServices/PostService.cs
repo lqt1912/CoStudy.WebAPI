@@ -16,21 +16,80 @@ using System.Threading.Tasks;
 
 namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
 {
+    /// <summary>
+    /// The Post Service. 
+    /// </summary>
+    /// <seealso cref="CoStudy.API.Infrastructure.Shared.Services.PostServices.IPostService" />
     public class PostService : IPostService
     {
+        /// <summary>
+        /// The HTTP context accessor
+        /// </summary>
         IHttpContextAccessor httpContextAccessor;
+        /// <summary>
+        /// The configuration
+        /// </summary>
         IConfiguration configuration;
+        /// <summary>
+        /// The user repository
+        /// </summary>
         IUserRepository userRepository;
+        /// <summary>
+        /// The post repository
+        /// </summary>
         IPostRepository postRepository;
+        /// <summary>
+        /// The comment repository
+        /// </summary>
         ICommentRepository commentRepository;
+        /// <summary>
+        /// The reply comment repository
+        /// </summary>
         IReplyCommentRepository replyCommentRepository;
+        /// <summary>
+        /// The field repository
+        /// </summary>
         IFieldRepository fieldRepository;
+        /// <summary>
+        /// The follow repository
+        /// </summary>
         IFollowRepository followRepository;
+        /// <summary>
+        /// Up vote repository
+        /// </summary>
         IUpVoteRepository upVoteRepository;
+        /// <summary>
+        /// Down vote repository
+        /// </summary>
         IDownVoteRepository downVoteRepository;
+        /// <summary>
+        /// The client group repository
+        /// </summary>
         IClientGroupRepository clientGroupRepository;
+        /// <summary>
+        /// The FCM repository
+        /// </summary>
         IFcmRepository fcmRepository;
+        /// <summary>
+        /// The noftication repository
+        /// </summary>
         INofticationRepository nofticationRepository;
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PostService"/> class.
+        /// </summary>
+        /// <param name="httpContextAccessor">The HTTP context accessor.</param>
+        /// <param name="configuration">The configuration.</param>
+        /// <param name="userRepository">The user repository.</param>
+        /// <param name="postRepository">The post repository.</param>
+        /// <param name="commentRepository">The comment repository.</param>
+        /// <param name="replyCommentRepository">The reply comment repository.</param>
+        /// <param name="fieldRepository">The field repository.</param>
+        /// <param name="followRepository">The follow repository.</param>
+        /// <param name="upVoteRepository">Up vote repository.</param>
+        /// <param name="downVoteRepository">Down vote repository.</param>
+        /// <param name="clientGroupRepository">The client group repository.</param>
+        /// <param name="fcmRepository">The FCM repository.</param>
+        /// <param name="nofticationRepository">The noftication repository.</param>
         public PostService(
             IHttpContextAccessor httpContextAccessor,
             IConfiguration configuration,
@@ -63,6 +122,12 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
 
 
 
+        /// <summary>
+        /// Adds the media.
+        /// </summary>
+        /// <param name="request">The request.</param>
+        /// <returns></returns>
+        /// <exception cref="Exception">Post đã bị xóa</exception>
         public async Task<AddMediaResponse> AddMedia(AddMediaRequest request)
         {
             var currentPost = await postRepository.GetByIdAsync(ObjectId.Parse(request.PostId));
@@ -78,6 +143,11 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
             else throw new Exception("Post đã bị xóa");
         }
 
+        /// <summary>
+        /// Adds the post.
+        /// </summary>
+        /// <param name="request">The request.</param>
+        /// <returns></returns>
         public async Task<AddPostResponse> AddPost(AddPostRequest request)
         {
 
@@ -113,6 +183,12 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
         }
 
 
+        /// <summary>
+        /// Gets the post by identifier.
+        /// </summary>
+        /// <param name="postId">The post identifier.</param>
+        /// <returns></returns>
+        /// <exception cref="Exception">Không tìm thấy bài viết</exception>
         public async Task<GetPostByIdResponse> GetPostById(string postId)
         {
             var post = await postRepository.GetByIdAsync(ObjectId.Parse(postId));
@@ -121,6 +197,14 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
             return PostAdapter.ToResponse(post);
         }
 
+        /// <summary>
+        /// Gets the post by user identifier.
+        /// </summary>
+        /// <param name="userId">The user identifier.</param>
+        /// <param name="skip">The skip.</param>
+        /// <param name="count">The count.</param>
+        /// <returns></returns>
+        /// <exception cref="Exception">Người dùng chưa có bài viết nào</exception>
         public async Task<IEnumerable<Post>> GetPostByUserId(string userId, int skip, int count)
         {
             try
@@ -138,6 +222,12 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
 
         }
 
+        /// <summary>
+        /// Gets the post timeline asynchronous.
+        /// </summary>
+        /// <param name="skip">The skip.</param>
+        /// <param name="count">The count.</param>
+        /// <returns></returns>
         public async Task<IEnumerable<Post>> GetPostTimelineAsync(int skip, int count)
         {
             var currentUser = Feature.CurrentUser(httpContextAccessor, userRepository);
@@ -163,6 +253,9 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
         }
 
 
+        /// <summary>
+        /// Synchronizes the comment.
+        /// </summary>
         public async Task SyncComment()
         {
             try
@@ -185,6 +278,9 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
             }
         }
 
+        /// <summary>
+        /// Synchronizes the reply.
+        /// </summary>
         public async Task SyncReply()
         {
             try
@@ -206,6 +302,12 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
             }
         }
 
+        /// <summary>
+        /// Upvotes the specified post identifier.
+        /// </summary>
+        /// <param name="postId">The post identifier.</param>
+        /// <returns></returns>
+        /// <exception cref="Exception">Uncompleted activity</exception>
         public async Task<string> Upvote(string postId)
         {
             try
@@ -287,6 +389,12 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
                 throw new Exception("Uncompleted activity");
             }
         }
+        /// <summary>
+        /// Downvotes the specified post identifier.
+        /// </summary>
+        /// <param name="postId">The post identifier.</param>
+        /// <returns></returns>
+        /// <exception cref="Exception">Uncompleted activity</exception>
         public async Task<string> Downvote(string postId)
         {
 
@@ -368,6 +476,11 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
             }
         }
 
+        /// <summary>
+        /// Updates the post.
+        /// </summary>
+        /// <param name="request">The request.</param>
+        /// <returns></returns>
         public async Task<Post> UpdatePost(UpdatePostRequest request)
         {
             var currentPost = await postRepository.GetByIdAsync(ObjectId.Parse(request.PostId));
@@ -384,6 +497,12 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
             return currentPost;
         }
 
+        /// <summary>
+        /// Saves the post.
+        /// </summary>
+        /// <param name="id">The identifier.</param>
+        /// <returns></returns>
+        /// <exception cref="Exception">Bài viết không tồn tại hoặc đã bị xóa.</exception>
         public async Task<Post> SavePost(string id)
         {
             var currentUser = Feature.CurrentUser(httpContextAccessor, userRepository);
@@ -407,6 +526,12 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
 
         }
 
+        /// <summary>
+        /// Gets the saved post.
+        /// </summary>
+        /// <param name="skip">The skip.</param>
+        /// <param name="count">The count.</param>
+        /// <returns></returns>
         public async Task<List<Post>> GetSavedPost(int skip, int count)
         {
             var currentUser = Feature.CurrentUser(httpContextAccessor, userRepository);
@@ -420,6 +545,11 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
             return result.Skip(skip).Take(count).ToList();
         }
 
+        /// <summary>
+        /// Filters the specified filter request.
+        /// </summary>
+        /// <param name="filterRequest">The filter request.</param>
+        /// <returns></returns>
         public async Task<IEnumerable<Post>> Filter(FilterRequest filterRequest)
         {
             var currentUser = Feature.CurrentUser(httpContextAccessor, userRepository);
@@ -489,6 +619,9 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
         }
 
 
+        /// <summary>
+        /// Synchronizes the vote.
+        /// </summary>
         public async Task SyncVote()
         {
             try
@@ -511,6 +644,9 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
             }
         }
 
+        /// <summary>
+        /// Synchronizes the reply vote.
+        /// </summary>
         public async Task SyncReplyVote()
         {
             try

@@ -3,12 +3,15 @@ using System.Runtime.Caching;
 
 namespace CoStudy.API.Application.Features
 {
+    /// <summary>
+    /// Cachehelper
+    /// </summary>
     public class CacheHelper
     {
         /// <summary>
         /// Get cache value by key
         /// </summary>
-        /// <param name="key"></param>
+        /// <param name="key">The key.</param>
         /// <returns></returns>
         public static object GetValue(string key)
         {
@@ -18,9 +21,9 @@ namespace CoStudy.API.Application.Features
         /// <summary>
         /// Add a cache object with date expiration
         /// </summary>
-        /// <param name="key"></param>
-        /// <param name="value"></param>
-        /// <param name="absExpiration"></param>
+        /// <param name="key">The key.</param>
+        /// <param name="value">The value.</param>
+        /// <param name="absExpiration">The abs expiration.</param>
         /// <returns></returns>
         public static bool Add(string key, object value, DateTimeOffset absExpiration)
         {
@@ -30,7 +33,7 @@ namespace CoStudy.API.Application.Features
         /// <summary>
         /// Delete cache value from key
         /// </summary>
-        /// <param name="key"></param>
+        /// <param name="key">The key.</param>
         public static void Delete(string key)
         {
             MemoryCache memoryCache = MemoryCache.Default;

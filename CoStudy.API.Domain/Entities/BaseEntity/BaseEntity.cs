@@ -11,6 +11,7 @@ namespace CoStudy.API.Domain.Entities.BaseEntity
         public ObjectId Id { get; set; }
 
         [JsonPropertyName("oid")]
+        [BsonElement("oid")]
         public string OId { get; set; }
         public Entity()
         {

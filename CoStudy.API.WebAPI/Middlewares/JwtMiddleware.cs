@@ -12,18 +12,37 @@ using System.Threading.Tasks;
 
 namespace CoStudy.API.WebAPI.Middlewares
 {
+    /// <summary>
+    /// Jwt middleware
+    /// </summary>
     public class JwtMiddleware
     {
+        /// <summary>
+        /// The next
+        /// </summary>
         private readonly RequestDelegate _next;
+        /// <summary>
+        /// The application settings
+        /// </summary>
         private readonly AppSettings _appSettings;
 
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="JwtMiddleware"/> class.
+        /// </summary>
+        /// <param name="next">The next.</param>
+        /// <param name="appSettings">The application settings.</param>
         public JwtMiddleware(RequestDelegate next, IOptions<AppSettings> appSettings)
         {
             _next = next;
             _appSettings = appSettings.Value;
         }
 
+        /// <summary>
+        /// Invokes the specified context.
+        /// </summary>
+        /// <param name="context">The context.</param>
+        /// <param name="accountRepository">The account repository.</param>
         public async Task Invoke(HttpContext context, IAccountRepository accountRepository)
         {
             var token = context.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
@@ -34,6 +53,12 @@ namespace CoStudy.API.WebAPI.Middlewares
             await _next(context);
         }
 
+        /// <summary>
+        /// Attaches the account to context.
+        /// </summary>
+        /// <param name="context">The context.</param>
+        /// <param name="token">The token.</param>
+        /// <param name="accountRepository">The account repository.</param>
         private async Task attachAccountToContext(HttpContext context, string token, IAccountRepository accountRepository)
         {
             try

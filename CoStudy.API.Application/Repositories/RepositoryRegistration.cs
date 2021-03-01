@@ -5,9 +5,16 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace CoStudy.API.Application.Repositories
 {
+    /// <summary>
+    /// Repository Registration
+    /// </summary>
     public static class RepositoryRegistration
     {
 
+        /// <summary>
+        /// Registers the custom repository.
+        /// </summary>
+        /// <param name="services">The services.</param>
         public static void RegisterCustomRepository(this IServiceCollection services)
         {
             services.AddTransient<IAdditionalInfoRepository, AdditionalInfoRepository>();
@@ -57,6 +64,12 @@ namespace CoStudy.API.Application.Repositories
             services.AddTransient<IObjectLevelRepository, ObjectLevelRepository>();
             var googleCredential = GoogleCredential.FromFile(@"wwwroot/costudy-c5390-firebase-adminsdk-e63r1-4405752328.json");
             FirebaseApp.Create(new AppOptions() { Credential = googleCredential });
+            services.AddTransient<IFileHelper, FileHelper>();
+
+            services.AddTransient<IDocumentRepository, DocumentRepository>();
+            services.AddTransient<IReportRepository, ReportRepository>();
+            services.AddTransient<IReportReasonRepository, ReportReasonRepository>();
+
         }
 
     }
