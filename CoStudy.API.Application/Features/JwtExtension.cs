@@ -8,8 +8,18 @@ using System.Text;
 
 namespace CoStudy.API.Application.Features
 {
+    /// <summary>
+    /// class JwtExtension
+    /// </summary>
     public static class JwtExtension
     {
+        /// <summary>
+        /// Gets the identifier from JWT.
+        /// </summary>
+        /// <param name="context">The context.</param>
+        /// <param name="configuration">The configuration.</param>
+        /// <returns></returns>
+        /// <exception cref="Exception">Unauthorized</exception>
         public static string GetIdFromJwt(IHttpContextAccessor context, IConfiguration configuration)
         {
             string token = context.HttpContext.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();

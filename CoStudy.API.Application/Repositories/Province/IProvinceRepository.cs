@@ -3,7 +3,11 @@ using CoStudy.API.Infrastructure.Persistence.Repositories;
 
 namespace CoStudy.API.Application.Repositories
 {
-    public interface IProvinceRepository : IBaseRepository<Province>
+    /// <summary>
+    /// Interface IProvinceRepository
+    /// </summary>
+    /// <seealso cref="CoStudy.API.Infrastructure.Persistence.Repositories.IBaseRepository{CoStudy.API.Domain.Entities.Application.Province}" />
+    public interface IProvinceRepository :IBaseRepository<Province>
     {
     }
 }

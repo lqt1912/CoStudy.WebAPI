@@ -15,19 +15,66 @@ using System.Threading.Tasks;
 
 namespace CoStudy.API.Infrastructure.Shared.Services
 {
+    /// <summary>
+    /// The comment service. 
+    /// </summary>
+    /// <seealso cref="CoStudy.API.Infrastructure.Shared.Services.ICommentService" />
     public class CommentService : ICommentService
     {
+        /// <summary>
+        /// The HTTP context accessor
+        /// </summary>
         private IHttpContextAccessor httpContextAccessor;
+        /// <summary>
+        /// The user repository
+        /// </summary>
         private IUserRepository userRepository;
+        /// <summary>
+        /// The post repository
+        /// </summary>
         private IPostRepository postRepository;
+        /// <summary>
+        /// The comment repository
+        /// </summary>
         private ICommentRepository commentRepository;
+        /// <summary>
+        /// The reply comment repository
+        /// </summary>
         private IReplyCommentRepository replyCommentRepository;
+        /// <summary>
+        /// Down vote repository
+        /// </summary>
         private IDownVoteRepository downVoteRepository;
+        /// <summary>
+        /// Up vote repository
+        /// </summary>
         private IUpVoteRepository upVoteRepository;
+        /// <summary>
+        /// The client group repository
+        /// </summary>
         private IClientGroupRepository clientGroupRepository;
+        /// <summary>
+        /// The FCM repository
+        /// </summary>
         private IFcmRepository fcmRepository;
+        /// <summary>
+        /// The noftication repository
+        /// </summary>
         private INofticationRepository nofticationRepository;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CommentService"/> class.
+        /// </summary>
+        /// <param name="httpContextAccessor">The HTTP context accessor.</param>
+        /// <param name="userRepository">The user repository.</param>
+        /// <param name="postRepository">The post repository.</param>
+        /// <param name="commentRepository">The comment repository.</param>
+        /// <param name="replyCommentRepository">The reply comment repository.</param>
+        /// <param name="downVoteRepository">Down vote repository.</param>
+        /// <param name="upVoteRepository">Up vote repository.</param>
+        /// <param name="clientGroupRepository">The client group repository.</param>
+        /// <param name="fcmRepository">The FCM repository.</param>
+        /// <param name="nofticationRepository">The noftication repository.</param>
         public CommentService(IHttpContextAccessor httpContextAccessor,
             IUserRepository userRepository,
             IPostRepository postRepository,
@@ -51,6 +98,12 @@ namespace CoStudy.API.Infrastructure.Shared.Services
             this.nofticationRepository = nofticationRepository;
         }
 
+        /// <summary>
+        /// Adds the comment.
+        /// </summary>
+        /// <param name="request">The request.</param>
+        /// <returns></returns>
+        /// <exception cref="Exception">Post đã bị xóa</exception>
         public async Task<AddCommentResponse> AddComment(AddCommentRequest request)
         {
             User currentUser = Feature.CurrentUser(httpContextAccessor, userRepository);
@@ -126,6 +179,12 @@ namespace CoStudy.API.Infrastructure.Shared.Services
             else throw new Exception("Post đã bị xóa");
         }
 
+        /// <summary>
+        /// Deletes the comment.
+        /// </summary>
+        /// <param name="commentId">The comment identifier.</param>
+        /// <returns></returns>
+        /// <exception cref="Exception">Comment không tồn tại hoặc đã bị xóa</exception>
         public async Task<string> DeleteComment(string commentId)
         {
             Comment currentComment = await commentRepository.GetByIdAsync(ObjectId.Parse(commentId));
@@ -142,6 +201,12 @@ namespace CoStudy.API.Infrastructure.Shared.Services
             else throw new Exception("Comment không tồn tại hoặc đã bị xóa");
         }
 
+        /// <summary>
+        /// Deletes the reply.
+        /// </summary>
+        /// <param name="replyId">The reply identifier.</param>
+        /// <returns></returns>
+        /// <exception cref="Exception">Câu rả lời không tồn tại hoặc đã bị xóa</exception>
         public async Task<string> DeleteReply(string replyId)
         {
             ReplyComment currentReply = await replyCommentRepository.GetByIdAsync(ObjectId.Parse(replyId));
@@ -154,6 +219,16 @@ namespace CoStudy.API.Infrastructure.Shared.Services
             else throw new Exception("Câu rả lời không tồn tại hoặc đã bị xóa");
         }
 
+        /// <summary>
+        /// Gets the comment by post identifier.
+        /// </summary>
+        /// <param name="request">The request.</param>
+        /// <returns></returns>
+        /// <exception cref="Exception">
+        /// Không tồn tại bài post
+        /// or
+        /// Post không tồn tại hoặc đã bị xóa
+        /// </exception>
         public async Task<IEnumerable<Comment>> GetCommentByPostId(CommentFilterRequest request)
         {
             if (String.IsNullOrEmpty(request.PostId))
@@ -216,6 +291,14 @@ namespace CoStudy.API.Infrastructure.Shared.Services
             }
             else throw new Exception("Post không tồn tại hoặc đã bị xóa");
         }
+        /// <summary>
+        /// Gets the reply comment by comment identifier.
+        /// </summary>
+        /// <param name="commentId">The comment identifier.</param>
+        /// <param name="skip">The skip.</param>
+        /// <param name="count">The count.</param>
+        /// <returns></returns>
+        /// <exception cref="Exception">Bình luận không tồn tại hoặc đã bị xóa</exception>
         public async Task<IEnumerable<ReplyComment>> GetReplyCommentByCommentId(string commentId, int skip, int count)
         {
             FilterDefinitionBuilder<ReplyComment> builder = Builders<ReplyComment>.Filter;
@@ -244,6 +327,12 @@ namespace CoStudy.API.Infrastructure.Shared.Services
             else throw new Exception("Bình luận không tồn tại hoặc đã bị xóa");
         }
 
+        /// <summary>
+        /// Replies the comment.
+        /// </summary>
+        /// <param name="request">The request.</param>
+        /// <returns></returns>
+        /// <exception cref="Exception">Bình luận đã bị xóa</exception>
         public async Task<ReplyCommentResponse> ReplyComment(ReplyCommentRequest request)
         {
             User currentUser = Feature.CurrentUser(httpContextAccessor, userRepository);
@@ -262,6 +351,11 @@ namespace CoStudy.API.Infrastructure.Shared.Services
             else throw new Exception("Bình luận đã bị xóa");
 
         }
+        /// <summary>
+        /// Upvotes the comment.
+        /// </summary>
+        /// <param name="commentId">The comment identifier.</param>
+        /// <returns></returns>
         public async Task<string> UpvoteComment(string commentId)
         {
             User currentUser = Feature.CurrentUser(httpContextAccessor, userRepository);
@@ -293,6 +387,11 @@ namespace CoStudy.API.Infrastructure.Shared.Services
             else return "Bạn đã upvote rồi";
         }
 
+        /// <summary>
+        /// Downvotes the comment.
+        /// </summary>
+        /// <param name="commentId">The comment identifier.</param>
+        /// <returns></returns>
         public async Task<string> DownvoteComment(string commentId)
         {
 
@@ -326,6 +425,12 @@ namespace CoStudy.API.Infrastructure.Shared.Services
             else return "Bạn đã downvote rồi";
         }
 
+        /// <summary>
+        /// Updates the comment.
+        /// </summary>
+        /// <param name="request">The request.</param>
+        /// <returns></returns>
+        /// <exception cref="Exception">Không tìm thấy bình luận</exception>
         public async Task<Comment> UpdateComment(UpdateCommentRequest request)
         {
             Comment comment = await commentRepository.GetByIdAsync(ObjectId.Parse(request.Id));
@@ -340,6 +445,12 @@ namespace CoStudy.API.Infrastructure.Shared.Services
             return comment;
         }
 
+        /// <summary>
+        /// Updates the reply.
+        /// </summary>
+        /// <param name="request">The request.</param>
+        /// <returns></returns>
+        /// <exception cref="Exception">Không tìm thấy câu trả lời</exception>
         public async Task<ReplyComment> UpdateReply(UpdateReplyRequest request)
         {
             ReplyComment reply = await replyCommentRepository.GetByIdAsync(ObjectId.Parse(request.Id));

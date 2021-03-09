@@ -10,6 +10,9 @@ using System.Threading.Tasks;
 
 namespace CoStudy.API.WebAPI.Middlewares
 {
+    /// <summary>
+    /// Error wrapping middleware
+    /// </summary>
     public class ErrorWrappingMiddleware
     {
         /// <summary>
@@ -21,12 +24,16 @@ namespace CoStudy.API.WebAPI.Middlewares
         /// </summary>
         private readonly ILogger<ErrorWrappingMiddleware> _logger;
 
+        /// <summary>
+        /// The logging repository
+        /// </summary>
         private readonly ILoggingRepository loggingRepository;
         /// <summary>
         /// Initializes a new instance of the <see cref="ErrorWrappingMiddleware" /> class.
         /// </summary>
         /// <param name="next">The next.</param>
         /// <param name="logger">The logger.</param>
+        /// <param name="loggingRepository">The logging repository.</param>
         /// <exception cref="ArgumentNullException">logger</exception>
         public ErrorWrappingMiddleware(RequestDelegate next, ILogger<ErrorWrappingMiddleware> logger, ILoggingRepository loggingRepository)
         {
@@ -64,7 +71,7 @@ namespace CoStudy.API.WebAPI.Middlewares
 
                 LogEventLevel level = statusCode > 499 ? LogEventLevel.Error : LogEventLevel.Information;
 
-                if (level == LogEventLevel.Information)
+                if (level == LogEventLevel.Information && !context.Request.Path.ToString().ToLower().Contains("logging"))
                 {
                     Logging logging = new Logging();
                     logging.RequestMethod = context.Request.Method;
@@ -112,6 +119,11 @@ namespace CoStudy.API.WebAPI.Middlewares
             }
         }
 
+        /// <summary>
+        /// Reads the exception.
+        /// </summary>
+        /// <param name="messageException">The message exception.</param>
+        /// <returns></returns>
         private ExceptionMessageModel ReadException(string messageException)
         {
             ExceptionMessageModel exceptionMessageModel = new ExceptionMessageModel();

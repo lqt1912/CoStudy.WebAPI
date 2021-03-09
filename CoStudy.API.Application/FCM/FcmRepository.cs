@@ -11,14 +11,37 @@ using System.Threading.Tasks;
 
 namespace CoStudy.API.Application.FCM
 {
+    /// <summary>
+    /// Fcm repository
+    /// </summary>
+    /// <seealso cref="CoStudy.API.Application.FCM.IFcmRepository" />
     public class FcmRepository : IFcmRepository
     {
+        /// <summary>
+        /// The FCM information repository
+        /// </summary>
         IFcmInfoRepository fcmInfoRepository;
+        /// <summary>
+        /// The client group repository
+        /// </summary>
         IClientGroupRepository clientGroupRepository;
+        /// <summary>
+        /// The user repository
+        /// </summary>
         IUserRepository userRepository;
+        /// <summary>
+        /// The HTTP context accessor
+        /// </summary>
         IHttpContextAccessor httpContextAccessor;
 
-        public FcmRepository(IFcmInfoRepository fcmInfoRepository,
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FcmRepository"/> class.
+        /// </summary>
+        /// <param name="fcmInfoRepository">The FCM information repository.</param>
+        /// <param name="clientGroupRepository">The client group repository.</param>
+        /// <param name="userRepository">The user repository.</param>
+        /// <param name="httpContextAccessor">The HTTP context accessor.</param>
+        public FcmRepository(IFcmInfoRepository fcmInfoRepository, 
             IClientGroupRepository clientGroupRepository,
             IUserRepository userRepository,
             IHttpContextAccessor httpContextAccessor)
@@ -29,6 +52,12 @@ namespace CoStudy.API.Application.FCM
             this.httpContextAccessor = httpContextAccessor;
         }
 
+        /// <summary>
+        /// Adds the FCM information.
+        /// </summary>
+        /// <param name="userId">The user identifier.</param>
+        /// <param name="deviceToken">The device token.</param>
+        /// <returns></returns>
         public async Task<FcmInfo> AddFcmInfo(string userId, string deviceToken)
         {
             FilterDefinition<FcmInfo> finder = Builders<FcmInfo>.Filter.Eq("user_id", userId);
@@ -54,6 +83,12 @@ namespace CoStudy.API.Application.FCM
             }
         }
 
+        /// <summary>
+        /// Revokes the FCM information.
+        /// </summary>
+        /// <param name="userId">The user identifier.</param>
+        /// <param name="deviceToken">The device token.</param>
+        /// <returns></returns>
         public async Task<FcmInfo> RevokeFcmInfo(string userId, string deviceToken)
         {
             FilterDefinitionBuilder<FcmInfo> builder = Builders<FcmInfo>.Filter;
@@ -67,9 +102,13 @@ namespace CoStudy.API.Application.FCM
                 return exist;
             }
             else return null;
-
         }
 
+        /// <summary>
+        /// Sends the message.
+        /// </summary>
+        /// <param name="clientGroupName">Name of the client group.</param>
+        /// <param name="message">The message.</param>
         public async Task SendMessage(string clientGroupName, Domain.Entities.Application.Message message)
         {
             try
@@ -105,9 +144,13 @@ namespace CoStudy.API.Application.FCM
             {
                 //Do nothing
             }
-
         }
 
+        /// <summary>
+        /// Pushes the notify.
+        /// </summary>
+        /// <param name="clientGroupName">Name of the client group.</param>
+        /// <param name="noftication">The noftication.</param>
         public async Task PushNotify(string clientGroupName, Noftication noftication)
         {
             try
@@ -143,6 +186,10 @@ namespace CoStudy.API.Application.FCM
             }
         }
 
+        /// <summary>
+        /// Sends the notification.
+        /// </summary>
+        /// <returns></returns>
         public async Task<string> SendNotification()
         {
             FirebaseAdmin.Messaging.Message message = new FirebaseAdmin.Messaging.Message()

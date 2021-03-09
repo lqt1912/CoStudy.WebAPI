@@ -9,9 +9,18 @@ using System.IO;
 
 namespace CoStudy.API.Application.Features
 {
+    /// <summary>
+    /// Some External feature
+    /// </summary>
     public static class Feature
     {
 
+        /// <summary>
+        /// Saves the image to URL.
+        /// </summary>
+        /// <param name="image">The image.</param>
+        /// <param name="accessor">The accessor.</param>
+        /// <returns></returns>
         public static string SaveImageToUrl(IFormFile image, IHttpContextAccessor accessor)
         {
             if (image == null)
@@ -19,12 +28,11 @@ namespace CoStudy.API.Application.Features
                 return "";
             }
 
-
-            string scheme = accessor.HttpContext.Request.Scheme;
-            HostString host = accessor.HttpContext.Request.Host;
-            PathString pathBase = accessor.HttpContext.Request.PathBase;
-            string imageFolder = @"UserAvatar/";
-            string location = $"{scheme}://{host}{pathBase}/{imageFolder}";
+            var scheme = accessor.HttpContext.Request.Scheme;
+            var host = accessor.HttpContext.Request.Host;
+            var pathBase = accessor.HttpContext.Request.PathBase;
+            var imageFolder = @"UserAvatar/";
+            var location = $"{scheme}://{host}{pathBase}/{imageFolder}";
 
             string target = Path.Combine(Directory.GetCurrentDirectory(), @"wwwroot\UserAvatar\");
             Directory.CreateDirectory(target);
@@ -39,6 +47,13 @@ namespace CoStudy.API.Application.Features
             return location + fileName;
         }
 
+        /// <summary>
+        /// Saves the image.
+        /// </summary>
+        /// <param name="image">The image.</param>
+        /// <param name="accessor">The accessor.</param>
+        /// <param name="folder">The folder.</param>
+        /// <returns></returns>
         public static string SaveImage(IFormFile image, IHttpContextAccessor accessor, string folder)
         {
             if (image == null)
@@ -69,6 +84,11 @@ namespace CoStudy.API.Application.Features
 
 
 
+        /// <summary>
+        /// Gets the host URL.
+        /// </summary>
+        /// <param name="httpContextAccessor">The HTTP context accessor.</param>
+        /// <returns></returns>
         public static string GetHostUrl(IHttpContextAccessor httpContextAccessor)
         {
             string scheme = httpContextAccessor.HttpContext.Request.Scheme;
@@ -78,17 +98,19 @@ namespace CoStudy.API.Application.Features
             return location;
         }
 
+        /// <summary>
+        /// Currents the user.
+        /// </summary>
+        /// <param name="_httpContextAccessor">The HTTP context accessor.</param>
+        /// <param name="userRepository">The user repository.</param>
+        /// <returns></returns>
         public static User CurrentUser(IHttpContextAccessor _httpContextAccessor, IUserRepository userRepository)
         {
             Account currentAccount = (Account)_httpContextAccessor.HttpContext.Items["Account"];
 
             if (currentAccount != null)
             {
-
-                //var cacheduser = CacheHelper.GetValue($"CurrentUser-{currentAccount.Email}") as User;
-                //if (cacheduser != null)
-                //    return cacheduser;
-                FilterDefinition<User> filter = Builders<User>.Filter.Eq("email", currentAccount.Email);
+                var filter = Builders<User>.Filter.Eq("email", currentAccount.Email);
                 return userRepository.Find(filter);
             }
             else return null;
@@ -96,6 +118,15 @@ namespace CoStudy.API.Application.Features
 
         }
 
+
+        /// <summary>
+        /// Determines whether the specified list a is equal.
+        /// </summary>
+        /// <param name="listA">The list a.</param>
+        /// <param name="listB">The list b.</param>
+        /// <returns>
+        ///   <c>true</c> if the specified list a is equal; otherwise, <c>false</c>.
+        /// </returns>
         public static bool IsEqual(List<string> listA, List<string> listB)
         {
             if (listA.Count == listB.Count)

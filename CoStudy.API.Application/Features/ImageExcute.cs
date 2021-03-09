@@ -5,20 +5,88 @@ using System.Net;
 
 namespace CoStudy.API.Application.Features
 {
+    /// <summary>
+    /// Image
+    /// </summary>
     public class ImageRequest
     {
+        /// <summary>
+        /// Gets or sets the posi x.
+        /// </summary>
+        /// <value>
+        /// The posi x.
+        /// </value>
         public int? PosiX { get; set; }
+        /// <summary>
+        /// Gets or sets the posi y.
+        /// </summary>
+        /// <value>
+        /// The posi y.
+        /// </value>
         public int? PosiY { get; set; }
+        /// <summary>
+        /// Gets or sets the width.
+        /// </summary>
+        /// <value>
+        /// The width.
+        /// </value>
         public int? Width { get; set; }
+        /// <summary>
+        /// Gets or sets the height.
+        /// </summary>
+        /// <value>
+        /// The height.
+        /// </value>
         public int? Height { get; set; }
 
+        /// <summary>
+        /// Gets or sets the flip horizontal.
+        /// </summary>
+        /// <value>
+        /// The flip horizontal.
+        /// </value>
         public bool? FlipHorizontal { get; set; }
+        /// <summary>
+        /// Gets or sets the flip vertical.
+        /// </summary>
+        /// <value>
+        /// The flip vertical.
+        /// </value>
         public bool? FlipVertical { get; set; }
+        /// <summary>
+        /// Gets or sets the angle.
+        /// </summary>
+        /// <value>
+        /// The angle.
+        /// </value>
         public int? Angle { get; set; }
+        /// <summary>
+        /// Gets or sets the URL.
+        /// </summary>
+        /// <value>
+        /// The URL.
+        /// </value>
         public string Url { get; set; }
     }
+    /// <summary>
+    /// 
+    /// </summary>
     public class ImageExcute
     {
+        /// <summary>
+        /// Gets the image extension nullable.
+        /// </summary>
+        /// <param name="url">The URL.</param>
+        /// <param name="posiX">The posi x.</param>
+        /// <param name="posiY">The posi y.</param>
+        /// <param name="width">The width.</param>
+        /// <param name="height">The height.</param>
+        /// <param name="flipX">The flip x.</param>
+        /// <param name="flipY">The flip y.</param>
+        /// <param name="rotate">The rotate.</param>
+        /// <param name="configuration">The configuration.</param>
+        /// <returns></returns>
+        /// <exception cref="Exception">Lỗi định dạng</exception>
         public Tuple<byte[], string> GetImageExtensionNullable(string url, int? posiX, int? posiY, int? width, int? height, bool? flipX, bool? flipY, float? rotate, IConfiguration configuration)
         {
             WebClient webClient = new WebClient();
