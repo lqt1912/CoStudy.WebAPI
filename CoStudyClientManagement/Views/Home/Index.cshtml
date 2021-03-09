@@ -1,0 +1,296 @@
+﻿
+
+@{
+    ViewData["Title"] = "Logging";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1 class="m-0">@ViewData["Title"]</h1>
+            </div><!-- /.col -->
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="#">Home</a></li>
+                    <li class="breadcrumb-item active">Dashboard v1</li>
+                </ol>
+            </div><!-- /.col -->
+        </div><!-- /.row -->
+    </div><!-- /.container-fluid -->
+</div>
+<!-- /.content-header -->
+
+<div class="content">
+
+    <div class="row justify-content-around">
+        <div class="col-lg-3 col-6">
+            <!-- small box -->
+            <div class="small-box bg-warning">
+                <div class="inner">
+                    <h3 id="unauth">N/A</h3>
+
+                    <p>Unauthorized</p>
+                </div>
+            </div>
+        </div>
+        <!-- ./col -->
+        <div class="col-lg-3 col-6">
+            <!-- small box -->
+            <div class="small-box bg-success">
+                <div class="inner">
+                    <h3 id="success">N/A</h3>
+
+                    <p>Success</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- ./col -->
+        <div class="col-lg-3 col-6">
+            <!-- small box -->
+            <div class="small-box bg-danger">
+                <div class="inner">
+                    <h3 id="bad">N/A</h3>
+
+                    <p>Bad request</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-3 col-6">
+            <!-- small box -->
+            <div class="small-box bg-info">
+                <div class="inner">
+                    <h3 id="bad">N/A</h3>
+
+                    <p>Others</p>
+                </div>
+            </div>
+        </div>
+        <!-- ./col -->
+    </div>
+    <div class="w-100 form-row pb-3 ">
+        <div class="col-4 mb-2"> <input id="txtSearch" class=" form-control" placeholder="Phương thức" /> </div>
+        <div class="col-4 mb-2"> <input id="txtLocation" class="form-control" placeholder="Địa chỉ" /> </div>
+        <div class="col-4 mb-2"> <input id="txtStatusCode" class="form-control" placeholder="Mã phản hồi" /></div>
+        <div class="col-4 form-group row m-0">
+            <label for="" class="col-sm-3 col-form-label">Từ ngày </label>
+            <div class="col-sm-9">
+                <input type="date" class="form-control" id="inputPassword" placeholder="">
+            </div>
+        </div>
+
+        <div class="col-4 form-group row m-0">
+            <label for="" class="col-sm-3 col-form-label">Đến ngày </label>
+            <div class="col-sm-9">
+                <input type="date" class="form-control" id="inputPassword" placeholder="Password">
+            </div>
+        </div>
+        <div class="col-2"> <button id="btnSearch" class="form-control btn btn-primary"> Tìm kiếm </button></div>
+        <div class="col-2"> <button id="btnClear" class="form-control btn btn-primary"> Hủy  </button></div>
+
+    </div>
+
+
+
+    <div class="row container-fluid     ">
+
+        <table id="myTable" class="table table-responsive table-striped border" style="font-size: 15px; width: 100% !important">
+            <thead>
+                <tr>
+                    <th>STT</th>
+                    <th>Phương thức</th>
+                    <th>Địa chỉ</th>
+                    <th>Đường dẫn</th>
+                    <th>Code</th>
+                    <th>Thời gian</th>
+                    <th>Phản hồi</th>
+                    <th>IP</th>
+                    <th>Ngày</th>
+                </tr>
+            </thead>
+        </table>
+    </div>
+
+</div>
+<style>
+    .dataTables_wrapper {
+        width: 100%
+    }
+</style>
+
+
+<script>
+
+    var dataTableOption = {
+
+
+    };
+
+    $(document).ready(function () {
+
+      
+
+        //jQuery DataTables initialization
+        var dt = $('#myTable').DataTable({
+            paging: true,
+            processing: true,
+            dom: 'lirtp',
+            serverSide: true, // for process on server side
+            orderMulti: true,
+            searching: true,
+            bSort: false,
+            bScrollCollapse: true,
+            bAutoWidth: false,
+            lengthMenu: [[10, 20, 50, 100], [10, 20, 50, 100]],
+            language: {
+                info: "Hiển thị _START_ đến _END_ của _TOTAL_ mục",
+                infoFiltered: "",
+                lengthMenu: "Hiển thị _MENU_ mục",
+                search: "Search",
+                processing: '<div class="border" style="background-color: #717571; font-size: 20px;line-height: 4; font-weight: bold">Đang tải dữ liệu...</div>',
+                paginate: {
+                    previous: "Đầu",
+                    next: "Tiếp theo",
+                    last: "Cuối"
+                },
+            },
+            ajax: {
+                url: "https://localhost:44323/api/Logging/paged",
+                type: "POST",
+                method: "POST",
+
+                contentType: "application/json",
+                dataType: "json",
+                data: function (d) {
+                    var settings = $("#myTable").dataTable().fnSettings();
+                    d.start = settings._iDisplayStart;
+                    d.length = settings._iDisplayLength;
+
+                    return JSON.stringify(d);
+                },
+
+                dataSrc: function (response) {
+                    if (response.data.length > 0) {
+
+                        response.recordsTotal = response.recordsTotal;
+                        response.recordsFiltered = response.recordsFiltered;
+
+                        console.log(response);
+                        return response.data;
+                    }
+                    else {
+                        return [];
+                    };
+
+                },
+                dataFilter: function (data) {
+                    return data;
+                },
+                error: function (status) {
+                    alone.notify('Cannot load data of Product', 'error');
+                }
+            },
+            columns: [
+                {
+                    data: "index",
+                    name: "index",
+                    width: "5%"
+                },
+                {
+                    data: "requestMethod",
+                    name: "requestMethod",
+                    width: "5%"
+                },
+                {
+                    data: "location",
+                    "name": "location",
+                    width: "15%"
+                },
+                {
+                    "data": "requestPath",
+                    "name": "requestPath",
+                    width: "20%"
+                },
+                {
+                    "data": "statusCode",
+                    "name": "statusCode",
+                    width: "5%"
+                },
+                {
+                    "data": "timeElapsed",
+                    "name": "timeElapsed",
+                    "width": "10%"
+                },               //index 4
+                {
+                    "data": "message",
+                    "name": "message",
+                    width: "20%"
+                },   //index 5
+                {
+                    "data": "ip",
+                    "name": "ip",
+                    width: "5%"
+                },   //index 5
+                {
+                    "data": "createdDate",
+                    "name": "createdDate",
+                    width: "40%",
+                },   //index 5
+            ]
+        });
+
+        $('#btnSearch').click(function () {
+            oTable = $('#myTable').DataTable();
+
+            oTable.columns(3).search($('#txtStatusCode').val());
+            oTable.columns(1).search($('#txtLocation').val());
+            oTable.columns(0).search($('#txtSearch').val());
+
+            //hit search on server
+            oTable.draw();
+        });
+
+        $('#btnClear').click(
+            function () {
+                oTable = $('#myTable').DataTable();
+                $('#txtStatusCode').val('');
+                $('#txtLocation').val('');
+                $('#txtSearch').val('');
+                oTable.columns(3).search($('#txtStatusCode').val());
+                oTable.columns(1).search($('#txtLocation').val());
+                oTable.columns(0).search($('#txtSearch').val());
+
+                oTable.draw();
+            }
+        );
+
+        setInterval(function () {
+            ajaxCall();
+        }, 1000);
+
+
+        
+
+    });
+
+    function ajaxCall() {
+        $.ajax({
+            type: "GET",
+            url: "https://localhost:44323/api/Logging/count",
+
+            success: function (response) {
+              //  console.log(response);
+                $('#success').text(response.result[0]);
+                $('#unauth').text(response.result[2]);
+                $('#bad').text(response.result[1]);
+            },
+            error: function (response) {
+                console.log(response)
+            }
+        }
+        );
+    }
+</script>

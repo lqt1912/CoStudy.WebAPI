@@ -17,7 +17,7 @@ namespace CoStudy.API.Infrastructure.Identity.Helpers
         public static string randomOTPString()
         {
             using var rngCryptoServiceProvider = new RNGCryptoServiceProvider();
-            var randomBytes = new byte[6];
+            var randomBytes = new byte[3];
             rngCryptoServiceProvider.GetBytes(randomBytes);
             // convert random bytes to hex string
             return BitConverter.ToString(randomBytes).Replace("-", "");

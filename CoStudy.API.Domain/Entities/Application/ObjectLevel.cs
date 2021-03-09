@@ -83,4 +83,14 @@ namespace CoStudy.API.Domain.Entities.Application
         [JsonPropertyName("is_active")]
         public bool IsActive { get; set; } = true;
     }
+
+     
+    public static class LevelPoint  {
+
+        public const int Level1 = 100;
+        public const int Level2 = 200;
+        public const int Level3 = 300;
+        public const int Level4 = 400;
+        public const int Level5 = 500;
+    }
 }

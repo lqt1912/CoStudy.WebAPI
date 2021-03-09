@@ -71,7 +71,7 @@ namespace CoStudy.API.WebAPI.Middlewares
 
                 var level = statusCode > 499 ? LogEventLevel.Error : LogEventLevel.Information;
 
-                if (level == LogEventLevel.Information)
+                if (level == LogEventLevel.Information && !context.Request.Path.ToString().ToLower().Contains("logging"))
                 {
                     var logging = new Logging();
                     logging.RequestMethod = context.Request.Method;

@@ -144,7 +144,6 @@ namespace CoStudy.API.Application.FCM
             {
                 //Do nothing
             }
-
         }
 
         /// <summary>

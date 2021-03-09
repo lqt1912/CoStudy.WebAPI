@@ -83,7 +83,7 @@ namespace CoStudy.API.Domain.Entities.Identity.MongoAuthen
     }
 
     /// <summary>
-    /// 
+    /// Enum Role
     /// </summary>
     public enum Role
     {

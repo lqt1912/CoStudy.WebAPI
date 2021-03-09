@@ -1,4 +1,6 @@
-﻿using CoStudy.API.Infrastructure.Shared.Services.LocationServices;
+﻿using AutoMapper;
+using CoStudy.API.Infrastructure.Shared.AutoMapper;
+using CoStudy.API.Infrastructure.Shared.Services.LocationServices;
 using CoStudy.API.Infrastructure.Shared.Services.MessageServices;
 using CoStudy.API.Infrastructure.Shared.Services.NofticationServices;
 using CoStudy.API.Infrastructure.Shared.Services.PostServices;
@@ -29,6 +31,19 @@ namespace CoStudy.API.Infrastructure.Shared.Services
             services.AddTransient<IReportServices, ReportServices>();
             services.AddTransient<IIdentityService, IdentityService>();
             services.AddTransient<IReportReasonService, ReportReasonService>();
+            services.AddTransient<ILoggingServices, LoggingServices>();
+        }
+
+        public static void AutoMapperConfig(this IServiceCollection services)
+        {
+            var mappingConfig = new MapperConfiguration(mc =>
+            {
+                mc.AddProfile(new MappingProfile());
+            });
+
+            IMapper mapper = mappingConfig.CreateMapper();
+            services.AddSingleton(mapper);
+
         }
     }
 }

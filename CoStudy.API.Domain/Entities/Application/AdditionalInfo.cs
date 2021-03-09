@@ -10,8 +10,6 @@ namespace CoStudy.API.Domain.Entities.Application
     /// </summary>
     public class AdditionalInfo
     {
-
-
         /// <summary>
         /// Gets or sets the type of the information.
         /// </summary>

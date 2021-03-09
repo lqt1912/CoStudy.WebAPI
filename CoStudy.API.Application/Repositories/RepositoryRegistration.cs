@@ -43,7 +43,6 @@ namespace CoStudy.API.Application.Repositories
 
             services.AddTransient<IClientGroupRepository, ClientGroupRepository>();
 
-
             services.AddTransient<IClientGroupRepository, ClientGroupRepository>();
 
             services.AddTransient<ILoggingRepository, LoggingRepository>();
@@ -57,17 +56,27 @@ namespace CoStudy.API.Application.Repositories
             services.AddTransient<IFcmInfoRepository, FcmInfoRepository>();
 
             services.AddTransient<IFcmRepository, FcmRepository>();
+
             services.AddTransient<IProvinceRepository, ProvinceRepository>();
+
             services.AddTransient<IDistrictRepository, DistrictRepository>();
+
             services.AddTransient<IWardRepository, WardRepository>();
+
             services.AddTransient<ILevelRepository, LevelRepository>();
+
             services.AddTransient<IObjectLevelRepository, ObjectLevelRepository>();
+
             var googleCredential = GoogleCredential.FromFile(@"wwwroot/costudy-c5390-firebase-adminsdk-e63r1-4405752328.json");
+            
             FirebaseApp.Create(new AppOptions() { Credential = googleCredential });
+         
             services.AddTransient<IFileHelper, FileHelper>();
 
             services.AddTransient<IDocumentRepository, DocumentRepository>();
+
             services.AddTransient<IReportRepository, ReportRepository>();
+
             services.AddTransient<IReportReasonRepository, ReportReasonRepository>();
 
         }

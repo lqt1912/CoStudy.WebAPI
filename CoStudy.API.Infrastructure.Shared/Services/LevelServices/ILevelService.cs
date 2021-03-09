@@ -61,6 +61,32 @@ namespace CoStudy.API.Infrastructure.Shared.Services
         /// </summary>
         /// <param name="userId">The user identifier.</param>
         /// <returns></returns>
+       
         Task<IEnumerable<UserGetFieldResponse>> GetFieldsOfUser(string userId);
+     
+        /// <summary>
+        /// Determines whether the specified user object levels is match.
+        /// </summary>
+        /// <param name="userObjectLevels">The user object levels.</param>
+        /// <param name="postObjectLevels">The post object levels.</param>
+        /// <returns>
+        ///   <c>true</c> if the specified user object levels is match; otherwise, <c>false</c>.
+        /// </returns>
+        bool IsMatch(IEnumerable<ObjectLevel> userObjectLevels, IEnumerable<ObjectLevel> postObjectLevels);
+      
+        /// <summary>
+        /// Gets all post match user.
+        /// </summary>
+        /// <param name="postId">The post identifier.</param>
+        /// <returns></returns>
+        Task<IEnumerable<User>> GetAllPostMatchUser(string postId);
+      
+        /// <summary>
+        /// Adds the point.
+        /// </summary>
+        /// <param name="objectLevelId">The object level identifier.</param>
+        /// <param name="point">The point.</param>
+        /// <returns></returns>
+        Task<ObjectLevel> AddPoint(string objectLevelId, int point);
     }
 }

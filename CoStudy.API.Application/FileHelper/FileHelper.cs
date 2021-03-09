@@ -10,17 +10,37 @@ using System.Threading.Tasks;
 
 namespace CoStudy.API.Application
 {
+    /// <summary>
+    /// class FileHelper
+    /// </summary>
+    /// <seealso cref="CoStudy.API.Application.IFileHelper" />
     public class FileHelper : IFileHelper
     {
+        /// <summary>
+        /// The configuration
+        /// </summary>
         IConfiguration configuration;
+        /// <summary>
+        /// The firebase storage
+        /// </summary>
         FirebaseStorage firebaseStorage;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FileHelper"/> class.
+        /// </summary>
+        /// <param name="configuration">The configuration.</param>
         public FileHelper(IConfiguration configuration)
         {
             this.configuration = configuration;
             firebaseStorage = new FirebaseStorage(configuration["FirebaseBlob"]);
         }
 
+        /// <summary>
+        /// Uploads the file.
+        /// </summary>
+        /// <param name="folder">The folder.</param>
+        /// <param name="files">The files.</param>
+        /// <returns></returns>
         public async Task<IEnumerable<string>> UploadFile(string folder, IEnumerable<IFormFile> files)
         {
             var result = new List<string>();
