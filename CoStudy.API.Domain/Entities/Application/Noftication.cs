@@ -30,26 +30,6 @@ namespace CoStudy.API.Domain.Entities.Application
         public string AuthorId { get; set; }
 
         /// <summary>
-        /// Gets or sets the name of the author.
-        /// </summary>
-        /// <value>
-        /// The name of the author.
-        /// </value>
-        [BsonElement("author_name")]
-        [JsonPropertyName("author_name")]
-        public string AuthorName { get; set; }
-
-        /// <summary>
-        /// Gets or sets the author avatar.
-        /// </summary>
-        /// <value>
-        /// The author avatar.
-        /// </value>
-        [BsonElement("author_avatar")]
-        [JsonPropertyName("author_avatar")]
-        public string AuthorAvatar { get; set; }
-
-        /// <summary>
         /// Gets or sets the owner identifier.
         /// </summary>
         /// <value>

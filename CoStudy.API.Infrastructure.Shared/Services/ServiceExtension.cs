@@ -34,6 +34,10 @@ namespace CoStudy.API.Infrastructure.Shared.Services
             services.AddTransient<ILoggingServices, LoggingServices>();
         }
 
+        /// <summary>
+        /// Automatics the mapper configuration.
+        /// </summary>
+        /// <param name="services">The services.</param>
         public static void AutoMapperConfig(this IServiceCollection services)
         {
             var mappingConfig = new MapperConfiguration(mc =>

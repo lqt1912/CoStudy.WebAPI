@@ -1,25 +1,24 @@
-﻿using CoStudy.API.Domain.Entities.BaseEntity;
-using MongoDB.Bson;
-using MongoDB.Bson.Serialization.Attributes;
+﻿using CoStudy.API.Domain.Entities.Application;
+using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
-namespace CoStudy.API.Domain.Entities.Application
+namespace CoStudy.API.Infrastructure.Shared.ViewModels
 {
     /// <summary>
-    /// Class comment
+    /// Class Comment View  Model
     /// </summary>
-    /// <seealso cref="CoStudy.API.Domain.Entities.BaseEntity.Entity" />
-    public class Comment : Entity
+    public class CommentViewModel
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="Comment"/> class.
+        /// Gets or sets the o identifier.
         /// </summary>
-        public Comment() : base()
-        {
-            Replies = new List<ReplyComment>();
-        }
+        /// <value>
+        /// The o identifier.
+        /// </value>
+        [JsonPropertyName("oid")]
+        [JsonProperty("oid")]
+        public string OId { get; set; }
 
         /// <summary>
         /// Gets or sets the post identifier.
@@ -27,9 +26,10 @@ namespace CoStudy.API.Domain.Entities.Application
         /// <value>
         /// The post identifier.
         /// </value>
-        [BsonElement("post_id")]
         [JsonPropertyName("post_id")]
+        [JsonProperty("post_id")]
         public string PostId { get; set; }
+
 
         /// <summary>
         /// Gets or sets the content.
@@ -37,9 +37,10 @@ namespace CoStudy.API.Domain.Entities.Application
         /// <value>
         /// The content.
         /// </value>
-        [BsonElement("content")]
         [JsonPropertyName("content")]
+        [JsonProperty("content")]
         public string Content { get; set; }
+
 
         /// <summary>
         /// Gets or sets the image.
@@ -47,7 +48,7 @@ namespace CoStudy.API.Domain.Entities.Application
         /// <value>
         /// The image.
         /// </value>
-        [BsonElement("image")]
+        [JsonProperty("image")]
         [JsonPropertyName("image")]
         public string Image { get; set; }
 
@@ -57,8 +58,8 @@ namespace CoStudy.API.Domain.Entities.Application
         /// <value>
         /// The author identifier.
         /// </value>
-        [BsonElement("author_id")]
         [JsonPropertyName("author_id")]
+        [JsonProperty("author_id")]
         public string AuthorId { get; set; }
 
         /// <summary>
@@ -67,8 +68,8 @@ namespace CoStudy.API.Domain.Entities.Application
         /// <value>
         /// The name of the author.
         /// </value>
-        [BsonElement("author_name")]
         [JsonPropertyName("author_name")]
+        [JsonProperty("author_name")]
         public string AuthorName { get; set; }
 
         /// <summary>
@@ -77,8 +78,8 @@ namespace CoStudy.API.Domain.Entities.Application
         /// <value>
         /// The author avatar.
         /// </value>
-        [BsonElement("author_avatar")]
         [JsonPropertyName("author_avatar")]
+        [JsonProperty("author_avatar")]
         public string AuthorAvatar { get; set; }
 
         /// <summary>
@@ -87,10 +88,9 @@ namespace CoStudy.API.Domain.Entities.Application
         /// <value>
         /// The status.
         /// </value>
-        [BsonElement("status")]
         [JsonPropertyName("status")]
+        [JsonProperty("status")]
         public ItemStatus Status { get; set; }
-
 
         /// <summary>
         /// Gets or sets the created date.
@@ -98,8 +98,8 @@ namespace CoStudy.API.Domain.Entities.Application
         /// <value>
         /// The created date.
         /// </value>
-        [BsonElement("created_date")]
         [JsonPropertyName("created_date")]
+        [JsonProperty("created_date")]
         public DateTime? CreatedDate { get; set; }
 
         /// <summary>
@@ -108,20 +108,9 @@ namespace CoStudy.API.Domain.Entities.Application
         /// <value>
         /// The modified date.
         /// </value>
-        [BsonElement("modified_date")]
         [JsonPropertyName("modified_date")]
+        [JsonProperty("modified_date")]
         public DateTime? ModifiedDate { get; set; }
-
-        /// <summary>
-        /// Gets or sets the replies.
-        /// </summary>
-        /// <value>
-        /// The replies.
-        /// </value>
-        [BsonElement("replies")]
-        [JsonPropertyName("replies")]
-        public List<ReplyComment> Replies { get; set; }
-
 
         /// <summary>
         /// Gets or sets the replies count.
@@ -129,8 +118,8 @@ namespace CoStudy.API.Domain.Entities.Application
         /// <value>
         /// The replies count.
         /// </value>
-        [BsonElement("replies_count")]
         [JsonPropertyName("replies_count")]
+        [JsonProperty("replies_count")]
         public int RepliesCount { get; set; }
 
         /// <summary>
@@ -139,8 +128,8 @@ namespace CoStudy.API.Domain.Entities.Application
         /// <value>
         /// The upvote count.
         /// </value>
-        [BsonElement("upvote_count")]
         [JsonPropertyName("upvote_count")]
+        [JsonProperty("upvote_count")]
         public int UpvoteCount { get; set; }
 
         /// <summary>
@@ -149,8 +138,8 @@ namespace CoStudy.API.Domain.Entities.Application
         /// <value>
         /// The downvote count.
         /// </value>
-        [BsonElement("downvote_count")]
         [JsonPropertyName("downvote_count")]
+        [JsonProperty("downvote_count")]
         public int DownvoteCount { get; set; }
 
         /// <summary>
@@ -159,18 +148,19 @@ namespace CoStudy.API.Domain.Entities.Application
         /// <value>
         /// The is edited.
         /// </value>
-        [BsonElement("is_edited")]
         [JsonPropertyName("is_edited")]
+        [JsonProperty("is_edited")]
         public bool? IsEdited { get; set; }
+
+
         /// <summary>
-        /// Use for response
+        /// Gets or sets the is vote by current.
         /// </summary>
         /// <value>
         /// The is vote by current.
         /// </value>
-
+        [JsonProperty("is_vote_by_current")]
         [JsonPropertyName("is_vote_by_current")]
-        [BsonElement("is_vote_by_current")]
         public bool? IsVoteByCurrent { get; set; }
 
         /// <summary>
@@ -179,8 +169,9 @@ namespace CoStudy.API.Domain.Entities.Application
         /// <value>
         /// The is down vote by current.
         /// </value>
+        [JsonProperty("is_downvote_by_current")]
         [JsonPropertyName("is_downvote_by_current")]
-        [BsonElement("is_downvote_by_current")]
         public bool? IsDownVoteByCurrent { get; set; }
+
     }
 }

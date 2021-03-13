@@ -71,7 +71,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services
         /// <returns></returns>
         public TableResultJson<LoggingViewModel> GetPaged(TableRequest request)
         {
-            var dataSource = loggingRepository.GetAll().AsEnumerable();
+            var dataSource = loggingRepository.GetAll().OrderByDescending(x => x.CreatedDate.Value).AsEnumerable();
 
             if (request.columns[0].search != null)
             {
@@ -95,7 +95,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services
             response.recordsFiltered = dataSource.Count();
 
             dataSource = dataSource.Skip(request.start).Take(request.length);
-            response.data = mapper.Map<List<LoggingViewModel>>(dataSource.OrderByDescending(x => x.CreatedDate.Value).ToList());
+            response.data = mapper.Map<List<LoggingViewModel>>(dataSource.ToList());
             foreach (var item in response.data)
             {
                 item.Index = response.data.IndexOf(item)+ request.start +1;

@@ -4,9 +4,6 @@ using CoStudy.API.Domain.Entities.Identity.MongoAuthen;
 using CoStudy.API.Infrastructure.Identity.Models.Account.Request;
 using CoStudy.API.Infrastructure.Identity.Models.Account.Response;
 using CoStudy.API.Infrastructure.Shared.ViewModels;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace CoStudy.API.Infrastructure.Shared.AutoMapper
 {
@@ -14,7 +11,7 @@ namespace CoStudy.API.Infrastructure.Shared.AutoMapper
     /// Class MappingProfile
     /// </summary>
     /// <seealso cref="AutoMapper.Profile" />
-    public class MappingProfile :Profile
+    public class MappingProfile : Profile
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="MappingProfile"/> class.
@@ -47,6 +44,12 @@ namespace CoStudy.API.Infrastructure.Shared.AutoMapper
                         return true;
                     }
                 ));
+
+            CreateMap<Post, PostViewModel>().ReverseMap();
+
+            CreateMap<Comment, CommentViewModel>().ReverseMap();
+
+
         }
 
     }

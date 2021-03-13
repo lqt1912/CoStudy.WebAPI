@@ -5,7 +5,7 @@ using System.Text.Json.Serialization;
 namespace CoStudy.API.Domain.Entities.Application
 {
     /// <summary>
-    /// Class Upvote. 
+    /// Class Upvote.
     /// </summary>
     /// <seealso cref="CoStudy.API.Domain.Entities.BaseEntity.Entity" />
     public class UpVote : Entity
@@ -29,10 +29,20 @@ namespace CoStudy.API.Domain.Entities.Application
         [BsonElement("upvote_by")]
         [JsonPropertyName("upvote_by")]
         public string UpVoteBy { get; set; }
+
+        /// <summary>
+        /// Gets or sets the is deleted.
+        /// </summary>
+        /// <value>
+        /// The is deleted.
+        /// </value>
+        [BsonElement("is_deleted")]
+        [JsonPropertyName("is_deleted")]
+        public bool? IsDeleted { get; set; } = false;
     }
 
     /// <summary>
-    /// Class Downvote. 
+    /// Class Downvote.
     /// </summary>
     /// <seealso cref="CoStudy.API.Domain.Entities.BaseEntity.Entity" />
     public class DownVote : Entity
@@ -56,5 +66,16 @@ namespace CoStudy.API.Domain.Entities.Application
         [BsonElement("downvote_by")]
         [JsonPropertyName("downvote_by")]
         public string DownVoteBy { get; set; }
+
+
+        /// <summary>
+        /// Gets or sets the is deleted.
+        /// </summary>
+        /// <value>
+        /// The is deleted.
+        /// </value>
+        [BsonElement("is_deleted")]
+        [JsonPropertyName("is_deleted")]
+        public bool? IsDeleted { get; set; } = false;
     }
 }

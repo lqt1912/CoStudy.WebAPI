@@ -1,10 +1,12 @@
-﻿using CoStudy.API.Application.FCM;
+﻿using AutoMapper;
+using CoStudy.API.Application.FCM;
 using CoStudy.API.Application.Features;
 using CoStudy.API.Application.Repositories;
 using CoStudy.API.Domain.Entities.Application;
 using CoStudy.API.Infrastructure.Shared.Adapters;
 using CoStudy.API.Infrastructure.Shared.Models.Request.PostRequest;
 using CoStudy.API.Infrastructure.Shared.Models.Response.PostResponse;
+using CoStudy.API.Infrastructure.Shared.ViewModels;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using MongoDB.Bson;
@@ -17,7 +19,7 @@ using System.Threading.Tasks;
 namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
 {
     /// <summary>
-    /// The Post Service. 
+    /// The Post Service.
     /// </summary>
     /// <seealso cref="CoStudy.API.Infrastructure.Shared.Services.PostServices.IPostService" />
     public class PostService : IPostService
@@ -74,8 +76,14 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
         /// The noftication repository
         /// </summary>
         INofticationRepository nofticationRepository;
+
         /// <summary>
-        /// Initializes a new instance of the <see cref="PostService"/> class.
+        /// The mapper
+        /// </summary>
+        IMapper mapper;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PostService" /> class.
         /// </summary>
         /// <param name="httpContextAccessor">The HTTP context accessor.</param>
         /// <param name="configuration">The configuration.</param>
@@ -90,6 +98,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
         /// <param name="clientGroupRepository">The client group repository.</param>
         /// <param name="fcmRepository">The FCM repository.</param>
         /// <param name="nofticationRepository">The noftication repository.</param>
+        /// <param name="mapper">The mapper.</param>
         public PostService(
             IHttpContextAccessor httpContextAccessor,
             IConfiguration configuration,
@@ -103,7 +112,8 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
             IDownVoteRepository downVoteRepository,
             IClientGroupRepository clientGroupRepository,
             IFcmRepository fcmRepository,
-            INofticationRepository nofticationRepository)
+            INofticationRepository nofticationRepository, 
+            IMapper mapper)
         {
             this.httpContextAccessor = httpContextAccessor;
             this.configuration = configuration;
@@ -118,6 +128,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
             this.clientGroupRepository = clientGroupRepository;
             this.fcmRepository = fcmRepository;
             this.nofticationRepository = nofticationRepository;
+            this.mapper = mapper;
         }
 
 
@@ -148,7 +159,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
         /// </summary>
         /// <param name="request">The request.</param>
         /// <returns></returns>
-        public async Task<AddPostResponse> AddPost(AddPostRequest request)
+        public async Task<PostViewModel> AddPost(AddPostRequest request)
         {
 
             User currentUser = Feature.CurrentUser(httpContextAccessor, userRepository);
@@ -158,9 +169,6 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
 
             Post post = PostAdapter.FromRequest(request);
             post.AuthorId = currentUser.Id.ToString();
-            post.AuthorAvatar = currentUser.AvatarHash;
-
-            post.AuthorName = $"{currentUser.FirstName} {currentUser.LastName}";
 
             foreach (string fieldId in request.Fields)
             {
@@ -179,7 +187,13 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
             clientGroup.UserIds.Add(post.AuthorId);
             await clientGroupRepository.AddAsync(clientGroup);
 
-            return PostAdapter.ToResponse(post, currentUser.Id.ToString());
+            var response = mapper.Map<PostViewModel>(post);
+            response.AuthorAvatar = currentUser.AvatarHash;
+            response.AuthorName = $"{currentUser.FirstName} {currentUser.LastName}";
+            response.CommentCount = 0;
+            response.Upvote = 0;
+            response.Downvote = 0;
+            return response;
         }
 
 
@@ -253,30 +267,6 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
         }
 
 
-        /// <summary>
-        /// Synchronizes the comment.
-        /// </summary>
-        public async Task SyncComment()
-        {
-            try
-            {
-                List<Post> posts = postRepository.GetAll().Where(x => x.Status == ItemStatus.Active).ToList();
-                foreach (Post post in posts)
-                {
-                    IQueryable<Comment> latestComments = commentRepository.GetAll().OrderByDescending(x => x.CreatedDate).Where(x => x.PostId == post.Id.ToString() && x.Status == ItemStatus.Active);
-                    if (latestComments.Count() > 3)
-                        latestComments = latestComments.Take(3);
-                    post.Comments.Clear();
-                    post.Comments.AddRange(latestComments);
-                    await postRepository.UpdateAsync(post, post.Id);
-                }
-            }
-            catch (Exception)
-            {
-                //do nothing
-                return;
-            }
-        }
 
         /// <summary>
         /// Synchronizes the reply.
@@ -310,6 +300,81 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
         /// <exception cref="Exception">Uncompleted activity</exception>
         public async Task<string> Upvote(string postId)
         {
+            var currentuser = Feature.CurrentUser(httpContextAccessor, userRepository);
+            var currentPost = await postRepository.GetByIdAsync(ObjectId.Parse(postId));
+
+            var builderUpvote = Builders<UpVote>.Filter;
+            var filterExistUpvote = builderUpvote.Eq("object_vote_id", postId)
+                & builderUpvote.Eq("upvote_by", currentuser.OId)
+                & builderUpvote.Eq("is_deleted", false);
+
+            var existUpvote = await upVoteRepository.FindAsync(filterExistUpvote);
+            if (existUpvote != null)
+                return "Bạn đã Upvote bài viết rồi";
+
+            else if (existUpvote == null)
+            {
+                var builderDownVote = Builders<DownVote>.Filter;
+                var filterExistDownVote = builderDownVote.Eq("object_vote_id", postId)
+                    & builderDownVote.Eq("downvote_by", currentuser.OId)
+                    & builderDownVote.Eq("is_deleted", false);
+                var existDownVote = await downVoteRepository.FindAsync(filterExistDownVote);
+                
+                if(existDownVote!=null)
+                {
+                    existDownVote.IsDeleted = true;
+                    await downVoteRepository.UpdateAsync(existDownVote, existDownVote.Id);
+                }
+
+                var upvote = new UpVote()
+                {
+                    ObjectVoteId = postId,
+                    UpVoteBy = currentuser.OId
+                };
+                await upVoteRepository.AddAsync(upvote);
+                return "Upvote thành công. ";
+            }
+
+            FilterDefinition<ClientGroup> filter = Builders<ClientGroup>.Filter.Eq("name", postId);
+
+            ClientGroup clientGroup = await clientGroupRepository.FindAsync(filter);
+
+            if (!clientGroup.UserIds.Contains(currentuser.OId))
+            {
+                clientGroup.UserIds.Add(currentuser.OId);
+                await clientGroupRepository.UpdateAsync(clientGroup, clientGroup.Id);
+            }
+
+            if (currentPost.AuthorId != currentuser.OId) //Cùng tác giả
+            {
+                Noftication notify = new Noftication()
+                {
+                    AuthorId = currentuser.OId,
+                    OwnerId = currentPost.AuthorId,
+                    Content = $"{currentuser.LastName} đã upvote bài viết của {currentuser.FirstName} {currentuser.LastName} ",
+                    CreatedDate = DateTime.Now,
+                    ModifiedDate = DateTime.Now
+                };
+
+                await fcmRepository.PushNotify(currentPost.OId, notify);
+                await nofticationRepository.AddAsync(notify);
+            }
+            else //Khác tác giả
+            {
+                Noftication notify = new Noftication()
+                {
+                    AuthorId = currentuser.OId,
+                    OwnerId = currentPost.AuthorId,
+                    Content = $"{currentuser.LastName} đã upvote bài viết của bạn",
+                    CreatedDate = DateTime.Now,
+                    ModifiedDate = DateTime.Now
+                };
+
+                await fcmRepository.PushNotify(currentPost.OId, notify);
+                await nofticationRepository.AddAsync(notify);
+
+            }
+
             try
             {
                 User currentUser = Feature.CurrentUser(httpContextAccessor, userRepository);
@@ -340,47 +405,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
                     }
                 }
 
-                FilterDefinition<ClientGroup> filter = Builders<ClientGroup>.Filter.Eq("name", currentPost.OId);
-                ClientGroup clientGroup = await clientGroupRepository.FindAsync(filter);
-
-                if (!clientGroup.UserIds.Contains(currentUser.OId))
-                {
-                    clientGroup.UserIds.Add(currentUser.OId);
-                    await clientGroupRepository.UpdateAsync(clientGroup, clientGroup.Id);
-                }
-
-                if (currentPost.AuthorId != currentUser.OId) //Cùng tác giả
-                {
-                    Noftication notify = new Noftication()
-                    {
-                        AuthorId = currentUser.OId,
-                        OwnerId = currentPost.AuthorId,
-                        Content = $"{currentUser.LastName} đã upvote bài viết của {currentPost.AuthorName} ",
-                        AuthorName = currentUser.LastName,
-                        AuthorAvatar = currentUser.AvatarHash,
-                        CreatedDate = DateTime.Now,
-                        ModifiedDate = DateTime.Now
-                    };
-
-                    await fcmRepository.PushNotify(currentPost.OId, notify);
-                    await nofticationRepository.AddAsync(notify);
-                }
-                else //Khác tác giả
-                {
-                    Noftication notify = new Noftication()
-                    {
-                        AuthorId = currentUser.OId,
-                        OwnerId = currentPost.AuthorId,
-                        Content = $"{currentUser.LastName} đã upvote bài viết của bạn",
-                        AuthorName = currentUser.LastName,
-                        AuthorAvatar = currentUser.AvatarHash,
-                        CreatedDate = DateTime.Now,
-                        ModifiedDate = DateTime.Now
-                    };
-
-                    await fcmRepository.PushNotify(currentPost.OId, notify);
-                    await nofticationRepository.AddAsync(notify);
-                }
+               
 
                 return "Success";
             }
@@ -667,6 +692,22 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
             {
                 //do nothing
             }
+        }
+
+        /// <summary>
+        /// Gets the post by identifier.
+        /// </summary>
+        /// <param name="id">The identifier.</param>
+        /// <returns></returns>
+        /// <exception cref="NotImplementedException"></exception>
+        public async Task<PostViewModel> GetPostById1(string id)
+        {
+            var post = await postRepository.GetByIdAsync(ObjectId.Parse(id));
+            if(post!=null)
+            {
+                return mapper.Map<PostViewModel>(post);
+            }
+            throw new Exception("Không tìm thấy post");
         }
     }
 }
