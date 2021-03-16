@@ -1,10 +1,11 @@
-﻿using CoStudy.API.Infrastructure.Shared.Models.Request.PostRequest;
+﻿using CoStudy.API.Infrastructure.Shared.Models.Request.BaseRequest;
+using CoStudy.API.Infrastructure.Shared.Models.Request.PostRequest;
 using System;
 using System.Text.Json.Serialization;
 
 namespace CoStudy.API.Infrastructure.Shared.Models.Request.UserRequest
 {
-    public class FollowFilterRequest
+    public class FollowFilterRequest :BaseGetAllRequest
     {
         [JsonPropertyName("user_id")]
         public string UserId { get; set; }
@@ -15,11 +16,7 @@ namespace CoStudy.API.Infrastructure.Shared.Models.Request.UserRequest
         [JsonPropertyName("to_date")]
         public DateTime? ToDate { get; set; }
 
-        [JsonPropertyName("skip")]
-        public int? Skip { get; set; }
-
-        [JsonPropertyName("count")]
-        public int? Count { get; set; }
+      
 
         [JsonPropertyName("order_type")]
         public OrderType OrderType { get; set; }

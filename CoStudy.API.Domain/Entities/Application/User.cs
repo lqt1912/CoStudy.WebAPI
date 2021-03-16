@@ -126,37 +126,7 @@ namespace CoStudy.API.Domain.Entities.Application
 
 
 
-        /// <summary>
-        /// Gets or sets the post count.
-        /// </summary>
-        /// <value>
-        /// The post count.
-        /// </value>
-        [BsonElement("post_count")]
-        [JsonPropertyName("post_count")]
-        public int PostCount { get; set; }
-
-        /// <summary>
-        /// List id of follower
-        /// </summary>
-        /// <value>
-        /// The followers.
-        /// </value>
-        [BsonElement("followers")]
-        [JsonPropertyName("followers")]
-        public int Followers { get; set; }
-
-
-        /// <summary>
-        /// List id of followings
-        /// </summary>
-        /// <value>
-        /// The following.
-        /// </value>
-        [BsonElement("followings")]
-        [JsonPropertyName("followings")]
-        public int Following { get; set; }
-
+        
         /// <summary>
         /// Thông tin thêm
         /// </summary>

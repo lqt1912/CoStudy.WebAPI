@@ -1,8 +1,10 @@
 using AspNetCoreRateLimit;
+using AutoMapper;
 using CoStudy.API.Application.Repositories;
 using CoStudy.API.Infrastructure.Identity;
 using CoStudy.API.Infrastructure.Identity.Helpers;
 using CoStudy.API.Infrastructure.Identity.Services.Implements;
+using CoStudy.API.Infrastructure.Shared.AutoMapper;
 using CoStudy.API.Infrastructure.Shared.Services;
 using CoStudy.API.WebAPI.BackgroundTask.WorkerService;
 using CoStudy.API.WebAPI.Extensions;
@@ -68,11 +70,9 @@ namespace CoStudy.API.WebAPI
 
             services.AddSingleton<IWorker, Worker>();
 
-            services.AutoMapperConfig();
+            services.AddAutoMapper(typeof(MappingProfile).Assembly);
+           
             services.AddCors();
-
-
-
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

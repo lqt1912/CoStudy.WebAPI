@@ -33,21 +33,6 @@ namespace CoStudy.API.Infrastructure.Shared.Services
             services.AddTransient<IReportReasonService, ReportReasonService>();
             services.AddTransient<ILoggingServices, LoggingServices>();
         }
-
-        /// <summary>
-        /// Automatics the mapper configuration.
-        /// </summary>
-        /// <param name="services">The services.</param>
-        public static void AutoMapperConfig(this IServiceCollection services)
-        {
-            var mappingConfig = new MapperConfiguration(mc =>
-            {
-                mc.AddProfile(new MappingProfile());
-            });
-
-            IMapper mapper = mappingConfig.CreateMapper();
-            services.AddSingleton(mapper);
-
-        }
+      
     }
 }

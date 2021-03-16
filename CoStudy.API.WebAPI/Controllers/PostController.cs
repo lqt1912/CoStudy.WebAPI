@@ -1,4 +1,5 @@
 ﻿using CoStudy.API.Domain.Entities.Application;
+using CoStudy.API.Infrastructure.Shared.Models.Request.BaseRequest;
 using CoStudy.API.Infrastructure.Shared.Models.Request.PostRequest;
 using CoStudy.API.Infrastructure.Shared.Models.Response.PostResponse;
 using CoStudy.API.Infrastructure.Shared.Services.PostServices;
@@ -26,7 +27,7 @@ namespace CoStudy.API.WebAPI.Controllers
         IPostService postService;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="PostController"/> class.
+        /// Initializes a new instance of the <see cref="PostController" /> class.
         /// </summary>
         /// <param name="postService">The post service.</param>
         public PostController(IPostService postService)
@@ -40,10 +41,9 @@ namespace CoStudy.API.WebAPI.Controllers
         /// <param name="request">The request.</param>
         /// <returns></returns>
         [HttpPost]
-        [Route("add")]
         public async Task<IActionResult> AddPost(AddPostRequest request)
         {
-            AddPostResponse data = await postService.AddPost(request);
+            PostViewModel data = await postService.AddPost(request);
             return Ok(new ApiOkResponse(data));
         }
 
@@ -53,7 +53,7 @@ namespace CoStudy.API.WebAPI.Controllers
         /// <param name="id">The identifier.</param>
         /// <returns></returns>
         [HttpGet]
-        [Route("get/{id}")]
+        [Route("{id}")]
         public async Task<IActionResult> GetById(string id)
         {
             PostViewModel data = await postService.GetPostById1(id);
@@ -63,29 +63,26 @@ namespace CoStudy.API.WebAPI.Controllers
         /// <summary>
         /// Gets the by user identifier.
         /// </summary>
-        /// <param name="userId">The user identifier.</param>
-        /// <param name="skip">The skip.</param>
-        /// <param name="count">The count.</param>
+        /// <param name="request">The request.</param>
         /// <returns></returns>
-        [HttpGet]
-        [Route("get/user/{userId}/skip/{skip}/count/{count}")]
-        public async Task<IActionResult> GetByUserId(string userId, int skip, int count)
+        [HttpPost]
+        [Route("user")]
+        public async Task<IActionResult> GetByUserId(GetPostByUserRequest request)
         {
-            IEnumerable<Domain.Entities.Application.Post> data = await postService.GetPostByUserId(userId, skip, count);
+           var data = await postService.GetPostByUserId(request);
             return Ok(new ApiOkResponse(data));
         }
 
         /// <summary>
         /// Gets the post timeline.
         /// </summary>
-        /// <param name="skip">The skip.</param>
-        /// <param name="count">The count.</param>
+        /// <param name="request">The request.</param>
         /// <returns></returns>
-        [HttpGet]
-        [Route("timeline/skip/{skip}/count/{count}")]
-        public async Task<IActionResult> GetPostTimeline(int skip, int count)
+        [HttpPost]
+        [Route("timeline")]
+        public async Task<IActionResult> GetPostTimeline(BaseGetAllRequest request)
         {
-            System.Collections.Generic.IEnumerable<Domain.Entities.Application.Post> data = await postService.GetPostTimelineAsync(skip, count);
+          var data = await postService.GetPostTimelineAsync(request);
             return Ok(new ApiOkResponse(data));
         }
 
@@ -97,7 +94,7 @@ namespace CoStudy.API.WebAPI.Controllers
         /// <param name="id">The identifier.</param>
         /// <returns></returns>
         [HttpPost]
-        [Route("post/upvote/{id}")]
+        [Route("upvote/{id}")]
         public async Task<IActionResult> Upvote(string id)
         {
             string data = await postService.Upvote(id);
@@ -110,7 +107,7 @@ namespace CoStudy.API.WebAPI.Controllers
         /// <param name="id">The identifier.</param>
         /// <returns></returns>
         [HttpPost]
-        [Route("post/downvote/{id}")]
+        [Route("downvote/{id}")]
         public async Task<IActionResult> Downvote(string id)
         {
             string data = await postService.Downvote(id);
@@ -123,10 +120,10 @@ namespace CoStudy.API.WebAPI.Controllers
         /// <param name="request">The request.</param>
         /// <returns></returns>
         [HttpPut]
-        [Route("post/update")]
+        [Route("update")]
         public async Task<IActionResult> Update(UpdatePostRequest request)
         {
-           Post data = await postService.UpdatePost(request);
+           var data = await postService.UpdatePost(request);
             return Ok(new ApiOkResponse(data));
         }
 
@@ -136,10 +133,10 @@ namespace CoStudy.API.WebAPI.Controllers
         /// <param name="id">The identifier.</param>
         /// <returns></returns>
         [HttpPost]
-        [Route("post/save/{id}")]
+        [Route("save/{id}")]
         public async Task<IActionResult> SavePost(string id)
         {
-            Domain.Entities.Application.Post data = await postService.SavePost(id);
+            var data = await postService.SavePost(id);
             return Ok(new ApiOkResponse(data));
         }
 
@@ -150,10 +147,10 @@ namespace CoStudy.API.WebAPI.Controllers
         /// <param name="count">The count.</param>
         /// <returns></returns>
         [HttpGet]
-        [Route("post/save")]
-        public async Task<IActionResult> GetSavedPost(int skip, int count)
+        [Route("save")]
+        public async Task<IActionResult> GetSavedPost([FromQuery]BaseGetAllRequest request)
         {
-            System.Collections.Generic.List<Domain.Entities.Application.Post> data = await postService.GetSavedPost(skip, count);
+           var data = await postService.GetSavedPost(request);
             return Ok(new ApiOkResponse(data));
         }
 
@@ -163,10 +160,10 @@ namespace CoStudy.API.WebAPI.Controllers
         /// <param name="request">The request.</param>
         /// <returns></returns>
         [HttpPost]
-        [Route("post/filter")]
+        [Route("filter")]
         public async Task<IActionResult> FilterPost(FilterRequest request)
         {
-            System.Collections.Generic.IEnumerable<Domain.Entities.Application.Post> data = await postService.Filter(request);
+            var data = await postService.Filter(request);
             return Ok(new ApiOkResponse(data));
         }
     }

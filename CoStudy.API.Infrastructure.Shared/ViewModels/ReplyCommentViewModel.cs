@@ -1,35 +1,37 @@
 ﻿using CoStudy.API.Domain.Entities.Application;
 using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
+using System.Text;
 using System.Text.Json.Serialization;
 
 namespace CoStudy.API.Infrastructure.Shared.ViewModels
 {
     /// <summary>
-    /// Class Comment View  Model
+    /// Class Reply Comment ViewModel
     /// </summary>
-    public class CommentViewModel
+    public class ReplyCommentViewModel
     {
+        /// <summary>
+        /// Gets or sets the parent identifier.
+        /// </summary>
+        /// <value>
+        /// The parent identifier.
+        /// </value>
+        [JsonProperty("parent_id")]
+        [JsonPropertyName("parent_id")]
+        public string ParentId { get; set; }
+
+
         /// <summary>
         /// Gets or sets the o identifier.
         /// </summary>
         /// <value>
         /// The o identifier.
         /// </value>
-        [JsonPropertyName("oid")]
         [JsonProperty("oid")]
-        public string OId { get; set; }
-
-        /// <summary>
-        /// Gets or sets the post identifier.
-        /// </summary>
-        /// <value>
-        /// The post identifier.
-        /// </value>
-        [JsonPropertyName("post_id")]
-        [JsonProperty("post_id")]
-        public string PostId { get; set; }
-
+        [JsonPropertyName("oid")]
+        public string  OId { get; set; }
 
         /// <summary>
         /// Gets or sets the content.
@@ -37,20 +39,9 @@ namespace CoStudy.API.Infrastructure.Shared.ViewModels
         /// <value>
         /// The content.
         /// </value>
-        [JsonPropertyName("content")]
         [JsonProperty("content")]
+        [JsonPropertyName("content")]
         public string Content { get; set; }
-
-
-        /// <summary>
-        /// Gets or sets the image.
-        /// </summary>
-        /// <value>
-        /// The image.
-        /// </value>
-        [JsonProperty("image")]
-        [JsonPropertyName("image")]
-        public string Image { get; set; }
 
         /// <summary>
         /// Gets or sets the author identifier.
@@ -58,8 +49,8 @@ namespace CoStudy.API.Infrastructure.Shared.ViewModels
         /// <value>
         /// The author identifier.
         /// </value>
-        [JsonPropertyName("author_id")]
         [JsonProperty("author_id")]
+        [JsonPropertyName("author_id")]
         public string AuthorId { get; set; }
 
         /// <summary>
@@ -68,18 +59,13 @@ namespace CoStudy.API.Infrastructure.Shared.ViewModels
         /// <value>
         /// The name of the author.
         /// </value>
-        [JsonPropertyName("author_name")]
-        [JsonProperty("author_name")]
         public string AuthorName { get; set; }
-
         /// <summary>
         /// Gets or sets the author avatar.
         /// </summary>
         /// <value>
         /// The author avatar.
         /// </value>
-        [JsonPropertyName("author_avatar")]
-        [JsonProperty("author_avatar")]
         public string AuthorAvatar { get; set; }
 
         /// <summary>
@@ -88,9 +74,10 @@ namespace CoStudy.API.Infrastructure.Shared.ViewModels
         /// <value>
         /// The status.
         /// </value>
-        [JsonPropertyName("status")]
         [JsonProperty("status")]
+        [JsonPropertyName("status")]
         public ItemStatus Status { get; set; }
+
 
         /// <summary>
         /// Gets or sets the created date.
@@ -98,8 +85,8 @@ namespace CoStudy.API.Infrastructure.Shared.ViewModels
         /// <value>
         /// The created date.
         /// </value>
-        [JsonPropertyName("created_date")]
         [JsonProperty("created_date")]
+        [JsonPropertyName("created_date")]
         public DateTime? CreatedDate { get; set; }
 
         /// <summary>
@@ -108,19 +95,9 @@ namespace CoStudy.API.Infrastructure.Shared.ViewModels
         /// <value>
         /// The modified date.
         /// </value>
-        [JsonPropertyName("modified_date")]
         [JsonProperty("modified_date")]
+        [JsonPropertyName("modified_date")]
         public DateTime? ModifiedDate { get; set; }
-
-        /// <summary>
-        /// Gets or sets the replies count.
-        /// </summary>
-        /// <value>
-        /// The replies count.
-        /// </value>
-        [JsonPropertyName("replies_count")]
-        [JsonProperty("replies_count")]
-        public int RepliesCount { get; set; } = 0;
 
         /// <summary>
         /// Gets or sets the upvote count.
@@ -128,9 +105,9 @@ namespace CoStudy.API.Infrastructure.Shared.ViewModels
         /// <value>
         /// The upvote count.
         /// </value>
-        [JsonPropertyName("upvote_count")]
         [JsonProperty("upvote_count")]
-        public int UpvoteCount { get; set; } = 0;
+        [JsonPropertyName("upvote_count")]
+        public int UpvoteCount { get; set; }
 
         /// <summary>
         /// Gets or sets the downvote count.
@@ -138,9 +115,10 @@ namespace CoStudy.API.Infrastructure.Shared.ViewModels
         /// <value>
         /// The downvote count.
         /// </value>
-        [JsonPropertyName("downvote_count")]
         [JsonProperty("downvote_count")]
-        public int DownvoteCount { get; set; } = 0;
+        [JsonPropertyName("downvote_count")]
+        public int DownvoteCount { get; set; }
+
 
         /// <summary>
         /// Gets or sets the is edited.
@@ -148,10 +126,9 @@ namespace CoStudy.API.Infrastructure.Shared.ViewModels
         /// <value>
         /// The is edited.
         /// </value>
-        [JsonPropertyName("is_edited")]
         [JsonProperty("is_edited")]
-        public bool? IsEdited { get; set; } = false;
-
+        [JsonPropertyName("is_edited")]
+        public bool? IsEdited { get; set; }
 
         /// <summary>
         /// Gets or sets the is vote by current.
@@ -159,8 +136,8 @@ namespace CoStudy.API.Infrastructure.Shared.ViewModels
         /// <value>
         /// The is vote by current.
         /// </value>
-        [JsonProperty("is_vote_by_current")]
         [JsonPropertyName("is_vote_by_current")]
+        [JsonProperty("is_vote_by_current")]
         public bool? IsVoteByCurrent { get; set; }
 
         /// <summary>
@@ -169,9 +146,8 @@ namespace CoStudy.API.Infrastructure.Shared.ViewModels
         /// <value>
         /// The is down vote by current.
         /// </value>
-        [JsonProperty("is_downvote_by_current")]
         [JsonPropertyName("is_downvote_by_current")]
+        [JsonProperty("is_downvote_by_current")]
         public bool? IsDownVoteByCurrent { get; set; }
-
     }
 }

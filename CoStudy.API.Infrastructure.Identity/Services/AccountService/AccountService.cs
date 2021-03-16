@@ -161,7 +161,7 @@ namespace CoStudy.API.Infrastructure.Identity.Services.AccountService
 
             Domain.Entities.Application.User currentUser = userRepository.GetAll().SingleOrDefault(x => x.Email == model.Email);
 
-            CacheHelper.Add($"Cu rrentUser-{currentUser.Email}", currentUser, DateTime.Now.AddDays(10));
+            CacheHelper.Add($"CurrentUser-{currentUser.Email}", currentUser, DateTime.Now.AddDays(10));
             CacheHelper.Add($"CurrentAccount-{account.Email}", account, DateTime.Now.AddDays(10));
 
             return response;

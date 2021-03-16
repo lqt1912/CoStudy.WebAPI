@@ -1,10 +1,12 @@
-﻿using CoStudy.API.Application.FCM;
+﻿using AutoMapper;
+using CoStudy.API.Application.FCM;
 using CoStudy.API.Application.Features;
 using CoStudy.API.Application.Repositories;
 using CoStudy.API.Domain.Entities.Application;
 using CoStudy.API.Infrastructure.Shared.Adapters;
 using CoStudy.API.Infrastructure.Shared.Models.Request.PostRequest;
 using CoStudy.API.Infrastructure.Shared.Models.Response.PostResponse;
+using CoStudy.API.Infrastructure.Shared.ViewModels;
 using Microsoft.AspNetCore.Http;
 using MongoDB.Bson;
 using MongoDB.Driver;
@@ -62,6 +64,8 @@ namespace CoStudy.API.Infrastructure.Shared.Services
         /// </summary>
         private INofticationRepository nofticationRepository;
 
+        private IMapper mapper;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="CommentService"/> class.
         /// </summary>
@@ -84,7 +88,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services
             IUpVoteRepository upVoteRepository,
             IClientGroupRepository clientGroupRepository,
             IFcmRepository fcmRepository,
-            INofticationRepository nofticationRepository)
+            INofticationRepository nofticationRepository, IMapper mapper)
         {
             this.httpContextAccessor = httpContextAccessor;
             this.userRepository = userRepository;
@@ -96,6 +100,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services
             this.clientGroupRepository = clientGroupRepository;
             this.fcmRepository = fcmRepository;
             this.nofticationRepository = nofticationRepository;
+            this.mapper = mapper;
         }
 
         /// <summary>
@@ -104,18 +109,16 @@ namespace CoStudy.API.Infrastructure.Shared.Services
         /// <param name="request">The request.</param>
         /// <returns></returns>
         /// <exception cref="Exception">Post đã bị xóa</exception>
-        public async Task<AddCommentResponse> AddComment(AddCommentRequest request)
+        public async Task<CommentViewModel> AddComment(AddCommentRequest request)
         {
             User currentUser = Feature.CurrentUser(httpContextAccessor, userRepository);
 
             Post currentPost = await postRepository.GetByIdAsync(ObjectId.Parse(request.PostId));
             if (currentPost != null)
             {
+                var author = await userRepository.GetByIdAsync(ObjectId.Parse(currentPost.AuthorId));
                 Comment comment = PostAdapter.FromRequest(request, currentUser.Id.ToString());
-                comment.AuthorAvatar = currentUser.AvatarHash;
-                comment.AuthorName = $"{currentUser.FirstName} {currentUser.LastName}";
 
-                currentPost.CommentCount++;
                 await postRepository.UpdateAsync(currentPost, currentPost.Id);
 
                 await commentRepository.AddAsync(comment);
@@ -136,9 +139,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services
                     {
                         AuthorId = currentUser.OId,
                         OwnerId = currentPost.AuthorId,
-                        Content = $"{currentUser.LastName} đã bình luận bài viết của {currentPost.AuthorName} ",
-                        AuthorName = currentUser.LastName,
-                        AuthorAvatar = currentUser.AvatarHash,
+                        Content = $"{currentUser.LastName} đã bình luận bài viết của {author.LastName} ",
                         CreatedDate = DateTime.Now,
                         ModifiedDate = DateTime.Now
                     };
@@ -153,8 +154,6 @@ namespace CoStudy.API.Infrastructure.Shared.Services
                         AuthorId = currentUser.OId,
                         OwnerId = currentPost.AuthorId,
                         Content = $"{currentUser.LastName} đã bình luận bài viết của bạn",
-                        AuthorName = currentUser.LastName,
-                        AuthorAvatar = currentUser.AvatarHash,
                         CreatedDate = DateTime.Now,
                         ModifiedDate = DateTime.Now
                     };
@@ -174,7 +173,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services
                 #endregion
 
                 //Update again
-                return PostAdapter.ToResponse(comment, request.PostId);
+                return mapper.Map<CommentViewModel>(comment);
             }
             else throw new Exception("Post đã bị xóa");
         }
@@ -194,7 +193,6 @@ namespace CoStudy.API.Infrastructure.Shared.Services
                 await commentRepository.UpdateAsync(currentComment, currentComment.Id);
 
                 Post currentPost = await postRepository.GetByIdAsync(ObjectId.Parse(currentComment.PostId));
-                currentPost.CommentCount--;
                 await postRepository.UpdateAsync(currentPost, currentPost.Id);
                 return "Xóa bình luận thành công";
             }
@@ -229,7 +227,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services
         /// or
         /// Post không tồn tại hoặc đã bị xóa
         /// </exception>
-        public async Task<IEnumerable<Comment>> GetCommentByPostId(CommentFilterRequest request)
+        public async Task<IEnumerable<CommentViewModel>> GetCommentByPostId(CommentFilterRequest request)
         {
             if (String.IsNullOrEmpty(request.PostId))
                 throw new Exception("Không tồn tại bài post");
@@ -241,7 +239,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services
             List<Comment> comments = await commentRepository.FindListAsync(filter);
             if (comments != null)
             {
-                IEnumerable<Comment> cmts = comments.AsEnumerable();
+                IEnumerable<CommentViewModel> cmts = mapper.Map<IEnumerable<CommentViewModel>>(comments.AsEnumerable());
 
                 if (request.Skip.HasValue && request.Count.HasValue)
                     cmts = cmts.Skip(request.Skip.Value).Take(request.Count.Value);
@@ -273,7 +271,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services
                 if (!String.IsNullOrEmpty(request.Keyword))
                     cmts = cmts.Where(x => x.Content.Contains(request.Keyword));
 
-                foreach (Comment item in cmts)
+                foreach (CommentViewModel item in cmts)
                 {
                     FilterDefinitionBuilder<UpVote> builderUpvote = Builders<UpVote>.Filter;
                     FilterDefinition<UpVote> finderUpvote = builderUpvote.Eq("object_vote_id", item.OId) & builderUpvote.Eq("upvote_by", currentUser.OId);
@@ -299,16 +297,16 @@ namespace CoStudy.API.Infrastructure.Shared.Services
         /// <param name="count">The count.</param>
         /// <returns></returns>
         /// <exception cref="Exception">Bình luận không tồn tại hoặc đã bị xóa</exception>
-        public async Task<IEnumerable<ReplyComment>> GetReplyCommentByCommentId(string commentId, int skip, int count)
+        public async Task<IEnumerable<ReplyCommentViewModel>> GetReplyCommentByCommentId(string commentId, int skip, int count)
         {
             FilterDefinitionBuilder<ReplyComment> builder = Builders<ReplyComment>.Filter;
             FilterDefinition<ReplyComment> filter = builder.Eq("parent_id", commentId) & builder.Eq("status", ItemStatus.Active);
             User currentUser = Feature.CurrentUser(httpContextAccessor, userRepository);
-            List<ReplyComment> comments = await replyCommentRepository.FindListAsync(filter);
+            List<ReplyCommentViewModel> comments = mapper.Map<List<ReplyCommentViewModel>>(await replyCommentRepository.FindListAsync(filter));
             if (comments != null)
             {
-                IEnumerable<ReplyComment> cmts = comments.Skip(skip).Take(count);
-                foreach (ReplyComment item in cmts)
+                IEnumerable<ReplyCommentViewModel> cmts = comments.Skip(skip).Take(count);
+                foreach (ReplyCommentViewModel item in cmts)
                 {
                     FilterDefinitionBuilder<UpVote> builderUpvote = Builders<UpVote>.Filter;
                     FilterDefinition<UpVote> finderUpvote = builderUpvote.Eq("object_vote_id", item.OId) & builderUpvote.Eq("upvote_by", currentUser.OId);
@@ -333,7 +331,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services
         /// <param name="request">The request.</param>
         /// <returns></returns>
         /// <exception cref="Exception">Bình luận đã bị xóa</exception>
-        public async Task<ReplyCommentResponse> ReplyComment(ReplyCommentRequest request)
+        public async Task<ReplyCommentViewModel> ReplyComment(ReplyCommentRequest request)
         {
             User currentUser = Feature.CurrentUser(httpContextAccessor, userRepository);
 
@@ -343,10 +341,9 @@ namespace CoStudy.API.Infrastructure.Shared.Services
             if (comment != null && comment.Status == ItemStatus.Active)
             {
                 await replyCommentRepository.AddAsync(replyComment);
-                comment.RepliesCount++;
                 await commentRepository.UpdateAsync(comment, comment.Id);
 
-                return PostAdapter.ToResponseReply(replyComment);
+                return  mapper.Map<ReplyCommentViewModel> (replyComment);
             }
             else throw new Exception("Bình luận đã bị xóa");
 
@@ -431,7 +428,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services
         /// <param name="request">The request.</param>
         /// <returns></returns>
         /// <exception cref="Exception">Không tìm thấy bình luận</exception>
-        public async Task<Comment> UpdateComment(UpdateCommentRequest request)
+        public async Task<CommentViewModel> UpdateComment(UpdateCommentRequest request)
         {
             Comment comment = await commentRepository.GetByIdAsync(ObjectId.Parse(request.Id));
             if (comment == null)
@@ -442,7 +439,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services
             comment.ModifiedDate = DateTime.Now;
             comment.IsEdited = true;
             await commentRepository.UpdateAsync(comment, comment.Id);
-            return comment;
+            return mapper.Map<CommentViewModel>(comment);
         }
 
         /// <summary>
@@ -451,7 +448,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services
         /// <param name="request">The request.</param>
         /// <returns></returns>
         /// <exception cref="Exception">Không tìm thấy câu trả lời</exception>
-        public async Task<ReplyComment> UpdateReply(UpdateReplyRequest request)
+        public async Task<ReplyCommentViewModel> UpdateReply(UpdateReplyRequest request)
         {
             ReplyComment reply = await replyCommentRepository.GetByIdAsync(ObjectId.Parse(request.Id));
             if (reply == null)
@@ -460,7 +457,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services
             reply.IsEdited = true;
             reply.ModifiedDate = DateTime.Now;
             await replyCommentRepository.UpdateAsync(reply, reply.Id);
-            return reply;
+            return mapper.Map<ReplyCommentViewModel>(reply);
         }
     }
 }

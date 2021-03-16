@@ -12,13 +12,13 @@ namespace CoStudy.API.Infrastructure.Shared.Adapters
         public static Post FromRequest(AddPostRequest request)
         {
 
-            Post post = new Post();
-            post.Title = request.Title;
-            post.Upvote = 0;
-            post.Downvote = 0;
-            post.CreatedDate = DateTime.Now;
-            post.ModifiedDate = DateTime.Now;
-            post.Status = ItemStatus.Active;
+            Post post = new Post
+            {
+                Title = request.Title,
+                CreatedDate = DateTime.Now,
+                ModifiedDate = DateTime.Now,
+                Status = ItemStatus.Active
+            };
             if (request.StringContents != null)
             {
                 foreach (PostContent content in request.StringContents)
@@ -133,13 +133,10 @@ namespace CoStudy.API.Infrastructure.Shared.Adapters
                 Id = post.Id.ToString(),
                 Title = post.Title,
                 AuthorId = post.AuthorId,
-                Upvote = post.Upvote,
-                Downvote = post.Downvote,
                 CreatedDate = post.CreatedDate,
                 ModifiedDate = post.ModifiedDate,
                 StringContents = post.StringContents,
                 MediaContents = post.MediaContents,
-                Comments = post.Comments,
                 Fields = post.Fields
             };
         }

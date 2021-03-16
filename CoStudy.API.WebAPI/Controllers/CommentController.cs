@@ -21,7 +21,7 @@ namespace CoStudy.API.WebAPI.Controllers
         [Route("add")]
         public async Task<IActionResult> AddComment(AddCommentRequest request)
         {
-            Infrastructure.Shared.Models.Response.PostResponse.AddCommentResponse data = await commentService.AddComment(request);
+          var data = await commentService.AddComment(request);
             return Ok(new ApiOkResponse(data));
         }
 
@@ -29,7 +29,7 @@ namespace CoStudy.API.WebAPI.Controllers
         [Route("reply")]
         public async Task<IActionResult> Addreply(ReplyCommentRequest request)
         {
-            Infrastructure.Shared.Models.Response.PostResponse.ReplyCommentResponse data = await commentService.ReplyComment(request);
+           var data = await commentService.ReplyComment(request);
             return Ok(new ApiOkResponse(data));
         }
 
@@ -37,7 +37,7 @@ namespace CoStudy.API.WebAPI.Controllers
         [Route("get/post")]
         public async Task<IActionResult> GetCommentByPostId([FromQuery] CommentFilterRequest request)
         {
-            System.Collections.Generic.IEnumerable<Domain.Entities.Application.Comment> data = await commentService.GetCommentByPostId(request);
+           var  data = await commentService.GetCommentByPostId(request);
             return Ok(new ApiOkResponse(data));
         }
 
@@ -45,7 +45,7 @@ namespace CoStudy.API.WebAPI.Controllers
         [Route("get/replies/{commentId}")]
         public async Task<IActionResult> GetReplyByCommentId(string commentId, int skip, int count)
         {
-            System.Collections.Generic.IEnumerable<Domain.Entities.Application.ReplyComment> data = await commentService.GetReplyCommentByCommentId(commentId, skip, count);
+           var data = await commentService.GetReplyCommentByCommentId(commentId, skip, count);
             return Ok(new ApiOkResponse(data));
         }
 
@@ -85,7 +85,7 @@ namespace CoStudy.API.WebAPI.Controllers
         [Route("comment/update")]
         public async Task<IActionResult> UpdateComment(UpdateCommentRequest request)
         {
-            Domain.Entities.Application.Comment data = await commentService.UpdateComment(request);
+            var  data = await commentService.UpdateComment(request);
             return Ok(new ApiOkResponse(data));
         }
 
@@ -93,7 +93,7 @@ namespace CoStudy.API.WebAPI.Controllers
         [Route("reply/update")]
         public async Task<IActionResult> UpdateReply(UpdateReplyRequest request)
         {
-            Domain.Entities.Application.ReplyComment data = await commentService.UpdateReply(request);
+            var data = await commentService.UpdateReply(request);
             return Ok(new ApiOkResponse(data));
         }
     }

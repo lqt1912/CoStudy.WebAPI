@@ -1,6 +1,7 @@
 ﻿using CoStudy.API.Domain.Entities.Application;
 using CoStudy.API.Infrastructure.Shared.Models.Request.UserRequest;
 using CoStudy.API.Infrastructure.Shared.Models.Response.UserResponse;
+using CoStudy.API.Infrastructure.Shared.ViewModels;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -22,27 +23,27 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
         /// </summary>
         /// <param name="entity">The entity.</param>
         /// <returns></returns>
-        Task<AddUserResponse> AddUserAsync(AddUserRequest entity);
+        Task<UserViewModel> AddUserAsync(AddUserRequest entity);
 
         /// <summary>
         /// Updates the user asynchronous.
         /// </summary>
         /// <param name="request">The request.</param>
         /// <returns></returns>
-        Task<User> UpdateUserAsync(UpdateUserRequest request);
+        Task<UserViewModel> UpdateUserAsync(UpdateUserRequest request);
 
         /// <summary>
         /// Adds the avatar asynchronous.
         /// </summary>
         /// <param name="request">The request.</param>
         /// <returns></returns>
-        Task<AddAvatarResponse> AddAvatarAsync(AddAvatarRequest request);
+        Task<UserViewModel> AddAvatarAsync(AddAvatarRequest request);
         /// <summary>
         /// Updates the avatar asynchronous.
         /// </summary>
         /// <param name="request">The request.</param>
         /// <returns></returns>
-        Task<User> UpdateAvatarAsync(AddAvatarRequest request);
+        Task<UserViewModel> UpdateAvatarAsync(AddAvatarRequest request);
 
 
         /// <summary>
@@ -58,17 +59,8 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
         /// </summary>
         /// <param name="id">The identifier.</param>
         /// <returns></returns>
-        Task<User> GetUserById(string id);
-        /// <summary>
-        /// Synchronizes the follow.
-        /// </summary>
-        /// <returns></returns>
-        Task SyncFollow();
-        /// <summary>
-        /// Gets the current user.
-        /// </summary>
-        /// <returns></returns>
-        User GetCurrentUser();
+        Task<UserViewModel> GetUserById(string id);
+      
 
         /// <summary>
         /// Removes the following.
@@ -88,27 +80,29 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
         /// </summary>
         /// <param name="request">The request.</param>
         /// <returns></returns>
-        Task<IEnumerable<Follow>> GetFollower(FollowFilterRequest request);
+        Task<IEnumerable<FollowViewModel>> GetFollower(FollowFilterRequest request);
 
         /// <summary>
         /// Gets the following.
         /// </summary>
         /// <param name="request">The request.</param>
         /// <returns></returns>
-        Task<IEnumerable<Follow>> GetFollowing(FollowFilterRequest request);
+        Task<IEnumerable<FollowViewModel>> GetFollowing(FollowFilterRequest request);
 
         /// <summary>
         /// Filters the user.
         /// </summary>
         /// <param name="request">The request.</param>
         /// <returns></returns>
-        Task<IEnumerable<User>> FilterUser(FilterUserRequest request);
+        Task<IEnumerable<UserViewModel>> FilterUser(FilterUserRequest request);
 
         /// <summary>
         /// Adds the information.
         /// </summary>
         /// <param name="request">The request.</param>
         /// <returns></returns>
-        Task<User> AddInfo(List<IDictionary<string, string>> request);
+        Task<UserViewModel> AddInfo(List<IDictionary<string, string>> request);
+
+        UserViewModel GetCurrentUser();
     }
 }

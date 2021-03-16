@@ -80,25 +80,7 @@ namespace CoStudy.API.Domain.Entities.Application
         [JsonPropertyName("modified_date")]
         public DateTime? ModifiedDate { get; set; }
 
-        /// <summary>
-        /// Gets or sets the upvote count.
-        /// </summary>
-        /// <value>
-        /// The upvote count.
-        /// </value>
-        [BsonElement("upvote_count")]
-        [JsonPropertyName("upvote_count")]
-        public int UpvoteCount { get; set; }
-
-        /// <summary>
-        /// Gets or sets the downvote count.
-        /// </summary>
-        /// <value>
-        /// The downvote count.
-        /// </value>
-        [BsonElement("downvote_count")]
-        [JsonPropertyName("downvote_count")]
-        public int DownvoteCount { get; set; }
+    
 
 
         /// <summary>
@@ -111,24 +93,6 @@ namespace CoStudy.API.Domain.Entities.Application
         [JsonPropertyName("is_edited")]
         public bool? IsEdited { get; set; }
 
-        /// <summary>
-        /// Gets or sets the is vote by current.
-        /// </summary>
-        /// <value>
-        /// The is vote by current.
-        /// </value>
-        [JsonPropertyName("is_vote_by_current")]
-        [BsonElement("is_vote_by_current")]
-        public bool? IsVoteByCurrent { get; set; }
-
-        /// <summary>
-        /// Gets or sets the is down vote by current.
-        /// </summary>
-        /// <value>
-        /// The is down vote by current.
-        /// </value>
-        [JsonPropertyName("is_downvote_by_current")]
-        [BsonElement("is_downvote_by_current")]
-        public bool? IsDownVoteByCurrent { get; set; }
+        
     }
 }

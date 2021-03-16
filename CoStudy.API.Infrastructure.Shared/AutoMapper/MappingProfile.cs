@@ -1,9 +1,16 @@
 ﻿using AutoMapper;
+using CoStudy.API.Application.Features;
+using CoStudy.API.Application.Repositories;
 using CoStudy.API.Domain.Entities.Application;
 using CoStudy.API.Domain.Entities.Identity.MongoAuthen;
 using CoStudy.API.Infrastructure.Identity.Models.Account.Request;
 using CoStudy.API.Infrastructure.Identity.Models.Account.Response;
 using CoStudy.API.Infrastructure.Shared.ViewModels;
+using Microsoft.AspNetCore.Http;
+using MongoDB.Bson;
+using MongoDB.Driver;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace CoStudy.API.Infrastructure.Shared.AutoMapper
 {
@@ -14,7 +21,7 @@ namespace CoStudy.API.Infrastructure.Shared.AutoMapper
     public class MappingProfile : Profile
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="MappingProfile"/> class.
+        /// Initializes a new instance of the <see cref="MappingProfile" /> class.
         /// </summary>
         public MappingProfile()
         {
@@ -44,13 +51,16 @@ namespace CoStudy.API.Infrastructure.Shared.AutoMapper
                         return true;
                     }
                 ));
-
-            CreateMap<Post, PostViewModel>().ReverseMap();
-
-            CreateMap<Comment, CommentViewModel>().ReverseMap();
-
-
+            CreateMap<Post, PostViewModel>().AfterMap<PostConvertAction>();
+            CreateMap<Comment, CommentViewModel>().AfterMap<CommentConvertAction>();
+            CreateMap<ReplyComment, ReplyCommentViewModel>().AfterMap<ReplyCommentConvertAction>();
+            CreateMap<User, UserViewModel>().AfterMap<UserConvertAction>();
+            CreateMap<Follow, FollowViewModel>().AfterMap<FollowConvertAction>();
+            CreateMap<Message, MessageViewModel>().AfterMap<MessageConvertAction>();
         }
 
     }
+
+   
+
 }

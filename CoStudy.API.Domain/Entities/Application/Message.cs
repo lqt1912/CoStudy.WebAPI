@@ -2,6 +2,8 @@
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
 namespace CoStudy.API.Domain.Entities.Application
@@ -51,7 +53,7 @@ namespace CoStudy.API.Domain.Entities.Application
         /// </value>
         [BsonElement("media_content")]
         [JsonPropertyName("media_content")]
-        public Image MediaContent { get; set; }
+        public IEnumerable<Image> MediaContent { get; set; }
 
         /// <summary>
         /// Gets or sets the content of the string.
