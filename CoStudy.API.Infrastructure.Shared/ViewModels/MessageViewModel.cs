@@ -43,6 +43,16 @@ namespace CoStudy.API.Infrastructure.Shared.ViewModels
         public string SenderId { get; set; }
 
         /// <summary>
+        /// Gets or sets the type of the message.
+        /// </summary>
+        /// <value>
+        /// The type of the message.
+        /// </value>
+        [JsonPropertyName("message_type")]
+        [JsonProperty("message_type")]
+        public MessageType? MessageType { get; set; }
+
+        /// <summary>
         /// Gets or sets the name of the sender.
         /// </summary>
         /// <value>
@@ -101,7 +111,7 @@ namespace CoStudy.API.Infrastructure.Shared.ViewModels
         /// </value>
         [JsonProperty("string_content")]
         [JsonPropertyName("string_content")]
-        public IEnumerable<string> StringContent { get; set; }
+        public string StringContent { get; set; }
 
 
         /// <summary>

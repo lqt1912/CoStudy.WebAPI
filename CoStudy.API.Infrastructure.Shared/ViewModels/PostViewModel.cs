@@ -126,15 +126,6 @@ namespace CoStudy.API.Infrastructure.Shared.ViewModels
         [JsonPropertyName("comments_count")]
         public int CommentCount { get; set; }
 
-        /// <summary>
-        /// Gets or sets the fields.
-        /// </summary>
-        /// <value>
-        /// The fields.
-        /// </value>
-        [JsonProperty("fields")]
-        [JsonPropertyName("fields")]
-        public List<Field> Fields { get; set; }
 
         /// <summary>
         /// Gets or sets the status.
@@ -146,10 +137,22 @@ namespace CoStudy.API.Infrastructure.Shared.ViewModels
         [JsonPropertyName("status")]
         public ItemStatus Status { get; set; }
 
+        /// <summary>
+        /// Gets or sets the is vote by current.
+        /// </summary>
+        /// <value>
+        /// The is vote by current.
+        /// </value>
         [JsonProperty("is_vote_by_current")]
         [JsonPropertyName("is_vote_by_current")]
         public bool? IsVoteByCurrent { get; set; }
 
+        /// <summary>
+        /// Gets or sets the is down vote by current.
+        /// </summary>
+        /// <value>
+        /// The is down vote by current.
+        /// </value>
         [JsonProperty("is_downvote_by_current")]
         [JsonPropertyName("is_downvote_by_current")]
         public bool? IsDownVoteByCurrent { get; set; }

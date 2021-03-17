@@ -123,54 +123,61 @@ namespace CoStudy.API.Infrastructure.Shared.Services
 
                 await commentRepository.AddAsync(comment);
 
-                #region Notification
-                FilterDefinition<ClientGroup> filter = Builders<ClientGroup>.Filter.Eq("name", currentPost.OId);
-                ClientGroup clientGroup = await clientGroupRepository.FindAsync(filter);
-
-                if (!clientGroup.UserIds.Contains(currentUser.OId))
+                try
                 {
-                    clientGroup.UserIds.Add(currentUser.OId);
-                    await clientGroupRepository.UpdateAsync(clientGroup, clientGroup.Id);
-                }
+                    #region Notification
+                    FilterDefinition<ClientGroup> filter = Builders<ClientGroup>.Filter.Eq("name", currentPost.OId);
+                    ClientGroup clientGroup = await clientGroupRepository.FindAsync(filter);
 
-                if (currentPost.AuthorId != currentUser.OId) //Cùng tác giả
-                {
-                    Noftication notify = new Noftication()
+                    if (!clientGroup.UserIds.Contains(currentUser.OId))
                     {
-                        AuthorId = currentUser.OId,
-                        OwnerId = currentPost.AuthorId,
-                        Content = $"{currentUser.LastName} đã bình luận bài viết của {author.LastName} ",
-                        CreatedDate = DateTime.Now,
-                        ModifiedDate = DateTime.Now
-                    };
+                        clientGroup.UserIds.Add(currentUser.OId);
+                        await clientGroupRepository.UpdateAsync(clientGroup, clientGroup.Id);
+                    }
 
-                    await fcmRepository.PushNotify(currentPost.OId, notify);
-                    await nofticationRepository.AddAsync(notify);
-                }
-                else //Khác tác giả
-                {
-                    Noftication notify = new Noftication()
+                    if (currentPost.AuthorId != currentUser.OId) //Cùng tác giả
                     {
-                        AuthorId = currentUser.OId,
-                        OwnerId = currentPost.AuthorId,
-                        Content = $"{currentUser.LastName} đã bình luận bài viết của bạn",
-                        CreatedDate = DateTime.Now,
-                        ModifiedDate = DateTime.Now
+                        Noftication notify = new Noftication()
+                        {
+                            AuthorId = currentUser.OId,
+                            OwnerId = currentPost.AuthorId,
+                            Content = $"{currentUser.LastName} đã bình luận bài viết của {author.LastName} ",
+                            CreatedDate = DateTime.Now,
+                            ModifiedDate = DateTime.Now
+                        };
+
+                        await fcmRepository.PushNotify(currentPost.OId, notify);
+                        await nofticationRepository.AddAsync(notify);
+                    }
+                    else //Khác tác giả
+                    {
+                        Noftication notify = new Noftication()
+                        {
+                            AuthorId = currentUser.OId,
+                            OwnerId = currentPost.AuthorId,
+                            Content = $"{currentUser.LastName} đã bình luận bài viết của bạn",
+                            CreatedDate = DateTime.Now,
+                            ModifiedDate = DateTime.Now
+                        };
+
+                        await fcmRepository.PushNotify(currentPost.OId, notify);
+                        await nofticationRepository.AddAsync(notify);
+                    }
+
+                    //Tạo clientGroup cho comment
+                    ClientGroup commentClientGroup = new ClientGroup()
+                    {
+                        Name = comment.Id.ToString()
                     };
+                    commentClientGroup.UserIds.Add(comment.AuthorId);
+                    await clientGroupRepository.AddAsync(commentClientGroup);
 
-                    await fcmRepository.PushNotify(currentPost.OId, notify);
-                    await nofticationRepository.AddAsync(notify);
+                    #endregion
                 }
-
-                //Tạo clientGroup cho comment
-                ClientGroup commentClientGroup = new ClientGroup()
+                catch(Exception)
                 {
-                    Name = comment.Id.ToString()
-                };
-                commentClientGroup.UserIds.Add(comment.AuthorId);
-                await clientGroupRepository.AddAsync(commentClientGroup);
-
-                #endregion
+                    //Do nothing 
+                }
 
                 //Update again
                 return mapper.Map<CommentViewModel>(comment);

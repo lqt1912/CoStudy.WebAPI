@@ -6,6 +6,7 @@ using MongoDB.Driver;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace CoStudy.API.Application.Features
 {
@@ -127,13 +128,13 @@ namespace CoStudy.API.Application.Features
         /// <returns>
         ///   <c>true</c> if the specified list a is equal; otherwise, <c>false</c>.
         /// </returns>
-        public static bool IsEqual(List<string> listA, List<string> listB)
+        public static bool IsEqual(List<ConversationMember> listA, List<ConversationMember> listB)
         {
             if (listA.Count == listB.Count)
             {
-                foreach (string item in listB)
+                foreach (var _b in listB)
                 {
-                    if (!listA.Contains(item))
+                    if (listA.AsQueryable().FirstOrDefault(x => x.MemberId == _b.MemberId) == null)
                         return false;
                 }
                 return true;

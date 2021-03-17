@@ -56,7 +56,12 @@ namespace CoStudy.API.Infrastructure.Shared.AutoMapper
             CreateMap<ReplyComment, ReplyCommentViewModel>().AfterMap<ReplyCommentConvertAction>();
             CreateMap<User, UserViewModel>().AfterMap<UserConvertAction>();
             CreateMap<Follow, FollowViewModel>().AfterMap<FollowConvertAction>();
+
+
             CreateMap<Message, MessageViewModel>().AfterMap<MessageConvertAction>();
+            CreateMap<ConversationMember, ConversationMemberViewModel>().AfterMap<ConversationMemberConvertAction>();
+            CreateMap<Conversation, ConversationViewModel>();
+
         }
 
     }

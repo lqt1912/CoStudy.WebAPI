@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using CoStudy.API.Domain.Entities.Application;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -9,13 +10,17 @@ namespace CoStudy.API.Infrastructure.Shared.ViewModels
     public class ConversationMemberViewModel
     {
 
-        [JsonProperty("oid")]
-        [JsonPropertyName("oid")]
-        public string OId { get; set; }
+        [JsonProperty("member_id")]
+        [JsonPropertyName("member_id")]
+        public string MemberId { get; set; }
 
         [JsonProperty("member_name")]
         [JsonPropertyName("member_name")]
         public string MemberName { get; set; }
+
+        [JsonPropertyName("nickname")]
+        [JsonProperty("nickname")]
+        public string  Nickname { get; set; }
 
         [JsonProperty("member_avatar")]
         [JsonPropertyName("member_avatar")]
@@ -29,9 +34,13 @@ namespace CoStudy.API.Infrastructure.Shared.ViewModels
         [JsonPropertyName("join_by")]
         public string  JoinBy { get; set; }
 
-        [JsonProperty("is_admin")]
-        [JsonPropertyName("is_admin")]
-        public bool? IsAdmin { get; set; }
+        [JsonProperty("join_by_name")]
+        [JsonPropertyName("join_by_name")]
+        public string  JoinByName { get; set; }
+
+        [JsonProperty("role")]
+        [JsonPropertyName("role")]
+        public ConversationRole Role { get; set; }
 
     }
 }

@@ -126,19 +126,6 @@ namespace CoStudy.API.Infrastructure.Shared.Adapters
             };
         }
 
-        public static GetPostByIdResponse ToResponse(Post post)
-        {
-            return new GetPostByIdResponse()
-            {
-                Id = post.Id.ToString(),
-                Title = post.Title,
-                AuthorId = post.AuthorId,
-                CreatedDate = post.CreatedDate,
-                ModifiedDate = post.ModifiedDate,
-                StringContents = post.StringContents,
-                MediaContents = post.MediaContents,
-                Fields = post.Fields
-            };
-        }
+      
     }
 }

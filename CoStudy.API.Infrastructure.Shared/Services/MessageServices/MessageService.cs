@@ -1,10 +1,12 @@
-﻿using CoStudy.API.Application.FCM;
+﻿using AutoMapper;
+using CoStudy.API.Application.FCM;
 using CoStudy.API.Application.Features;
 using CoStudy.API.Application.Repositories;
 using CoStudy.API.Domain.Entities.Application;
 using CoStudy.API.Infrastructure.Shared.Adapters;
 using CoStudy.API.Infrastructure.Shared.Models.Request.MessageRequest;
 using CoStudy.API.Infrastructure.Shared.Models.Response.MessageResponse;
+using CoStudy.API.Infrastructure.Shared.ViewModels;
 using Microsoft.AspNetCore.Http;
 using MongoDB.Bson;
 using MongoDB.Driver;
@@ -15,22 +17,60 @@ using System.Threading.Tasks;
 
 namespace CoStudy.API.Infrastructure.Shared.Services.MessageServices
 {
+    /// <summary>
+    /// Class MessageService.
+    /// </summary>
+    /// <seealso cref="CoStudy.API.Infrastructure.Shared.Services.MessageServices.IMessageService" />
     public class MessageService : IMessageService
     {
+        /// <summary>
+        /// The message repository
+        /// </summary>
         IMessageRepository messageRepository;
+        /// <summary>
+        /// The conversation repository
+        /// </summary>
         IConversationRepository conversationRepository;
+        /// <summary>
+        /// The user repository
+        /// </summary>
         IUserRepository userRepository;
+        /// <summary>
+        /// The HTTP context accessor
+        /// </summary>
         IHttpContextAccessor httpContextAccessor;
+        /// <summary>
+        /// The FCM repository
+        /// </summary>
         IFcmRepository fcmRepository;
-
+        /// <summary>
+        /// The mapper
+        /// </summary>
+        IMapper mapper;
+        /// <summary>
+        /// Gets the client group repository.
+        /// </summary>
+        /// <value>
+        /// The client group repository.
+        /// </value>
         public IClientGroupRepository clientGroupRepository { get; }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MessageService"/> class.
+        /// </summary>
+        /// <param name="messageRepository">The message repository.</param>
+        /// <param name="conversationRepository">The conversation repository.</param>
+        /// <param name="userRepository">The user repository.</param>
+        /// <param name="httpContextAccessor">The HTTP context accessor.</param>
+        /// <param name="clientGroupRepository">The client group repository.</param>
+        /// <param name="fcmRepository">The FCM repository.</param>
+        /// <param name="mapper">The mapper.</param>
         public MessageService(IMessageRepository messageRepository,
             IConversationRepository conversationRepository,
             IUserRepository userRepository,
             IHttpContextAccessor httpContextAccessor,
             IClientGroupRepository clientGroupRepository,
-            IFcmRepository fcmRepository)
+            IFcmRepository fcmRepository, IMapper mapper)
         {
             this.messageRepository = messageRepository;
             this.conversationRepository = conversationRepository;
@@ -38,16 +78,32 @@ namespace CoStudy.API.Infrastructure.Shared.Services.MessageServices
             this.httpContextAccessor = httpContextAccessor;
             this.clientGroupRepository = clientGroupRepository;
             this.fcmRepository = fcmRepository;
+            this.mapper = mapper;
         }
 
-        public async Task<AddConversationResponse> AddConversation(AddConversationRequest request)
+        /// <summary>
+        /// Adds the conversation.
+        /// </summary>
+        /// <param name="request">The request.</param>
+        /// <returns></returns>
+        public async Task<ConversationViewModel> AddConversation(AddConversationRequest request)
         {
 
             User currentUser = Feature.CurrentUser(httpContextAccessor, userRepository);
 
-            request.Participants.Add(currentUser.Id.ToString());
+            var firstmember = new ConversationMember()
+            {
+                DateJoin = DateTime.Now,
+                JoinBy = currentUser.OId,
+                MemberId = currentUser.OId,
+                Nickname = $"{currentUser.FirstName} {currentUser.LastName}",
+                Role = ConversationRole.Admin
+            };
 
-            Conversation existConversation = new Conversation() { Participants = new List<string>() };
+
+            request.Participants.Add(firstmember);
+
+            Conversation existConversation = new Conversation() { Participants = new List<ConversationMember>() };
 
             foreach (Conversation conver in conversationRepository.GetAll())
             {
@@ -59,7 +115,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.MessageServices
             }
 
             if (existConversation.Participants.Count != 0)
-                return MessageAdapter.ToResponse(existConversation);
+                return mapper.Map<ConversationViewModel>(existConversation);
 
             Conversation conversation = MessageAdapter.FromRequest(request);
 
@@ -67,14 +123,19 @@ namespace CoStudy.API.Infrastructure.Shared.Services.MessageServices
 
             ClientGroup clientGroup = new ClientGroup()
             {
-                UserIds = request.Participants,
+                UserIds = request.Participants.Select(x => x.MemberId).ToList(),
                 Name = conversation.Id.ToString(),
             };
             await clientGroupRepository.AddAsync(clientGroup);
-            return MessageAdapter.ToResponse(conversation);
+            return mapper.Map<ConversationViewModel>(conversation);
         }
 
-        public async Task<AddMessageResponse> AddMessage(AddMessageRequest request)
+        /// <summary>
+        /// Adds the message.
+        /// </summary>
+        /// <param name="request">The request.</param>
+        /// <returns></returns>
+        public async Task<MessageViewModel> AddMessage(AddMessageRequest request)
         {
             Message message = MessageAdapter.FromRequest(request, httpContextAccessor, userRepository);
 
@@ -82,21 +143,26 @@ namespace CoStudy.API.Infrastructure.Shared.Services.MessageServices
 
             await fcmRepository.SendMessage(request.ConversationId, message);
 
-            return MessageAdapter.ToResponse(message);
+            return mapper.Map<MessageViewModel>(message);
         }
 
-        public async Task<GetMessageByConversationIdResponse> GetMessageByConversationId(string conversationId, int skip, int count)
+        /// <summary>
+        /// Gets the message by conversation identifier.
+        /// </summary>
+        /// <param name="request">The request.</param>
+        /// <returns></returns>
+        /// <exception cref="Exception">Đã có lỗi xảy ra.</exception>
+        public async Task<IEnumerable<MessageViewModel>> GetMessageByConversationId(GetMessageByConversationIdRequest request)
         {
             try
             {
                 FilterDefinitionBuilder<Message> finder = Builders<Message>.Filter;
-                FilterDefinition<Message> filter = finder.Eq("conversation_id", conversationId) & finder.Eq("status", ItemStatus.Active);
-                IEnumerable<Message> messages = (await messageRepository.FindListAsync(filter)).OrderByDescending(x => x.CreatedDate).Skip(skip).Take(count);
-                return new GetMessageByConversationIdResponse()
-                {
-                    Id = conversationId,
-                    Messages = messages
-                };
+                FilterDefinition<Message> filter = finder.Eq("conversation_id", request.ConversationId) & finder.Eq("status", ItemStatus.Active);
+                var messages = (await messageRepository.FindListAsync(filter)).OrderByDescending(x => x.CreatedDate).ToList();
+                if (request.Skip.HasValue && request.Count.HasValue)
+                    messages = messages.Skip(request.Skip.Value).Take(request.Count.Value).ToList();
+
+                return mapper.Map<IEnumerable<MessageViewModel>>(messages);
 
             }
             catch (Exception)
@@ -105,33 +171,65 @@ namespace CoStudy.API.Infrastructure.Shared.Services.MessageServices
             }
         }
 
+        /// <summary>
+        /// Gets the conversation by user identifier.
+        /// </summary>
+        /// <returns></returns>
+        /// <exception cref="Exception">User not found</exception>
         public GetConversationByUserIdResponse GetConversationByUserId()
         {
             User currentUser = Feature.CurrentUser(httpContextAccessor, userRepository);
             if (currentUser == null)
                 throw new Exception("User not found");
-            List<Tuple<Conversation, Message>> result = new List<Tuple<Conversation, Message>>();
 
-            IQueryable<Conversation> conversations = conversationRepository.GetAll().Where(x => x.Participants.Contains(currentUser.Id.ToString()));
+            var listData = new List<ConversationData>();
+
+            var conversations = new List<Conversation>();
+            foreach (var item in conversationRepository.GetAll())
+            {
+                foreach (var i in item.Participants)
+                {
+                    if (i.MemberId == currentUser.OId)
+                        conversations.Add(item);
+                }
+            }
+
             foreach (Conversation conversation in conversations)
             {
-                Message recentMessage = messageRepository.GetAll().Where(x => x.ConversationId == conversation.Id.ToString()).OrderByDescending(x => x.CreatedDate).FirstOrDefault();
-                if (recentMessage == null)
-                    recentMessage = new Message();
-                Tuple<Conversation, Message> item = new Tuple<Conversation, Message>(conversation, recentMessage);
-                result.Add(item);
+                IEnumerable<Message> recentMessage = messageRepository.GetAll().Where(x => x.ConversationId == conversation.Id.ToString()).OrderByDescending(x => x.CreatedDate).Take(5);
+                if (recentMessage.Count() == 0)
+                    recentMessage = new List<Message>();
+                var messageViewModel = mapper.Map<IEnumerable<MessageViewModel>>(recentMessage);
+
+                var conversationViewModel = mapper.Map<ConversationViewModel>(conversation);
+
+                listData.Add(new ConversationData()
+                {
+                    Conversation = conversationViewModel,
+                    Messages = messageViewModel
+                });
             }
             return new GetConversationByUserIdResponse()
             {
-                Conversations = result
+                Conversations = listData
             };
         }
 
+        /// <summary>
+        /// Gets all.
+        /// </summary>
+        /// <returns></returns>
         public List<Message> GetAll()
         {
             return messageRepository.GetAll().ToList();
         }
 
+        /// <summary>
+        /// Deletes the conversation.
+        /// </summary>
+        /// <param name="id">The identifier.</param>
+        /// <returns></returns>
+        /// <exception cref="Exception">Đã có lỗi xảy ra</exception>
         public async Task<string> DeleteConversation(string id)
         {
             Conversation exist = await conversationRepository.GetByIdAsync(ObjectId.Parse(id));
@@ -151,6 +249,12 @@ namespace CoStudy.API.Infrastructure.Shared.Services.MessageServices
             else throw new Exception("Đã có lỗi xảy ra");
         }
 
+        /// <summary>
+        /// Deletes the message.
+        /// </summary>
+        /// <param name="id">The identifier.</param>
+        /// <returns></returns>
+        /// <exception cref="Exception">Đã có lỗi xảy ra</exception>
         public async Task<string> DeleteMessage(string id)
         {
             Message existMessage = await messageRepository.GetByIdAsync(ObjectId.Parse(id));
@@ -164,7 +268,13 @@ namespace CoStudy.API.Infrastructure.Shared.Services.MessageServices
             else throw new Exception("Đã có lỗi xảy ra");
         }
 
-        public async Task<Message> EditMessage(UpdateMessageRequest request)
+        /// <summary>
+        /// Edits the message.
+        /// </summary>
+        /// <param name="request">The request.</param>
+        /// <returns></returns>
+        /// <exception cref="Exception">Tin nhắn không tìm thấy</exception>
+        public async Task<MessageViewModel> EditMessage(UpdateMessageRequest request)
         {
             Message message = await messageRepository.GetByIdAsync(ObjectId.Parse(request.Id));
             if (message == null)
@@ -173,8 +283,55 @@ namespace CoStudy.API.Infrastructure.Shared.Services.MessageServices
             message.StringContent = request.Content;
             message.IsEdited = true;
             await messageRepository.UpdateAsync(message, message.Id);
-            return message;
+            return mapper.Map<MessageViewModel>(message);
         }
+
+
+        public async Task<IEnumerable<MessageViewModel>> AddMember(AddMemberRequest request)
+        {
+            var conversation = await conversationRepository.GetByIdAsync(ObjectId.Parse(request.ConversationId));
+
+            var currentUser = Feature.CurrentUser(httpContextAccessor, userRepository);
+            var currentMember = conversation.Participants.FirstOrDefault(x => x.MemberId == currentUser.OId);
+            if (currentMember.Role != ConversationRole.Admin)
+                throw new Exception("Bạn không có quyền thêm người dùng mới vào cuộc trò chuyện. ");
+
+            var result = new List<Message>();
+
+            foreach (var userId in request.UserIds)
+            {
+                if (conversation.Participants.FirstOrDefault(x => x.MemberId == userId) == null)
+                {
+                    var user = await userRepository.GetByIdAsync(ObjectId.Parse(userId));
+                    var conversationMember = new ConversationMember()
+                    {
+                        MemberId = user.OId,
+                        DateJoin = DateTime.Now,
+                        JoinBy = currentUser.OId,
+                        Nickname = $"{user.FirstName} {user.LastName}",
+                        Role = ConversationRole.Admin
+                    };
+                    conversation.Participants.Add(conversationMember);
+                    await conversationRepository.UpdateAsync(conversation, conversation.Id);
+
+                    var message = new Message()
+                    {
+                        SenderId = currentUser.OId,
+                        ConversationId = conversation.OId,
+                        StringContent = $"{user.FirstName} {user.LastName} đã được thêm vào nhóm",
+                        Status = ItemStatus.Active,
+                        IsEdited = false,
+                        CreatedDate = DateTime.Now,
+                        ModifiedDate = DateTime.Now
+                    };
+                    await messageRepository.AddAsync(message);
+                    result.Add(message);
+                }
+            }
+
+            return mapper.Map<IEnumerable<MessageViewModel>>(result);
+        }
+
     }
 }
 

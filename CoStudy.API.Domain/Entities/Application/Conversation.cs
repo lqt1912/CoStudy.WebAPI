@@ -19,7 +19,7 @@ namespace CoStudy.API.Domain.Entities.Application
         public Conversation() : base()
         {
             //  Messages = new List<string>();
-            Participants = new List<string>();
+            Participants = new List<ConversationMember>();
         }
 
         /// <summary>
@@ -40,7 +40,10 @@ namespace CoStudy.API.Domain.Entities.Application
         /// </value>
         [BsonElement("participants")]
         [JsonPropertyName("participants")]
-        public List<string> Participants { get; set; }
+        public List<ConversationMember> Participants { get; set; }
+
+
+
 
         /// <summary>
         /// Gets or sets the status.
@@ -82,4 +85,6 @@ namespace CoStudy.API.Domain.Entities.Application
         [JsonPropertyName("modified_date")]
         public DateTime ModifiedDate { get; set; }
     }
+
+   
 }

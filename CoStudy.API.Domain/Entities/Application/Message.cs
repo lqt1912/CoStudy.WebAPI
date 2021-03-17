@@ -16,7 +16,7 @@ namespace CoStudy.API.Domain.Entities.Application
     {
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Message"/> class.
+        /// Initializes a new instance of the <see cref="Message" /> class.
         /// </summary>
         public Message() : base()
         {
@@ -32,6 +32,16 @@ namespace CoStudy.API.Domain.Entities.Application
         [BsonElement("sender_id")]
         [JsonPropertyName("sender_id")]
         public string SenderId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the type of the message.
+        /// </summary>
+        /// <value>
+        /// The type of the message.
+        /// </value>
+        [BsonElement("message_type")]
+        [JsonPropertyName("message_type")]
+        public MessageType? MessageType { get; set; }
 
 
         /// <summary>
@@ -76,7 +86,6 @@ namespace CoStudy.API.Domain.Entities.Application
         public bool? IsEdited { get; set; }
 
 
-
         /// <summary>
         /// Delete or not ?
         /// </summary>
@@ -107,5 +116,21 @@ namespace CoStudy.API.Domain.Entities.Application
         [JsonPropertyName("modified_date")]
         public DateTime ModifiedDate { get; set; }
 
+    }
+
+
+    /// <summary>
+    /// Enum MessageType
+    /// </summary>
+    public enum MessageType
+    {
+        /// <summary>
+        /// The normal
+        /// </summary>
+        Normal,
+        /// <summary>
+        /// The activity
+        /// </summary>
+        Activity
     }
 }

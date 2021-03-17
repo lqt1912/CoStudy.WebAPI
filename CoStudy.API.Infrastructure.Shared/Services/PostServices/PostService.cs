@@ -145,12 +145,6 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
             Post post = PostAdapter.FromRequest(request);
             post.AuthorId = currentUser.Id.ToString();
 
-            foreach (string fieldId in request.Fields)
-            {
-                Field field = await fieldRepository.GetByIdAsync(ObjectId.Parse(fieldId));
-                if (field != null)
-                    post.Fields.Add(field);
-            }
 
             await postRepository.AddAsync(post);
 
@@ -435,7 +429,6 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
                 currentPost.StringContents = request.StringContents;
                 currentPost.MediaContents = request.MediaContents;
                 currentPost.Title = request.Title;
-                currentPost.Fields = request.Fields;
                 currentPost.ModifiedDate = DateTime.Now;
                 await postRepository.UpdateAsync(currentPost, currentPost.Id);
                 var response = mapper.Map<PostViewModel>(currentPost);
@@ -531,12 +524,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
                 queryable = queryable.Where(x => x.CreatedDate >= filterRequest.FromDate);
             if (filterRequest.ToDate != null)
                 queryable = queryable.Where(x => x.CreatedDate <= filterRequest.ToDate);
-            if (!String.IsNullOrEmpty(filterRequest.Field))
-            {
-                Field field = fieldRepository.GetById(ObjectId.Parse(filterRequest.Field));
-                queryable = queryable.Where(x => x.Fields.Contains(field));
-            }
-
+           
             switch (filterRequest.OrderBy)
             {
                 case PostOrder.CreatedDate:

@@ -22,6 +22,7 @@ namespace CoStudy.API.Infrastructure.Shared.Adapters
                     ConversationId = request.ConversationId,
                     StringContent = request.Content,
                     Status = ItemStatus.Active,
+                    MessageType = MessageType.Normal,
                     CreatedDate = DateTime.Now,
                     ModifiedDate = DateTime.Now
                 };
@@ -31,6 +32,7 @@ namespace CoStudy.API.Infrastructure.Shared.Adapters
                 return new Message()
                 {
                     SenderId = Feature.CurrentUser(httpContextAccessor, userRepository).Id.ToString(),
+                    MessageType = MessageType.Normal,
                     MediaContent = null,
                     ConversationId = request.ConversationId,
                     StringContent = request.Content,
@@ -42,20 +44,6 @@ namespace CoStudy.API.Infrastructure.Shared.Adapters
             }
         }
 
-        public static AddMessageResponse ToResponse(Message message)
-        {
-            return new AddMessageResponse()
-            {
-                SenderId = message.SenderId,
-                MediaContent = message.MediaContent,
-                StringContent = message.StringContent,
-                Status = message.Status,
-                CreatedDate = message.CreatedDate,
-                ModifiedDate = message.ModifiedDate,
-                ConversationId = message.ConversationId,
-                Id = message.Id.ToString()
-            };
-        }
 
         public static Conversation FromRequest(AddConversationRequest request)
         {
@@ -69,16 +57,5 @@ namespace CoStudy.API.Infrastructure.Shared.Adapters
             };
         }
 
-        public static AddConversationResponse ToResponse(Conversation conversation)
-        {
-            return new AddConversationResponse()
-            {
-                Id = conversation.Id.ToString(),
-                Name = conversation.Name,
-                Participants = conversation.Participants,
-                CreatedDate = conversation.CreatedDate,
-                Status = conversation.Status
-            };
-        }
     }
 }

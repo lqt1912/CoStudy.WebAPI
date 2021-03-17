@@ -20,7 +20,6 @@ namespace CoStudy.API.Domain.Entities.Application
         {
             StringContents = new List<PostContent>();
             MediaContents = new List<Image>();
-            Fields = new List<Field>();
         }
 
         /// <summary>
@@ -84,17 +83,6 @@ namespace CoStudy.API.Domain.Entities.Application
         [BsonElement("image_contents")]
         [JsonPropertyName("image_contents")]
         public List<Image> MediaContents { get; set; }
-
-
-        /// <summary>
-        /// Lĩnh vực của bài post
-        /// </summary>
-        /// <value>
-        /// The fields.
-        /// </value>
-        [BsonElement("fields")]
-        [JsonPropertyName("fields")]
-        public List<Field> Fields { get; set; }
 
 
         /// <summary>

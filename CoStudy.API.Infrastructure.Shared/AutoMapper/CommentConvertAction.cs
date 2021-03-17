@@ -6,9 +6,7 @@ using CoStudy.API.Infrastructure.Shared.ViewModels;
 using Microsoft.AspNetCore.Http;
 using MongoDB.Bson;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace CoStudy.API.Infrastructure.Shared.AutoMapper
 {
@@ -52,11 +50,11 @@ namespace CoStudy.API.Infrastructure.Shared.AutoMapper
         /// <param name="upVoteRepository">Up vote repository.</param>
         /// <param name="downVoteRepository">Down vote repository.</param>
         /// <param name="httpContextAccessor">The HTTP context accessor.</param>
-        public CommentConvertAction(IUserRepository userRepository, 
+        public CommentConvertAction(IUserRepository userRepository,
             IReplyCommentRepository replyCommentRepository,
-            ICommentRepository commentRepository, 
-            IUpVoteRepository upVoteRepository, 
-            IDownVoteRepository downVoteRepository, 
+            ICommentRepository commentRepository,
+            IUpVoteRepository upVoteRepository,
+            IDownVoteRepository downVoteRepository,
             IHttpContextAccessor httpContextAccessor)
         {
             this.userRepository = userRepository;
@@ -76,24 +74,30 @@ namespace CoStudy.API.Infrastructure.Shared.AutoMapper
         /// <exception cref="NotImplementedException"></exception>
         public void Process(Comment source, CommentViewModel destination, ResolutionContext context)
         {
-            var currentUser = Feature.CurrentUser(httpContextAccessor, userRepository);
-            var author = userRepository.GetById(ObjectId.Parse(source.AuthorId));
-            destination.AuthorName = $"{author.FirstName} {author.LastName}";
-            destination.AuthorAvatar = author.AvatarHash;
+            try
+            {
 
-            destination.RepliesCount = replyCommentRepository.GetAll().Where(x => x.Status == ItemStatus.Active && x.ParentId == source.OId).Count();
+                User currentUser = Feature.CurrentUser(httpContextAccessor, userRepository);
+                User author = userRepository.GetById(ObjectId.Parse(source.AuthorId));
+                destination.AuthorName = $"{author.FirstName} {author.LastName}";
+                destination.AuthorAvatar = author.AvatarHash;
+
+                destination.RepliesCount = replyCommentRepository.GetAll().Where(x => x.Status == ItemStatus.Active && x.ParentId == source.OId).Count();
+
+                IQueryable<UpVote> listUpVote = upVoteRepository.GetAll().Where(x => x.ObjectVoteId == source.OId && x.IsDeleted == false);
+                destination.UpvoteCount = listUpVote.Count();
+
+                destination.IsVoteByCurrent = (listUpVote.FirstOrDefault(x => x.UpVoteBy == currentUser.OId) != null);
 
 
-            var listUpVote = upVoteRepository.GetAll().Where(x => x.ObjectVoteId == source.OId && x.IsDeleted == false);
-            destination.UpvoteCount = listUpVote.Count();
-
-            destination.IsVoteByCurrent = (listUpVote.FirstOrDefault(x => x.UpVoteBy == currentUser.OId) != null);
-
-
-            var listDownVote = downVoteRepository.GetAll().Where(x => x.ObjectVoteId == source.OId && x.IsDeleted == false);
-            destination.DownvoteCount = listDownVote.Count();
-            destination.IsDownVoteByCurrent = listDownVote.FirstOrDefault(x => x.DownVoteBy == currentUser.OId) != null;
-
+                IQueryable<DownVote> listDownVote = downVoteRepository.GetAll().Where(x => x.ObjectVoteId == source.OId && x.IsDeleted == false);
+                destination.DownvoteCount = listDownVote.Count();
+                destination.IsDownVoteByCurrent = listDownVote.FirstOrDefault(x => x.DownVoteBy == currentUser.OId) != null;
+            }
+            catch (Exception)
+            {
+                Console.WriteLine("Lỗi convert action ");
+            }
         }
     }
 }

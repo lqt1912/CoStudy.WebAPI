@@ -1,57 +1,95 @@
 ﻿using CoStudy.API.Infrastructure.Shared.Models.Request.MessageRequest;
+using CoStudy.API.Infrastructure.Shared.Models.Response.MessageResponse;
 using CoStudy.API.Infrastructure.Shared.Services.MessageServices;
+using CoStudy.API.Infrastructure.Shared.ViewModels;
 using CoStudy.API.WebAPI.Middlewares;
 using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace CoStudy.API.WebAPI.Controllers
 {
+    /// <summary>
+    /// The Message Controller.
+    /// </summary>
+    /// <seealso cref="Microsoft.AspNetCore.Mvc.ControllerBase" />
     [Route("api/[controller]")]
     [ApiController]
 
     public class MessageController : ControllerBase
     {
+        /// <summary>
+        /// The message service
+        /// </summary>
         IMessageService messageService;
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MessageController"/> class.
+        /// </summary>
+        /// <param name="messageService">The message service.</param>
         public MessageController(IMessageService messageService)
         {
             this.messageService = messageService;
         }
 
+        /// <summary>
+        /// Adds the conversation.
+        /// </summary>
+        /// <param name="request">The request.</param>
+        /// <returns></returns>
         [HttpPost]
         [Route("conversation/add")]
         public async Task<IActionResult> AddConversation(AddConversationRequest request)
         {
-            Infrastructure.Shared.Models.Response.MessageResponse.AddConversationResponse data = await messageService.AddConversation(request);
+            ConversationViewModel data = await messageService.AddConversation(request);
             return Ok(new ApiOkResponse(data));
         }
 
+        /// <summary>
+        /// Gets the current conversation list.
+        /// </summary>
+        /// <returns></returns>
         [HttpGet]
         [Route("conversation/current")]
         public IActionResult GetCurrentConversationList()
         {
-            Infrastructure.Shared.Models.Response.MessageResponse.GetConversationByUserIdResponse data = messageService.GetConversationByUserId();
+            GetConversationByUserIdResponse data = messageService.GetConversationByUserId();
             return Ok(new ApiOkResponse(data));
         }
 
+        /// <summary>
+        /// Adds the message.
+        /// </summary>
+        /// <param name="request">The request.</param>
+        /// <returns></returns>
         [Authorize]
         [HttpPost]
         [Route("message/add")]
         public async Task<IActionResult> AddMessage(AddMessageRequest request)
         {
-            Infrastructure.Shared.Models.Response.MessageResponse.AddMessageResponse data = await messageService.AddMessage(request);
+            MessageViewModel data = await messageService.AddMessage(request);
 
             return Ok(new ApiOkResponse(data));
         }
 
+        /// <summary>
+        /// Gets the message by conversation identifier.
+        /// </summary>
+        /// <param name="request">The request.</param>
+        /// <returns></returns>
         [HttpGet]
-        [Route("message/get/conversation/{id}/skip/{skip}/count/{count}")]
-        public async Task<IActionResult> GetMessageByConversationId(string id, int skip, int count)
+        [Route("message/get/conversation")]
+        public async Task<IActionResult> GetMessageByConversationId([FromQuery] GetMessageByConversationIdRequest request)
         {
-            Infrastructure.Shared.Models.Response.MessageResponse.GetMessageByConversationIdResponse data = await messageService.GetMessageByConversationId(id, skip, count);
+            IEnumerable<MessageViewModel> data = await messageService.GetMessageByConversationId(request);
             return Ok(new ApiOkResponse(data));
         }
 
 
+        /// <summary>
+        /// Deletes the conversation.
+        /// </summary>
+        /// <param name="id">The identifier.</param>
+        /// <returns></returns>
         [HttpDelete]
         [Route("conversation/{id}")]
         public async Task<IActionResult> DeleteConversation(string id)
@@ -60,6 +98,11 @@ namespace CoStudy.API.WebAPI.Controllers
             return Ok(new ApiOkResponse(data));
         }
 
+        /// <summary>
+        /// Deletes the message.
+        /// </summary>
+        /// <param name="id">The identifier.</param>
+        /// <returns></returns>
         [HttpDelete]
         [Route("message/{id}")]
         public async Task<IActionResult> DeleteMessage(string id)
@@ -68,19 +111,42 @@ namespace CoStudy.API.WebAPI.Controllers
             return Ok(new ApiOkResponse(data));
         }
 
+        /// <summary>
+        /// Edits the message.
+        /// </summary>
+        /// <param name="request">The request.</param>
+        /// <returns></returns>
         [HttpPut]
         [Route("update")]
         public async Task<IActionResult> EditMessage(UpdateMessageRequest request)
         {
-            Domain.Entities.Application.Message data = await messageService.EditMessage(request);
+            MessageViewModel data = await messageService.EditMessage(request);
             return Ok(new ApiOkResponse(data));
         }
 
+        /// <summary>
+        /// Gets all.
+        /// </summary>
+        /// <returns></returns>
         [HttpGet]
         [Route("all")]
         public IActionResult GetAll()
         {
             return Ok(messageService.GetAll());
         }
+
+
+        /// <summary>
+        /// Adds the member.
+        /// </summary>
+        /// <param name="request">The request.</param>
+        /// <returns></returns>
+        [HttpPost]
+        public async Task<IActionResult> AddMember(AddMemberRequest request)
+        {
+            IEnumerable<MessageViewModel> data = await messageService.AddMember(request);
+            return Ok(new ApiOkResponse(data));
+        }
+
     }
 }

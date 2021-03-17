@@ -3,10 +3,7 @@ using AutoMapper;
 using CoStudy.API.Application.Repositories;
 using CoStudy.API.Domain.Entities.Application;
 using CoStudy.API.Infrastructure.Shared.ViewModels;
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace CoStudy.API.Infrastructure.Shared.AutoMapper
 {
@@ -51,8 +48,9 @@ namespace CoStudy.API.Infrastructure.Shared.AutoMapper
         public void Process(User source, UserViewModel destination, ResolutionContext context)
         {
             destination.PostCount = postRepository.GetAll().Where(x => x.AuthorId == source.OId).Count();
-            destination.Followers = followRepository.GetAll().Where(x => x.FromId == source.OId).Count();
-            destination.Following = followRepository.GetAll().Where(x => x.ToId == source.OId).Count();
+            destination.Followers = followRepository.GetAll().Where(x => x.ToId == source.OId).Count();
+            destination.Following = followRepository.GetAll().Where(x => x.FromId == source.OId).Count();
+            destination.FullName = $"{source.FirstName} {source.LastName}";
 
         }
     }
