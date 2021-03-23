@@ -22,7 +22,7 @@ namespace CoStudy.API.Infrastructure.Shared.AutoMapper
 
         public void Process(Conversation source, ConversationViewModel destination, ResolutionContext context)
         {
-            destination.Participants = mapper.Map<IEnumerable<ConversationMemberViewModel>>(source.Participants);
+          //  destination.Participants = mapper.Map<IEnumerable<ConversationMemberViewModel>>(source.Participants);
         }
     }
 }

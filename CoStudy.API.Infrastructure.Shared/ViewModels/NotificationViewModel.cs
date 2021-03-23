@@ -1,23 +1,26 @@
-﻿using CoStudy.API.Domain.Entities.BaseEntity;
-using MongoDB.Bson;
-using MongoDB.Bson.Serialization.Attributes;
+﻿using CoStudy.API.Domain.Entities.Application;
+using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
+using System.Text;
 using System.Text.Json.Serialization;
 
-namespace CoStudy.API.Domain.Entities.Application
+namespace CoStudy.API.Infrastructure.Shared.ViewModels
 {
     /// <summary>
-    /// Class Notification.
+    /// Class NotificationViewModel
     /// </summary>
-    /// <seealso cref="CoStudy.API.Domain.Entities.BaseEntity.Entity" />
-    public class Noftication : Entity
+    public class NotificationViewModel
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="Noftication" /> class.
+        /// Gets or sets the o identifier.
         /// </summary>
-        public Noftication() : base()
-        {
-        }
+        /// <value>
+        /// The o identifier.
+        /// </value>
+        [JsonProperty("oid")]
+        [JsonPropertyName("oid")]
+        public string  OId { get; set; }
 
         /// <summary>
         /// Gets or sets the author identifier.
@@ -25,9 +28,29 @@ namespace CoStudy.API.Domain.Entities.Application
         /// <value>
         /// The author identifier.
         /// </value>
-        [BsonElement("author_id")]
+        [JsonProperty("author_id")]
         [JsonPropertyName("author_id")]
-        public string AuthorId { get; set; }
+        public string  AuthorId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the name of the author.
+        /// </summary>
+        /// <value>
+        /// The name of the author.
+        /// </value>
+        [JsonProperty("author_name")]
+        [JsonPropertyName("author_name")]
+        public string  AuthorName { get; set; }
+
+        /// <summary>
+        /// Gets or sets the author avatar.
+        /// </summary>
+        /// <value>
+        /// The author avatar.
+        /// </value>
+        [JsonProperty("author_avatar")]
+        [JsonPropertyName("author_avatar")]
+        public string  AuthorAvatar { get; set; }
 
         /// <summary>
         /// Gets or sets the owner identifier.
@@ -35,9 +58,9 @@ namespace CoStudy.API.Domain.Entities.Application
         /// <value>
         /// The owner identifier.
         /// </value>
-        [BsonElement("owner_id")]
+        [JsonProperty("owner_id")]
         [JsonPropertyName("owner_id")]
-        public string OwnerId { get; set; }
+        public string  OwnerId { get; set; }
 
         /// <summary>
         /// Gets or sets the content.
@@ -45,28 +68,21 @@ namespace CoStudy.API.Domain.Entities.Application
         /// <value>
         /// The content.
         /// </value>
-        [BsonElement("content")]
+        [JsonProperty("content")]
         [JsonPropertyName("content")]
         public string Content { get; set; }
 
-        /// <summary>
-        /// Gets or sets the object identifier.
-        /// </summary>
-        /// <value>
-        /// The object identifier.
-        /// </value>
-        [BsonElement("object_id")]
         [JsonPropertyName("object_id")]
-        public string  ObjectId { get; set; }
-
+        [JsonProperty("object_id")]
+        public string ObjectId { get; set; }
         /// <summary>
         /// Gets or sets the created date.
         /// </summary>
         /// <value>
         /// The created date.
         /// </value>
-        [BsonElement("created_date")]
         [JsonPropertyName("created_date")]
+        [JsonProperty("created_date")]
         public DateTime CreatedDate { get; set; }
 
         /// <summary>
@@ -75,8 +91,8 @@ namespace CoStudy.API.Domain.Entities.Application
         /// <value>
         /// The modified date.
         /// </value>
-        [BsonElement("modified_date")]
         [JsonPropertyName("modified_date")]
+        [JsonProperty("modified_date")]
         public DateTime ModifiedDate { get; set; }
 
         /// <summary>
@@ -85,8 +101,8 @@ namespace CoStudy.API.Domain.Entities.Application
         /// <value>
         /// The status.
         /// </value>
-        [BsonElement("status")]
         [JsonPropertyName("status")]
+        [JsonProperty("status")]
         public ItemStatus Status { get; set; }
 
         /// <summary>
@@ -95,8 +111,8 @@ namespace CoStudy.API.Domain.Entities.Application
         /// <value>
         /// The is read.
         /// </value>
-        [BsonElement("is_read")]
         [JsonPropertyName("is_read")]
+        [JsonProperty("is_read")]
         public bool? IsRead { get; set; }
     }
 }

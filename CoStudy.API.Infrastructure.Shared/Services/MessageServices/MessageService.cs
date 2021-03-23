@@ -117,7 +117,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.MessageServices
             if (existConversation.Participants.Count != 0)
                 return mapper.Map<ConversationViewModel>(existConversation);
 
-            Conversation conversation = MessageAdapter.FromRequest(request);
+            Conversation conversation = MessageAdapter.FromRequest(request, httpContextAccessor, userRepository);
 
             await conversationRepository.AddAsync(conversation);
 

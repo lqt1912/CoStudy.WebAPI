@@ -12,6 +12,7 @@ namespace CoStudy.API.Infrastructure.Shared.Adapters
             return new Noftication()
             {
                 AuthorId = request.AuthorId,
+                ObjectId = request.ObjectId,
                 OwnerId = request.OwnerId,
                 Content = request.Content,
                 CreatedDate = DateTime.Now,

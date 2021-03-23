@@ -633,6 +633,9 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
         {
             var objlvls = objectLevelRepository.GetAll().Where(x => x.ObjectId == post.OId);
 
+            if (string.IsNullOrEmpty(objectLevel.FieldId) || string.IsNullOrEmpty(objectLevel.LevelId))
+                return true;
+
             foreach (var item in objlvls)
             {
                 if (item.FieldId ==objectLevel.FieldId)

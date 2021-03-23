@@ -1,8 +1,11 @@
-﻿using CoStudy.API.Infrastructure.Shared.Models.Request.NofticationRequest;
+﻿using CoStudy.API.Infrastructure.Shared.Models.Request.BaseRequest;
+using CoStudy.API.Infrastructure.Shared.Models.Request.NofticationRequest;
 using CoStudy.API.Infrastructure.Shared.Services.NofticationServices;
 using CoStudy.API.WebAPI.Middlewares;
 using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
 using System.Threading.Tasks;
+using CoStudy.API.Infrastructure.Shared.ViewModels;
 
 namespace CoStudy.API.WebAPI.Controllers
 {
@@ -22,15 +25,15 @@ namespace CoStudy.API.WebAPI.Controllers
         [Route("add")]
         public async Task<IActionResult> AddNoftication(AddNofticationRequest request)
         {
-            Infrastructure.Shared.Models.Response.NofticationResponse.AddNofticationResponse data = await nofticationService.AddNoftication(request);
+          NotificationViewModel data = await nofticationService.AddNoftication(request);
             return Ok(new ApiOkResponse(data));
         }
 
         [HttpGet]
         [Route("current")]
-        public async Task<IActionResult> GetCurrentUserNoftication(int? skip, int? count)
+        public async Task<IActionResult> GetCurrentUserNoftication(BaseGetAllRequest request)
         {
-            System.Collections.Generic.IEnumerable<Domain.Entities.Application.Noftication> data = await nofticationService.GetCurrentUserNoftication(skip, count);
+            IEnumerable<NotificationViewModel> data = await nofticationService.GetCurrentUserNoftication(request);
             return Ok(new ApiOkResponse(data));
         }
 

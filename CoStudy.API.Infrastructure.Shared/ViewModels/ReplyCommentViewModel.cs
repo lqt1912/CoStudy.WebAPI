@@ -59,6 +59,9 @@ namespace CoStudy.API.Infrastructure.Shared.ViewModels
         /// <value>
         /// The name of the author.
         /// </value>
+        /// 
+        [JsonProperty("author_name")]
+        [JsonPropertyName("author_name")]
         public string AuthorName { get; set; }
         /// <summary>
         /// Gets or sets the author avatar.
@@ -66,6 +69,9 @@ namespace CoStudy.API.Infrastructure.Shared.ViewModels
         /// <value>
         /// The author avatar.
         /// </value>
+        /// 
+        [JsonProperty("author_avatar")]
+        [JsonPropertyName("author_avatar")]
         public string AuthorAvatar { get; set; }
 
         /// <summary>

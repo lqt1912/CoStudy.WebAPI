@@ -45,9 +45,9 @@ namespace CoStudy.API.Infrastructure.Shared.AutoMapper
             if (user == null || joinBy == null)
                 throw new Exception("Không tìm thấy người dùng hợp lệ. ");
 
-                destination.MemberName = $"{user.FirstName} {user.LastName}";
-                destination.MemberAvatar = user.AvatarHash;
-                destination.JoinByName = $"{joinBy.FirstName} {joinBy.LastName}";
+                destination.MemberName = $"{user?.FirstName} {user?.LastName}";
+                destination.MemberAvatar = user?.AvatarHash;
+                destination.JoinByName = $"{joinBy?.FirstName} {joinBy?.LastName}";
 
         }
     }

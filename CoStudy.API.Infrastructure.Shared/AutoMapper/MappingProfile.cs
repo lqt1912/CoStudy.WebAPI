@@ -64,6 +64,8 @@ namespace CoStudy.API.Infrastructure.Shared.AutoMapper
             CreateMap<ObjectLevel, ObjectLevelViewModel>().AfterMap<ObjectLevelConvertAction>();
 
             CreateMap<Level, LevelViewModel>();
+
+            CreateMap<Noftication, NotificationViewModel>().AfterMap<NotificationConvertAction>();
         }
 
     }

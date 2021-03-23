@@ -1,9 +1,12 @@
-﻿using CoStudy.API.Application.Features;
+﻿using AutoMapper;
+using CoStudy.API.Application.Features;
 using CoStudy.API.Application.Repositories;
 using CoStudy.API.Domain.Entities.Application;
 using CoStudy.API.Infrastructure.Shared.Adapters;
+using CoStudy.API.Infrastructure.Shared.Models.Request.BaseRequest;
 using CoStudy.API.Infrastructure.Shared.Models.Request.NofticationRequest;
 using CoStudy.API.Infrastructure.Shared.Models.Response.NofticationResponse;
+using CoStudy.API.Infrastructure.Shared.ViewModels;
 using Microsoft.AspNetCore.Http;
 using MongoDB.Bson;
 using MongoDB.Driver;
@@ -14,37 +17,81 @@ using System.Threading.Tasks;
 
 namespace CoStudy.API.Infrastructure.Shared.Services.NofticationServices
 {
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <seealso cref="CoStudy.API.Infrastructure.Shared.Services.NofticationServices.INofticationService" />
     public class NofticationService : INofticationService
     {
+        /// <summary>
+        /// The noftication repository
+        /// </summary>
         INofticationRepository nofticationRepository;
+        /// <summary>
+        /// The user repository
+        /// </summary>
         IUserRepository userRepository;
+        /// <summary>
+        /// The context accessor
+        /// </summary>
         IHttpContextAccessor contextAccessor;
+        /// <summary>
+        /// The mapper
+        /// </summary>
+        IMapper mapper;
 
-        public NofticationService(INofticationRepository nofticationRepository, IUserRepository userRepository, IHttpContextAccessor contextAccessor)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="NofticationService"/> class.
+        /// </summary>
+        /// <param name="nofticationRepository">The noftication repository.</param>
+        /// <param name="userRepository">The user repository.</param>
+        /// <param name="contextAccessor">The context accessor.</param>
+        /// <param name="mapper">The mapper.</param>
+        public NofticationService(INofticationRepository nofticationRepository, IUserRepository userRepository, IHttpContextAccessor contextAccessor, IMapper mapper)
         {
             this.nofticationRepository = nofticationRepository;
             this.userRepository = userRepository;
             this.contextAccessor = contextAccessor;
+            this.mapper = mapper;
         }
 
-        public async Task<AddNofticationResponse> AddNoftication(AddNofticationRequest request)
+        /// <summary>
+        /// Adds the noftication.
+        /// </summary>
+        /// <param name="request">The request.</param>
+        /// <returns></returns>
+        public async Task<NotificationViewModel> AddNoftication(AddNofticationRequest request)
         {
 
             Noftication noftication = NofticationAdapter.FromRequest(request);
             await nofticationRepository.AddAsync(noftication);
-            return NofticationAdapter.ToResponse(noftication);
+
+            return mapper.Map<NotificationViewModel>(noftication);
         }
 
-        public async Task<IEnumerable<Noftication>> GetCurrentUserNoftication(int? skip, int? count)
+        /// <summary>
+        /// Gets the current user noftication.
+        /// </summary>
+        /// <param name="skip">The skip.</param>
+        /// <param name="count">The count.</param>
+        /// <returns></returns>
+        public async Task<IEnumerable<NotificationViewModel>> GetCurrentUserNoftication(BaseGetAllRequest request)
         {
             User currentUser = Feature.CurrentUser(contextAccessor, userRepository);
             FilterDefinition<Noftication> builder = Builders<Noftication>.Filter.Eq("owner_id", currentUser.OId);
+
             IEnumerable<Noftication> result = (await nofticationRepository.FindListAsync(builder)).AsEnumerable();
-            if (skip.HasValue && count.HasValue)
-                result = result.Skip(skip.Value).Take(count.Value);
-            return result;
+
+            if (request.Count.HasValue && request.Skip.HasValue)
+                result = result.Skip(request.Skip.Value).Take(request.Count.Value);
+            return mapper.Map<IEnumerable<NotificationViewModel>>(result);
         }
 
+        /// <summary>
+        /// Deletes the notification.
+        /// </summary>
+        /// <param name="id">The identifier.</param>
+        /// <returns></returns>
         public async Task<string> DeleteNotification(string id)
         {
             try
@@ -58,6 +105,12 @@ namespace CoStudy.API.Infrastructure.Shared.Services.NofticationServices
             }
         }
 
+        /// <summary>
+        /// Marks as read.
+        /// </summary>
+        /// <param name="id">The identifier.</param>
+        /// <returns></returns>
+        /// <exception cref="Exception">Không tìm thấy thông báo</exception>
         public async Task<string> MarkAsRead(string id)
         {
             if (!string.IsNullOrEmpty(id))
