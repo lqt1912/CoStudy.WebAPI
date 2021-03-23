@@ -2,6 +2,7 @@
 using CoStudy.API.Application.FCM;
 using CoStudy.API.Application.Features;
 using CoStudy.API.Application.Repositories;
+using CoStudy.API.Application.Utitlities;
 using CoStudy.API.Domain.Entities.Application;
 using CoStudy.API.Infrastructure.Shared.Adapters;
 using CoStudy.API.Infrastructure.Shared.Models.Request.BaseRequest;
@@ -82,6 +83,12 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
         /// </summary>
         IMapper mapper;
 
+
+        /// <summary>
+        /// The object level repository
+        /// </summary>
+        IObjectLevelRepository objectLevelRepository;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="PostService" /> class.
         /// </summary>
@@ -99,6 +106,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
         /// <param name="fcmRepository">The FCM repository.</param>
         /// <param name="nofticationRepository">The noftication repository.</param>
         /// <param name="mapper">The mapper.</param>
+        /// <param name="objectLevelRepository">The object level repository.</param>
         public PostService(
             IHttpContextAccessor httpContextAccessor,
             IConfiguration configuration,
@@ -113,7 +121,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
             IClientGroupRepository clientGroupRepository,
             IFcmRepository fcmRepository,
             INofticationRepository nofticationRepository,
-            IMapper mapper)
+            IMapper mapper, IObjectLevelRepository objectLevelRepository)
         {
             this.httpContextAccessor = httpContextAccessor;
             this.configuration = configuration;
@@ -129,6 +137,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
             this.fcmRepository = fcmRepository;
             this.nofticationRepository = nofticationRepository;
             this.mapper = mapper;
+            this.objectLevelRepository = objectLevelRepository;
         }
 
         /// <summary>
@@ -163,9 +172,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
         /// <summary>
         /// Gets the post by user identifier.
         /// </summary>
-        /// <param name="userId">The user identifier.</param>
-        /// <param name="skip">The skip.</param>
-        /// <param name="count">The count.</param>
+        /// <param name="request">The request.</param>
         /// <returns></returns>
         /// <exception cref="Exception">Người dùng chưa có bài viết nào</exception>
         public async Task<IEnumerable<PostViewModel>> GetPostByUserId(GetPostByUserRequest request)
@@ -178,9 +185,11 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
 
                 User author = await userRepository.GetByIdAsync(ObjectId.Parse(request.UserId));
 
-                var data = await postRepository.FindListAsync(match);
-                if(request.Skip.HasValue && request.Count.HasValue)
-                    data = data.Skip(request.Skip.Value).Take(request.Count.Value).ToList() ;
+                List<Post> data = await postRepository.FindListAsync(match);
+                if (request.Skip.HasValue && request.Count.HasValue)
+                {
+                    data = data.Skip(request.Skip.Value).Take(request.Count.Value).ToList();
+                }
 
                 IEnumerable<PostViewModel> response = mapper.Map<IEnumerable<PostViewModel>>(data);
                 return response;
@@ -194,8 +203,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
         /// <summary>
         /// Gets the post timeline asynchronous.
         /// </summary>
-        /// <param name="skip">The skip.</param>
-        /// <param name="count">The count.</param>
+        /// <param name="request">The request.</param>
         /// <returns></returns>
         public async Task<IEnumerable<PostViewModel>> GetPostTimelineAsync(BaseGetAllRequest request)
         {
@@ -208,7 +216,9 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
             List<string> listAuthor = new List<string>();
             listAuthor.Add(currentUser.Id.ToString());
             foreach (Follow item in listFollow)
+            {
                 listAuthor.Add(item.ToId);
+            }
 
             List<Post> result = new List<Post>();
 
@@ -220,9 +230,11 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
             }
 
             if (request.Skip.HasValue && request.Count.HasValue)
-                result = result.Skip(request.Skip.Value).Take(request.Count.Value).OrderByDescending(x=>x.CreatedDate).ToList();
+            {
+                result = result.Skip(request.Skip.Value).Take(request.Count.Value).OrderByDescending(x => x.CreatedDate).ToList();
+            }
 
-            var data = mapper.Map<IEnumerable<PostViewModel>>(result);
+            IEnumerable<PostViewModel> data = mapper.Map<IEnumerable<PostViewModel>>(result);
 
             return data;
         }
@@ -247,8 +259,9 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
 
                 UpVote existUpvote = await upVoteRepository.FindAsync(filterExistUpvote);
                 if (existUpvote != null)
+                {
                     return "Bạn đã Upvote bài viết rồi";
-
+                }
                 else if (existUpvote == null)
                 {
                     FilterDefinitionBuilder<DownVote> builderDownVote = Builders<DownVote>.Filter;
@@ -260,7 +273,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
                     if (existDownVote != null)
                     {
                         existDownVote.IsDeleted = true;
-                        await downVoteRepository.DeleteAsync( existDownVote.Id);
+                        await downVoteRepository.DeleteAsync(existDownVote.Id);
                     }
 
                     UpVote upvote = new UpVote()
@@ -342,8 +355,9 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
 
                 DownVote existDownVote = await downVoteRepository.FindAsync(filterExistDownvote);
                 if (existDownVote != null)
+                {
                     return "Bạn đã Down bài viết rồi";
-
+                }
                 else if (existDownVote == null)
                 {
                     FilterDefinitionBuilder<UpVote> builderUpVote = Builders<UpVote>.Filter;
@@ -420,6 +434,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
         /// </summary>
         /// <param name="request">The request.</param>
         /// <returns></returns>
+        /// <exception cref="Exception">Có lỗi xảy ra khi tìm kiếm bài viết.</exception>
         public async Task<PostViewModel> UpdatePost(UpdatePostRequest request)
         {
             Post currentPost = await postRepository.GetByIdAsync(ObjectId.Parse(request.PostId));
@@ -431,7 +446,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
                 currentPost.Title = request.Title;
                 currentPost.ModifiedDate = DateTime.Now;
                 await postRepository.UpdateAsync(currentPost, currentPost.Id);
-                var response = mapper.Map<PostViewModel>(currentPost);
+                PostViewModel response = mapper.Map<PostViewModel>(currentPost);
                 return response;
             }
             throw new Exception("Có lỗi xảy ra khi tìm kiếm bài viết. ");
@@ -460,18 +475,19 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
                     await userRepository.UpdateAsync(currentUser, currentUser.Id);
                 }
 
-                var response = mapper.Map<PostViewModel>(post);
+                PostViewModel response = mapper.Map<PostViewModel>(post);
                 return response;
             }
-            else throw new Exception("Bài viết không tồn tại hoặc đã bị xóa. ");
-
+            else
+            {
+                throw new Exception("Bài viết không tồn tại hoặc đã bị xóa. ");
+            }
         }
 
         /// <summary>
         /// Gets the saved post.
         /// </summary>
-        /// <param name="skip">The skip.</param>
-        /// <param name="count">The count.</param>
+        /// <param name="request"></param>
         /// <returns></returns>
         public async Task<List<PostViewModel>> GetSavedPost(BaseGetAllRequest request)
         {
@@ -481,11 +497,16 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
             {
                 Post post = await postRepository.GetByIdAsync(ObjectId.Parse(postId));
                 if (post != null)
+                {
                     result.Add(post);
+                }
             }
 
             if (request.Skip.HasValue && request.Count.HasValue)
+            {
                 result = result.Skip(request.Skip.Value).Take(request.Count.Value).ToList();
+            }
+
             return mapper.Map<List<PostViewModel>>(result);
         }
 
@@ -494,62 +515,90 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
         /// </summary>
         /// <param name="filterRequest">The filter request.</param>
         /// <returns></returns>
-        public async Task<IEnumerable<Post>> Filter(FilterRequest filterRequest)
+        public async Task<IEnumerable<PostViewModel>> Filter(FilterRequest filterRequest)
         {
-            User currentUser = Feature.CurrentUser(httpContextAccessor, userRepository);
+            var posts = postRepository.GetAll();
 
-            FilterDefinition<Follow> findFilter = Builders<Follow>.Filter.Eq("from_id", currentUser.OId);
+            var builders = Builders<Post>.Filter;
+            FilterDefinition<Post> filterParam = builders.Eq("status", ItemStatus.Active);
 
-            List<Follow> listFollow = await followRepository.FindListAsync(findFilter);
-
-            List<string> listAuthor = new List<string>();
-
-            foreach (Follow item in listFollow)
-                listAuthor.Add(item.ToId);
-            listAuthor.Add(currentUser.OId);
-            List<Post> timelines = new List<Post>();
-
-            foreach (string author in listAuthor)
+            if (filterRequest.ContentFilter != null)
             {
-                FilterDefinitionBuilder<Post> builder = Builders<Post>.Filter;
-                FilterDefinition<Post> postFindFilter = builder.Eq("author_id", author) & builder.Eq("status", ItemStatus.Active);
-                timelines.AddRange(await postRepository.FindListAsync(postFindFilter));
+                filterParam = filterParam & (builders.Regex("string_contents.content", filterRequest.ContentFilter.KeyWord)
+                    | builders.Regex("title", filterRequest.ContentFilter.KeyWord));
             }
 
-            IQueryable<Post> queryable = timelines.AsQueryable();
-
-            if (!String.IsNullOrEmpty(filterRequest.KeyWord))
-                queryable = queryable.Where(x => x.Title.ToLower().Contains(filterRequest.KeyWord.ToLower()));
-            if (filterRequest.FromDate != null)
-                queryable = queryable.Where(x => x.CreatedDate >= filterRequest.FromDate);
-            if (filterRequest.ToDate != null)
-                queryable = queryable.Where(x => x.CreatedDate <= filterRequest.ToDate);
-           
-            switch (filterRequest.OrderBy)
+            if (filterRequest.CreatedDateFilter != null)
             {
-                case PostOrder.CreatedDate:
-                    {
-                        if (filterRequest.OrderType == OrderType.Ascending)
-                            queryable = queryable.OrderBy(x => x.CreatedDate);
-                        else queryable = queryable.OrderByDescending(x => x.CreatedDate);
-                        break;
-                    }
-                case PostOrder.Comment:
-                    {
-                        if (filterRequest.OrderType == OrderType.Ascending)
-                            queryable = queryable.OrderBy(x => x.CreatedDate);
-                        else queryable = queryable.OrderByDescending(x => x.CreatedDate);
-                        break;
-                    }
-                default:
-                    break;
+                if (filterRequest.CreatedDateFilter.FromDate.HasValue && filterRequest.CreatedDateFilter.ToDate.HasValue)
+                    filterParam = filterParam
+                        & builders.Gt("created_date", filterRequest.CreatedDateFilter.FromDate)
+                        & builders.Lt("created_date", filterRequest.CreatedDateFilter.ToDate);
             }
-            if (filterRequest.Skip.HasValue && filterRequest.Count.HasValue)
-                queryable = queryable.Skip(filterRequest.Skip.Value).Take(filterRequest.Count.Value);
-            return queryable.ToList();
 
+            posts = (await postRepository.FindListAsync(filterParam)).AsQueryable();
+
+
+            if (filterRequest.CreatedDateFilter != null)
+            {
+
+
+
+                if (filterRequest.CreatedDateFilter.IsSortDescending == true)
+                    posts = posts.OrderByDescending(x => x.CreatedDate);
+                else
+                    posts = posts.OrderBy(x => x.CreatedDate);
+            }
+
+            if (filterRequest.ContentFilter != null)
+            {
+
+                if (filterRequest.ContentFilter.IsSortDescending == true)
+                    posts = posts.OrderByDescending(x => x.Title);
+                else
+                    posts = posts.OrderBy(x => x.Title);
+
+            }
+
+            var vm = mapper.Map<IEnumerable<PostViewModel>>(posts);
+
+            if (filterRequest.UpvoteCountFilter != null)
+            {
+                if (filterRequest.UpvoteCountFilter.ValueFrom.HasValue && filterRequest.UpvoteCountFilter.ValueTo.HasValue)
+                {
+                    vm = vm.Where(x => x.Upvote >= filterRequest.UpvoteCountFilter.ValueFrom.Value && x.Upvote <= filterRequest.UpvoteCountFilter.ValueTo.Value);
+                }
+
+                if (filterRequest.UpvoteCountFilter.IsSortDescending == true)
+                    vm = vm.OrderByDescending(x => x.Upvote);
+                else
+                    vm = vm.OrderBy(x => x.Upvote);
+            }
+
+            if (filterRequest.CommentCountFilter != null)
+            {
+                if (filterRequest.CommentCountFilter.ValueFrom.HasValue && filterRequest.CommentCountFilter.ValueTo.HasValue)
+                {
+
+                    vm = vm.Where(x => x.CommentCount >= filterRequest.CommentCountFilter.ValueFrom.Value
+                    && x.CommentCount <= filterRequest.CommentCountFilter.ValueTo.Value);
+                }
+
+                if (filterRequest.CommentCountFilter.IsSortDescending == true)
+                    vm = vm.OrderByDescending(x => x.CommentCount);
+                else
+                    vm = vm.OrderBy(x => x.CommentCount);
+            }
+
+            var result = new List<PostViewModel>();
+            foreach (var post in vm)
+            {
+                if (IsMatch(post, filterRequest.LevelFilter) == true)
+                    result.Add(post);
+            }
+
+            return result;
         }
-
 
 
         /// <summary>
@@ -557,6 +606,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
         /// </summary>
         /// <param name="id">The identifier.</param>
         /// <returns></returns>
+        /// <exception cref="Exception">Không tìm thấy post</exception>
         /// <exception cref="NotImplementedException"></exception>
         public async Task<PostViewModel> GetPostById1(string id)
         {
@@ -567,5 +617,31 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
             }
             throw new Exception("Không tìm thấy post");
         }
+
+
+
+
+        /// <summary>
+        /// Determines whether the specified post is match.
+        /// </summary>
+        /// <param name="post">The post.</param>
+        /// <param name="objectLevel">The object level.</param>
+        /// <returns>
+        ///   <c>true</c> if the specified post is match; otherwise, <c>false</c>.
+        /// </returns>
+        private bool IsMatch(PostViewModel post, ObjectLevel objectLevel)
+        {
+            var objlvls = objectLevelRepository.GetAll().Where(x => x.ObjectId == post.OId);
+
+            foreach (var item in objlvls)
+            {
+                if (item.FieldId ==objectLevel.FieldId)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
     }
 }

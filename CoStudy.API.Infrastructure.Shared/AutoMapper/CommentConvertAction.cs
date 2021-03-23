@@ -78,7 +78,12 @@ namespace CoStudy.API.Infrastructure.Shared.AutoMapper
             {
 
                 User currentUser = Feature.CurrentUser(httpContextAccessor, userRepository);
+                
                 User author = userRepository.GetById(ObjectId.Parse(source.AuthorId));
+
+                if (author == null)
+                    throw new Exception("Không tìm thấy author. ");
+
                 destination.AuthorName = $"{author.FirstName} {author.LastName}";
                 destination.AuthorAvatar = author.AvatarHash;
 

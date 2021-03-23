@@ -24,6 +24,9 @@ namespace CoStudy.API.Infrastructure.Shared.AutoMapper
             var fromUser = userRepository.GetById(ObjectId.Parse(source.FromId));
             var toUser = userRepository.GetById(ObjectId.Parse(source.ToId));
 
+            if (fromUser == null || toUser == null)
+                throw new Exception("Không tìm thấy người theo dõi phù hợp. ");
+
             destination.FromAvatar = fromUser.AvatarHash;
             destination.FromName = $"{fromUser.FirstName} {fromUser.LastName}";
 

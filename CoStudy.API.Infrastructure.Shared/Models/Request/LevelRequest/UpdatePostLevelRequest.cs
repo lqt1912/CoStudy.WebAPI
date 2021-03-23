@@ -1,4 +1,5 @@
-﻿using CoStudy.API.Infrastructure.Shared.Validator;
+﻿using CoStudy.API.Domain.Entities.Application;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -7,9 +8,9 @@ using System.Text.Json.Serialization;
 namespace CoStudy.API.Infrastructure.Shared.Models.Request.LevelRequest
 {
     /// <summary>
-    /// Class UserAddFieldRequest
+    /// Class UpdatePostLevelRequest
     /// </summary>
-    public class UserAddFieldRequest
+    public class UpdatePostLevelRequest
     {
         /// <summary>
         /// Gets or sets the user identifier.
@@ -17,18 +18,19 @@ namespace CoStudy.API.Infrastructure.Shared.Models.Request.LevelRequest
         /// <value>
         /// The user identifier.
         /// </value>
-        [JsonPropertyName("user_id")]
-        [StringRequired]
-        public string UserId { get; set; }
+        [JsonProperty("post_id")]
+        [JsonPropertyName("post_id")]
+        public string  PostId { get; set; }
+
 
         /// <summary>
-        /// Gets or sets the field identifier.
+        /// Gets or sets the field.
         /// </summary>
         /// <value>
-        /// The field identifier.
+        /// The field.
         /// </value>
-        [ListRequired]
-        [JsonPropertyName("field_id")]
-        public IEnumerable<string> FieldId { get; set; }
+        [JsonProperty("field")]
+        [JsonPropertyName("field")]
+        public IEnumerable<ObjectLevel> Field { get; set; }
     }
 }

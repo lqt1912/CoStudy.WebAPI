@@ -191,7 +191,7 @@ namespace CoStudy.API.Infrastructure.Shared.ViewModels
         /// </value>
         [JsonProperty("fields")]
         [JsonPropertyName("fields")]
-        public List<string> Fields { get; set; }
+        public List<object> Fields { get; set; }
 
         /// <summary>
         /// Gets or sets the post upvote.

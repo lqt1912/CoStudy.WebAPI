@@ -82,7 +82,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
         /// </summary>
         /// <param name="filterRequest">The filter request.</param>
         /// <returns></returns>
-        Task<IEnumerable<Post>> Filter(FilterRequest filterRequest);
+       Task< IEnumerable<PostViewModel>> Filter(FilterRequest filterRequest);
        
        
     }

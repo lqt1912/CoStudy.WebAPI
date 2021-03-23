@@ -40,7 +40,7 @@ namespace CoStudy.API.WebAPI.Controllers
         [HttpGet, Route("level/{id}")]
         public async Task<IActionResult> ById(string id)
         {
-            var data =await  levelService.BetGyId(id);
+            var data =await  levelService.GetById(id);
             return Ok(new ApiOkResponse(data));
         }
 
@@ -61,7 +61,7 @@ namespace CoStudy.API.WebAPI.Controllers
         [HttpPost, Route("user/field/add")]
         public async Task<IActionResult> AddFieldsForUser(UserAddFieldRequest request)
         {
-            var data = await levelService.AddFieldsForUser(request);
+            var data = await levelService.AddOrUpdateUserFields(request);
             return Ok(new ApiOkResponse(data));
         }
 

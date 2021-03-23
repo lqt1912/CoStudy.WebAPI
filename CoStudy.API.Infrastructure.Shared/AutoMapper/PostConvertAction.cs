@@ -40,24 +40,37 @@ namespace CoStudy.API.Infrastructure.Shared.AutoMapper
         IHttpContextAccessor httpContextAccessor;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="PostConvertAction"/> class.
+        /// The object level repository
+        /// </summary>
+        IObjectLevelRepository objectLevelRepository;
+
+        /// <summary>
+        /// The mapper
+        /// </summary>
+        IMapper mapper;
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PostConvertAction" /> class.
         /// </summary>
         /// <param name="userRepository">The user repository.</param>
         /// <param name="upVoteRepository">Up vote repository.</param>
         /// <param name="downVoteRepository">Down vote repository.</param>
         /// <param name="commentRepository">The comment repository.</param>
         /// <param name="httpContextAccessor">The HTTP context accessor.</param>
+        /// <param name="objectLevelRepository">The object level repository.</param>
+        /// <param name="mapper">The mapper.</param>
         public PostConvertAction(IUserRepository userRepository,
             IUpVoteRepository upVoteRepository,
             IDownVoteRepository downVoteRepository,
             ICommentRepository commentRepository,
-            IHttpContextAccessor httpContextAccessor)
+            IHttpContextAccessor httpContextAccessor, IObjectLevelRepository objectLevelRepository, IMapper mapper)
         {
             this.userRepository = userRepository;
             this.upVoteRepository = upVoteRepository;
             this.downVoteRepository = downVoteRepository;
             this.commentRepository = commentRepository;
             this.httpContextAccessor = httpContextAccessor;
+            this.objectLevelRepository = objectLevelRepository;
+            this.mapper = mapper;
         }
 
         /// <summary>
@@ -69,9 +82,14 @@ namespace CoStudy.API.Infrastructure.Shared.AutoMapper
         public void Process(Post source, PostViewModel destination, ResolutionContext context)
         {
             var currentUser = Feature.CurrentUser(httpContextAccessor, userRepository);
+            
             var author = userRepository.GetById(ObjectId.Parse(source.AuthorId));
-            destination.AuthorName = $"{author.FirstName} {author.LastName}";
-            destination.AuthorAvatar = author.AvatarHash;
+            if (author == null)
+                throw new Exception("Không tim thấy author phù hợp. ");
+
+
+            destination.AuthorName = $"{author?.FirstName} {author?.LastName}";
+            destination.AuthorAvatar = author?.AvatarHash;
 
             destination.CommentCount = commentRepository.GetAll().Where(x => x.Status == ItemStatus.Active && x.PostId == source.OId).Count();
 
@@ -85,7 +103,12 @@ namespace CoStudy.API.Infrastructure.Shared.AutoMapper
             var listDownVote = downVoteRepository.GetAll().Where(x => x.ObjectVoteId == source.OId && x.IsDeleted == false);
             destination.Downvote = listDownVote.Count();
             destination.IsDownVoteByCurrent = listDownVote.FirstOrDefault(x => x.DownVoteBy == currentUser.OId) != null;
-      
+
+            var objectLevels = objectLevelRepository.GetAll().Where(x => x.ObjectId == source.OId);
+            var postObjecLevel = mapper.Map<IEnumerable<ObjectLevelViewModel>>(objectLevels);
+
+            destination.Field = postObjecLevel;
+
         }
     }
 }

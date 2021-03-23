@@ -61,7 +61,9 @@ namespace CoStudy.API.Infrastructure.Shared.AutoMapper
             CreateMap<Message, MessageViewModel>().AfterMap<MessageConvertAction>();
             CreateMap<ConversationMember, ConversationMemberViewModel>().AfterMap<ConversationMemberConvertAction>();
             CreateMap<Conversation, ConversationViewModel>();
+            CreateMap<ObjectLevel, ObjectLevelViewModel>().AfterMap<ObjectLevelConvertAction>();
 
+            CreateMap<Level, LevelViewModel>();
         }
 
     }

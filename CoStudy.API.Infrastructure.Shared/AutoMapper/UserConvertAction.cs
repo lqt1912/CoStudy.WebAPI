@@ -3,6 +3,8 @@ using AutoMapper;
 using CoStudy.API.Application.Repositories;
 using CoStudy.API.Domain.Entities.Application;
 using CoStudy.API.Infrastructure.Shared.ViewModels;
+using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace CoStudy.API.Infrastructure.Shared.AutoMapper
@@ -26,17 +28,23 @@ namespace CoStudy.API.Infrastructure.Shared.AutoMapper
         /// </summary>
         IFollowRepository followRepository;
 
+        IObjectLevelRepository objectLevelRepository;
+
+        IMapper mapper;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="UserConvertAction"/> class.
         /// </summary>
         /// <param name="postRepository">The post repository.</param>
         /// <param name="userRepository">The user repository.</param>
         /// <param name="followRepository">The follow repository.</param>
-        public UserConvertAction(IPostRepository postRepository, IUserRepository userRepository, IFollowRepository followRepository)
+        public UserConvertAction(IPostRepository postRepository, IUserRepository userRepository, IFollowRepository followRepository, IObjectLevelRepository objectLevelRepository, IMapper mapper)
         {
             this.postRepository = postRepository;
             this.userRepository = userRepository;
             this.followRepository = followRepository;
+            this.objectLevelRepository = objectLevelRepository;
+            this.mapper = mapper;
         }
 
         /// <summary>
@@ -51,7 +59,8 @@ namespace CoStudy.API.Infrastructure.Shared.AutoMapper
             destination.Followers = followRepository.GetAll().Where(x => x.ToId == source.OId).Count();
             destination.Following = followRepository.GetAll().Where(x => x.FromId == source.OId).Count();
             destination.FullName = $"{source.FirstName} {source.LastName}";
-
+            var objectLevels = mapper.Map<IEnumerable<ObjectLevelViewModel>>(objectLevelRepository.GetAll().Where(x => x.ObjectId == source.OId));
+            destination.Fields.AddRange(objectLevels);
         }
     }
 }

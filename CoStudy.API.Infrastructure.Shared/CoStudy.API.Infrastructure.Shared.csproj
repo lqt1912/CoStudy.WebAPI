@@ -14,12 +14,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Common\Common.csproj" />
     <ProjectReference Include="..\CoStudy.API.Application\CoStudy.API.Application.csproj" />
     <ProjectReference Include="..\CoStudy.API.Infrastructure.Identity\CoStudy.API.Infrastructure.Identity.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Models\Request\LevelRequest\" />
   </ItemGroup>
 
 </Project>

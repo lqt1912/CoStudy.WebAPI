@@ -127,6 +127,11 @@ namespace CoStudy.API.Infrastructure.Shared.ViewModels
         public int CommentCount { get; set; }
 
 
+        [JsonProperty("field")]
+        [JsonPropertyName("field")]
+        public IEnumerable<object> Field { get; set; }
+
+
         /// <summary>
         /// Gets or sets the status.
         /// </summary>

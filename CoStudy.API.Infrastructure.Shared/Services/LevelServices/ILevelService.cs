@@ -2,6 +2,7 @@
 using CoStudy.API.Infrastructure.Shared.Models.Request.BaseRequest;
 using CoStudy.API.Infrastructure.Shared.Models.Request.LevelRequest;
 using CoStudy.API.Infrastructure.Shared.Models.Response;
+using CoStudy.API.Infrastructure.Shared.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -15,55 +16,47 @@ namespace CoStudy.API.Infrastructure.Shared.Services
     public interface ILevelService
     {
         /// <summary>
+        /// Adds the or update user fields.
+        /// </summary>
+        /// <param name="request">The request.</param>
+        /// <returns></returns>
+        Task<UserViewModel> AddOrUpdateUserFields(UserAddFieldRequest request);
+        /// <summary>
         /// Adds the level.
         /// </summary>
         /// <param name="level">The level.</param>
         /// <returns></returns>
-        Task<IEnumerable<Level>> AddLevel(IEnumerable<Level> level);
-        /// <summary>
-        /// Gets all level.
-        /// </summary>
-        /// <param name="request">The request.</param>
-        /// <returns></returns>
-        IEnumerable<Level> GetAllLevel(BaseGetAllRequest request);
-        /// <summary>
-        /// Bets the gy identifier.
-        /// </summary>
-        /// <param name="id">The identifier.</param>
-        /// <returns></returns>
-        Task<Level> BetGyId(string id);
-
+        Task<IEnumerable<LevelViewModel>> AddLevel(IEnumerable<Level> level);
         /// <summary>
         /// Adds the object level.
         /// </summary>
         /// <param name="objectLevels">The object levels.</param>
         /// <returns></returns>
-        Task<IEnumerable<ObjectLevel>> AddObjectLevel(IEnumerable<ObjectLevel> objectLevels);
-
+        Task<IEnumerable<ObjectLevelViewModel>> AddObjectLevel(IEnumerable<ObjectLevel> objectLevels);
         /// <summary>
-        /// Gets the level by object.
+        /// Gets the by identifier.
         /// </summary>
-        /// <param name="objectId">The object identifier.</param>
+        /// <param name="id">The identifier.</param>
         /// <returns></returns>
-        Task<IEnumerable<ObjectLevel>> GetLevelByObject(string objectId);
-
-
-
+        Task<LevelViewModel> GetById(string id);
         /// <summary>
-        /// Adds the fields for user.
+        /// Gets all level.
         /// </summary>
         /// <param name="request">The request.</param>
         /// <returns></returns>
-        Task<User> AddFieldsForUser(UserAddFieldRequest request);
-
+        IEnumerable<LevelViewModel> GetAllLevel(BaseGetAllRequest request);
         /// <summary>
         /// Gets the fields of user.
         /// </summary>
         /// <param name="userId">The user identifier.</param>
         /// <returns></returns>
-       
-        Task<IEnumerable<UserGetFieldResponse>> GetFieldsOfUser(string userId);
-     
+        Task<IEnumerable<ObjectLevelViewModel>> GetFieldsOfUser(string userId);
+        /// <summary>
+        /// Gets the level by object.
+        /// </summary>
+        /// <param name="objectId">The object identifier.</param>
+        /// <returns></returns>
+        Task<IEnumerable<ObjectLevelViewModel>> GetLevelByObject(string objectId);
         /// <summary>
         /// Determines whether the specified user object levels is match.
         /// </summary>
@@ -72,15 +65,14 @@ namespace CoStudy.API.Infrastructure.Shared.Services
         /// <returns>
         ///   <c>true</c> if the specified user object levels is match; otherwise, <c>false</c>.
         /// </returns>
-        bool IsMatch(IEnumerable<ObjectLevel> userObjectLevels, IEnumerable<ObjectLevel> postObjectLevels);
-      
+        bool IsMatch(IEnumerable<ObjectLevelViewModel> userObjectLevels, IEnumerable<ObjectLevelViewModel> postObjectLevels);
         /// <summary>
         /// Gets all post match user.
         /// </summary>
         /// <param name="postId">The post identifier.</param>
         /// <returns></returns>
         Task<IEnumerable<User>> GetAllPostMatchUser(string postId);
-      
+
         /// <summary>
         /// Adds the point.
         /// </summary>
@@ -88,5 +80,21 @@ namespace CoStudy.API.Infrastructure.Shared.Services
         /// <param name="point">The point.</param>
         /// <returns></returns>
         Task<ObjectLevel> AddPoint(string objectLevelId, int point);
+
+        /// <summary>
+        /// Resets the field.
+        /// </summary>
+        /// <param name="request">The request.</param>
+        /// <returns></returns>
+        Task<UserViewModel> ResetField(UserResetFieldRequest request);
+
+        /// <summary>
+        /// Updates the post field.
+        /// </summary>
+        /// <param name="request">The request.</param>
+        /// <returns></returns>
+        Task<PostViewModel> UpdatePostField(UpdatePostLevelRequest request);
+
+
     }
 }

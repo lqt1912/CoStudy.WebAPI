@@ -41,12 +41,13 @@ namespace CoStudy.API.Infrastructure.Shared.AutoMapper
 
             var user = userRepository.GetById(ObjectId.Parse(source.MemberId));
             var joinBy = userRepository.GetById(ObjectId.Parse(source.JoinBy));
-            if (user!=null)
-            {
+
+            if (user == null || joinBy == null)
+                throw new Exception("Không tìm thấy người dùng hợp lệ. ");
+
                 destination.MemberName = $"{user.FirstName} {user.LastName}";
                 destination.MemberAvatar = user.AvatarHash;
                 destination.JoinByName = $"{joinBy.FirstName} {joinBy.LastName}";
-            }
 
         }
     }

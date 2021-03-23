@@ -1,15 +1,14 @@
 ﻿using CoStudy.API.Infrastructure.Shared.Validator;
-using System;
+using Newtonsoft.Json;
 using System.Collections.Generic;
-using System.Text;
 using System.Text.Json.Serialization;
 
 namespace CoStudy.API.Infrastructure.Shared.Models.Request.LevelRequest
 {
     /// <summary>
-    /// Class UserAddFieldRequest
+    /// Class UserResetFieldRequest
     /// </summary>
-    public class UserAddFieldRequest
+    public class UserResetFieldRequest
     {
         /// <summary>
         /// Gets or sets the user identifier.
@@ -17,9 +16,11 @@ namespace CoStudy.API.Infrastructure.Shared.Models.Request.LevelRequest
         /// <value>
         /// The user identifier.
         /// </value>
-        [JsonPropertyName("user_id")]
         [StringRequired]
+        [JsonProperty("user_id")]
+        [JsonPropertyName("user_id")]
         public string UserId { get; set; }
+
 
         /// <summary>
         /// Gets or sets the field identifier.
@@ -27,7 +28,7 @@ namespace CoStudy.API.Infrastructure.Shared.Models.Request.LevelRequest
         /// <value>
         /// The field identifier.
         /// </value>
-        [ListRequired]
+        [JsonProperty("field_id")]
         [JsonPropertyName("field_id")]
         public IEnumerable<string> FieldId { get; set; }
     }

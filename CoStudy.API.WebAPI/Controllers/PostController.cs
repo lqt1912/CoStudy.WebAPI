@@ -1,11 +1,14 @@
 ﻿using CoStudy.API.Domain.Entities.Application;
 using CoStudy.API.Infrastructure.Shared.Models.Request.BaseRequest;
+using CoStudy.API.Infrastructure.Shared.Models.Request.LevelRequest;
 using CoStudy.API.Infrastructure.Shared.Models.Request.PostRequest;
 using CoStudy.API.Infrastructure.Shared.Models.Response.PostResponse;
+using CoStudy.API.Infrastructure.Shared.Services;
 using CoStudy.API.Infrastructure.Shared.Services.PostServices;
 using CoStudy.API.Infrastructure.Shared.ViewModels;
 using CoStudy.API.WebAPI.Middlewares;
 using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -26,13 +29,17 @@ namespace CoStudy.API.WebAPI.Controllers
         /// </summary>
         IPostService postService;
 
+        /// <summary>The level service</summary>
+        ILevelService levelService;
         /// <summary>
         /// Initializes a new instance of the <see cref="PostController" /> class.
         /// </summary>
         /// <param name="postService">The post service.</param>
-        public PostController(IPostService postService)
+        /// <param name="levelService">The level service.</param>
+        public PostController(IPostService postService, ILevelService levelService)
         {
             this.postService = postService;
+            this.levelService = levelService;
         }
 
         /// <summary>
@@ -43,7 +50,37 @@ namespace CoStudy.API.WebAPI.Controllers
         [HttpPost]
         public async Task<IActionResult> AddPost(AddPostRequest request)
         {
-            PostViewModel data = await postService.AddPost(request);
+            var fakeString = "Lorem Ipsum is simply dummy text of the printing and typesetting" +
+                " industry. Lorem Ipsum has been the industry's standard dummy text ever since" +
+                " the 1500s, when an unknown printer took a galley of type and scrambled it to " +
+                "make a type specimen book. It has survived not only five centuries, but also the " +
+                "leap into electronic typesetting, remaining essentially unchanged. It was " +
+                "popularised in the 1960s with the release of Letraset sheets containing " +
+                "Lorem Ipsum passages, and more recently with desktop publishing software " +
+                "like Aldus PageMaker including versions of Lorem Ipsum.";
+
+            var strLength = fakeString.Length - 1;
+            Random rand = new Random();
+            Tuple<int, int> title = new Tuple<int, int>(rand.Next(0, 10), rand.Next(20, 50));
+            Tuple<int, int> content = new Tuple<int, int>(rand.Next(0, strLength / 2 - 1), rand.Next(strLength / 2 + 1, strLength-2));
+
+
+
+            var fakeRequest = new AddPostRequest()
+            {
+                Title = fakeString.Substring(title.Item1, title.Item2),
+                StringContents = new List<PostContent>()
+                 {
+                     new PostContent()
+                     {
+                         Content  = fakeString.Substring(content.Item1, content.Item2),
+                          ContentType =0
+
+                         }
+                 },
+            };
+
+            PostViewModel data = await postService.AddPost(fakeRequest);
             return Ok(new ApiOkResponse(data));
         }
 
@@ -143,8 +180,7 @@ namespace CoStudy.API.WebAPI.Controllers
         /// <summary>
         /// Gets the saved post.
         /// </summary>
-        /// <param name="skip">The skip.</param>
-        /// <param name="count">The count.</param>
+        /// <param name="request">The request.</param>
         /// <returns></returns>
         [HttpGet]
         [Route("save")]
@@ -166,5 +202,20 @@ namespace CoStudy.API.WebAPI.Controllers
             var data = await postService.Filter(request);
             return Ok(new ApiOkResponse(data));
         }
+
+
+        /// <summary>
+        /// Updates the post field.
+        /// </summary>
+        /// <param name="request">The request.</param>
+        /// <returns></returns>
+        [HttpPost]
+        [Route("update-field")]
+        public async Task<IActionResult> UpdatePostField(UpdatePostLevelRequest request)
+        {
+            var data = await levelService.UpdatePostField(request);
+            return Ok(new ApiOkResponse(data));
+        }
+
     }
 }

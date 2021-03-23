@@ -45,11 +45,16 @@ namespace CoStudy.API.Infrastructure.Shared.AutoMapper
         {
             var level = levelRepository.GetById(ObjectId.Parse(source.LevelId));
 
+            if (level == null)
+                throw new Exception("Id level không hợp lệ. ");
+
+            var field = fieldRepository.GetById(ObjectId.Parse(source.FieldId));
+            if (field == null)
+                throw new Exception("Id field không hợp lệ. ");
+
             destination.LevelName = level.Name;
             destination.LevelDescription = level.Description;
-            destination.FieldName = fieldRepository.GetById(ObjectId.Parse(source.FieldId)).Value;
-
-             
+            destination.FieldName = field.Value;
 
         }
     }
