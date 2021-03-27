@@ -12,13 +12,32 @@ using System.Threading.Tasks;
 
 namespace CoStudy.API.WebAPI.Controllers
 {
+    /// <summary>
+    /// Class AccountController
+    /// </summary>
+    /// <seealso cref="CoStudy.API.WebAPI.Controllers.BaseController" />
     [Route("api/[controller]")]
     [ApiController]
     public class AccountsController : BaseController
     {
+        /// <summary>
+        /// The account service
+        /// </summary>
         private readonly IAccountService _accountService;
+        /// <summary>
+        /// The mapper
+        /// </summary>
         private readonly IMapper _mapper;
+        /// <summary>
+        /// The HTTP context accessor
+        /// </summary>
         private readonly IHttpContextAccessor httpContextAccessor;
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AccountsController"/> class.
+        /// </summary>
+        /// <param name="accountService">The account service.</param>
+        /// <param name="mapper">The mapper.</param>
+        /// <param name="httpContextAccessor">The HTTP context accessor.</param>
         public AccountsController(
             IAccountService accountService,
             IMapper mapper, IHttpContextAccessor httpContextAccessor)
@@ -28,6 +47,11 @@ namespace CoStudy.API.WebAPI.Controllers
             this.httpContextAccessor = httpContextAccessor;
         }
 
+        /// <summary>
+        /// Authenticates the specified model.
+        /// </summary>
+        /// <param name="model">The model.</param>
+        /// <returns></returns>
         [HttpPost("login")]
         public ActionResult<AuthenticateResponse> Authenticate(AuthenticateRequest model)
         {
@@ -36,6 +60,10 @@ namespace CoStudy.API.WebAPI.Controllers
             return Ok(new ApiOkResponse(response));
         }
 
+        /// <summary>
+        /// Refreshes the token.
+        /// </summary>
+        /// <returns></returns>
         [HttpPost("refresh-token")]
         public ActionResult<AuthenticateResponse> RefreshToken()
         {
@@ -45,6 +73,11 @@ namespace CoStudy.API.WebAPI.Controllers
             return Ok(new ApiOkResponse(response));
         }
 
+        /// <summary>
+        /// Revokes the token.
+        /// </summary>
+        /// <param name="model">The model.</param>
+        /// <returns></returns>
         [Authorize]
         [HttpPost("revoke-token")]
         public IActionResult RevokeToken(RevokeTokenRequest model)
@@ -70,6 +103,11 @@ namespace CoStudy.API.WebAPI.Controllers
         //    return Ok(new ApiOkResponse( "Registration successful, please check your email for verification instructions" ));
         //}
 
+        /// <summary>
+        /// Verifies the email.
+        /// </summary>
+        /// <param name="token">The token.</param>
+        /// <returns></returns>
         [HttpPost("verify-email")]
         public IActionResult VerifyEmail(string token)
         {
@@ -77,6 +115,11 @@ namespace CoStudy.API.WebAPI.Controllers
             return Ok(new ApiOkResponse("Verification successful, you can now login"));
         }
 
+        /// <summary>
+        /// Forgots the password.
+        /// </summary>
+        /// <param name="model">The model.</param>
+        /// <returns></returns>
         [HttpPost("forgot-password")]
         public async Task<IActionResult> ForgotPassword(ForgotPasswordRequest model)
         {
@@ -85,6 +128,11 @@ namespace CoStudy.API.WebAPI.Controllers
             return Ok(new ApiOkResponse("Please check your email for password reset instructions"));
         }
 
+        /// <summary>
+        /// Validates the reset token.
+        /// </summary>
+        /// <param name="model">The model.</param>
+        /// <returns></returns>
         [HttpPost("validate-reset-token")]
         public IActionResult ValidateResetToken(ValidateResetTokenRequest model)
         {
@@ -92,6 +140,11 @@ namespace CoStudy.API.WebAPI.Controllers
             return Ok(new ApiOkResponse("Token is valid"));
         }
 
+        /// <summary>
+        /// Resets the password.
+        /// </summary>
+        /// <param name="model">The model.</param>
+        /// <returns></returns>
         [HttpPost("reset-password")]
         public IActionResult ResetPassword(ResetPasswordRequest model)
         {
@@ -99,6 +152,10 @@ namespace CoStudy.API.WebAPI.Controllers
             return Ok(new ApiOkResponse("Password reset successful, you can now login"));
         }
 
+        /// <summary>
+        /// Gets all.
+        /// </summary>
+        /// <returns></returns>
         [Authorize(Role.Admin)]
         [HttpGet]
         public ActionResult<IEnumerable<AccountResponse>> GetAll()
@@ -107,6 +164,11 @@ namespace CoStudy.API.WebAPI.Controllers
             return Ok(new ApiOkResponse(accounts));
         }
 
+        /// <summary>
+        /// Gets the by identifier.
+        /// </summary>
+        /// <param name="id">The identifier.</param>
+        /// <returns></returns>
         [Authorize]
         [HttpGet("{id}")]
         public ActionResult<AccountResponse> GetById(string id)
@@ -119,6 +181,11 @@ namespace CoStudy.API.WebAPI.Controllers
             return Ok(new ApiOkResponse(account));
         }
 
+        /// <summary>
+        /// Creates the specified model.
+        /// </summary>
+        /// <param name="model">The model.</param>
+        /// <returns></returns>
         [Authorize(Role.Admin)]
         [HttpPost]
         public ActionResult<AccountResponse> Create(CreateRequest model)
@@ -127,6 +194,12 @@ namespace CoStudy.API.WebAPI.Controllers
             return Ok(new ApiOkResponse(account));
         }
 
+        /// <summary>
+        /// Updates the specified identifier.
+        /// </summary>
+        /// <param name="id">The identifier.</param>
+        /// <param name="model">The model.</param>
+        /// <returns></returns>
         [Authorize]
         [HttpPut("{id}")]
         public ActionResult<AccountResponse> Update(string id, UpdateRequest model)
@@ -144,6 +217,11 @@ namespace CoStudy.API.WebAPI.Controllers
         }
 
         // [Authorize]
+        /// <summary>
+        /// Deletes the specified identifier.
+        /// </summary>
+        /// <param name="id">The identifier.</param>
+        /// <returns></returns>
         [HttpDelete("{id}")]
         public IActionResult Delete(string id)
         {
@@ -158,6 +236,10 @@ namespace CoStudy.API.WebAPI.Controllers
 
         // helper methods
 
+        /// <summary>
+        /// Sets the token cookie.
+        /// </summary>
+        /// <param name="token">The token.</param>
         private void setTokenCookie(string token)
         {
             CookieOptions cookieOptions = new CookieOptions
@@ -168,6 +250,10 @@ namespace CoStudy.API.WebAPI.Controllers
             Response.Cookies.Append("refreshToken", token, cookieOptions);
         }
 
+        /// <summary>
+        /// Ips the address.
+        /// </summary>
+        /// <returns></returns>
         private string ipAddress()
         {
             if (Request.Headers.ContainsKey("X-Forwarded-For"))
@@ -176,6 +262,10 @@ namespace CoStudy.API.WebAPI.Controllers
                 return HttpContext.Connection.RemoteIpAddress.MapToIPv4().ToString();
         }
 
+        /// <summary>
+        /// Gets the host URL.
+        /// </summary>
+        /// <returns></returns>
         private string GetHostUrl()
         {
             string scheme = httpContextAccessor.HttpContext.Request.Scheme;

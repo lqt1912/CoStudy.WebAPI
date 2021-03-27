@@ -6,13 +6,13 @@ using System.Text.Json.Serialization;
 namespace CoStudy.API.Domain.Entities.Application
 {
     /// <summary>
-    /// Client group 
+    /// Client group
     /// </summary>
     /// <seealso cref="CoStudy.API.Domain.Entities.BaseEntity.Entity" />
     public class ClientGroup : Entity
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="ClientGroup"/> class.
+        /// Initializes a new instance of the <see cref="ClientGroup" /> class.
         /// </summary>
         public ClientGroup() : base()
         {
@@ -29,6 +29,16 @@ namespace CoStudy.API.Domain.Entities.Application
         [BsonElement("name")]
         [JsonPropertyName("name")]
         public string Name { get; set; }
+
+        /// <summary>
+        /// Gets or sets the type of the group.
+        /// </summary>
+        /// <value>
+        /// The type of the group.
+        /// </value>
+        [BsonElement("group_type")]
+        [JsonPropertyName("group_type")]
+        public string GroupType { get; set; }
 
 
         /// <summary>

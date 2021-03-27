@@ -1,4 +1,5 @@
-﻿using CoStudy.API.Infrastructure.Identity.Models.Account.Request;
+﻿using CoStudy.API.Domain.Entities.Identity.MongoAuthen;
+using CoStudy.API.Infrastructure.Identity.Models.Account.Request;
 using CoStudy.API.Infrastructure.Identity.Models.Account.Response;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -94,5 +95,22 @@ namespace CoStudy.API.Infrastructure.Identity.Services.AccountService
         /// </summary>
         /// <returns></returns>
         Task<string> GetCurrentRefreshToken();
+        /// <summary>
+        /// Generates the JWT token.
+        /// </summary>
+        /// <param name="account">The account.</param>
+        /// <returns></returns>
+        string generateJwtToken(Account account);
+        /// <summary>
+        /// Generates the refresh token.
+        /// </summary>
+        /// <param name="ipAddress">The ip address.</param>
+        /// <returns></returns>
+        RefreshToken generateRefreshToken(string ipAddress);
+        /// <summary>
+        /// Removes the old refresh tokens.
+        /// </summary>
+        /// <param name="account">The account.</param>
+        void removeOldRefreshTokens(Account account);
     }
 }

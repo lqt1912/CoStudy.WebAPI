@@ -157,13 +157,14 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
 
             await postRepository.AddAsync(post);
 
-            ClientGroup clientGroup = new ClientGroup()
-            {
-                Name = post.Id.ToString(),
-
-            };
-            clientGroup.UserIds.Add(post.AuthorId);
-            await clientGroupRepository.AddAsync(clientGroup);
+            await fcmRepository.AddToGroup(
+                     new AddUserToGroupRequest()
+                     {
+                         GroupName = post.OId,
+                         Type = Feature.GetTypeName(post),
+                         UserIds = new List<string> { currentUser.OId }
+                     }
+                     );
 
             PostViewModel response = mapper.Map<PostViewModel>(post);
             return response;
@@ -285,45 +286,16 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
 
                 }
 
-                FilterDefinition<ClientGroup> filter = Builders<ClientGroup>.Filter.Eq("name", postId);
 
-                ClientGroup clientGroup = await clientGroupRepository.FindAsync(filter);
-
-                if (!clientGroup.UserIds.Contains(currentuser.OId))
+                var notification = new Noftication()
                 {
-                    clientGroup.UserIds.Add(currentuser.OId);
-                    await clientGroupRepository.UpdateAsync(clientGroup, clientGroup.Id);
-                }
+                    AuthorId = currentuser.OId,
+                    OwnerId = currentPost.AuthorId,
+                    ContentType = ContentType.UPVOTE_POST_NOTIFY,
+                    ObjectId = currentPost.OId
+                };
 
-                if (currentPost.AuthorId != currentuser.OId) //Cùng tác giả
-                {
-                    Noftication notify = new Noftication()
-                    {
-                        AuthorId = currentuser.OId,
-                        OwnerId = currentPost.AuthorId,
-                        Content = $"{currentuser.LastName} đã upvote bài viết của {currentuser.FirstName} {currentuser.LastName} ",
-                        CreatedDate = DateTime.Now,
-                        ModifiedDate = DateTime.Now
-                    };
-
-                    await fcmRepository.PushNotify(currentPost.OId, notify);
-                    await nofticationRepository.AddAsync(notify);
-                }
-                else //Khác tác giả
-                {
-                    Noftication notify = new Noftication()
-                    {
-                        AuthorId = currentuser.OId,
-                        OwnerId = currentPost.AuthorId,
-                        Content = $"{currentuser.LastName} đã upvote bài viết của bạn",
-                        CreatedDate = DateTime.Now,
-                        ModifiedDate = DateTime.Now
-                    };
-
-                    await fcmRepository.PushNotify(currentPost.OId, notify);
-                    await nofticationRepository.AddAsync(notify);
-
-                }
+               await  fcmRepository.PushNotify(currentPost.OId, notification);
 
                 return "Upvote thành công. ";
             }
@@ -382,44 +354,18 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
 
                 }
 
-                FilterDefinition<ClientGroup> filter = Builders<ClientGroup>.Filter.Eq("name", postId);
 
-                ClientGroup clientGroup = await clientGroupRepository.FindAsync(filter);
+               
 
-                if (!clientGroup.UserIds.Contains(currentuser.OId))
+                var notification = new Noftication()
                 {
-                    clientGroup.UserIds.Add(currentuser.OId);
-                    await clientGroupRepository.UpdateAsync(clientGroup, clientGroup.Id);
-                }
+                    AuthorId = currentuser.OId,
+                    OwnerId = currentPost.AuthorId,
+                    ContentType = ContentType.DOWNVOTE_POST_NOTIFY,
+                    ObjectId = currentPost.OId
+                };
 
-                if (currentPost.AuthorId != currentuser.OId) //Cùng tác giả
-                {
-                    Noftication notify = new Noftication()
-                    {
-                        AuthorId = currentuser.OId,
-                        OwnerId = currentPost.AuthorId,
-                        Content = $"{currentuser.LastName} đã downvote bài viết của {currentuser.FirstName} {currentuser.LastName} ",
-                        CreatedDate = DateTime.Now,
-                        ModifiedDate = DateTime.Now
-                    };
-
-                    await fcmRepository.PushNotify(currentPost.OId, notify);
-                    await nofticationRepository.AddAsync(notify);
-                }
-                else //Khác tác giả
-                {
-                    Noftication notify = new Noftication()
-                    {
-                        AuthorId = currentuser.OId,
-                        OwnerId = currentPost.AuthorId,
-                        Content = $"{currentuser.LastName} đã downvote bài viết của bạn",
-                        CreatedDate = DateTime.Now,
-                        ModifiedDate = DateTime.Now
-                    };
-
-                    await fcmRepository.PushNotify(currentPost.OId, notify);
-                    await nofticationRepository.AddAsync(notify);
-                }
+                await fcmRepository.PushNotify(currentPost.OId, notification);
 
                 return "Downvote thành công. ";
             }
@@ -620,7 +566,6 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
 
 
 
-
         /// <summary>
         /// Determines whether the specified post is match.
         /// </summary>
@@ -638,7 +583,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
 
             foreach (var item in objlvls)
             {
-                if (item.FieldId ==objectLevel.FieldId)
+                if (item.FieldId == objectLevel.FieldId)
                 {
                     return true;
                 }

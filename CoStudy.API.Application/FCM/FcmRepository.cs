@@ -1,4 +1,6 @@
-﻿using CoStudy.API.Application.Repositories;
+﻿using AutoMapper;
+using CoStudy.API.Application.Features;
+using CoStudy.API.Application.Repositories;
 using CoStudy.API.Domain.Entities.Application;
 using FirebaseAdmin.Messaging;
 using Microsoft.AspNetCore.Http;
@@ -7,6 +9,7 @@ using MongoDB.Driver;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace CoStudy.API.Application.FCM
@@ -21,35 +24,48 @@ namespace CoStudy.API.Application.FCM
         /// The FCM information repository
         /// </summary>
         IFcmInfoRepository fcmInfoRepository;
+
         /// <summary>
         /// The client group repository
         /// </summary>
         IClientGroupRepository clientGroupRepository;
+
         /// <summary>
         /// The user repository
         /// </summary>
         IUserRepository userRepository;
+
         /// <summary>
         /// The HTTP context accessor
         /// </summary>
         IHttpContextAccessor httpContextAccessor;
 
+        IMapper mapper; 
+
         /// <summary>
-        /// Initializes a new instance of the <see cref="FcmRepository"/> class.
+        /// The noftication repository
+        /// </summary>
+        INofticationRepository nofticationRepository;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FcmRepository" /> class.
         /// </summary>
         /// <param name="fcmInfoRepository">The FCM information repository.</param>
         /// <param name="clientGroupRepository">The client group repository.</param>
         /// <param name="userRepository">The user repository.</param>
         /// <param name="httpContextAccessor">The HTTP context accessor.</param>
-        public FcmRepository(IFcmInfoRepository fcmInfoRepository, 
+        public FcmRepository(IFcmInfoRepository fcmInfoRepository,
             IClientGroupRepository clientGroupRepository,
             IUserRepository userRepository,
-            IHttpContextAccessor httpContextAccessor)
+            IHttpContextAccessor httpContextAccessor,
+            INofticationRepository nofticationRepository, IMapper mapper)
         {
             this.fcmInfoRepository = fcmInfoRepository;
             this.clientGroupRepository = clientGroupRepository;
             this.userRepository = userRepository;
             this.httpContextAccessor = httpContextAccessor;
+            this.nofticationRepository = nofticationRepository;
+            this.mapper = mapper;
         }
 
         /// <summary>
@@ -157,27 +173,77 @@ namespace CoStudy.API.Application.FCM
             {
                 FilterDefinition<ClientGroup> finder = Builders<ClientGroup>.Filter.Eq("name", clientGroupName);
                 ClientGroup clientGroup = await clientGroupRepository.FindAsync(finder);
-                foreach (string item in clientGroup.UserIds)
+                foreach (string receiver in clientGroup.UserIds)
                 {
-                    FilterDefinition<FcmInfo> user = Builders<FcmInfo>.Filter.Eq("user_id", item);
-                    string token = (await fcmInfoRepository.FindAsync(user)).DeviceToken;
-                    User sender = await userRepository.GetByIdAsync(ObjectId.Parse(noftication.AuthorId));
-                    FirebaseAdmin.Messaging.Message mes = new FirebaseAdmin.Messaging.Message()
+                    var finalNotification = new Noftication()
                     {
-                        Token = token,
+                        CreatedDate = DateTime.Now,
+                        AuthorId = noftication.AuthorId,
+                        ContentType = noftication.ContentType,
+                        IsRead = false,
+                        ModifiedDate = DateTime.Now,
+                        OwnerId = noftication.OwnerId,
+                        Status = ItemStatus.Active,
+                        ReceiverId = receiver,
+                        ObjectId = noftication.ObjectId
+                    };
 
-                        Data = new Dictionary<string, string>()
+                    //Người tạo ra thông báo. 
+                    var creator = noftication.AuthorId;
+                    var userCreator = await userRepository.GetByIdAsync(ObjectId.Parse(creator));
+
+                    //Chủ sở hữu post
+                    var owner = noftication.OwnerId;
+                    var userOwner = await userRepository.GetByIdAsync(ObjectId.Parse(owner));
+
+
+                    if (owner == creator)
+                    {
+                        if (receiver == owner)
+                        {
+                            finalNotification.Content = Feature.BuildNotifyContent(noftication.ContentType, "Bạn", "chính mình");
+                        }
+                        else if (receiver != owner)
+                        {
+                            finalNotification.Content = Feature.BuildNotifyContent(noftication.ContentType, userCreator.LastName, "họ");
+                        }
+                    }
+                    else if (owner != creator)
+                    {
+                        if (receiver != owner)
+                        {
+                            finalNotification.Content = Feature.BuildNotifyContent(noftication.ContentType, userCreator.LastName, userOwner.LastName);
+                        }
+                        else if (receiver != creator)
+                        {
+                            finalNotification.Content = Feature.BuildNotifyContent(noftication.ContentType, userCreator.LastName, "bạn");
+                        }
+                    }
+
+                    await nofticationRepository.AddAsync(finalNotification);
+                    if (!(owner == creator && receiver == owner))
+                    {
+
+                        FilterDefinition<FcmInfo> user = Builders<FcmInfo>.Filter.Eq("user_id", receiver);
+                        string token = (await fcmInfoRepository.FindAsync(user)).DeviceToken;
+                        User sender = await userRepository.GetByIdAsync(ObjectId.Parse(noftication.AuthorId));
+                        FirebaseAdmin.Messaging.Message mes = new FirebaseAdmin.Messaging.Message()
+                        {
+                            Token = token,
+
+                            Data = new Dictionary<string, string>()
                         {
                             { "notification",  JsonConvert.SerializeObject(noftication) }
                         },
-                        Notification = new Notification()
-                        {
-                            Title = sender.LastName,
-                            Body = noftication.Content,
-                            ImageUrl = sender.AvatarHash
-                        }
-                    };
-                    string response = await FirebaseMessaging.DefaultInstance.SendAsync(mes).ConfigureAwait(true);
+                            Notification = new Notification()
+                            {
+                                Title = sender.LastName,
+                                Body = noftication.Content,
+                                ImageUrl = sender.AvatarHash
+                            }
+                        };
+                        string response = await FirebaseMessaging.DefaultInstance.SendAsync(mes).ConfigureAwait(true);
+                    }
                 }
             }
             catch (Exception)
@@ -209,6 +275,69 @@ namespace CoStudy.API.Application.FCM
             };
             string response = await FirebaseMessaging.DefaultInstance.SendAsync(message).ConfigureAwait(true);
             return response;
+        }
+
+        /// <summary>
+        /// Adds to group.
+        /// </summary>
+        /// <param name="request">The request.</param>
+        public async Task AddToGroup(AddUserToGroupRequest request)
+        {
+            if (request.UserIds == null)
+                request.UserIds = new List<string>();
+
+            var builder = Builders<ClientGroup>.Filter.Eq("name", request.GroupName);
+            var clientGroup = await clientGroupRepository.FindAsync(builder);
+
+            if (clientGroup != null)
+            {
+                foreach (var userId in request.UserIds)
+                {
+                    var _userId = clientGroup.UserIds.FirstOrDefault(x => x == userId);
+
+                    if (string.IsNullOrEmpty(_userId))
+                        clientGroup.UserIds.Add(userId);
+
+                }
+                await clientGroupRepository.UpdateAsync(clientGroup, clientGroup.Id);
+            }
+            else
+            {
+                var group = new ClientGroup()
+                {
+                    Name = request.GroupName,
+                    GroupType = request.Type
+                };
+                group.UserIds.AddRange(request.UserIds.Distinct());
+
+                await clientGroupRepository.AddAsync(group);
+            };
+        }
+
+        /// <summary>
+        /// Removes from group.
+        /// </summary>
+        /// <param name="request">The request.</param>
+        public async Task RemoveFromGroup(RemoveFromGroupRequest request)
+        {
+            if (request.UserIds == null)
+                request.UserIds = new List<string>();
+
+            var builder = Builders<ClientGroup>.Filter.Eq("name", request.GroupName);
+            var clientGroup = await clientGroupRepository.FindAsync(builder);
+
+            if (clientGroup != null)
+            {
+                foreach (var userId in request.UserIds)
+                {
+                    clientGroup.UserIds.Remove(userId);
+                }
+                await clientGroupRepository.UpdateAsync(clientGroup, clientGroup.Id);
+            }
+            else
+            {
+                return;
+            }
         }
     }
 }

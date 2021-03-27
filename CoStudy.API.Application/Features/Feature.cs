@@ -7,7 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-
+using static Common.Constants.NotificationContentTypeConstant;
 namespace CoStudy.API.Application.Features
 {
     /// <summary>
@@ -143,5 +143,59 @@ namespace CoStudy.API.Application.Features
 
         }
 
+
+        /// <summary>
+        /// Gets the name of the type.
+        /// </summary>
+        /// <param name="obj">The object.</param>
+        /// <returns></returns>
+        public static string GetTypeName(object obj)
+        {
+            Type type = obj.GetType();
+            return type.FullName;
+        }
+
+        /// <summary>
+        /// Builds the content of the notify.
+        /// </summary>
+        /// <param name="actionName">Name of the action.</param>
+        /// <param name="creatorName">Name of the creator.</param>
+        /// <param name="authorName">Name of the author.</param>
+        /// <returns></returns>
+        public static string BuildNotifyContent(ContentType actionName, string creatorName, string authorName)
+        {
+
+            switch (actionName)
+            {
+                case ContentType.ADD_POST_NOTIFY:
+                    return $"{creatorName}{ADD_POST_NOTIFY}{authorName}";
+
+                case ContentType.DOWNVOTE_COMMENT_NOTIFY:
+                    return $"{creatorName}{DOWNVOTE_COMMENT_NOTIFY}{authorName}";
+
+                case ContentType.DOWNVOTE_POST_NOTIFY:
+                    return $"{creatorName}{DOWNVOTE_POST_NOTIFY}{authorName}";
+
+                case ContentType.DOWNVOTE_REPLY_NOTIFY:
+                    return $"{creatorName}{DOWNVOTE_REPLY_NOTIFY}{authorName}";
+
+                case ContentType.UPVOTE_COMMENT_NOTIFY:
+                    return $"{creatorName}{UPVOTE_COMMENT_NOTIFY}{authorName}";
+
+                case ContentType.UPVOTE_POST_NOTIFY:
+                    return $"{creatorName}{UPVOTE_POST_NOTIFY}{authorName}";
+
+                case ContentType.UPVOTE_REPLY_NOTIFY:
+                    return $"{creatorName}{UPVOTE_REPLY_NOTIFY}{authorName}";
+
+                case ContentType.COMMENT_NOTIFY:
+                    return $"{creatorName}{COMMENT_NOTIFY}{authorName}";
+
+                case ContentType.REPLY_COMMENT_NOTIFY:
+                    return $"{creatorName}{REPLY_COMMENT_NOTIFY}{authorName}";
+                default:
+                    return "Có thông báo mới. ";
+            }
+        }
     }
 }

@@ -125,54 +125,24 @@ namespace CoStudy.API.Infrastructure.Shared.Services
 
                 try
                 {
-                    #region Notification
-                    FilterDefinition<ClientGroup> filter = Builders<ClientGroup>.Filter.Eq("name", currentPost.OId);
-                    ClientGroup clientGroup = await clientGroupRepository.FindAsync(filter);
-
-                    if (!clientGroup.UserIds.Contains(currentUser.OId))
+                    await fcmRepository.AddToGroup(
+                    new AddUserToGroupRequest()
                     {
-                        clientGroup.UserIds.Add(currentUser.OId);
-                        await clientGroupRepository.UpdateAsync(clientGroup, clientGroup.Id);
+                        GroupName = currentPost.OId,
+                        Type = Feature.GetTypeName(currentPost),
+                        UserIds = new List<string> { currentUser.OId }
                     }
+                    );
 
-                    if (currentPost.AuthorId != currentUser.OId) //Cùng tác giả
+                    var notification = new Noftication()
                     {
-                        Noftication notify = new Noftication()
-                        {
-                            AuthorId = currentUser.OId,
-                            OwnerId = currentPost.AuthorId,
-                            Content = $"{currentUser.LastName} đã bình luận bài viết của {author.LastName} ",
-                            CreatedDate = DateTime.Now,
-                            ModifiedDate = DateTime.Now
-                        };
-
-                        await fcmRepository.PushNotify(currentPost.OId, notify);
-                        await nofticationRepository.AddAsync(notify);
-                    }
-                    else //Khác tác giả
-                    {
-                        Noftication notify = new Noftication()
-                        {
-                            AuthorId = currentUser.OId,
-                            OwnerId = currentPost.AuthorId,
-                            Content = $"{currentUser.LastName} đã bình luận bài viết của bạn",
-                            CreatedDate = DateTime.Now,
-                            ModifiedDate = DateTime.Now
-                        };
-
-                        await fcmRepository.PushNotify(currentPost.OId, notify);
-                        await nofticationRepository.AddAsync(notify);
-                    }
-
-                    //Tạo clientGroup cho comment
-                    ClientGroup commentClientGroup = new ClientGroup()
-                    {
-                        Name = comment.Id.ToString()
+                        AuthorId = currentUser.OId,
+                        OwnerId = currentPost.AuthorId,
+                        ContentType = ContentType.COMMENT_NOTIFY,
+                        ObjectId = currentPost.OId
                     };
-                    commentClientGroup.UserIds.Add(comment.AuthorId);
-                    await clientGroupRepository.AddAsync(commentClientGroup);
 
-                    #endregion
+                    await fcmRepository.PushNotify(currentPost.OId, notification);
                 }
                 catch(Exception)
                 {
@@ -350,6 +320,26 @@ namespace CoStudy.API.Infrastructure.Shared.Services
                 await replyCommentRepository.AddAsync(replyComment);
                 await commentRepository.UpdateAsync(comment, comment.Id);
 
+
+                await fcmRepository.AddToGroup(
+                   new AddUserToGroupRequest()
+                   {
+                       GroupName = comment.OId,
+                       Type = Feature.GetTypeName(comment),
+                       UserIds = new List<string> { currentUser.OId }
+                   }
+                   );
+
+                var notification = new Noftication()
+                {
+                    AuthorId = currentUser.OId,
+                    OwnerId = comment.AuthorId,
+                    ContentType = ContentType.UPVOTE_POST_NOTIFY,
+                    ObjectId = comment.OId
+                };
+
+                await fcmRepository.PushNotify(comment.OId, notification);
+
                 return  mapper.Map<ReplyCommentViewModel> (replyComment);
             }
             else throw new Exception("Bình luận đã bị xóa");
@@ -363,6 +353,8 @@ namespace CoStudy.API.Infrastructure.Shared.Services
         public async Task<string> UpvoteComment(string commentId)
         {
             User currentUser = Feature.CurrentUser(httpContextAccessor, userRepository);
+
+            var comment = await commentRepository.GetByIdAsync(ObjectId.Parse(commentId));
 
             FilterDefinitionBuilder<DownVote> builder = Builders<DownVote>.Filter;
 
@@ -385,6 +377,19 @@ namespace CoStudy.API.Infrastructure.Shared.Services
                 };
 
                 await upVoteRepository.AddAsync(upvote);
+
+
+              
+
+                var notification = new Noftication()
+                {
+                    AuthorId = currentUser.OId,
+                    OwnerId = comment.AuthorId,
+                    ContentType = ContentType.UPVOTE_COMMENT_NOTIFY,
+                    ObjectId = comment.OId
+                };
+
+                await fcmRepository.PushNotify(commentId, notification);
                 return "Upvote thành công";
             }
 
@@ -400,7 +405,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services
         {
 
             User currentUser = Feature.CurrentUser(httpContextAccessor, userRepository);
-
+            var comment = await commentRepository.GetByIdAsync(ObjectId.Parse(commentId));
             FilterDefinitionBuilder<UpVote> builder = Builders<UpVote>.Filter;
             FilterDefinition<UpVote> finder = builder.Eq("object_vote_id", commentId) & builder.Eq("upvote_by", currentUser.OId);
             UpVote existUpvote = await upVoteRepository.FindAsync(finder);
@@ -424,6 +429,18 @@ namespace CoStudy.API.Infrastructure.Shared.Services
                 };
 
                 await downVoteRepository.AddAsync(downVote);
+
+
+                var notification = new Noftication()
+                {
+                    AuthorId = currentUser.OId,
+                    OwnerId = comment.AuthorId,
+                    ContentType = ContentType.DOWNVOTE_COMMENT_NOTIFY,
+                    ObjectId = comment.OId
+                };
+
+
+                await fcmRepository.PushNotify(commentId, notification);
                 return "Downvote thành công";
             }
             else return "Bạn đã downvote rồi";

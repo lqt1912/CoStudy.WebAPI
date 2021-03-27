@@ -1,4 +1,5 @@
 ﻿using CoStudy.API.Domain.Entities.Application;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace CoStudy.API.Application.FCM
@@ -43,5 +44,21 @@ namespace CoStudy.API.Application.FCM
         /// </summary>
         /// <returns></returns>
         Task<string> SendNotification();
+
+
+
+        /// <summary>
+        /// Adds to group.
+        /// </summary>
+        /// <param name="request">The request.</param>
+        /// <returns></returns>
+        Task AddToGroup(AddUserToGroupRequest request);
+        /// <summary>
+        /// Removes from group.
+        /// </summary>
+        /// <param name="request">The request.</param>
+        /// <returns></returns>
+        Task RemoveFromGroup(RemoveFromGroupRequest request);
+
     }
 }

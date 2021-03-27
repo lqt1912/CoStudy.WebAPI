@@ -20,7 +20,7 @@ namespace CoStudy.API.Domain.Entities.Application
         }
 
         /// <summary>
-        /// Gets or sets the author identifier.
+        /// Người tạo ra.  (Người vote, upvote, ...)
         /// </summary>
         /// <value>
         /// The author identifier.
@@ -30,7 +30,7 @@ namespace CoStudy.API.Domain.Entities.Application
         public string AuthorId { get; set; }
 
         /// <summary>
-        /// Gets or sets the owner identifier.
+        /// Chủ sở hữu đối tượng.
         /// </summary>
         /// <value>
         /// The owner identifier.
@@ -38,6 +38,17 @@ namespace CoStudy.API.Domain.Entities.Application
         [BsonElement("owner_id")]
         [JsonPropertyName("owner_id")]
         public string OwnerId { get; set; }
+
+
+        /// <summary>
+        /// Người nhận thông báo
+        /// </summary>
+        /// <value>
+        /// The receiver identifier.
+        /// </value>
+        [BsonElement("receiver_id")]
+        [JsonPropertyName("receiver_id")]
+        public string ReceiverId { get; set; }
 
         /// <summary>
         /// Gets or sets the content.
@@ -48,6 +59,8 @@ namespace CoStudy.API.Domain.Entities.Application
         [BsonElement("content")]
         [JsonPropertyName("content")]
         public string Content { get; set; }
+
+        public ContentType ContentType { get; set; }
 
         /// <summary>
         /// Gets or sets the object identifier.
@@ -98,5 +111,55 @@ namespace CoStudy.API.Domain.Entities.Application
         [BsonElement("is_read")]
         [JsonPropertyName("is_read")]
         public bool? IsRead { get; set; }
+
+    }
+    /// <summary>
+    /// Enum ContentType
+    /// </summary>
+    public enum ContentType
+    {
+        /// <summary>
+        /// The add post notify
+        /// </summary>
+        ADD_POST_NOTIFY,
+        /// <summary>
+        /// The upvote post notify
+        /// </summary>
+        UPVOTE_POST_NOTIFY,
+        /// <summary>
+        /// The downvote post notify
+        /// </summary>
+        DOWNVOTE_POST_NOTIFY,
+        /// <summary>
+        /// The upvote comment notify
+        /// </summary>
+        UPVOTE_COMMENT_NOTIFY,
+        /// <summary>
+        /// The downvote comment notify
+        /// </summary>
+        DOWNVOTE_COMMENT_NOTIFY,
+        /// <summary>
+        /// The upvote reply notify
+        /// </summary>
+        UPVOTE_REPLY_NOTIFY,
+        /// <summary>
+        /// The downvote reply notify
+        /// </summary>
+        DOWNVOTE_REPLY_NOTIFY,
+        /// <summary>
+        /// The follow notify
+        /// </summary>
+        FOLLOW_NOTIFY,
+
+        /// <summary>
+        /// The comment notify
+        /// </summary>
+        COMMENT_NOTIFY,
+
+        /// <summary>
+        /// The reply comment notify
+        /// </summary>
+        REPLY_COMMENT_NOTIFY
+
     }
 }

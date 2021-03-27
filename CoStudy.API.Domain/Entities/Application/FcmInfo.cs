@@ -6,7 +6,7 @@ using System.Text.Json.Serialization;
 namespace CoStudy.API.Domain.Entities.Application
 {
     /// <summary>
-    /// Class FCM info 
+    /// Class FCM info
     /// </summary>
     /// <seealso cref="CoStudy.API.Domain.Entities.BaseEntity.Entity" />
     public class FcmInfo : Entity
@@ -30,6 +30,18 @@ namespace CoStudy.API.Domain.Entities.Application
         [BsonElement("device_token")]
         [JsonPropertyName("device_token")]
         public string DeviceToken { get; set; }
+
+
+        /// <summary>
+        /// Gets or sets the is active.
+        /// </summary>
+        /// <value>
+        /// The is active.
+        /// </value>
+        [BsonElement("is_active")]
+        [JsonPropertyName("is_active")]
+        public bool? IsActive { get; set; }
+
 
         /// <summary>
         /// Gets or sets the created date.

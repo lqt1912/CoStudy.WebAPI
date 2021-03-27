@@ -1,7 +1,9 @@
 ﻿using AutoMapper;
 using CoStudy.API.Infrastructure.Identity.Helpers;
 using CoStudy.API.Infrastructure.Identity.Repositories.AccountRepository;
+using CoStudy.API.Infrastructure.Identity.Repositories.ExternalLoginRepository;
 using CoStudy.API.Infrastructure.Identity.Services.AccountService;
+using CoStudy.API.Infrastructure.Identity.Services.GoogleAuthService;
 using CoStudy.API.Infrastructure.Identity.Services.Implements;
 using CoStudy.API.Infrastructure.Identity.Services.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
@@ -24,6 +26,8 @@ namespace CoStudy.API.Infrastructure.Identity
             services.AddTransient<IAccountRepository, AccountRepository>();
             services.AddTransient<IAccountService, AccountService>();
             services.AddScoped<IEmailService, EmailService>();
+            services.AddTransient<IExternalLoginRepository, ExternalLoginRepository>();
+            services.AddTransient<IGoogleAuthServices, GoogleAuthServices>();
         }
     }
 }

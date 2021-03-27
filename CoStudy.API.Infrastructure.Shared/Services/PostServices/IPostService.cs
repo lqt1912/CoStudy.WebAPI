@@ -28,8 +28,6 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
         Task<PostViewModel> AddPost(AddPostRequest request);
 
 
-
-
         /// <summary>
         /// Gets the post by user identifier.
         /// </summary>

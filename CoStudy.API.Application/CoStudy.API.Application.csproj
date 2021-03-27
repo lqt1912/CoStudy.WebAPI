@@ -26,6 +26,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Common\Common.csproj" />
     <ProjectReference Include="..\CoStudy.API.Domain\CoStudy.API.Domain.csproj" />
     <ProjectReference Include="..\CoStudy.API.Infrastructure.Persistence\CoStudy.API.Infrastructure.Persistence.csproj" />
   </ItemGroup>

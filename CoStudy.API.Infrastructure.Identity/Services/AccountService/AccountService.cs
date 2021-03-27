@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using CoStudy.API.Application.FCM;
 using CoStudy.API.Application.Features;
 using CoStudy.API.Application.Repositories;
 using CoStudy.API.Domain.Entities.Identity.MongoAuthen;
@@ -58,6 +59,8 @@ namespace CoStudy.API.Infrastructure.Identity.Services.AccountService
         /// </summary>
         IHttpContextAccessor httpContextAccessor;
 
+        IFcmRepository fcmRepository;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="AccountService"/> class.
         /// </summary>
@@ -67,7 +70,7 @@ namespace CoStudy.API.Infrastructure.Identity.Services.AccountService
         /// <param name="emailService">The email service.</param>
         /// <param name="userRepository">The user repository.</param>
         /// <param name="httpContextAccessor">The HTTP context accessor.</param>
-        public AccountService(IAccountRepository accountRepository, IMapper mapper, IOptions<AppSettings> appSettings, IEmailService emailService, IUserRepository userRepository, IHttpContextAccessor httpContextAccessor)
+        public AccountService(IAccountRepository accountRepository, IMapper mapper, IOptions<AppSettings> appSettings, IEmailService emailService, IUserRepository userRepository, IHttpContextAccessor httpContextAccessor, IFcmRepository fcmRepository)
         {
             this.accountRepository = accountRepository;
             this.mapper = mapper;
@@ -75,6 +78,7 @@ namespace CoStudy.API.Infrastructure.Identity.Services.AccountService
             this.emailService = emailService;
             this.userRepository = userRepository;
             this.httpContextAccessor = httpContextAccessor;
+            this.fcmRepository = fcmRepository;
         }
 
         /// <summary>
@@ -82,7 +86,7 @@ namespace CoStudy.API.Infrastructure.Identity.Services.AccountService
         /// </summary>
         /// <param name="account">The account.</param>
         /// <returns></returns>
-        private string generateJwtToken(Account account)
+        public string generateJwtToken(Account account)
         {
             JwtSecurityTokenHandler tokenHandler = new JwtSecurityTokenHandler();
             byte[] key = Encoding.ASCII.GetBytes(appSettings.Secret);
@@ -101,7 +105,7 @@ namespace CoStudy.API.Infrastructure.Identity.Services.AccountService
         /// </summary>
         /// <param name="ipAddress">The ip address.</param>
         /// <returns></returns>
-        private RefreshToken generateRefreshToken(string ipAddress)
+        public RefreshToken generateRefreshToken(string ipAddress)
         {
             return new RefreshToken
             {
@@ -116,7 +120,7 @@ namespace CoStudy.API.Infrastructure.Identity.Services.AccountService
         /// Removes the old refresh tokens.
         /// </summary>
         /// <param name="account">The account.</param>
-        private void removeOldRefreshTokens(Account account)
+        public void removeOldRefreshTokens(Account account)
         {
             account.RefreshTokens.RemoveAll(x =>
                 !x.IsActive &&
@@ -163,6 +167,14 @@ namespace CoStudy.API.Infrastructure.Identity.Services.AccountService
 
             CacheHelper.Add($"CurrentUser-{currentUser.Email}", currentUser, DateTime.Now.AddDays(10));
             CacheHelper.Add($"CurrentAccount-{account.Email}", account, DateTime.Now.AddDays(10));
+
+            fcmRepository.AddToGroup(new AddUserToGroupRequest()
+            {
+                UserIds = new List<string> { currentUser.OId },
+                GroupName = currentUser.OId,
+                Type = Feature.GetTypeName(currentUser)
+
+            });
 
             return response;
         }
@@ -395,7 +407,7 @@ namespace CoStudy.API.Infrastructure.Identity.Services.AccountService
         /// </summary>
         /// <param name="account">The account.</param>
         /// <param name="origin">The origin.</param>
-        private async Task sendPasswordResetEmail(Account account, string origin)
+        public async Task sendPasswordResetEmail(Account account, string origin)
         {
             string message;
             if (!string.IsNullOrEmpty(origin))
@@ -427,7 +439,7 @@ namespace CoStudy.API.Infrastructure.Identity.Services.AccountService
         /// </summary>
         /// <param name="account">The account.</param>
         /// <param name="origin">The origin.</param>
-        private async Task sendVerificationEmail(Account account, string origin)
+        public async Task sendVerificationEmail(Account account, string origin)
         {
             string message;
             if (!string.IsNullOrEmpty(origin))
@@ -461,7 +473,7 @@ namespace CoStudy.API.Infrastructure.Identity.Services.AccountService
         /// </summary>
         /// <param name="email">The email.</param>
         /// <param name="origin">The origin.</param>
-        private async Task sendAlreadyRegisteredEmail(string email, string origin)
+        public async Task sendAlreadyRegisteredEmail(string email, string origin)
         {
             string message;
             if (!string.IsNullOrEmpty(origin))
@@ -499,7 +511,7 @@ namespace CoStudy.API.Infrastructure.Identity.Services.AccountService
         /// or
         /// Invalid token
         /// </exception>
-        private (RefreshToken, Account) getRefreshToken(string token)
+        public (RefreshToken, Account) getRefreshToken(string token)
         {
             Account account = accountRepository.GetAll().SingleOrDefault(u => u.RefreshTokens.Any(t => t.Token == token));
 
