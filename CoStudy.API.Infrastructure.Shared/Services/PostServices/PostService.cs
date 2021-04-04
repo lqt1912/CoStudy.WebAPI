@@ -90,6 +90,11 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
         IObjectLevelRepository objectLevelRepository;
 
         /// <summary>
+        /// The notification object repository
+        /// </summary>
+        INotificationObjectRepository notificationObjectRepository;
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="PostService" /> class.
         /// </summary>
         /// <param name="httpContextAccessor">The HTTP context accessor.</param>
@@ -121,7 +126,8 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
             IClientGroupRepository clientGroupRepository,
             IFcmRepository fcmRepository,
             INofticationRepository nofticationRepository,
-            IMapper mapper, IObjectLevelRepository objectLevelRepository)
+            IMapper mapper, IObjectLevelRepository objectLevelRepository, 
+            INotificationObjectRepository notificationObjectRepository)
         {
             this.httpContextAccessor = httpContextAccessor;
             this.configuration = configuration;
@@ -138,6 +144,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
             this.nofticationRepository = nofticationRepository;
             this.mapper = mapper;
             this.objectLevelRepository = objectLevelRepository;
+            this.notificationObjectRepository = notificationObjectRepository;
         }
 
         /// <summary>
@@ -286,16 +293,35 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
 
                 }
 
+                var notificationObjectBuilders = Builders<NotificationObject>.Filter;
 
-                var notification = new Noftication()
+                var notificationObjectFilters = notificationObjectBuilders.Eq("object_id", postId)
+                    & notificationObjectBuilders.Eq("notification_type", "UPVOTE_POST_NOTIFY");
+
+                var existNotificationObject = await notificationObjectRepository.FindAsync(notificationObjectFilters);
+
+                string notificationObject = existNotificationObject!=null? existNotificationObject.OId: string.Empty;
+
+                if(existNotificationObject==null)
                 {
-                    AuthorId = currentuser.OId,
-                    OwnerId = currentPost.AuthorId,
-                    ContentType = ContentType.UPVOTE_POST_NOTIFY,
-                    ObjectId = currentPost.OId
+                    var newNotificationObject = new NotificationObject()
+                    {
+                        NotificationType = "UPVOTE_POST_NOTIFY",
+                        ObjectId = postId,
+                        OwnerId = currentPost.AuthorId
+                    };
+                    await notificationObjectRepository.AddAsync(newNotificationObject);
+                    notificationObject = newNotificationObject.OId;
+                }
+
+                var notificationDetail = new NotificationDetail()
+                {
+                    CreatorId = currentuser.OId,
+                    NotificationObjectId = notificationObject
                 };
 
-               await  fcmRepository.PushNotify(currentPost.OId, notification);
+
+               await  fcmRepository.PushNotifyDetail(currentPost.OId, notificationDetail);
 
                 return "Upvote thành công. ";
             }
@@ -313,10 +339,8 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
         /// <exception cref="Exception">Uncompleted activity</exception>
         public async Task<string> Downvote(string postId)
         {
-
             try
             {
-
                 User currentuser = Feature.CurrentUser(httpContextAccessor, userRepository);
                 Post currentPost = await postRepository.GetByIdAsync(ObjectId.Parse(postId));
 
@@ -336,37 +360,50 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
                     FilterDefinition<UpVote> filterExistUpVote = builderUpVote.Eq("object_vote_id", postId)
                         & builderUpVote.Eq("upvote_by", currentuser.OId)
                         & builderUpVote.Eq("is_deleted", false);
-
                     UpVote existUpVote = await upVoteRepository.FindAsync(filterExistUpVote);
-
                     if (existUpVote != null)
                     {
                         existUpVote.IsDeleted = true;
                         await upVoteRepository.DeleteAsync(existUpVote.Id);
                     }
-
                     DownVote downvote = new DownVote()
                     {
                         ObjectVoteId = postId,
                         DownVoteBy = currentuser.OId
                     };
                     await downVoteRepository.AddAsync(downvote);
-
                 }
 
 
-               
+                var notificationObjectBuilders = Builders<NotificationObject>.Filter;
 
-                var notification = new Noftication()
+                var notificationObjectFilters = notificationObjectBuilders.Eq("object_id", postId)
+                    & notificationObjectBuilders.Eq("notification_type", "DOWNVOTE_POST_NOTIFY");
+
+                var existNotificationObject = await notificationObjectRepository.FindAsync(notificationObjectFilters);
+
+                string notificationObject = existNotificationObject!=null ? existNotificationObject.OId: string.Empty;
+
+                if (existNotificationObject == null)
                 {
-                    AuthorId = currentuser.OId,
-                    OwnerId = currentPost.AuthorId,
-                    ContentType = ContentType.DOWNVOTE_POST_NOTIFY,
-                    ObjectId = currentPost.OId
+                    var newNotificationObject = new NotificationObject()
+                    {
+                        NotificationType = "DOWNVOTE_POST_NOTIFY",
+                        ObjectId = postId,
+                        OwnerId = currentPost.AuthorId
+                    };
+                    await notificationObjectRepository.AddAsync(newNotificationObject);
+                    notificationObject = newNotificationObject.OId;
+                }
+
+                var notificationDetail = new NotificationDetail()
+                {
+                    CreatorId = currentuser.OId,
+                    NotificationObjectId = notificationObject
                 };
 
-                await fcmRepository.PushNotify(currentPost.OId, notification);
-
+                await fcmRepository.PushNotifyDetail(currentPost.OId, notificationDetail);
+            
                 return "Downvote thành công. ";
             }
             catch (Exception)

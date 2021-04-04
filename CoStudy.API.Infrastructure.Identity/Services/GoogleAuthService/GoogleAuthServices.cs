@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Common;
 using CoStudy.API.Application.Repositories;
 using CoStudy.API.Domain.Entities.Application;
 using CoStudy.API.Domain.Entities.Identity.MongoAuthen;
@@ -8,6 +9,7 @@ using CoStudy.API.Infrastructure.Identity.Repositories.AccountRepository;
 using CoStudy.API.Infrastructure.Identity.Repositories.ExternalLoginRepository;
 using CoStudy.API.Infrastructure.Identity.Services.AccountService;
 using Microsoft.Extensions.Configuration;
+using MongoDB.Bson;
 using MongoDB.Driver;
 using System;
 using System.Collections.Generic;
@@ -22,7 +24,7 @@ namespace CoStudy.API.Infrastructure.Identity.Services.GoogleAuthService
     /// Class GoogleAuthServices
     /// </summary>
     /// <seealso cref="CoStudy.API.Infrastructure.Identity.Services.GoogleAuthService.IGoogleAuthServices" />
-    public class GoogleAuthServices :IGoogleAuthServices
+    public class GoogleAuthServices : IGoogleAuthServices
     {
         /// <summary>
         /// The configuration
@@ -72,72 +74,33 @@ namespace CoStudy.API.Infrastructure.Identity.Services.GoogleAuthService
         }
 
         /// <summary>
-        /// Verifies the google token.
-        /// </summary>
-        /// <param name="externalAuth">The external authentication.</param>
-        /// <returns></returns>
-        public async Task<Payload> VerifyGoogleToken(GoogleAuth externalAuth)
-        {
-            try
-            {
-                var settings = new ValidationSettings()
-                {
-                    Audience = new List<string>() { configuration["clientId"] }
-                };
-
-                var payload = await ValidateAsync(externalAuth.IdToken, settings);
-                return payload;
-            }
-            catch (Exception ex)
-            {
-                //log an exception
-                return null;
-            }
-        }
-
-
-        /// <summary>
         /// Externals the login.
         /// </summary>
-        /// <param name="externalAuth">The external authentication.</param>
+        /// <param name="request">The request.</param>
         /// <param name="ipAddress">The ip address.</param>
         /// <returns></returns>
-        /// <exception cref="Exception">Unauthorized
-        /// or
-        /// Vui lòng đăng kí thông tin.</exception>
-        public async Task<AuthenticateResponse> ExternalLogin(GoogleAuth externalAuth, string ipAddress)
+        public async Task<object> ExternalLogin(GoogleAuthenticationRequest request, string ipAddress)
         {
-            var payLoad = await VerifyGoogleToken(externalAuth);
-
-            if (payLoad == null)
-                throw new Exception("Unauthorized");
-
-            var filter = Builders<User>.Filter;
-
-            var finder = filter.Eq("email", payLoad.Email);
-
-            var internalUser = await userRepository.FindAsync(finder);
-
-            if(internalUser !=null)
+            var internalUserFilter = Builders<User>.Filter.Eq("email", request.User.Email);
+            var existInternalUser = await userRepository.FindAsync(internalUserFilter);
+            if (existInternalUser != null)
             {
-                var externalFilter = Builders<ExternalLogin>.Filter.Eq("user_id", internalUser.OId);
+                var finder = Builders<ExternalLogin>.Filter.Eq("email", request.User.Email);
 
-                var existExternalLogin = await externalLoginRepository.FindAsync(externalFilter);
+                var existExternalLogin = await externalLoginRepository.FindAsync(finder);
 
-                //Chưa có External
                 if (existExternalLogin == null)
                 {
-                    ExternalLogin external = new ExternalLogin()
+                    var externalLogin = new ExternalLogin()
                     {
-                        LoginProvider = externalAuth.Provider,
-                        ProviderDisplayName = externalAuth.Provider,
-                        UserId = internalUser.OId
+                        Email = request.User.Email,
+                        LoginProvider = Constants.ExternalLoginConstants.GOOGLE_EXTERNAL_PROVIDER
                     };
 
-                    await externalLoginRepository.AddAsync(external);
+                    await externalLoginRepository.AddAsync(externalLogin);
                 }
 
-                Account account = accountRepository.GetAll().FirstOrDefault(x => x.Email == internalUser.Email);
+                Account account = accountRepository.GetAll().FirstOrDefault(x => x.Email == existExternalLogin.Email);
 
                 string jwtToken = accountService.generateJwtToken(account);
                 RefreshToken refreshToken = accountService.generateRefreshToken(ipAddress);
@@ -151,19 +114,9 @@ namespace CoStudy.API.Infrastructure.Identity.Services.GoogleAuthService
                 response.RefreshToken = refreshToken.Token;
                 return response;
             }
-            else //Chưa có internal
+            else
             {
-                ExternalLogin external = new ExternalLogin()
-                {
-                    LoginProvider = externalAuth.Provider,
-                    ProviderDisplayName = externalAuth.Provider,
-                    UserId = internalUser.OId
-                };
-
-                await externalLoginRepository.AddAsync(external);
-
-                //Nhảy về giao diện điền thông tin. 
-                throw new Exception("Vui lòng đăng kí thông tin. ");
+                return request;
             }
         }
     }

@@ -135,21 +135,10 @@ namespace CoStudy.API.Domain.Entities.Application
         /// </value>
         [BsonElement("additional_infos")]
         [JsonPropertyName("additional_infos")]
-        public List<IDictionary<string, string>> AdditionalInfos { get; set; }
+        public List<AdditionalInfomation> AdditionalInfos { get; set; }
 
 
-        /// <summary>
-        /// Gets or sets the fields.
-        /// </summary>
-        /// <value>
-        /// The fields.
-        /// </value>
-        [BsonElement("fields")]
-        [JsonPropertyName("fields")]
-        public List<string> Fields { get; set; }
-
-
-
+     
         /// <summary>
         /// Gets or sets the post upvote.
         /// </summary>
@@ -186,11 +175,10 @@ namespace CoStudy.API.Domain.Entities.Application
         {
             Avatar = new Image();
 
-            AdditionalInfos = new List<IDictionary<string, string>>();
+            AdditionalInfos = new List<AdditionalInfomation>();
             PostDownvote = new List<string>();
             PostUpvote = new List<string>();
             PostSaved = new List<string>();
-            Fields = new List<string>();
         }
     }
 }

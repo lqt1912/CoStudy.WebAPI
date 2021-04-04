@@ -4,6 +4,7 @@ using CoStudy.API.Domain.Entities.Identity.MongoAuthen;
 using Microsoft.AspNetCore.Http;
 using MongoDB.Driver;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -61,7 +62,6 @@ namespace CoStudy.API.Application.Features
             {
                 return "";
             }
-
 
             string scheme = accessor.HttpContext.Request.Scheme;
             HostString host = accessor.HttpContext.Request.Host;
@@ -143,7 +143,6 @@ namespace CoStudy.API.Application.Features
 
         }
 
-
         /// <summary>
         /// Gets the name of the type.
         /// </summary>
@@ -198,4 +197,6 @@ namespace CoStudy.API.Application.Features
             }
         }
     }
+
+   
 }

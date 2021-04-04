@@ -35,15 +35,15 @@ namespace CoStudy.API.Infrastructure.Shared.Models.Request.UserRequest
         [Range(typeof(bool), "true", "true")]
         public bool AcceptTerms { get; set; }
 
-        [Required]
+     //   [Required]
         [MinLength(6)]
         public string Password { get; set; }
 
-        [Required]
+    //   [Required]
         [Compare("Password")]
         public string ConfirmPassword { get; set; }
 
-        [Required]
+     //   [Required]
         public string Title { get; set; }
     }
 }

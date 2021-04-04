@@ -21,24 +21,28 @@ namespace CoStudy.API.Infrastructure.Shared.Services
         /// <param name="request">The request.</param>
         /// <returns></returns>
         Task<UserViewModel> AddOrUpdateUserFields(UserAddFieldRequest request);
+
         /// <summary>
         /// Adds the level.
         /// </summary>
         /// <param name="level">The level.</param>
         /// <returns></returns>
         Task<IEnumerable<LevelViewModel>> AddLevel(IEnumerable<Level> level);
+
         /// <summary>
         /// Adds the object level.
         /// </summary>
         /// <param name="objectLevels">The object levels.</param>
         /// <returns></returns>
         Task<IEnumerable<ObjectLevelViewModel>> AddObjectLevel(IEnumerable<ObjectLevel> objectLevels);
+
         /// <summary>
         /// Gets the by identifier.
         /// </summary>
         /// <param name="id">The identifier.</param>
         /// <returns></returns>
         Task<LevelViewModel> GetById(string id);
+
         /// <summary>
         /// Gets all level.
         /// </summary>
@@ -51,12 +55,14 @@ namespace CoStudy.API.Infrastructure.Shared.Services
         /// <param name="userId">The user identifier.</param>
         /// <returns></returns>
         Task<IEnumerable<ObjectLevelViewModel>> GetFieldsOfUser(string userId);
+
         /// <summary>
         /// Gets the level by object.
         /// </summary>
         /// <param name="objectId">The object identifier.</param>
         /// <returns></returns>
         Task<IEnumerable<ObjectLevelViewModel>> GetLevelByObject(string objectId);
+
         /// <summary>
         /// Determines whether the specified user object levels is match.
         /// </summary>
@@ -66,6 +72,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services
         ///   <c>true</c> if the specified user object levels is match; otherwise, <c>false</c>.
         /// </returns>
         bool IsMatch(IEnumerable<ObjectLevelViewModel> userObjectLevels, IEnumerable<ObjectLevelViewModel> postObjectLevels);
+
         /// <summary>
         /// Gets all post match user.
         /// </summary>
@@ -76,10 +83,9 @@ namespace CoStudy.API.Infrastructure.Shared.Services
         /// <summary>
         /// Adds the point.
         /// </summary>
-        /// <param name="objectLevelId">The object level identifier.</param>
-        /// <param name="point">The point.</param>
+        /// <param name="request">The request.</param>
         /// <returns></returns>
-        Task<ObjectLevel> AddPoint(string objectLevelId, int point);
+        Task<ObjectLevelViewModel> AddPoint(AddPointRequest request);
 
         /// <summary>
         /// Resets the field.

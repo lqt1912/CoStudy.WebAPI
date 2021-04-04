@@ -66,7 +66,7 @@ namespace CoStudy.API.WebAPI.Controllers
         }
 
         [HttpPost]
-        [Route("upvote/{commentId}")]
+        [Route("upvote-comment/{commentId}")]
         public async Task<IActionResult> UpvoteComment(string commentId)
         {
             string data = await commentService.UpvoteComment(commentId);
@@ -74,12 +74,30 @@ namespace CoStudy.API.WebAPI.Controllers
         }
 
         [HttpPost]
-        [Route("downvote/{commentId}")]
+        [Route("downvote-comment/{commentId}")]
         public async Task<IActionResult> DownvoteComment(string commentId)
         {
             string data = await commentService.DownvoteComment(commentId);
             return Ok(new ApiOkResponse(data));
         }
+
+        [HttpPost]
+        [Route("upvote-reply/{replyId}")]
+        public async Task<IActionResult> UpvoteReplyComment(string replyId)
+        {
+            string data = await commentService.UpvoteReplyComment(replyId);
+            return Ok(new ApiOkResponse(data));
+        }
+
+        [HttpPost]
+        [Route("downvote-reply/{replyId}")]
+        public async Task<IActionResult> DownvoteReplyComment(string replyId)
+        {
+            string data = await commentService.DownvoteReplyComment(replyId);
+            return Ok(new ApiOkResponse(data));
+        }
+
+
 
         [HttpPut]
         [Route("comment/update")]

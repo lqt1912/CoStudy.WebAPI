@@ -9,6 +9,16 @@ namespace Common
     /// </summary>
     public static class Constants
     {
+        /// <summary>
+        /// Class ExternalLoginConstants
+        /// </summary>
+        public static class ExternalLoginConstants
+        {
+            /// <summary>
+            /// The google external provider
+            /// </summary>
+            public static string GOOGLE_EXTERNAL_PROVIDER = "GOOGLE";
+        }
 
         /// <summary>
         /// Class LevelConstants

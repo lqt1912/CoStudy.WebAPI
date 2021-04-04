@@ -140,9 +140,9 @@ namespace CoStudy.API.WebAPI.Controllers
         [Authorize]
         [HttpPost]
         [Route("additionalinfos")]
-        public async Task<IActionResult> AddAdditionalInfos(List<IDictionary<string, string>> request)
+        public async Task<IActionResult> AddAdditionalInfos(List<AdditionalInfomation> request)
         {
-            var data = await userService.AddInfo(request);
+            var data = await userService.AddOrUpdateInfo(request);
             return Ok(new ApiOkResponse(data));
         }
 
@@ -206,9 +206,9 @@ namespace CoStudy.API.WebAPI.Controllers
         /// </summary>
         /// <param name="request">The request.</param>
         /// <returns></returns>
-        [HttpGet]
-        [Route("follower")]
-        public async Task<IActionResult> GetFollower([FromQuery] FollowFilterRequest request)
+        [HttpPost]
+        [Route("get-follower")]
+        public async Task<IActionResult> GetFollower( FollowFilterRequest request)
         {
             var data = await userService.GetFollower(request);
             return Ok(new ApiOkResponse(data));
@@ -219,9 +219,9 @@ namespace CoStudy.API.WebAPI.Controllers
         /// </summary>
         /// <param name="request">The request.</param>
         /// <returns></returns>
-        [HttpGet]
-        [Route("following")]
-        public async Task<IActionResult> GetFollowing([FromQuery] FollowFilterRequest request)
+        [HttpPost]
+        [Route("get-following")]
+        public async Task<IActionResult> GetFollowing( FollowFilterRequest request)
         {
             var data = await userService.GetFollowing(request);
             return Ok(new ApiOkResponse(data));

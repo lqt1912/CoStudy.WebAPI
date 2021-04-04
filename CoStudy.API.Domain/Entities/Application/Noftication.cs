@@ -2,6 +2,7 @@
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 using System;
+using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
 namespace CoStudy.API.Domain.Entities.Application
@@ -60,6 +61,15 @@ namespace CoStudy.API.Domain.Entities.Application
         [JsonPropertyName("content")]
         public string Content { get; set; }
 
+
+        /// <summary>
+        /// Gets or sets the type of the content.
+        /// </summary>
+        /// <value>
+        /// The type of the content.
+        /// </value>
+        [BsonElement("content_type")]
+        [JsonPropertyName("content_type")]
         public ContentType ContentType { get; set; }
 
         /// <summary>

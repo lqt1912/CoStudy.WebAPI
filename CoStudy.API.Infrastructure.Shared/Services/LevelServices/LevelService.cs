@@ -5,7 +5,6 @@ using CoStudy.API.Application.Repositories;
 using CoStudy.API.Domain.Entities.Application;
 using CoStudy.API.Infrastructure.Shared.Models.Request.BaseRequest;
 using CoStudy.API.Infrastructure.Shared.Models.Request.LevelRequest;
-using CoStudy.API.Infrastructure.Shared.Models.Response;
 using CoStudy.API.Infrastructure.Shared.ViewModels;
 using Microsoft.AspNetCore.Http;
 using MongoDB.Bson;
@@ -40,8 +39,14 @@ namespace CoStudy.API.Infrastructure.Shared.Services
         /// </summary>
         IFieldRepository fieldRepository;
 
+        /// <summary>
+        /// The post repository
+        /// </summary>
         IPostRepository postRepository;
 
+        /// <summary>
+        /// The HTTP context accessor
+        /// </summary>
         IHttpContextAccessor httpContextAccessor;
 
         /// <summary>
@@ -56,6 +61,8 @@ namespace CoStudy.API.Infrastructure.Shared.Services
         /// <param name="userRepository">The user repository.</param>
         /// <param name="fieldRepository">The field repository.</param>
         /// <param name="mapper">The mapper.</param>
+        /// <param name="postRepository">The post repository.</param>
+        /// <param name="httpContextAccessor">The HTTP context accessor.</param>
         public LevelService(ILevelRepository levelRepository, IObjectLevelRepository objectLevelRepository, IUserRepository userRepository, IFieldRepository fieldRepository, IMapper mapper, IPostRepository postRepository, IHttpContextAccessor httpContextAccessor)
         {
             this.levelRepository = levelRepository;
@@ -73,19 +80,19 @@ namespace CoStudy.API.Infrastructure.Shared.Services
         /// </summary>
         /// <param name="request">The request.</param>
         /// <returns></returns>
-        /// <exception cref="System.Exception">Không tìm thấy user</exception>
         /// <exception cref="Exception">Không tìm thấy user</exception>
+        /// <exception cref="System.Exception">Không tìm thấy user</exception>
         public async Task<UserViewModel> AddOrUpdateUserFields(UserAddFieldRequest request)
         {
             User user = await userRepository.GetByIdAsync(ObjectId.Parse(request.UserId));
 
             if (user != null)
             {
-                var buidler = Builders<ObjectLevel>.Filter.Eq("object_id", request.UserId);
+                FilterDefinition<ObjectLevel> buidler = Builders<ObjectLevel>.Filter.Eq("object_id", request.UserId);
 
-                var existObjectLevels = (await objectLevelRepository.FindListAsync(buidler)).ToList();
+                List<ObjectLevel> existObjectLevels = (await objectLevelRepository.FindListAsync(buidler)).ToList();
 
-                foreach (var item in request.FieldId)
+                foreach (string item in request.FieldId)
                 {
                     if (existObjectLevels.FirstOrDefault(x => x.FieldId == item) == null)
                     {
@@ -102,7 +109,10 @@ namespace CoStudy.API.Infrastructure.Shared.Services
                 }
                 return mapper.Map<UserViewModel>(user);
             }
-            else throw new Exception("Không tìm thấy user");
+            else
+            {
+                throw new Exception("Không tìm thấy user");
+            }
         }
 
         /// <summary>
@@ -126,7 +136,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services
                 result.Add(model);
             }
 
-            return mapper.Map<IEnumerable<LevelViewModel>>( result);
+            return mapper.Map<IEnumerable<LevelViewModel>>(result);
         }
 
         /// <summary>
@@ -168,7 +178,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services
         {
             FilterDefinition<Level> filter = Builders<Level>.Filter.Eq("oid", id);
             Level result = await levelRepository.FindAsync(filter);
-            return  mapper.Map<LevelViewModel>(result);
+            return mapper.Map<LevelViewModel>(result);
         }
 
         /// <summary>
@@ -180,8 +190,11 @@ namespace CoStudy.API.Infrastructure.Shared.Services
         {
             IQueryable<Level> result = levelRepository.GetAll();
             if (request.Skip.HasValue && request.Count.HasValue)
+            {
                 result = result.Skip(request.Skip.Value).Take(request.Count.Value);
-            return mapper.Map<IEnumerable<LevelViewModel>>( result);
+            }
+
+            return mapper.Map<IEnumerable<LevelViewModel>>(result);
         }
 
         /// <summary>
@@ -192,9 +205,9 @@ namespace CoStudy.API.Infrastructure.Shared.Services
         /// <exception cref="Exception">Không tìm thấy user</exception>
         public async Task<IEnumerable<ObjectLevelViewModel>> GetFieldsOfUser(string userId)
         {
-            var filter = Builders<ObjectLevel>.Filter.Eq("object_id", userId);
+            FilterDefinition<ObjectLevel> filter = Builders<ObjectLevel>.Filter.Eq("object_id", userId);
 
-            var objectlevels = (await objectLevelRepository.FindListAsync(filter));
+            List<ObjectLevel> objectlevels = (await objectLevelRepository.FindListAsync(filter));
             return mapper.Map<IEnumerable<ObjectLevelViewModel>>(objectlevels);
 
         }
@@ -227,7 +240,9 @@ namespace CoStudy.API.Infrastructure.Shared.Services
                 foreach (ObjectLevelViewModel postObjectLevel in postObjectLevels)
                 {
                     if ((userObjectLevel.LevelId == postObjectLevel.LevelId) || (userObjectLevel.Point >= postObjectLevel.Point))
+                    {
                         return true;
+                    }
                 }
             }
             return false;
@@ -248,8 +263,10 @@ namespace CoStudy.API.Infrastructure.Shared.Services
             {
                 IEnumerable<ObjectLevelViewModel> userObjectLevels = await GetLevelByObject(user.OId);
                 if (IsMatch(userObjectLevels, postObjectLevels) == true)
+                {
                     result.Add(user);
-            }
+                }
+            } 
 
             return result;
         }
@@ -258,32 +275,47 @@ namespace CoStudy.API.Infrastructure.Shared.Services
         /// <summary>
         /// Adds the point.
         /// </summary>
-        /// <param name="objectLevelId">The object level identifier.</param>
-        /// <param name="point">The point.</param>
+        /// <param name="request">The request.</param>
         /// <returns></returns>
-        /// <exception cref="System.Exception">Không tìm thấy Object Level.</exception>
         /// <exception cref="Exception">Không tìm thấy Object Level.</exception>
-        public async Task<ObjectLevel> AddPoint(string objectLevelId, int point)
+        /// <exception cref="System.Exception">Không tìm thấy Object Level.</exception>
+        public async Task<ObjectLevelViewModel> AddPoint(AddPointRequest request)
         {
-            var objectLevel = await objectLevelRepository.GetByIdAsync(ObjectId.Parse(objectLevelId));
+            string objectLevelId = request.ObjectLevelId;
+            int point = request.Point;
+            ObjectLevel objectLevel = await objectLevelRepository.GetByIdAsync(ObjectId.Parse(objectLevelId));
             if (objectLevel != null)
             {
                 objectLevel.Point += point;
-                if (objectLevel.Point > LevelPoint.Level1)
+                if (objectLevel.Point < LevelPoint.Level1)
+                {
                     objectLevel.LevelId = levelRepository.GetAll().FirstOrDefault(x => x.Order == 0)?.OId;
-                else if (objectLevel.Point > LevelPoint.Level2)
+                }
+                else if (objectLevel.Point < LevelPoint.Level2)
+                {
                     objectLevel.LevelId = levelRepository.GetAll().FirstOrDefault(x => x.Order == 1)?.OId;
-                else if (objectLevel.Point > LevelPoint.Level3)
+                }
+                else if (objectLevel.Point < LevelPoint.Level3)
+                {
                     objectLevel.LevelId = levelRepository.GetAll().FirstOrDefault(x => x.Order == 2)?.OId;
-                else if (objectLevel.Point > LevelPoint.Level4)
+                }
+                else if (objectLevel.Point < LevelPoint.Level4)
+                {
                     objectLevel.LevelId = levelRepository.GetAll().FirstOrDefault(x => x.Order == 3)?.OId;
-                else if (objectLevel.Point > LevelPoint.Level5)
+                }
+                else 
+                {
                     objectLevel.LevelId = levelRepository.GetAll().FirstOrDefault(x => x.Order == 4)?.OId;
+                }
 
                 await objectLevelRepository.UpdateAsync(objectLevel, objectLevel.Id);
-                return objectLevel;
+                
+                return mapper.Map<ObjectLevelViewModel>(objectLevel);
             }
-            else throw new Exception("Không tìm thấy Object Level. ");
+            else
+            {
+                throw new Exception("Không tìm thấy Object Level. ");
+            }
         }
 
         /// <summary>
@@ -291,19 +323,20 @@ namespace CoStudy.API.Infrastructure.Shared.Services
         /// </summary>
         /// <param name="request">The request.</param>
         /// <returns></returns>
+        /// <exception cref="Exception">Không tìm thấy user.</exception>
         /// <exception cref="System.Exception">Không tìm thấy user.</exception>
-        public async Task<UserViewModel> ResetField(UserResetFieldRequest request )
+        public async Task<UserViewModel> ResetField(UserResetFieldRequest request)
         {
-            var user = await userRepository.GetByIdAsync(ObjectId.Parse(request.UserId));
+            User user = await userRepository.GetByIdAsync(ObjectId.Parse(request.UserId));
 
             if (user != null)
             {
-                foreach (var item in request.FieldId)
+                foreach (string item in request.FieldId)
                 {
-                    var finder = Builders<ObjectLevel>.Filter;
-                    var filter = finder.Eq("field_id", item) & finder.Eq("object_id", user.OId);
-                    var objectLevel = await objectLevelRepository.FindAsync(filter);
-                    if(objectLevel !=null)
+                    FilterDefinitionBuilder<ObjectLevel> finder = Builders<ObjectLevel>.Filter;
+                    FilterDefinition<ObjectLevel> filter = finder.Eq("field_id", item) & finder.Eq("object_id", user.OId);
+                    ObjectLevel objectLevel = await objectLevelRepository.FindAsync(filter);
+                    if (objectLevel != null)
                     {
                         objectLevel.LevelId = Constants.LevelConstants.LEVEL_0_ID;
                         objectLevel.Point = 0;
@@ -314,27 +347,40 @@ namespace CoStudy.API.Infrastructure.Shared.Services
 
                 return mapper.Map<UserViewModel>(user);
             }
-            else throw new Exception("Không tìm thấy user. ");
+            else
+            {
+                throw new Exception("Không tìm thấy user. ");
+            }
         }
 
 
+        /// <summary>
+        /// Updates the post field.
+        /// </summary>
+        /// <param name="request">The request.</param>
+        /// <returns></returns>
+        /// <exception cref="Exception">Bạn không có quyền chỉnh sửa nội dung này.</exception>
         public async Task<PostViewModel> UpdatePostField(UpdatePostLevelRequest request)
         {
 
-            var post = await postRepository.GetByIdAsync(ObjectId.Parse(request.PostId));
-            if(post!=null)
+            Post post = await postRepository.GetByIdAsync(ObjectId.Parse(request.PostId));
+            if (post != null)
             {
-                var currentUser = Feature.CurrentUser(httpContextAccessor, userRepository);
+                User currentUser = Feature.CurrentUser(httpContextAccessor, userRepository);
                 if (currentUser.OId != post.AuthorId)
+                {
                     throw new Exception("Bạn không có quyền chỉnh sửa nội dung này. ");
+                }
 
-                var finder = Builders<ObjectLevel>.Filter.Eq("object_id", request.PostId);
-                var postExistObjectLevel = await objectLevelRepository.FindListAsync(finder);
+                FilterDefinition<ObjectLevel> finder = Builders<ObjectLevel>.Filter.Eq("object_id", request.PostId);
+                List<ObjectLevel> postExistObjectLevel = await objectLevelRepository.FindListAsync(finder);
 
-                foreach (var item in postExistObjectLevel)
+                foreach (ObjectLevel item in postExistObjectLevel)
+                {
                     await objectLevelRepository.DeleteAsync(item.Id);
+                }
 
-                foreach (var item in request.Field)
+                foreach (ObjectLevel item in request.Field)
                 {
                     item.Point = 0;
                     item.ObjectId = request.PostId;

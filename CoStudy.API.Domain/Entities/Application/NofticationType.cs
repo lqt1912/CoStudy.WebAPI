@@ -1,21 +1,59 @@
-﻿namespace CoStudy.API.Domain.Entities.Application
+﻿using CoStudy.API.Domain.Entities.BaseEntity;
+using MongoDB.Bson.Serialization.Attributes;
+using System;
+
+namespace CoStudy.API.Domain.Entities.Application
 {
     /// <summary>
-    /// Enum notification type. 
+    /// Class NotificationType
     /// </summary>
-    public enum NofticationType
+    /// <seealso cref="CoStudy.API.Domain.Entities.BaseEntity.Entity" />
+    public class NotificationType :Entity
     {
         /// <summary>
-        /// The reply comment
+        /// Gets or sets the code.
         /// </summary>
-        ReplyComment,
+        /// <value>
+        /// The code.
+        /// </value>
+        [BsonElement("code")]
+        public string  Code { get; set; }
+
         /// <summary>
-        /// The message
+        /// Gets or sets the type of the object.
         /// </summary>
-        Message,
+        /// <value>
+        /// The type of the object.
+        /// </value>
+        [BsonElement("object_type")]
+        public string ObjectType { get; set; }
+
         /// <summary>
-        /// The request
+        /// Gets or sets the content template.
         /// </summary>
-        Request
+        /// <value>
+        /// The content template.
+        /// </value>
+        [BsonElement("content_template")]
+        public string  ContentTemplate { get; set; }
+
+        /// <summary>
+        /// Gets or sets the created date.
+        /// </summary>
+        /// <value>
+        /// The created date.
+        /// </value>
+        [BsonElement("created_date")]
+        public DateTime? CreatedDate { get; set; } = DateTime.Now;
+
+
+        /// <summary>
+        /// Gets or sets the modified date.
+        /// </summary>
+        /// <value>
+        /// The modified date.
+        /// </value>
+        [BsonElement("modified_date")]
+        public DateTime? ModifiedDate { get; set; } = DateTime.Now;
     }
 }

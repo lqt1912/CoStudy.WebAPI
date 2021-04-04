@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using CoStudy.API.Application.Features;
 using CoStudy.API.Application.Repositories;
+using CoStudy.API.Application.Utitlities;
 using CoStudy.API.Domain.Entities.Application;
 using CoStudy.API.Domain.Entities.Identity.MongoAuthen;
 using CoStudy.API.Infrastructure.Identity.Repositories.AccountRepository;
@@ -60,6 +61,10 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
         /// </summary>
         IFollowRepository followRepository;
 
+        /// <summary>
+        /// The object level repository
+        /// </summary>
+        IObjectLevelRepository objectLevelRepository;
 
         /// <summary>
         /// The mapper
@@ -314,7 +319,9 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
         public async Task<IEnumerable<FollowViewModel>> GetFollower(FollowFilterRequest request)
         {
             var findFilter = Builders<Follow>.Filter.Eq("to_id", request.UserId);
-            var queryable = (await followRepository.FindListAsync(findFilter)).AsQueryable();
+            var queryable = mapper.Map<List<FollowViewModel>>(await followRepository.FindListAsync(findFilter)).AsQueryable();
+
+            queryable = queryable.Where(x => x.FromName.NormalizeSearch().Contains(request.KeyWord.NormalizeSearch()));
 
             if (request.FromDate != null)
                 queryable = queryable.Where(x => x.FollowDate >= request.FromDate);
@@ -326,7 +333,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
             else queryable = queryable.OrderByDescending(x => x.FollowDate);
             if (request.Skip.HasValue && request.Count.HasValue)
                 queryable = queryable.Skip(request.Skip.Value).Take(request.Count.Value);
-            return mapper.Map<IEnumerable<FollowViewModel>>(queryable.ToList());
+            return queryable.ToList();
         }
 
         /// <summary>
@@ -337,8 +344,9 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
         public async Task<IEnumerable<FollowViewModel>> GetFollowing(FollowFilterRequest request)
         {
             var findFilter = Builders<Follow>.Filter.Eq("from_id", request.UserId);
-            var queryable = (await followRepository.FindListAsync(findFilter)).AsQueryable();
+            IQueryable<FollowViewModel> queryable = mapper.Map<List<FollowViewModel>>(await followRepository.FindListAsync(findFilter)).AsQueryable();
 
+            queryable = queryable.Where(x => x.ToName.NormalizeSearch().Contains(request.KeyWord.NormalizeSearch()));
             if (request.FromDate != null)
                 queryable = queryable.Where(x => x.FollowDate >= request.FromDate);
             if (request.ToDate != null)
@@ -349,7 +357,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
             else queryable = queryable.OrderByDescending(x => x.FollowDate);
             if (request.Skip.HasValue && request.Count.HasValue)
                 queryable = queryable.Skip(request.Skip.Value).Take(request.Count.Value);
-            return  mapper.Map<IEnumerable<FollowViewModel>>(queryable.ToList());
+            return queryable.ToList();
         }
 
         /// <summary>
@@ -359,54 +367,73 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
         /// <returns></returns>
         public async Task<IEnumerable<UserViewModel>> FilterUser(FilterUserRequest request)
         {
-            var users = mapper.Map<IEnumerable<UserViewModel>>(userRepository.GetAll()).AsQueryable();
-            if (!String.IsNullOrEmpty(request.KeyWord))
-                users = users.Where(x => x.Email.Contains(request.KeyWord)
-                || x.LastName.Contains(request.KeyWord)
-                || x.PhoneNumber.Contains(request.KeyWord));
+            var builder = Builders<User>.Filter;
+            var filter = builder.Regex("first_name", request.KeyWord)
+                            | builder.Regex("last_name", request.KeyWord)
+                            | builder.Regex("email", request.KeyWord)
+                            | builder.Regex("phone_numer", request.KeyWord);
+            var users = (await userRepository.FindListAsync(filter)).AsQueryable();
+            var userIds = from s in users select s.OId;
 
-            if (request.FilterType.HasValue && request.OrderType.HasValue)
+            var objectLevelBuilder = Builders<ObjectLevel>.Filter;
+            var filterObjectLevel = objectLevelBuilder.Regex("level_id", request.LevelId)
+                | objectLevelBuilder.Regex("field_id", request.FieldId);
+
+            var objectLevels = (await objectLevelRepository.FindListAsync(filterObjectLevel)).AsQueryable();
+            var objectIds = (from s in objectLevels select s.ObjectId).ToList();
+
+            var finalUserList = userIds.Where(x => objectIds.Contains(x));
+
+            var user = new List<User>();
+            foreach (var userId in finalUserList)
             {
-                switch (request.FilterType.Value)
+                var _user = await userRepository.GetByIdAsync(ObjectId.Parse(userId));
+                if (_user != null)
+                    user.Add(_user);
+            }
+            var userViewModel = mapper.Map<List<UserViewModel>>(user);
+            if(request.FilterType.HasValue && request.OrderType.HasValue)
+            {
+                switch(request.FilterType.Value)
                 {
                     case UserFilterType.PostCount:
                         {
-                            if (request.OrderType.Value == OrderTypeUser.Ascending)
-                                users = users.OrderBy(x => x.PostCount);
-                            else users = users.OrderByDescending(x => x.PostCount);
+                            if (request.OrderType.Value == OrderTypeUser.Descending)
+                                userViewModel = userViewModel.OrderByDescending(x => x.PostCount).ToList();
+                            else userViewModel = userViewModel.OrderBy(x => x.PostCount).ToList();
                             break;
                         }
                     case UserFilterType.Follower:
                         {
-                            if (request.OrderType.Value == OrderTypeUser.Ascending)
-                                users = users.OrderBy(x => x.Followers);
-                            else users = users.OrderByDescending(x => x.Followers);
+                            if (request.OrderType.Value == OrderTypeUser.Descending)
+                                userViewModel = userViewModel.OrderByDescending(x => x.Followers).ToList();
+                            else userViewModel = userViewModel.OrderBy(x => x.Followers).ToList();
                             break;
                         }
-                    default:
-                        break;
                 }
             }
 
-            if (request.Skip.HasValue && request.Count.HasValue)
-                users = users.Skip(request.Skip.Value).Take(request.Count.Value);
-            return users;
+            if(request.Skip.HasValue && request.Count.HasValue)
+            {
+                userViewModel = userViewModel.Skip(request.Skip.Value).Take(request.Count.Value).ToList();
+            }
+            return userViewModel;
+
         }
 
 
-
         /// <summary>
-        /// Adds the information.
+        /// Adds the or update information.
         /// </summary>
         /// <param name="request">The request.</param>
         /// <returns></returns>
-        public async Task<UserViewModel> AddInfo(List<IDictionary<string, string>> request)
+        public async Task<UserViewModel> AddOrUpdateInfo(List<AdditionalInfomation> request)
         {
             var currentuser = Feature.CurrentUser(_httpContextAccessor, userRepository);
+            currentuser.AdditionalInfos.Clear();
             currentuser.AdditionalInfos.AddRange(request);
             await userRepository.UpdateAsync(currentuser, currentuser.Id);
-
-            return mapper.Map<UserViewModel>( currentuser);
+            return mapper.Map<UserViewModel>(currentuser);
         }
     }
 }

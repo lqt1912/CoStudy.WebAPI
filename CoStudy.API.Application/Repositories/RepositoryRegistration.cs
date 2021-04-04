@@ -79,6 +79,12 @@ namespace CoStudy.API.Application.Repositories
 
             services.AddTransient<IReportReasonRepository, ReportReasonRepository>();
 
+            services.AddTransient<INotificationDetailRepository, NotificationDetailRepository>();
+
+            services.AddTransient<INotificationObjectRepository, NotificationObjectRepository>();
+
+            services.AddTransient<INotificationTypeRepository, NotificationTypeRepository>();
+
         }
 
     }

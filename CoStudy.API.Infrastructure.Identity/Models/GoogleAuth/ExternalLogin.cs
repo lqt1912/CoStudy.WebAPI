@@ -22,30 +22,12 @@ namespace CoStudy.API.Infrastructure.Identity.Models.GoogleAuth
         public string LoginProvider { get; set; }
 
         /// <summary>
-        /// Gets or sets the provider key.
-        /// </summary>
-        /// <value>
-        /// The provider key.
-        /// </value>
-        [BsonElement("provider_key")]
-        public string ProviderKey { get; set; }
-
-        /// <summary>
-        /// Gets or sets the display name of the provider.
-        /// </summary>
-        /// <value>
-        /// The display name of the provider.
-        /// </value>
-        [BsonElement("provider_display_name")]
-        public string ProviderDisplayName { get; set; }
-
-        /// <summary>
         /// Gets or sets the user identifier.
         /// </summary>
         /// <value>
         /// The user identifier.
         /// </value>
-        [BsonElement("user_id")]
-        public string UserId { get; set; }
+        [BsonElement("email")]
+        public string Email { get; set; }
     }
 }

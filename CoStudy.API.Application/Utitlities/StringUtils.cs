@@ -37,7 +37,7 @@ namespace CoStudy.API.Application.Utitlities
         /// </summary>
         /// <param name="str">The string.</param>
         /// <returns></returns>
-        public static string RemoveVnChars(string str)
+        public static string RemoveVnChars(this string str)
         {
             //Thay thế và lọc dấu từng char      
             for (int i = 1; i < vnChars.Length; i++)
@@ -53,7 +53,7 @@ namespace CoStudy.API.Application.Utitlities
         /// </summary>
         /// <param name="s">The s.</param>
         /// <returns></returns>
-        public static string TrimExToLower(string s)
+        public static string TrimExToLower(this string s)
         {
             return Regex.Replace(s, " ", "").ToLower();
         }
@@ -63,7 +63,7 @@ namespace CoStudy.API.Application.Utitlities
         /// </summary>
         /// <param name="s">The s.</param>
         /// <returns></returns>
-        public static string Normalize(string s)
+        public static string NormalizeSearch(this string s)
         {
             return TrimExToLower(RemoveVnChars(s));
         }

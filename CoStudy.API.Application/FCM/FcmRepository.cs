@@ -40,12 +40,30 @@ namespace CoStudy.API.Application.FCM
         /// </summary>
         IHttpContextAccessor httpContextAccessor;
 
-        IMapper mapper; 
+        /// <summary>
+        /// The mapper
+        /// </summary>
+        IMapper mapper;
 
         /// <summary>
         /// The noftication repository
         /// </summary>
         INofticationRepository nofticationRepository;
+
+        /// <summary>
+        /// The notification detail repository
+        /// </summary>
+        INotificationDetailRepository notificationDetailRepository;
+
+        /// <summary>
+        /// The notification object repository
+        /// </summary>
+        INotificationObjectRepository notificationObjectRepository;
+
+        /// <summary>
+        /// The notification type repository
+        /// </summary>
+        INotificationTypeRepository notificationTypeRepository;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FcmRepository" /> class.
@@ -54,11 +72,20 @@ namespace CoStudy.API.Application.FCM
         /// <param name="clientGroupRepository">The client group repository.</param>
         /// <param name="userRepository">The user repository.</param>
         /// <param name="httpContextAccessor">The HTTP context accessor.</param>
+        /// <param name="nofticationRepository">The noftication repository.</param>
+        /// <param name="mapper">The mapper.</param>
+        /// <param name="notificationDetailRepository">The notification detail repository.</param>
+        /// <param name="notificationObjectRepository">The notification object repository.</param>
+        /// <param name="notificationTypeRepository">The notification type repository.</param>
         public FcmRepository(IFcmInfoRepository fcmInfoRepository,
             IClientGroupRepository clientGroupRepository,
             IUserRepository userRepository,
             IHttpContextAccessor httpContextAccessor,
-            INofticationRepository nofticationRepository, IMapper mapper)
+            INofticationRepository nofticationRepository,
+            IMapper mapper, 
+            INotificationDetailRepository notificationDetailRepository, 
+            INotificationObjectRepository notificationObjectRepository, 
+            INotificationTypeRepository notificationTypeRepository)
         {
             this.fcmInfoRepository = fcmInfoRepository;
             this.clientGroupRepository = clientGroupRepository;
@@ -66,6 +93,9 @@ namespace CoStudy.API.Application.FCM
             this.httpContextAccessor = httpContextAccessor;
             this.nofticationRepository = nofticationRepository;
             this.mapper = mapper;
+            this.notificationDetailRepository = notificationDetailRepository;
+            this.notificationObjectRepository = notificationObjectRepository;
+            this.notificationTypeRepository = notificationTypeRepository;
         }
 
         /// <summary>
@@ -337,6 +367,110 @@ namespace CoStudy.API.Application.FCM
             else
             {
                 return;
+            }
+        }
+
+        /// <summary>
+        /// Pushes the notify detail.
+        /// </summary>
+        /// <param name="clientGroupName">Name of the client group.</param>
+        /// <param name="notificationDetail">The notification detail.</param>
+        public async Task PushNotifyDetail(string clientGroupName, NotificationDetail notificationDetail)
+        {
+            FilterDefinition<ClientGroup> finder = Builders<ClientGroup>.Filter.Eq("name", clientGroupName);
+            ClientGroup clientGroup = await clientGroupRepository.FindAsync(finder);
+
+            var currentUser = Feature.CurrentUser(httpContextAccessor, userRepository);
+
+            foreach (string receiverId in clientGroup.UserIds)
+            {
+                var existNotificationDetailBuilder = Builders<NotificationDetail>.Filter;
+                var existNotificationDetailFilter = existNotificationDetailBuilder.Eq("creator_id", notificationDetail.CreatorId)
+                                                    & existNotificationDetailBuilder.Eq("receiver_id", receiverId)
+                                                    & existNotificationDetailBuilder.Eq("notification_object_id", notificationDetail.NotificationObjectId);
+
+                var existNotificationDetail = await notificationDetailRepository.FindAsync(existNotificationDetailFilter);
+
+                var finalNotificationDetail = new NotificationDetail();
+                if (existNotificationDetail != null)
+                {
+                    finalNotificationDetail = existNotificationDetail;
+                    finalNotificationDetail.ModifiedDate = DateTime.Now;
+                    finalNotificationDetail.IsDeleted = false;
+                    await notificationDetailRepository.UpdateAsync(finalNotificationDetail, finalNotificationDetail.Id);
+                }
+                else  {
+                    finalNotificationDetail.CreatorId = notificationDetail.CreatorId;
+                    finalNotificationDetail.ReceiverId = receiverId;
+                    finalNotificationDetail.NotificationObjectId = notificationDetail.NotificationObjectId;
+                    await notificationDetailRepository.AddAsync(finalNotificationDetail);
+                };
+
+                var notificationObject = await notificationObjectRepository.GetByIdAsync(ObjectId.Parse(finalNotificationDetail.NotificationObjectId));
+
+                var owner = await userRepository.GetByIdAsync(ObjectId.Parse(notificationObject.OwnerId));
+
+                var receiver = await userRepository.GetByIdAsync(ObjectId.Parse(receiverId));
+
+                var creator = await userRepository.GetByIdAsync(ObjectId.Parse(finalNotificationDetail.CreatorId));
+
+                var notificationTypeFilter = Builders<NotificationType>.Filter.Eq("code", notificationObject.NotificationType);
+
+                var notificationType = await notificationTypeRepository.FindAsync(notificationTypeFilter);
+
+                var notifyContent = string.Empty;
+
+                if (owner == creator)
+                {
+                    if (receiver == owner)
+                    {
+                        notifyContent = $"Bạn {notificationType.ContentTemplate} chính mình";
+                    }
+                    else if (receiver != owner)
+                    {
+                        notifyContent = $"{creator.LastName} {notificationType.ContentTemplate} họ";
+                    }
+                }
+                else if (owner != creator)
+                {
+                    if (receiver != owner)
+                    {
+                        notifyContent = $"{creator.LastName} {notificationType.ContentTemplate} {owner.LastName}";
+                    }
+                    else if (receiver != creator)
+                    {
+                        notifyContent = $"{creator.LastName} {notificationType.ContentTemplate} bạn";
+                    }
+                }
+
+                try
+                {
+                    if (!(owner == creator && receiver == owner))
+                    {
+                        FilterDefinition<FcmInfo> userFilter = Builders<FcmInfo>.Filter.Eq("user_id", receiverId);
+                        string token = (await fcmInfoRepository.FindAsync(userFilter)).DeviceToken;
+
+                        FirebaseAdmin.Messaging.Message mes = new FirebaseAdmin.Messaging.Message()
+                        {
+                            Token = token,
+                            Data = new Dictionary<string, string>()
+                        {
+                            { "notification",  JsonConvert.SerializeObject(finalNotificationDetail) }
+                        },
+                            Notification = new Notification()
+                            {
+                                Title = creator.LastName,
+                                Body = notifyContent,
+                                ImageUrl = creator.AvatarHash
+                            }
+                        };
+                        string response = await FirebaseMessaging.DefaultInstance.SendAsync(mes).ConfigureAwait(true);
+                    }
+                }
+                catch (Exception)
+                {
+                    // do nothing 
+                }
             }
         }
     }

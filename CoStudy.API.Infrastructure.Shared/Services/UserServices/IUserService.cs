@@ -97,12 +97,16 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
         Task<IEnumerable<UserViewModel>> FilterUser(FilterUserRequest request);
 
         /// <summary>
-        /// Adds the information.
+        /// Adds the or update information.
         /// </summary>
         /// <param name="request">The request.</param>
         /// <returns></returns>
-        Task<UserViewModel> AddInfo(List<IDictionary<string, string>> request);
+        Task<UserViewModel> AddOrUpdateInfo(List<AdditionalInfomation> request);
 
+        /// <summary>
+        /// Gets the current user.
+        /// </summary>
+        /// <returns></returns>
         UserViewModel GetCurrentUser();
     }
 }

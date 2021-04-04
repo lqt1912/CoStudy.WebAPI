@@ -100,7 +100,7 @@ namespace CoStudy.API.Domain.Entities.Application
         /// </value>
         [BsonElement("is_edited")]
         [JsonPropertyName("is_edited")]
-        public bool? IsEdited { get; set; }
+        public bool? IsEdited { get; set; } = false;
       
     }
 }

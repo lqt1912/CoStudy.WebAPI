@@ -181,7 +181,7 @@ namespace CoStudy.API.Infrastructure.Shared.ViewModels
         /// </value>
         [JsonProperty("additional_infos")]
         [JsonPropertyName("additional_infos")]
-        public List<IDictionary<string, string>> AdditionalInfos { get; set; }
+        public List<AdditionalInfomation> AdditionalInfos { get; set; }
 
         /// <summary>
         /// Gets or sets the fields.
@@ -191,7 +191,7 @@ namespace CoStudy.API.Infrastructure.Shared.ViewModels
         /// </value>
         [JsonProperty("fields")]
         [JsonPropertyName("fields")]
-        public List<object> Fields { get; set; }
+        public List<object> Fields { get; set; } = new List<object>();
 
         /// <summary>
         /// Gets or sets the post upvote.

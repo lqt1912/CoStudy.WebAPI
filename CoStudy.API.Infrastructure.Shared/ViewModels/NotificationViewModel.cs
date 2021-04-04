@@ -110,6 +110,7 @@ namespace CoStudy.API.Infrastructure.Shared.ViewModels
         /// </summary>
         /// <value>
         /// The is read.
+        /// 
         /// </value>
         [JsonPropertyName("is_read")]
         [JsonProperty("is_read")]

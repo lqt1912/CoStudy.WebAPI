@@ -13,6 +13,7 @@ using MongoDB.Driver;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace CoStudy.API.Infrastructure.Shared.Services
@@ -64,7 +65,25 @@ namespace CoStudy.API.Infrastructure.Shared.Services
         /// </summary>
         private INofticationRepository nofticationRepository;
 
+        /// <summary>
+        /// The mapper
+        /// </summary>
         private IMapper mapper;
+
+        /// <summary>
+        /// The notification object repository
+        /// </summary>
+        private INotificationObjectRepository notificationObjectRepository;
+
+        /// <summary>
+        /// The notification detail repository
+        /// </summary>
+        private INotificationDetailRepository notificationDetailRepository;
+
+        /// <summary>
+        /// The notification type repository
+        /// </summary>
+        private INotificationTypeRepository notificationTypeRepository;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CommentService"/> class.
@@ -88,7 +107,11 @@ namespace CoStudy.API.Infrastructure.Shared.Services
             IUpVoteRepository upVoteRepository,
             IClientGroupRepository clientGroupRepository,
             IFcmRepository fcmRepository,
-            INofticationRepository nofticationRepository, IMapper mapper)
+            INofticationRepository nofticationRepository,
+            IMapper mapper, 
+            INotificationObjectRepository notificationObjectRepository, 
+            INotificationDetailRepository notificationDetailRepository, 
+            INotificationTypeRepository notificationTypeRepository)
         {
             this.httpContextAccessor = httpContextAccessor;
             this.userRepository = userRepository;
@@ -101,6 +124,9 @@ namespace CoStudy.API.Infrastructure.Shared.Services
             this.fcmRepository = fcmRepository;
             this.nofticationRepository = nofticationRepository;
             this.mapper = mapper;
+            this.notificationObjectRepository = notificationObjectRepository;
+            this.notificationDetailRepository = notificationDetailRepository;
+            this.notificationTypeRepository = notificationTypeRepository;
         }
 
         /// <summary>
@@ -123,31 +149,45 @@ namespace CoStudy.API.Infrastructure.Shared.Services
 
                 await commentRepository.AddAsync(comment);
 
-                try
-                {
-                    await fcmRepository.AddToGroup(
-                    new AddUserToGroupRequest()
-                    {
-                        GroupName = currentPost.OId,
-                        Type = Feature.GetTypeName(currentPost),
-                        UserIds = new List<string> { currentUser.OId }
-                    }
-                    );
+                await fcmRepository.AddToGroup(
+                new AddUserToGroupRequest(){
+                    GroupName = currentPost.OId,
+                    Type = Feature.GetTypeName(currentPost),
+                    UserIds = new List<string> { currentUser.OId }
+                }
+                );
 
-                    var notification = new Noftication()
+                //Wait for saving
+                Thread.Sleep(50);
+
+                var notificationObjectBuilders = Builders<NotificationObject>.Filter;
+
+                var notificationObjectFilters = notificationObjectBuilders.Eq("object_id", currentPost.OId)
+                    & notificationObjectBuilders.Eq("notification_type", "COMMENT_NOTIFY");
+
+                var existNotificationObject = await notificationObjectRepository.FindAsync(notificationObjectFilters);
+
+                string notificationObject = existNotificationObject != null ? existNotificationObject.OId : string.Empty;
+
+                if (existNotificationObject == null)
+                {
+                    var newNotificationObject = new NotificationObject()
                     {
-                        AuthorId = currentUser.OId,
-                        OwnerId = currentPost.AuthorId,
-                        ContentType = ContentType.COMMENT_NOTIFY,
-                        ObjectId = currentPost.OId
+                        NotificationType = "COMMENT_NOTIFY",
+                        ObjectId = currentPost.OId,
+                        OwnerId = currentPost.AuthorId
                     };
+                    await notificationObjectRepository.AddAsync(newNotificationObject);
+                    notificationObject = newNotificationObject.OId;
+                }
 
-                    await fcmRepository.PushNotify(currentPost.OId, notification);
-                }
-                catch(Exception)
+                var notificationDetail = new NotificationDetail()
                 {
-                    //Do nothing 
-                }
+                    CreatorId = currentUser.OId,
+                    NotificationObjectId = notificationObject
+                };
+
+                await fcmRepository.PushNotifyDetail(currentPost.OId, notificationDetail);
 
                 //Update again
                 return mapper.Map<CommentViewModel>(comment);
@@ -324,23 +364,45 @@ namespace CoStudy.API.Infrastructure.Shared.Services
                 await fcmRepository.AddToGroup(
                    new AddUserToGroupRequest()
                    {
-                       GroupName = comment.OId,
-                       Type = Feature.GetTypeName(comment),
+                       GroupName = replyComment.OId,
+                       Type = Feature.GetTypeName(replyComment),
                        UserIds = new List<string> { currentUser.OId }
                    }
                    );
 
-                var notification = new Noftication()
+                //Wait for saving
+                Thread.Sleep(50);
+
+                var notificationObjectBuilders = Builders<NotificationObject>.Filter;
+
+                var notificationObjectFilters = notificationObjectBuilders.Eq("object_id", replyComment.OId)
+                    & notificationObjectBuilders.Eq("notification_type", "REPLY_COMMENT_NOTIFY");
+
+                var existNotificationObject = await notificationObjectRepository.FindAsync(notificationObjectFilters);
+
+                string notificationObject = existNotificationObject != null ? existNotificationObject.OId : string.Empty;
+
+                if (existNotificationObject == null)
                 {
-                    AuthorId = currentUser.OId,
-                    OwnerId = comment.AuthorId,
-                    ContentType = ContentType.UPVOTE_POST_NOTIFY,
-                    ObjectId = comment.OId
+                    var newNotificationObject = new NotificationObject()
+                    {
+                        NotificationType = "REPLY_COMMENT_NOTIFY",
+                        ObjectId = replyComment.OId,
+                        OwnerId = replyComment.AuthorId
+                    };
+                    await notificationObjectRepository.AddAsync(newNotificationObject);
+                    notificationObject = newNotificationObject.OId;
+                }
+
+                var notificationDetail = new NotificationDetail()
+                {
+                    CreatorId = currentUser.OId,
+                    NotificationObjectId = notificationObject
                 };
 
-                await fcmRepository.PushNotify(comment.OId, notification);
+                await fcmRepository.PushNotifyDetail(replyComment.OId, notificationDetail);
 
-                return  mapper.Map<ReplyCommentViewModel> (replyComment);
+                return mapper.Map<ReplyCommentViewModel>(replyComment);
             }
             else throw new Exception("Bình luận đã bị xóa");
 
@@ -378,18 +440,35 @@ namespace CoStudy.API.Infrastructure.Shared.Services
 
                 await upVoteRepository.AddAsync(upvote);
 
+                var notificationObjectBuilders = Builders<NotificationObject>.Filter;
 
-              
+                var notificationObjectFilters = notificationObjectBuilders.Eq("object_id", comment.OId)
+                    & notificationObjectBuilders.Eq("notification_type", "UPVOTE_COMMENT_NOTIFY");
 
-                var notification = new Noftication()
+                var existNotificationObject = await notificationObjectRepository.FindAsync(notificationObjectFilters);
+
+                string notificationObject = existNotificationObject != null ? existNotificationObject.OId : string.Empty;
+
+                if (existNotificationObject == null)
                 {
-                    AuthorId = currentUser.OId,
-                    OwnerId = comment.AuthorId,
-                    ContentType = ContentType.UPVOTE_COMMENT_NOTIFY,
-                    ObjectId = comment.OId
+                    var newNotificationObject = new NotificationObject()
+                    {
+                        NotificationType = "UPVOTE_COMMENT_NOTIFY",
+                        ObjectId = comment.OId,
+                        OwnerId = comment.AuthorId
+                    };
+                    await notificationObjectRepository.AddAsync(newNotificationObject);
+                    notificationObject = newNotificationObject.OId;
+                }
+
+                var notificationDetail = new NotificationDetail()
+                {
+                    CreatorId = currentUser.OId,
+                    NotificationObjectId = notificationObject
                 };
 
-                await fcmRepository.PushNotify(commentId, notification);
+                await fcmRepository.PushNotifyDetail(comment.OId, notificationDetail);
+
                 return "Upvote thành công";
             }
 
@@ -413,6 +492,143 @@ namespace CoStudy.API.Infrastructure.Shared.Services
             if (existUpvote != null)
                 await upVoteRepository.DeleteAsync(existUpvote.Id);
 
+            FilterDefinitionBuilder<DownVote> builderDownVote = Builders<DownVote>.Filter;
+
+            FilterDefinition<DownVote> downvoteFinder = builderDownVote.Eq("object_vote_id", commentId) & builderDownVote.Eq("downvote_by", currentUser.OId);
+
+            DownVote existDownvote = await downVoteRepository.FindAsync(downvoteFinder);
+
+            if (existDownvote == null)
+            {
+                DownVote downVote = new DownVote()
+                {
+                    DownVoteBy = currentUser.OId,
+                    ObjectVoteId = commentId,
+                };
+
+                await downVoteRepository.AddAsync(downVote);
+
+                var notificationObjectBuilders = Builders<NotificationObject>.Filter;
+
+                var notificationObjectFilters = notificationObjectBuilders.Eq("object_id", comment.OId)
+                    & notificationObjectBuilders.Eq("notification_type", "DOWNVOTE_COMMENT_NOTIFY");
+
+                var existNotificationObject = await notificationObjectRepository.FindAsync(notificationObjectFilters);
+
+                string notificationObject = existNotificationObject != null ? existNotificationObject.OId : string.Empty;
+
+                if (existNotificationObject == null)
+                {
+                    var newNotificationObject = new NotificationObject()
+                    {
+                        NotificationType = "DOWNVOTE_COMMENT_NOTIFY",
+                        ObjectId = comment.OId,
+                        OwnerId = comment.AuthorId
+                    };
+                    await notificationObjectRepository.AddAsync(newNotificationObject);
+                    notificationObject = newNotificationObject.OId;
+                }
+
+                var notificationDetail = new NotificationDetail()
+                {
+                    CreatorId = currentUser.OId,
+                    NotificationObjectId = notificationObject
+                };
+
+                await fcmRepository.PushNotifyDetail(comment.OId, notificationDetail);
+
+
+
+                return "Downvote thành công";
+            }
+            else return "Bạn đã downvote rồi";
+        }
+
+
+        /// <summary>
+        /// Upvotes the reply comment.
+        /// </summary>
+        /// <param name="commentId">The comment identifier.</param>
+        /// <returns></returns>
+        public async Task<string> UpvoteReplyComment(string commentId)
+        {
+            User currentUser = Feature.CurrentUser(httpContextAccessor, userRepository);
+
+            var comment = await replyCommentRepository.GetByIdAsync(ObjectId.Parse(commentId));
+
+            FilterDefinitionBuilder<DownVote> builder = Builders<DownVote>.Filter;
+
+            FilterDefinition<DownVote> downvoteFinder = builder.Eq("object_vote_id", commentId) & builder.Eq("downvote_by", currentUser.OId);
+
+            DownVote existDownvote = await downVoteRepository.FindAsync(downvoteFinder);
+            if (existDownvote != null)
+                await downVoteRepository.DeleteAsync(existDownvote.Id);
+
+            FilterDefinitionBuilder<UpVote> upvotebuilder = Builders<UpVote>.Filter;
+            FilterDefinition<UpVote> upvoteFinder = upvotebuilder.Eq("object_vote_id", commentId) & upvotebuilder.Eq("upvote_by", currentUser.OId);
+            UpVote existUpvote = await upVoteRepository.FindAsync(upvoteFinder);
+
+            if (existUpvote == null)
+            {
+                UpVote upvote = new UpVote()
+                {
+                    UpVoteBy = currentUser.OId,
+                    ObjectVoteId = commentId,
+                };
+
+                await upVoteRepository.AddAsync(upvote);
+
+                var notificationObjectBuilders = Builders<NotificationObject>.Filter;
+
+                var notificationObjectFilters = notificationObjectBuilders.Eq("object_id", comment.OId)
+                    & notificationObjectBuilders.Eq("notification_type", "UPVOTE_REPLY_NOTIFY");
+
+                var existNotificationObject = await notificationObjectRepository.FindAsync(notificationObjectFilters);
+
+                string notificationObject = existNotificationObject != null ? existNotificationObject.OId : string.Empty;
+
+                if (existNotificationObject == null)
+                {
+                    var newNotificationObject = new NotificationObject()
+                    {
+                        NotificationType = "UPVOTE_REPLY_NOTIFY",
+                        ObjectId = comment.OId,
+                        OwnerId = comment.AuthorId
+                    };
+                    await notificationObjectRepository.AddAsync(newNotificationObject);
+                    notificationObject = newNotificationObject.OId;
+                }
+
+                var notificationDetail = new NotificationDetail()
+                {
+                    CreatorId = currentUser.OId,
+                    NotificationObjectId = notificationObject
+                };
+
+                await fcmRepository.PushNotifyDetail(comment.OId, notificationDetail);
+
+                return "Upvote thành công";
+            }
+
+            else return "Bạn đã upvote rồi";
+        }
+
+        /// <summary>
+        /// Downvotes the reply comment.
+        /// </summary>
+        /// <param name="commentId">The comment identifier.</param>
+        /// <returns></returns>
+        public async Task<string> DownvoteReplyComment(string commentId)
+        {
+
+            User currentUser = Feature.CurrentUser(httpContextAccessor, userRepository);
+            var comment = await replyCommentRepository.GetByIdAsync(ObjectId.Parse(commentId));
+            FilterDefinitionBuilder<UpVote> builder = Builders<UpVote>.Filter;
+            FilterDefinition<UpVote> finder = builder.Eq("object_vote_id", commentId) & builder.Eq("upvote_by", currentUser.OId);
+            UpVote existUpvote = await upVoteRepository.FindAsync(finder);
+
+            if (existUpvote != null)
+                await upVoteRepository.DeleteAsync(existUpvote.Id);
 
             FilterDefinitionBuilder<DownVote> builderDownVote = Builders<DownVote>.Filter;
 
@@ -430,21 +646,42 @@ namespace CoStudy.API.Infrastructure.Shared.Services
 
                 await downVoteRepository.AddAsync(downVote);
 
+                var notificationObjectBuilders = Builders<NotificationObject>.Filter;
 
-                var notification = new Noftication()
+                var notificationObjectFilters = notificationObjectBuilders.Eq("object_id", comment.OId)
+                    & notificationObjectBuilders.Eq("notification_type", "DOWNVOTE_REPLY_NOTIFY");
+
+                var existNotificationObject = await notificationObjectRepository.FindAsync(notificationObjectFilters);
+
+                string notificationObject = existNotificationObject != null ? existNotificationObject.OId : string.Empty;
+
+                if (existNotificationObject == null)
                 {
-                    AuthorId = currentUser.OId,
-                    OwnerId = comment.AuthorId,
-                    ContentType = ContentType.DOWNVOTE_COMMENT_NOTIFY,
-                    ObjectId = comment.OId
+                    var newNotificationObject = new NotificationObject()
+                    {
+                        NotificationType = "DOWNVOTE_REPLY_NOTIFY",
+                        ObjectId = comment.OId,
+                        OwnerId = comment.AuthorId
+                    };
+                    await notificationObjectRepository.AddAsync(newNotificationObject);
+                    notificationObject = newNotificationObject.OId;
+                }
+
+                var notificationDetail = new NotificationDetail()
+                {
+                    CreatorId = currentUser.OId,
+                    NotificationObjectId = notificationObject
                 };
 
+                await fcmRepository.PushNotifyDetail(comment.OId, notificationDetail);
 
-                await fcmRepository.PushNotify(commentId, notification);
+
+
                 return "Downvote thành công";
             }
             else return "Bạn đã downvote rồi";
         }
+
 
         /// <summary>
         /// Updates the comment.

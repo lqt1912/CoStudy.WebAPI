@@ -40,6 +40,14 @@ namespace CoStudy.API.Application.FCM
         Task PushNotify(string clientGroupName, Noftication noftication);
 
         /// <summary>
+        /// Pushes the notify detail.
+        /// </summary>
+        /// <param name="clientGroupName">Name of the client group.</param>
+        /// <param name="notificationDetail">The notification detail.</param>
+        /// <returns></returns>
+        Task PushNotifyDetail(string clientGroupName, NotificationDetail notificationDetail);
+
+        /// <summary>
         /// Sends the notification.
         /// </summary>
         /// <returns></returns>

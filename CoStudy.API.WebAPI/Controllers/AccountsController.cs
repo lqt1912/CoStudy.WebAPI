@@ -2,7 +2,9 @@
 using CoStudy.API.Domain.Entities.Identity.MongoAuthen;
 using CoStudy.API.Infrastructure.Identity.Models.Account.Request;
 using CoStudy.API.Infrastructure.Identity.Models.Account.Response;
+using CoStudy.API.Infrastructure.Identity.Models.GoogleAuth;
 using CoStudy.API.Infrastructure.Identity.Services.AccountService;
+using CoStudy.API.Infrastructure.Identity.Services.GoogleAuthService;
 using CoStudy.API.WebAPI.Middlewares;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -24,6 +26,9 @@ namespace CoStudy.API.WebAPI.Controllers
         /// The account service
         /// </summary>
         private readonly IAccountService _accountService;
+
+        private readonly IGoogleAuthServices googleAuthServices;
+
         /// <summary>
         /// The mapper
         /// </summary>
@@ -40,11 +45,12 @@ namespace CoStudy.API.WebAPI.Controllers
         /// <param name="httpContextAccessor">The HTTP context accessor.</param>
         public AccountsController(
             IAccountService accountService,
-            IMapper mapper, IHttpContextAccessor httpContextAccessor)
+            IMapper mapper, IHttpContextAccessor httpContextAccessor, IGoogleAuthServices googleAuthServices)
         {
             _accountService = accountService;
             _mapper = mapper;
             this.httpContextAccessor = httpContextAccessor;
+            this.googleAuthServices = googleAuthServices;
         }
 
         /// <summary>
@@ -58,6 +64,15 @@ namespace CoStudy.API.WebAPI.Controllers
             AuthenticateResponse response = _accountService.Authenticate(model, ipAddress());
             setTokenCookie(response.RefreshToken);
             return Ok(new ApiOkResponse(response));
+        }
+
+
+        [HttpPost("google-login")]
+        public async  Task<ActionResult<object>> GoogleLogin(GoogleAuthenticationRequest request)
+        {
+            var data =await  googleAuthServices.ExternalLogin(request, ipAddress());
+
+            return Ok(new ApiOkResponse(data));
         }
 
         /// <summary>
