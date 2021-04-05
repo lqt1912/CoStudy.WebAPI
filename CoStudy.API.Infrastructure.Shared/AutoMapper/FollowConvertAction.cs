@@ -1,7 +1,9 @@
 ﻿using AutoMapper;
+using CoStudy.API.Application.Features;
 using CoStudy.API.Application.Repositories;
 using CoStudy.API.Domain.Entities.Application;
 using CoStudy.API.Infrastructure.Shared.ViewModels;
+using Microsoft.AspNetCore.Http;
 using MongoDB.Bson;
 using System;
 using System.Collections.Generic;
@@ -22,12 +24,25 @@ namespace CoStudy.API.Infrastructure.Shared.AutoMapper
         IUserRepository userRepository;
 
         /// <summary>
+        /// The follow repository
+        /// </summary>
+        IFollowRepository followRepository;
+
+        IHttpContextAccessor httpContextAccessor;
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="FollowConvertAction"/> class.
         /// </summary>
         /// <param name="userRepository">The user repository.</param>
-        public FollowConvertAction(IUserRepository userRepository)
+        /// <param name="followRepository">The follow repository.</param>
+        /// <param name="httpContextAccessor">The HTTP context accessor.</param>
+        public FollowConvertAction(IUserRepository userRepository, 
+            IFollowRepository followRepository, 
+            IHttpContextAccessor httpContextAccessor)
         {
             this.userRepository = userRepository;
+            this.followRepository = followRepository;
+            this.httpContextAccessor = httpContextAccessor;
         }
 
         /// <summary>
@@ -39,11 +54,18 @@ namespace CoStudy.API.Infrastructure.Shared.AutoMapper
         /// <exception cref="Exception">Không tìm thấy người theo dõi phù hợp.</exception>
         public void Process(Follow source, FollowViewModel destination, ResolutionContext context)
         {
+
+            var currentUser = Feature.CurrentUser(httpContextAccessor, userRepository);
+
             var fromUser = userRepository.GetById(ObjectId.Parse(source.FromId));
             var toUser = userRepository.GetById(ObjectId.Parse(source.ToId));
 
             if (fromUser == null || toUser == null)
                 throw new Exception("Không tìm thấy người theo dõi phù hợp. ");
+
+            if (fromUser.OId == currentUser.OId)
+                destination.IsFollowByCurrent = true;
+            else destination.IsFollowByCurrent = false;
 
             destination.FromAvatar = fromUser.AvatarHash;
             destination.FromName = $"{fromUser.FirstName} {fromUser.LastName}";

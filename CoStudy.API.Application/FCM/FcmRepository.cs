@@ -443,6 +443,22 @@ namespace CoStudy.API.Application.FCM
                     }
                 }
 
+                var notificationToPush = new PushedNotificationViewModel()
+                {
+                    AuthorName = $"{creator.FirstName} {creator.LastName}",
+                    AuthorAvatar = creator.AvatarHash,
+                    AuthorId = creator.OId,
+                    Content = notifyContent,
+                    CreatedDate = DateTime.Now,
+                    IsRead = false,
+                    ModifiedDate = DateTime.Now,
+                    ObjectId = notificationObject.ObjectId,
+                    OId = notificationObject.OId,
+                    OwnerId = owner.OId,
+                    Status = ItemStatus.Active
+                };
+
+
                 try
                 {
                     if (!(owner == creator && receiver == owner))
@@ -455,7 +471,7 @@ namespace CoStudy.API.Application.FCM
                             Token = token,
                             Data = new Dictionary<string, string>()
                         {
-                            { "notification",  JsonConvert.SerializeObject(finalNotificationDetail) }
+                            { "notification",  JsonConvert.SerializeObject(notificationToPush) }
                         },
                             Notification = new Notification()
                             {

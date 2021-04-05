@@ -40,7 +40,7 @@ namespace CoStudy.API.Infrastructure.Shared.ViewModels
         /// </value>
         [JsonProperty("to_name")]
         [JsonPropertyName("to_name")]
-        public string  ToName { get; set; }
+        public string ToName { get; set; }
 
 
         /// <summary>
@@ -51,7 +51,7 @@ namespace CoStudy.API.Infrastructure.Shared.ViewModels
         /// </value>
         [JsonProperty("from_avatar")]
         [JsonPropertyName("from_avatar")]
-        public string  FromAvatar { get; set; }
+        public string FromAvatar { get; set; }
 
         /// <summary>
         /// Converts to avatar.
@@ -61,7 +61,7 @@ namespace CoStudy.API.Infrastructure.Shared.ViewModels
         /// </value>
         [JsonProperty("to_avatar")]
         [JsonPropertyName("to_avatar")]
-        public string  ToAvatar { get; set; }
+        public string ToAvatar { get; set; }
 
         /// <summary>
         /// Gets or sets the follow date.
@@ -91,7 +91,16 @@ namespace CoStudy.API.Infrastructure.Shared.ViewModels
         /// </value>
         [JsonProperty("to_id")]
         [JsonPropertyName("to_id")]
-        public string  ToId { get; set; }
+        public string ToId { get; set; }
 
+        /// <summary>
+        /// Gets or sets the is follow by current.
+        /// </summary>
+        /// <value>
+        /// The is follow by current.
+        /// </value>
+        [JsonProperty("is_follow_by_current")]
+        [JsonPropertyName("is_follow_by_current")]
+        public bool? IsFollowByCurrent { get; set; }
     }
 }

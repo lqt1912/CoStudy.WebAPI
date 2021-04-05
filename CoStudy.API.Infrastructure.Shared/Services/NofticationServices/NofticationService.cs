@@ -243,8 +243,6 @@ namespace CoStudy.API.Infrastructure.Shared.Services.NofticationServices
 
                     if (notificationDetails.Count() == 1)
                     {
-
-
                         NotificationViewModel notificationViewModel = new NotificationViewModel()
                         {
                             AuthorAvatar = creator.AvatarHash,
@@ -297,11 +295,13 @@ namespace CoStudy.API.Infrastructure.Shared.Services.NofticationServices
             User currentUser = Feature.CurrentUser(contextAccessor, userRepository);
 
             FilterDefinitionBuilder<NotificationDetail> notificationDetailBuilder = Builders<NotificationDetail>.Filter;
+           
             FilterDefinition<NotificationDetail> notificationDetailFilter = notificationDetailBuilder.Eq("is_deleted", false)
                 & notificationDetailBuilder.Eq("notification_object_id", notificationObjectId)
                 & notificationDetailBuilder.Eq("receiver_id", currentUser.OId);
 
             List<NotificationDetail> notificationDetails = await notificationDetailRepository.FindListAsync(notificationDetailFilter);
+            
             foreach (NotificationDetail notificationDetail in notificationDetails)
             {
                 notificationDetail.IsDeleted = true;
