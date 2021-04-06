@@ -161,6 +161,15 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
             Post post = PostAdapter.FromRequest(request);
             post.AuthorId = currentUser.Id.ToString();
 
+            ///Check allowed word
+            foreach (var stringContent in post.StringContents)
+            {
+                if (StringUtils.ValidateAllowString(configuration, stringContent.Content) == false)
+                    throw new Exception("Nội dung có chứa từ ngữ không hợp lệ. ");
+            }
+
+            if (StringUtils.ValidateAllowString(configuration, post.Title) == false)
+                throw new Exception("Tiêu đề có chứa từ ngữ không hợp lệ. ");
 
             await postRepository.AddAsync(post);
 

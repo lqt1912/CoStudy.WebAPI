@@ -1,6 +1,10 @@
-﻿using CoStudy.API.Application.Repositories;
+﻿using AutoMapper;
+using CoStudy.API.Application.Features;
+using CoStudy.API.Application.Repositories;
 using CoStudy.API.Domain.Entities.Application;
 using CoStudy.API.Infrastructure.Shared.Models.Request.BaseRequest;
+using CoStudy.API.Infrastructure.Shared.ViewModels;
+using Microsoft.AspNetCore.Http;
 using MongoDB.Bson;
 using System;
 using System.Collections.Generic;
@@ -22,12 +26,30 @@ namespace CoStudy.API.Infrastructure.Shared.Services
         IReportReasonRepository reportReasonRepository;
 
         /// <summary>
+        /// The HTTP context accessor
+        /// </summary>
+        IHttpContextAccessor httpContextAccessor;
+
+        /// <summary>
+        /// The user repository
+        /// </summary>
+        IUserRepository userRepository;
+
+        /// <summary>
+        /// The mapper
+        /// </summary>
+        IMapper mapper;
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="ReportReasonService"/> class.
         /// </summary>
         /// <param name="reportReasonRepository">The report reason repository.</param>
-        public ReportReasonService(IReportReasonRepository reportReasonRepository)
+        public ReportReasonService(IReportReasonRepository reportReasonRepository, IMapper mapper, IHttpContextAccessor httpContextAccessor, IUserRepository userRepository)
         {
             this.reportReasonRepository = reportReasonRepository;
+            this.mapper = mapper;
+            this.httpContextAccessor = httpContextAccessor;
+            this.userRepository = userRepository;
         }
 
         /// <summary>
@@ -35,14 +57,16 @@ namespace CoStudy.API.Infrastructure.Shared.Services
         /// </summary>
         /// <param name="entity">The entity.</param>
         /// <returns></returns>
-        public async Task<ReportReason> Add(ReportReason entity)
+        public async Task<ReportReasonViewModel> Add(ReportReason entity)
         {
+            var currentUser = Feature.CurrentUser(httpContextAccessor, userRepository);
             var data = new ReportReason()
             {
-                Detail = entity.Detail
+                Detail = entity.Detail,
+                CreatedBy = currentUser.OId
             };
-            await reportReasonRepository.AddAsync(entity);
-            return data;
+            await reportReasonRepository.AddAsync(data);
+            return mapper.Map<ReportReasonViewModel>( data);
         }
 
         /// <summary>
@@ -50,14 +74,14 @@ namespace CoStudy.API.Infrastructure.Shared.Services
         /// </summary>
         /// <param name="request">The request.</param>
         /// <returns></returns>
-        public IEnumerable<ReportReason> GetAll(BaseGetAllRequest request)
+        public IEnumerable<ReportReasonViewModel> GetAll(BaseGetAllRequest request)
         {
             var data = reportReasonRepository.GetAll();
             if(request.Count.HasValue && request.Skip.HasValue)
             {
                 data = data.Skip(request.Skip.Value).Take(request.Count.Value);
             }
-            return data;
+            return mapper.Map<IEnumerable<ReportReasonViewModel>>( data);
         }
 
 

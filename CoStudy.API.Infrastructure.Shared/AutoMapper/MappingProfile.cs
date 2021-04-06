@@ -66,6 +66,10 @@ namespace CoStudy.API.Infrastructure.Shared.AutoMapper
             CreateMap<Level, LevelViewModel>();
 
             CreateMap<Noftication, NotificationViewModel>().AfterMap<NotificationConvertAction>();
+
+            CreateMap<ReportReason, ReportReasonViewModel>().AfterMap<ReportReasonConvertAction>();
+
+            CreateMap<Report, ReportViewModel>().AfterMap<ReportConvertAction>();
         }
 
     }

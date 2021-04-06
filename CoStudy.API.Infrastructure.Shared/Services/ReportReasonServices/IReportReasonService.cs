@@ -1,5 +1,6 @@
 ﻿using CoStudy.API.Domain.Entities.Application;
 using CoStudy.API.Infrastructure.Shared.Models.Request.BaseRequest;
+using CoStudy.API.Infrastructure.Shared.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -17,13 +18,14 @@ namespace CoStudy.API.Infrastructure.Shared.Services
         /// </summary>
         /// <param name="entity">The entity.</param>
         /// <returns></returns>
-        Task<ReportReason> Add(ReportReason entity);
+        Task<ReportReasonViewModel> Add(ReportReason entity);
+
         /// <summary>
         /// Gets all.
         /// </summary>
         /// <param name="request">The request.</param>
         /// <returns></returns>
-        IEnumerable<ReportReason> GetAll(BaseGetAllRequest request);
+        IEnumerable<ReportReasonViewModel> GetAll(BaseGetAllRequest request);
         /// <summary>
         /// Deletes the specified identifier.
         /// </summary>

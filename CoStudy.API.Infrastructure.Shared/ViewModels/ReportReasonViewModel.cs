@@ -1,17 +1,24 @@
 ﻿using CoStudy.API.Domain.Entities.BaseEntity;
-using MongoDB.Bson.Serialization.Attributes;
 using Newtonsoft.Json;
 using System;
 using System.Text.Json.Serialization;
 
-namespace CoStudy.API.Domain.Entities.Application
+namespace CoStudy.API.Infrastructure.Shared.ViewModels
 {
     /// <summary>
-    /// Class ReportReason
+    /// Class ReportReasonViewModel
     /// </summary>
-    /// <seealso cref="CoStudy.API.Domain.Entities.BaseEntity.Entity" />
-    public class ReportReason : Entity
+    public class ReportReasonViewModel
     {
+        /// <summary>
+        /// Gets or sets the o identifier.
+        /// </summary>
+        /// <value>
+        /// The o identifier.
+        /// </value>
+        [JsonProperty("oid")]
+        [JsonPropertyName("oid")]
+        public string OId { get; set; }
 
         /// <summary>
         /// Gets or sets the detail.
@@ -19,21 +26,18 @@ namespace CoStudy.API.Domain.Entities.Application
         /// <value>
         /// The detail.
         /// </value>
-        [BsonElement("detail")]
-        [JsonPropertyName("detail")]
         [JsonProperty("detail")]
+        [JsonPropertyName("detail")]
         public string Detail { get; set; }
 
-        /// <summary>
-        /// Gets or sets the created by.
-        /// </summary>
-        /// <value>
-        /// The created by.
-        /// </value>
-        [BsonElement("created_by")]
+
         [JsonProperty("created_by")]
         [JsonPropertyName("created_by")]
         public string CreatedBy { get; set; }
+
+        [JsonProperty("created_by_name")]
+        [JsonPropertyName("created_by_name")]
+        public string  CreatedByName { get; set; }
 
         /// <summary>
         /// Gets or sets the created date.
@@ -41,11 +45,9 @@ namespace CoStudy.API.Domain.Entities.Application
         /// <value>
         /// The created date.
         /// </value>
-        [BsonElement("created_date")]
         [JsonProperty("created_date")]
         [JsonPropertyName("created_date")]
         public DateTime? CreatedDate { get; set; } = DateTime.Now;
-
 
         /// <summary>
         /// Gets or sets the modified date.
@@ -53,10 +55,8 @@ namespace CoStudy.API.Domain.Entities.Application
         /// <value>
         /// The modified date.
         /// </value>
-        [BsonElement("modified_date")]
         [JsonProperty("modified_date")]
         [JsonPropertyName("modified_date")]
         public DateTime? ModifiedDate { get; set; } = DateTime.Now;
-
     }
 }

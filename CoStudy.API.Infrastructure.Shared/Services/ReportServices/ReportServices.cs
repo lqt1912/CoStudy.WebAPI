@@ -1,6 +1,11 @@
-﻿using CoStudy.API.Application.Repositories;
+﻿using AutoMapper;
+using CoStudy.API.Application.Features;
+using CoStudy.API.Application.Repositories;
 using CoStudy.API.Domain.Entities.Application;
 using CoStudy.API.Infrastructure.Shared.Models.Request.BaseRequest;
+using CoStudy.API.Infrastructure.Shared.Models.Request.ReportRequest;
+using CoStudy.API.Infrastructure.Shared.ViewModels;
+using Microsoft.AspNetCore.Http;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using System;
@@ -23,12 +28,54 @@ namespace CoStudy.API.Infrastructure.Shared.Services
         IReportRepository reportRepository;
 
         /// <summary>
+        /// The mapper
+        /// </summary>
+        IMapper mapper;
+
+        /// <summary>
+        /// The user repository
+        /// </summary>
+        IUserRepository userRepository;
+
+        /// <summary>
+        /// The HTTP context accessor
+        /// </summary>
+        IHttpContextAccessor httpContextAccessor;
+
+        /// <summary>
+        /// The post repository
+        /// </summary>
+        IPostRepository postRepository;
+
+        /// <summary>
+        /// The comment repository
+        /// </summary>
+        ICommentRepository commentRepository;
+
+        /// <summary>
+        /// The reply comment repository
+        /// </summary>
+        IReplyCommentRepository replyCommentRepository;
+
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="ReportServices"/> class.
         /// </summary>
         /// <param name="reportRepository">The report repository.</param>
-        public ReportServices(IReportRepository reportRepository)
+        public ReportServices(IReportRepository reportRepository, 
+            IMapper mapper, IUserRepository userRepository, 
+            IHttpContextAccessor httpContextAccessor,
+            IPostRepository postRepository, 
+            ICommentRepository commentRepository, 
+            IReplyCommentRepository replyCommentRepository)
         {
             this.reportRepository = reportRepository;
+            this.mapper = mapper;
+            this.userRepository = userRepository;
+            this.httpContextAccessor = httpContextAccessor;
+            this.postRepository = postRepository;
+            this.commentRepository = commentRepository;
+            this.replyCommentRepository = replyCommentRepository;
         }
 
 
@@ -37,44 +84,67 @@ namespace CoStudy.API.Infrastructure.Shared.Services
         /// </summary>
         /// <param name="entity">The entity.</param>
         /// <returns></returns>
-        public async Task<Report> Add(Report entity)
+        public async Task<ReportViewModel> Add(Report entity)
         {
             var data = new Report()
             {
                 CreatedDate = DateTime.Now,
                 AuthorId = entity.AuthorId,
-                IsApprove = false,
+                IsApproved = false,
                 ModifiedDate = DateTime.Now,
                 Reason = entity.Reason,
                 ObjectId = entity.ObjectId,
             };
             await reportRepository.AddAsync(data);
-            return data;
+            return mapper.Map<ReportViewModel>(data);
         }
 
+        /// <summary>
+        /// Posts the report.
+        /// </summary>
+        /// <param name="request">The request.</param>
+        /// <returns></returns>
+        public async Task<ReportViewModel> PostReport(CreatePostReportRequest request)
+        {
+            var currentUser = Feature.CurrentUser(httpContextAccessor, userRepository);
+
+            var post = new Post();
+
+            var data = new Report()
+            {
+                AuthorId = currentUser.OId,
+                Reason = request.Reason.ToList(),
+                ObjectId = request.PostId,
+                ObjectType = Feature.GetTypeName(post)
+            };
+
+            await reportRepository.AddAsync(data);
+
+            return mapper.Map<ReportViewModel>(data);
+
+        }
 
         /// <summary>
         /// Gets all.
         /// </summary>
         /// <param name="request">The request.</param>
         /// <returns></returns>
-        public IEnumerable<Report> GetAll(BaseGetAllRequest request)
+        public IEnumerable<ReportViewModel> GetAll(BaseGetAllRequest request)
         {
             var data = reportRepository.GetAll();
             if (request.Count.HasValue && request.Skip.HasValue)
             {
                 data = data.Skip(request.Skip.Value).Take(request.Count.Value);
             }
-            return data;
+            return mapper.Map<IEnumerable<ReportViewModel>>(data);
         }
 
-
         /// <summary>
-        /// Appvores the specified ids.
+        /// Approves the specified ids.
         /// </summary>
         /// <param name="ids">The ids.</param>
         /// <returns></returns>
-        public async Task<IEnumerable<Report>> Appvore(IEnumerable<string> ids)
+        public async Task<IEnumerable<ReportViewModel>> Approve(IEnumerable<string> ids)
         {
             var dataToApprove = new List<Report>();
             foreach (var item in ids)
@@ -84,15 +154,69 @@ namespace CoStudy.API.Infrastructure.Shared.Services
                     dataToApprove.Add(rp);
             }
 
+            var currentUser = Feature.CurrentUser(httpContextAccessor, userRepository);
+
             foreach (var item in dataToApprove)
             {
-                item.IsApprove = true;
+                item.IsApproved = true;
                 item.ModifiedDate = DateTime.Now;
-                item.ApprovedBy = "Admin";
+                item.ApprovedBy = currentUser.OId;
+                item.ApproveDate = DateTime.Now;
                 await reportRepository.UpdateAsync(item, item.Id);
+
+
+                if(item.ObjectType.Contains("Post"))
+                {
+
+                }
+
+
             }
-            return dataToApprove;
+            return mapper.Map<IEnumerable<ReportViewModel>>( dataToApprove);
         }
 
+        /// <summary>
+        /// Comments the report.
+        /// </summary>
+        /// <param name="request">The request.</param>
+        /// <returns></returns>
+        /// <exception cref="NotImplementedException"></exception>
+        public async Task<ReportViewModel> CommentReport(CreateCommentReportRequest request)
+        {
+            var currentUser = Feature.CurrentUser(httpContextAccessor, userRepository);
+
+            var comment = new Comment();
+
+            var data = new Report()
+            {
+                AuthorId = currentUser.OId,
+                Reason = request.Reason.ToList(),
+                ObjectId = request.CommentId,
+                ObjectType = Feature.GetTypeName(comment)
+            };
+
+            await reportRepository.AddAsync(data);
+
+            return mapper.Map<ReportViewModel>(data);
+        }
+
+        public async Task<ReportViewModel> ReplyReport(CreateReplyReportRequest request)
+        {
+            var currentUser = Feature.CurrentUser(httpContextAccessor, userRepository);
+
+            var comment = new ReplyComment();
+
+            var data = new Report()
+            {
+                AuthorId = currentUser.OId,
+                Reason = request.Reason.ToList(),
+                ObjectId = request.ReplyId,
+                ObjectType = Feature.GetTypeName(comment)
+            };
+
+            await reportRepository.AddAsync(data);
+
+            return mapper.Map<ReportViewModel>(data);
+        }
     }
 }

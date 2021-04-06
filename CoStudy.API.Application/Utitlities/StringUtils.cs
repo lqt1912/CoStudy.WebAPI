@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Extensions.Configuration;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -66,6 +67,23 @@ namespace CoStudy.API.Application.Utitlities
         public static string NormalizeSearch(this string s)
         {
             return TrimExToLower(RemoveVnChars(s));
+        }
+
+        /// <summary>
+        /// Validates if the string contains any unallowed word.
+        /// </summary>
+        /// <param name="configuration">The configuration.</param>
+        /// <param name="inputString">The input string.</param>
+        /// <returns></returns>
+        public static bool ValidateAllowString(IConfiguration configuration, string inputString)
+        {
+            string[] unAllowStrings = configuration.GetSection("UnAllowWord").Get<string[]>();
+            foreach (var unallowString in unAllowStrings )
+            {
+                if (NormalizeSearch(inputString).Contains(NormalizeSearch( unallowString)))
+                    return false;
+            }
+            return true;
         }
 
     }
