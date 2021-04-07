@@ -1,8 +1,10 @@
 ﻿using AutoMapper;
 using CoStudy.API.Application.Repositories;
 using CoStudy.API.Domain.Entities.Application;
+using CoStudy.API.Infrastructure.Shared.Models.Request.LoggingRequest;
 using CoStudy.API.Infrastructure.Shared.Paging;
 using CoStudy.API.Infrastructure.Shared.ViewModels;
+using MongoDB.Bson;
 using MongoDB.Driver;
 using System;
 using System.Collections.Generic;
@@ -101,6 +103,30 @@ namespace CoStudy.API.Infrastructure.Shared.Services
                 item.Index = response.data.IndexOf(item)+ request.start +1;
             }
             return response;
+        }
+
+        /// <summary>
+        /// Deletes the specified request.
+        /// </summary>
+        /// <param name="request">The request.</param>
+        /// <returns></returns>
+        public async Task<string> Delete(DeleteLoggingRequest request)
+        {
+            if (request.Ids == null)
+                request.Ids = new List<string>();
+
+            int count = 0;
+            foreach (var id in request.Ids)
+            {
+                var existLogging = await loggingRepository.GetByIdAsync(ObjectId.Parse(id));
+                if(existLogging!=null)
+                {
+                    await loggingRepository.DeleteAsync(existLogging.Id);
+                    count++;
+                }
+            }
+            return $"Đã xóa {count} đối tượng. ";
+
         }
     }
 }

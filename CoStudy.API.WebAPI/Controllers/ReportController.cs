@@ -82,6 +82,11 @@ namespace CoStudy.API.WebAPI.Controllers
             return Ok(new ApiOkResponse(data));
         }
 
+        /// <summary>
+        /// Approves the report.
+        /// </summary>
+        /// <param name="ids">The ids.</param>
+        /// <returns></returns>
         [HttpPost("approve-report")]
         public async Task<IActionResult> ApproveReport(IEnumerable<string> ids)
         {

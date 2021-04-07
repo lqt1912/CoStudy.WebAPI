@@ -1,4 +1,5 @@
-﻿using CoStudy.API.Infrastructure.Shared.Paging;
+﻿using CoStudy.API.Infrastructure.Shared.Models.Request.LoggingRequest;
+using CoStudy.API.Infrastructure.Shared.Paging;
 using CoStudy.API.Infrastructure.Shared.Services;
 using CoStudy.API.WebAPI.Middlewares;
 using Microsoft.AspNetCore.Http;
@@ -32,6 +33,14 @@ namespace CoStudy.API.WebAPI.Controllers
         public async Task<IActionResult> CountStatusCode()
         { 
             var data =await loggingServices.CountResultCode();
+            return Ok(new ApiOkResponse(data));
+        }
+
+
+        [HttpPost, Route("delete")]
+        public async Task<IActionResult> Delete(DeleteLoggingRequest request)
+        {
+            var data = await loggingServices.Delete(request);
             return Ok(new ApiOkResponse(data));
         }
     }

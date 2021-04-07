@@ -4,8 +4,22 @@ using System.Text;
 
 namespace CoStudy.API.Infrastructure.Shared.ViewModels
 {
-   public  class LoggingViewModel
+    public class LoggingViewModel
     {
+        /// <summary>
+        /// Gets or sets the o identifier.
+        /// </summary>
+        /// <value>
+        /// The o identifier.
+        /// </value>
+        public string OId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the index.
+        /// </summary>
+        /// <value>
+        /// The index.
+        /// </value>
         public int Index { get; set; }
         /// <summary>
         /// Gets or sets the request method.
