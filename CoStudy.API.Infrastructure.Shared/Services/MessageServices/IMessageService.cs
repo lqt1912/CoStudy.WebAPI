@@ -8,16 +8,10 @@ using System.Threading.Tasks;
 namespace CoStudy.API.Infrastructure.Shared.Services.MessageServices
 {
     /// <summary>
-    /// The Message Service Interface
+    /// The MessageService Interface
     /// </summary>
     public interface IMessageService
     {
-        /// <summary>
-        /// Adds the conversation.
-        /// </summary>
-        /// <param name="request">The request.</param>
-        /// <returns></returns>
-        Task<ConversationViewModel> AddConversation(AddConversationRequest request);
         /// <summary>
         /// Adds the message.
         /// </summary>
@@ -31,22 +25,12 @@ namespace CoStudy.API.Infrastructure.Shared.Services.MessageServices
         /// <param name="request">The request.</param>
         /// <returns></returns>
         Task<IEnumerable<MessageViewModel>> GetMessageByConversationId(GetMessageByConversationIdRequest request);
-        /// <summary>
-        /// Gets the conversation by user identifier.
-        /// </summary>
-        /// <returns></returns>
-        GetConversationByUserIdResponse GetConversationByUserId();
+      
         /// <summary>
         /// Gets all.
         /// </summary>
         /// <returns></returns>
         List<Message> GetAll();
-        /// <summary>
-        /// Deletes the conversation.
-        /// </summary>
-        /// <param name="id">The identifier.</param>
-        /// <returns></returns>
-        Task<string> DeleteConversation(string id);
         /// <summary>
         /// Deletes the message.
         /// </summary>
@@ -59,15 +43,5 @@ namespace CoStudy.API.Infrastructure.Shared.Services.MessageServices
         /// <param name="request">The request.</param>
         /// <returns></returns>
         Task<MessageViewModel> EditMessage(UpdateMessageRequest request);
-
-        /// <summary>
-        /// Adds the member.
-        /// </summary>
-        /// <param name="users">The users.</param>
-        /// <param name="conversationId">The conversation identifier.</param>
-        /// <returns></returns>
-        Task<IEnumerable<MessageViewModel>> AddMember(AddMemberRequest request);
-
-      
     }
 }

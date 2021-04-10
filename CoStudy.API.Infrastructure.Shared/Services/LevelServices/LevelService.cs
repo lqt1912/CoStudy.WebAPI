@@ -96,7 +96,6 @@ namespace CoStudy.API.Infrastructure.Shared.Services
                 {
                     if (existObjectLevels.FirstOrDefault(x => x.FieldId == item) == null)
                     {
-
                         ObjectLevel objectLevel = new ObjectLevel()
                         {
                             LevelId = Constants.LevelConstants.LEVEL_0_ID,
@@ -367,6 +366,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services
             if (post != null)
             {
                 User currentUser = Feature.CurrentUser(httpContextAccessor, userRepository);
+
                 if (currentUser.OId != post.AuthorId)
                 {
                     throw new Exception("Bạn không có quyền chỉnh sửa nội dung này. ");

@@ -1,5 +1,4 @@
-﻿using CoStudy.API.Application.FCM;
-using FirebaseAdmin;
+﻿using FirebaseAdmin;
 using Google.Apis.Auth.OAuth2;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -55,8 +54,6 @@ namespace CoStudy.API.Application.Repositories
 
             services.AddTransient<IFcmInfoRepository, FcmInfoRepository>();
 
-            services.AddTransient<IFcmRepository, FcmRepository>();
-
             services.AddTransient<IProvinceRepository, ProvinceRepository>();
 
             services.AddTransient<IDistrictRepository, DistrictRepository>();
@@ -85,6 +82,17 @@ namespace CoStudy.API.Application.Repositories
 
             services.AddTransient<INotificationTypeRepository, NotificationTypeRepository>();
 
+            services.AddTransient<IConversationItemTypeRepository, ConversationItemTypeRepository>();
+
+            services.AddTransient<IMessageImageRepository, MessageImageRepository>();
+
+            services.AddTransient<IMessageMultiMediaRepository, MessageMultiMediaRepository>();
+
+            services.AddTransient<IMessagePostThumbnailRepository, MessagePostThumbnailRepository>();
+
+            services.AddTransient<IMessageTextRepository, MessageTextRepository>();
+
+            services.AddTransient<IMessageConversationActivityRepository, MessageConversationActivityRepository>();
         }
 
     }

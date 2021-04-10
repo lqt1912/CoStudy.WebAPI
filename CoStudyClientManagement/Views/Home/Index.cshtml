@@ -72,28 +72,14 @@
         <!-- ./col -->
     </div>
     <div class="w-100 form-row pb-3 ">
-        <div class="col-4 mb-2"> <input id="txtSearch" class=" form-control" placeholder="Phương thức" /> </div>
-        <div class="col-4 mb-2"> <input id="txtLocation" class="form-control" placeholder="Địa chỉ" /> </div>
-        <div class="col-4 mb-2"> <input id="txtStatusCode" class="form-control" placeholder="Mã phản hồi" /></div>
-        <div class="col-6 form-group row m-0">
-            <label for="" class="col-sm-3 col-form-label">Từ ngày </label>
-            <div class="col-sm-9">
-                <input type="date" class="form-control" id="dtmFromDate" placeholder="">
-            </div>
-        </div>
+        <div class="col-3 mb-2"> <input id="txtSearch" class=" form-control" placeholder="Phương thức" /> </div>
+        <div class="col-3 mb-2"> <input id="txtLocation" class="form-control" placeholder="Địa chỉ" /> </div>
+        <div class="col-3 mb-2"> <input id="txtStatusCode" class="form-control" placeholder="Mã phản hồi" /></div>
+       <div class="col-3 mb-2">  <input id="txtDate"  class="form-control"  placeholder="Ngày"/></div>
 
-        <div class="col-6 form-group row m-0">
-            <label for="" class="col-sm-3 col-form-label">Đến ngày </label>
-            <div class="col-sm-9">
-                <input type="date" class="form-control" id="dtmToDate" placeholder="">
-            </div>
-        </div>
-
-        <div class="col-12 row pt-2">
             <div class="col-4"> <button id="btnSearch" class="form-control btn btn-info"> Tìm kiếm </button></div>
             <div class="col-4"> <button id="btnClear" class="form-control btn btn-primary"> Refresh  </button></div>
             <div class="col-4"><button id="" type="button" data-toggle="modal" data-target="#deleteConfirmModal" class="form-control btn btn-danger">Xóa </button></div>
-        </div>
     </div>
 
 
@@ -290,7 +276,7 @@
             oTable.columns(3).search($('#txtStatusCode').val());
             oTable.columns(1).search($('#txtLocation').val());
             oTable.columns(0).search($('#txtSearch').val());
-
+            oTable.columns()
             alert($("#dtmFromDate").val());
             //hit search on server
             oTable.draw();

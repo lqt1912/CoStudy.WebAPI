@@ -37,6 +37,8 @@ namespace CoStudy.API.Infrastructure.Shared.Models.Request.PostRequest
         [JsonPropertyName("image_contents")]
         public List<Image> MediaContents { get; set; }
 
+        [JsonPropertyName("fields")]
+        public IEnumerable<ObjectLevel> Fields { get; set; }
 
     }
 }

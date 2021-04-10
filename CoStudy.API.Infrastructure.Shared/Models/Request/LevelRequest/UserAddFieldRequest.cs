@@ -27,7 +27,7 @@ namespace CoStudy.API.Infrastructure.Shared.Models.Request.LevelRequest
         /// <value>
         /// The field identifier.
         /// </value>
-        [ListRequired]
+        [ListRequired( MaxCount =10, MinCount =1, UpperLimitMessage ="Vượt quá giới hạn", LowerLimitMessage ="Ít hơn giới hạn")]
         [JsonPropertyName("field_id")]
         public IEnumerable<string> FieldId { get; set; }
     }

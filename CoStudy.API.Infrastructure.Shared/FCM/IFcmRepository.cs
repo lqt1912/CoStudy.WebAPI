@@ -1,4 +1,5 @@
 ﻿using CoStudy.API.Domain.Entities.Application;
+using CoStudy.API.Infrastructure.Shared.ViewModels;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -30,7 +31,7 @@ namespace CoStudy.API.Application.FCM
         /// <param name="clientGroupName">Name of the client group.</param>
         /// <param name="message">The message.</param>
         /// <returns></returns>
-        Task SendMessage(string clientGroupName, Message message);
+        Task SendMessage(string clientGroupName, MessageViewModel message);
         /// <summary>
         /// Pushes the notify.
         /// </summary>

@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using CoStudy.API.Application.FCM;
 using CoStudy.API.Infrastructure.Shared.AutoMapper;
 using CoStudy.API.Infrastructure.Shared.Services.LocationServices;
 using CoStudy.API.Infrastructure.Shared.Services.MessageServices;
@@ -32,7 +33,8 @@ namespace CoStudy.API.Infrastructure.Shared.Services
             services.AddTransient<IIdentityService, IdentityService>();
             services.AddTransient<IReportReasonService, ReportReasonService>();
             services.AddTransient<ILoggingServices, LoggingServices>();
+            services.AddTransient<IConversationService, ConversationService>();
+            services.AddTransient<IFcmRepository, FcmRepository>();
         }
-      
     }
 }

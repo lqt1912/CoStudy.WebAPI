@@ -1,4 +1,5 @@
 ﻿using CoStudy.API.Domain.Entities.Application;
+using CoStudy.API.Infrastructure.Shared.Models.Request.LevelRequest;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
@@ -44,6 +45,15 @@ namespace CoStudy.API.Infrastructure.Shared.Models.Request.PostRequest
         /// </value>
         [JsonPropertyName("image_contents")]
         public List<Image> MediaContents { get; set; }
+
+        /// <summary>
+        /// Gets or sets the field.
+        /// </summary>
+        /// <value>
+        /// The field.
+        /// </value>
+        [JsonPropertyName("fields")]
+        public UpdatePostLevelRequest Fields { get; set; }
 
     }
 }

@@ -11,39 +11,6 @@ namespace CoStudy.API.Infrastructure.Shared.Adapters
 {
     public static class MessageAdapter
     {
-        public static Message FromRequest(AddMessageRequest request, IHttpContextAccessor httpContextAccessor, IUserRepository userRepository)
-        {
-
-            if (request.Image != null)
-            {
-                return new Message()
-                {
-                    SenderId = Feature.CurrentUser(httpContextAccessor, userRepository).Id.ToString(),
-                    MediaContent = request.Image,
-                    ConversationId = request.ConversationId,
-                    StringContent = request.Content,
-                    Status = ItemStatus.Active,
-                    MessageType = MessageType.Normal,
-                    CreatedDate = DateTime.Now,
-                    ModifiedDate = DateTime.Now
-                };
-            }
-            else
-            {
-                return new Message()
-                {
-                    SenderId = Feature.CurrentUser(httpContextAccessor, userRepository).Id.ToString(),
-                    MessageType = MessageType.Normal,
-                    MediaContent = null,
-                    ConversationId = request.ConversationId,
-                    StringContent = request.Content,
-                    Status = ItemStatus.Active,
-                    CreatedDate = DateTime.Now,
-                    ModifiedDate = DateTime.Now
-
-                };
-            }
-        }
 
 
         public static Conversation FromRequest(AddConversationRequest request, IHttpContextAccessor httpContextAccessor, IUserRepository userRepository)

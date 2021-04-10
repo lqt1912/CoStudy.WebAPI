@@ -2,6 +2,7 @@
 using CoStudy.API.Application.Features;
 using CoStudy.API.Application.Repositories;
 using CoStudy.API.Domain.Entities.Application;
+using CoStudy.API.Infrastructure.Shared.ViewModels;
 using FirebaseAdmin.Messaging;
 using Microsoft.AspNetCore.Http;
 using MongoDB.Bson;
@@ -155,7 +156,7 @@ namespace CoStudy.API.Application.FCM
         /// </summary>
         /// <param name="clientGroupName">Name of the client group.</param>
         /// <param name="message">The message.</param>
-        public async Task SendMessage(string clientGroupName, Domain.Entities.Application.Message message)
+        public async Task SendMessage(string clientGroupName, MessageViewModel message)
         {
             try
             {
@@ -179,7 +180,7 @@ namespace CoStudy.API.Application.FCM
                         Notification = new Notification()
                         {
                             Title = sender.LastName,
-                            Body = message.StringContent,
+                            Body = message.Content.ToString(),
                             ImageUrl = sender.AvatarHash
                         }
                     };

@@ -1,27 +1,17 @@
 ﻿using CoStudy.API.Domain.Entities.BaseEntity;
-using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 using System;
 using System.Collections.Generic;
-using System.Text.Json.Serialization;
+using System.Text;
 
 namespace CoStudy.API.Domain.Entities.Application
 {
     /// <summary>
-    /// Class Message
+    /// Class MessageBase
     /// </summary>
     /// <seealso cref="CoStudy.API.Domain.Entities.BaseEntity.Entity" />
-    public class Message : Entity
+    public class MessageBase : Entity
     {
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Message" /> class.
-        /// </summary>
-        public Message() : base()
-        {
-
-        }
-
         /// <summary>
         /// Gets or sets the sender identifier.
         /// </summary>
@@ -29,19 +19,7 @@ namespace CoStudy.API.Domain.Entities.Application
         /// The sender identifier.
         /// </value>
         [BsonElement("sender_id")]
-        [JsonPropertyName("sender_id")]
         public string SenderId { get; set; }
-
-        /// <summary>
-        /// Gets or sets the type of the message.
-        /// </summary>
-        /// <value>
-        /// The type of the message.
-        /// </value>
-        [BsonElement("message_type")]
-        [JsonPropertyName("message_type")]
-        public MessageType? MessageType { get; set; }
-
 
         /// <summary>
         /// Gets or sets the conversation identifier.
@@ -50,29 +28,7 @@ namespace CoStudy.API.Domain.Entities.Application
         /// The conversation identifier.
         /// </value>
         [BsonElement("conversation_id")]
-        [JsonPropertyName("conversation_id")]
         public string ConversationId { get; set; }
-
-
-        /// <summary>
-        /// Gets or sets the content of the media.
-        /// </summary>
-        /// <value>
-        /// The content of the media.
-        /// </value>
-        [BsonElement("media_content")]
-        [JsonPropertyName("media_content")]
-        public IEnumerable<Image> MediaContent { get; set; }
-
-        /// <summary>
-        /// Gets or sets the content of the string.
-        /// </summary>
-        /// <value>
-        /// The content of the string.
-        /// </value>
-        [BsonElement("string_content")]
-        [JsonPropertyName("string_content")]
-        public string StringContent { get; set; }
 
         /// <summary>
         /// Gets or sets the is edited.
@@ -81,18 +37,24 @@ namespace CoStudy.API.Domain.Entities.Application
         /// The is edited.
         /// </value>
         [BsonElement("is_edited")]
-        [JsonPropertyName("is_edited")]
         public bool? IsEdited { get; set; } = false;
 
+        /// <summary>
+        /// Gets or sets the type of the message.
+        /// </summary>
+        /// <value>
+        /// The type of the message.
+        /// </value>
+        [BsonElement("message_type")]
+        public MessageBaseType MessageType { get; set; }
 
         /// <summary>
-        /// Delete or not ?
+        /// Gets or sets the status.
         /// </summary>
         /// <value>
         /// The status.
         /// </value>
         [BsonElement("status")]
-        [JsonPropertyName("status")]
         public ItemStatus Status { get; set; } = ItemStatus.Active;
 
         /// <summary>
@@ -102,7 +64,6 @@ namespace CoStudy.API.Domain.Entities.Application
         /// The created date.
         /// </value>
         [BsonElement("created_date")]
-        [JsonPropertyName("created_date")]
         public DateTime CreatedDate { get; set; } = DateTime.Now;
 
         /// <summary>
@@ -112,24 +73,6 @@ namespace CoStudy.API.Domain.Entities.Application
         /// The modified date.
         /// </value>
         [BsonElement("modified_date")]
-        [JsonPropertyName("modified_date")]
         public DateTime ModifiedDate { get; set; } = DateTime.Now;
-
-    }
-
-
-    /// <summary>
-    /// Enum MessageType
-    /// </summary>
-    public enum MessageType
-    {
-        /// <summary>
-        /// The normal
-        /// </summary>
-        Normal,
-        /// <summary>
-        /// The activity
-        /// </summary>
-        Activity
     }
 }

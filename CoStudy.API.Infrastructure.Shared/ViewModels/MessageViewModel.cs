@@ -48,9 +48,10 @@ namespace CoStudy.API.Infrastructure.Shared.ViewModels
         /// <value>
         /// The type of the message.
         /// </value>
-        [JsonPropertyName("message_type")]
         [JsonProperty("message_type")]
-        public MessageType? MessageType { get; set; }
+        [JsonPropertyName("message_type")]
+        public MessageBaseType? MessageType { get; set; }
+
 
         /// <summary>
         /// Gets or sets the name of the sender.
@@ -93,26 +94,14 @@ namespace CoStudy.API.Infrastructure.Shared.ViewModels
         public string ReceiverAvatar { get; set; }
 
         /// <summary>
-        /// Gets or sets the content of the media.
+        /// Gets or sets the content.
         /// </summary>
         /// <value>
-        /// The content of the media.
+        /// The content.
         /// </value>
-        [JsonProperty("media_content")]
-        [JsonPropertyName("media_content")]
-        public IEnumerable<Image> MediaContent { get; set; }
-
-
-        /// <summary>
-        /// Gets or sets the content of the string.
-        /// </summary>
-        /// <value>
-        /// The content of the string.
-        /// </value>
-        [JsonProperty("string_content")]
-        [JsonPropertyName("string_content")]
-        public string StringContent { get; set; }
-
+        [JsonProperty("content")]
+        [JsonPropertyName("content")]
+        public object Content { get; set; }
 
         /// <summary>
         /// Gets or sets the is edited.

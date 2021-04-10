@@ -31,30 +31,8 @@ namespace CoStudy.API.WebAPI.Controllers
             this.messageService = messageService;
         }
 
-        /// <summary>
-        /// Adds the conversation.
-        /// </summary>
-        /// <param name="request">The request.</param>
-        /// <returns></returns>
-        [HttpPost]
-        [Route("conversation/add")]
-        public async Task<IActionResult> AddConversation(AddConversationRequest request)
-        {
-            ConversationViewModel data = await messageService.AddConversation(request);
-            return Ok(new ApiOkResponse(data));
-        }
+        
 
-        /// <summary>
-        /// Gets the current conversation list.
-        /// </summary>
-        /// <returns></returns>
-        [HttpGet]
-        [Route("conversation/current")]
-        public IActionResult GetCurrentConversationList()
-        {
-            GetConversationByUserIdResponse data = messageService.GetConversationByUserId();
-            return Ok(new ApiOkResponse(data));
-        }
 
         /// <summary>
         /// Adds the message.
@@ -85,18 +63,6 @@ namespace CoStudy.API.WebAPI.Controllers
         }
 
 
-        /// <summary>
-        /// Deletes the conversation.
-        /// </summary>
-        /// <param name="id">The identifier.</param>
-        /// <returns></returns>
-        [HttpDelete]
-        [Route("conversation/{id}")]
-        public async Task<IActionResult> DeleteConversation(string id)
-        {
-            string data = await messageService.DeleteConversation(id);
-            return Ok(new ApiOkResponse(data));
-        }
 
         /// <summary>
         /// Deletes the message.
@@ -136,17 +102,7 @@ namespace CoStudy.API.WebAPI.Controllers
         }
 
 
-        /// <summary>
-        /// Adds the member.
-        /// </summary>
-        /// <param name="request">The request.</param>
-        /// <returns></returns>
-        [HttpPost]
-        public async Task<IActionResult> AddMember(AddMemberRequest request)
-        {
-            IEnumerable<MessageViewModel> data = await messageService.AddMember(request);
-            return Ok(new ApiOkResponse(data));
-        }
+        
 
     }
 }

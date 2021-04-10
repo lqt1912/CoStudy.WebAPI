@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using CoStudy.API.Application.FCM;
 using CoStudy.API.Application.Features;
 using CoStudy.API.Application.Repositories;
 using CoStudy.API.Domain.Entities.Identity.MongoAuthen;
@@ -59,8 +58,6 @@ namespace CoStudy.API.Infrastructure.Identity.Services.AccountService
         /// </summary>
         IHttpContextAccessor httpContextAccessor;
 
-        IFcmRepository fcmRepository;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="AccountService"/> class.
         /// </summary>
@@ -70,7 +67,7 @@ namespace CoStudy.API.Infrastructure.Identity.Services.AccountService
         /// <param name="emailService">The email service.</param>
         /// <param name="userRepository">The user repository.</param>
         /// <param name="httpContextAccessor">The HTTP context accessor.</param>
-        public AccountService(IAccountRepository accountRepository, IMapper mapper, IOptions<AppSettings> appSettings, IEmailService emailService, IUserRepository userRepository, IHttpContextAccessor httpContextAccessor, IFcmRepository fcmRepository)
+        public AccountService(IAccountRepository accountRepository, IMapper mapper, IOptions<AppSettings> appSettings, IEmailService emailService, IUserRepository userRepository, IHttpContextAccessor httpContextAccessor)
         {
             this.accountRepository = accountRepository;
             this.mapper = mapper;
@@ -78,7 +75,6 @@ namespace CoStudy.API.Infrastructure.Identity.Services.AccountService
             this.emailService = emailService;
             this.userRepository = userRepository;
             this.httpContextAccessor = httpContextAccessor;
-            this.fcmRepository = fcmRepository;
         }
 
         /// <summary>
@@ -167,14 +163,6 @@ namespace CoStudy.API.Infrastructure.Identity.Services.AccountService
 
             CacheHelper.Add($"CurrentUser-{currentUser.Email}", currentUser, DateTime.Now.AddDays(10));
             CacheHelper.Add($"CurrentAccount-{account.Email}", account, DateTime.Now.AddDays(10));
-
-            fcmRepository.AddToGroup(new AddUserToGroupRequest()
-            {
-                UserIds = new List<string> { currentUser.OId },
-                GroupName = currentUser.OId,
-                Type = Feature.GetTypeName(currentUser)
-
-            });
 
             return response;
         }

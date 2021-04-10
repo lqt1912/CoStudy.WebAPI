@@ -41,18 +41,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
         /// The post repository
         /// </summary>
         IPostRepository postRepository;
-        /// <summary>
-        /// The comment repository
-        /// </summary>
-        ICommentRepository commentRepository;
-        /// <summary>
-        /// The reply comment repository
-        /// </summary>
-        IReplyCommentRepository replyCommentRepository;
-        /// <summary>
-        /// The field repository
-        /// </summary>
-        IFieldRepository fieldRepository;
+      
         /// <summary>
         /// The follow repository
         /// </summary>
@@ -66,17 +55,9 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
         /// </summary>
         IDownVoteRepository downVoteRepository;
         /// <summary>
-        /// The client group repository
-        /// </summary>
-        IClientGroupRepository clientGroupRepository;
-        /// <summary>
         /// The FCM repository
         /// </summary>
         IFcmRepository fcmRepository;
-        /// <summary>
-        /// The noftication repository
-        /// </summary>
-        INofticationRepository nofticationRepository;
 
         /// <summary>
         /// The mapper
@@ -95,56 +76,49 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
         INotificationObjectRepository notificationObjectRepository;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="PostService" /> class.
+        /// The level service
+        /// </summary>
+        ILevelService levelService;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PostService"/> class.
         /// </summary>
         /// <param name="httpContextAccessor">The HTTP context accessor.</param>
         /// <param name="configuration">The configuration.</param>
         /// <param name="userRepository">The user repository.</param>
         /// <param name="postRepository">The post repository.</param>
-        /// <param name="commentRepository">The comment repository.</param>
-        /// <param name="replyCommentRepository">The reply comment repository.</param>
-        /// <param name="fieldRepository">The field repository.</param>
         /// <param name="followRepository">The follow repository.</param>
         /// <param name="upVoteRepository">Up vote repository.</param>
         /// <param name="downVoteRepository">Down vote repository.</param>
-        /// <param name="clientGroupRepository">The client group repository.</param>
         /// <param name="fcmRepository">The FCM repository.</param>
-        /// <param name="nofticationRepository">The noftication repository.</param>
         /// <param name="mapper">The mapper.</param>
         /// <param name="objectLevelRepository">The object level repository.</param>
+        /// <param name="notificationObjectRepository">The notification object repository.</param>
+        /// <param name="levelService">The level service.</param>
         public PostService(
             IHttpContextAccessor httpContextAccessor,
             IConfiguration configuration,
             IUserRepository userRepository,
             IPostRepository postRepository,
-            ICommentRepository commentRepository,
-            IReplyCommentRepository replyCommentRepository,
-            IFieldRepository fieldRepository,
             IFollowRepository followRepository,
             IUpVoteRepository upVoteRepository,
             IDownVoteRepository downVoteRepository,
-            IClientGroupRepository clientGroupRepository,
             IFcmRepository fcmRepository,
-            INofticationRepository nofticationRepository,
-            IMapper mapper, IObjectLevelRepository objectLevelRepository, 
-            INotificationObjectRepository notificationObjectRepository)
+            IMapper mapper, IObjectLevelRepository objectLevelRepository,
+            INotificationObjectRepository notificationObjectRepository, ILevelService levelService)
         {
             this.httpContextAccessor = httpContextAccessor;
             this.configuration = configuration;
             this.userRepository = userRepository;
             this.postRepository = postRepository;
-            this.commentRepository = commentRepository;
-            this.replyCommentRepository = replyCommentRepository;
-            this.fieldRepository = fieldRepository;
             this.followRepository = followRepository;
             this.upVoteRepository = upVoteRepository;
             this.downVoteRepository = downVoteRepository;
-            this.clientGroupRepository = clientGroupRepository;
             this.fcmRepository = fcmRepository;
-            this.nofticationRepository = nofticationRepository;
             this.mapper = mapper;
             this.objectLevelRepository = objectLevelRepository;
             this.notificationObjectRepository = notificationObjectRepository;
+            this.levelService = levelService;
         }
 
         /// <summary>
@@ -154,7 +128,6 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
         /// <returns></returns>
         public async Task<PostViewModel> AddPost(AddPostRequest request)
         {
-
             User currentUser = Feature.CurrentUser(httpContextAccessor, userRepository);
 
 
@@ -181,6 +154,11 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
                          UserIds = new List<string> { currentUser.OId }
                      }
                      );
+
+            foreach (var item in request.Fields)
+                item.ObjectId = post.OId;
+
+            await levelService.AddObjectLevel(request.Fields);
 
             PostViewModel response = mapper.Map<PostViewModel>(post);
             return response;
@@ -438,7 +416,13 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
                 currentPost.Title = request.Title;
                 currentPost.ModifiedDate = DateTime.Now;
                 await postRepository.UpdateAsync(currentPost, currentPost.Id);
+
+                request.Fields.PostId = currentPost.OId;
+
+                await levelService.UpdatePostField(request.Fields);
+
                 PostViewModel response = mapper.Map<PostViewModel>(currentPost);
+
                 return response;
             }
             throw new Exception("Có lỗi xảy ra khi tìm kiếm bài viết. ");

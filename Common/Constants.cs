@@ -32,6 +32,32 @@ namespace Common
         }
 
         /// <summary>
+        /// Class MessageTypeConstants
+        /// </summary>
+        public static class MessageTypeConstants
+        {
+            /// <summary>
+            /// The text message
+            /// </summary>
+            public static string TEXT_MESSAGE = "TEXT_MESSAGE";
+
+            /// <summary>
+            /// The image message
+            /// </summary>
+            public static string IMAGE_MESSAGE = "IMAGE_MESSAGE";
+
+            /// <summary>
+            /// The add member message
+            /// </summary>
+            public static string ADD_MEMBER_MESSAGE = "ADD_MEMBER_MESSAGE";
+
+            /// <summary>
+            /// The post thumbnail message
+            /// </summary>
+            public static string POST_THUMBNAIL_MESSAGE = "POST_THUMBNAIL_MESSAGE";
+        }
+
+        /// <summary>
         /// Class NotificationContentTypeConstant
         /// </summary>
         public static class NotificationContentTypeConstant

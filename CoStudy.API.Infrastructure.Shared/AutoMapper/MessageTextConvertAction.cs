@@ -10,10 +10,10 @@ using System;
 namespace CoStudy.API.Infrastructure.Shared.AutoMapper
 {
     /// <summary>
-    /// Class MessageConvertAction.
+    /// Class MessageTextConvertAction.
     /// </summary>
-    /// <seealso cref="AutoMapper.IMappingAction{CoStudy.API.Domain.Entities.Application.Message, CoStudy.API.Infrastructure.Shared.ViewModels.MessageViewModel}" />
-    public class MessageConvertAction : IMappingAction<MessageBase, MessageViewModel>
+    /// <seealso cref="AutoMapper.IMappingAction{CoStudy.API.Domain.Entities.Application.MessageText, CoStudy.API.Infrastructure.Shared.ViewModels.MessageTextViewModel}" />
+    public class MessageTextConvertAction : IMappingAction<MessageText, MessageViewModel>
     {
         /// <summary>
         /// The HTTP context accessor
@@ -25,11 +25,11 @@ namespace CoStudy.API.Infrastructure.Shared.AutoMapper
         IUserRepository userRepository;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="MessageConvertAction"/> class.
+        /// Initializes a new instance of the <see cref="MessageTextConvertAction"/> class.
         /// </summary>
         /// <param name="httpContextAccessor">The HTTP context accessor.</param>
         /// <param name="userRepository">The user repository.</param>
-        public MessageConvertAction(IHttpContextAccessor httpContextAccessor, IUserRepository userRepository)
+        public MessageTextConvertAction(IHttpContextAccessor httpContextAccessor, IUserRepository userRepository)
         {
             this.httpContextAccessor = httpContextAccessor;
             this.userRepository = userRepository;
@@ -41,7 +41,7 @@ namespace CoStudy.API.Infrastructure.Shared.AutoMapper
         /// <param name="source">Source object</param>
         /// <param name="destination">Destination object</param>
         /// <param name="context">Resolution context</param>
-        public void Process(MessageBase source, MessageViewModel destination, ResolutionContext context)
+        public void Process(MessageText source, MessageViewModel destination, ResolutionContext context)
         {
             User receiver = Feature.CurrentUser(httpContextAccessor, userRepository);
 
@@ -49,6 +49,7 @@ namespace CoStudy.API.Infrastructure.Shared.AutoMapper
 
             if (receiver == null || sender == null)
                 throw new Exception("Không tìm thấy người dùng gửi tin phù hợp. ");
+
 
             destination.SenderName = $"{sender.FirstName} {sender.LastName}";
             destination.SenderAvatar = sender.AvatarHash;
