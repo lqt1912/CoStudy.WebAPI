@@ -59,7 +59,11 @@ namespace CoStudy.API.Infrastructure.Shared.AutoMapper
             destination.Followers = followRepository.GetAll().Where(x => x.ToId == source.OId).Count();
             destination.Following = followRepository.GetAll().Where(x => x.FromId == source.OId).Count();
             destination.FullName = $"{source.FirstName} {source.LastName}";
-            var objectLevels = mapper.Map<IEnumerable<ObjectLevelViewModel>>(objectLevelRepository.GetAll().Where(x => x.ObjectId == source.OId));
+
+
+            destination.FullAddress = $"{source.Address?.Detail}, {source.Address?.District}, {source.Address?.City}";
+            var objectLevels = mapper.Map<IEnumerable<ObjectLevelViewModel>>(objectLevelRepository.GetAll().Where(x => x.ObjectId == source.OId && x.IsActive == true));
+          
             destination.Fields.AddRange(objectLevels);
         }
     }

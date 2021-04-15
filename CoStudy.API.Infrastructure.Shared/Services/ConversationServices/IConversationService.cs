@@ -41,7 +41,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services
         /// Gets the conversation by user identifier.
         /// </summary>
         /// <returns></returns>
-        GetConversationByUserIdResponse GetConversationByUserId();
+        Task<GetConversationByUserIdResponse> GetConversationByUserId();
 
         /// <summary>
         /// Adds the member.

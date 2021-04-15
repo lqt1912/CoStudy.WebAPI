@@ -54,8 +54,6 @@ namespace CoStudy.API.Application.FCM
         /// <returns></returns>
         Task<string> SendNotification();
 
-
-
         /// <summary>
         /// Adds to group.
         /// </summary>
@@ -69,5 +67,20 @@ namespace CoStudy.API.Application.FCM
         /// <returns></returns>
         Task RemoveFromGroup(RemoveFromGroupRequest request);
 
+        /// <summary>
+        /// Pushes the notify report.
+        /// </summary>
+        /// <param name="userId">The user identifier.</param>
+        /// <param name="notificationDetail">The notification detail.</param>
+        /// <returns></returns>
+        Task PushNotifyReport(string userId, NotificationDetail notificationDetail);
+
+        /// <summary>
+        /// Pushes the notify approve report.
+        /// </summary>
+        /// <param name="userId">The user identifier.</param>
+        /// <param name="notificationDetail">The notification detail.</param>
+        /// <returns></returns>
+        Task PushNotifyApproveReport(string userId, NotificationDetail notificationDetail);
     }
 }

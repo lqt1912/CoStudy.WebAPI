@@ -58,15 +58,46 @@ namespace CoStudy.API.Infrastructure.Shared.Services
         private IMessageRepository messageRepository;
 
         /// <summary>
+        /// The messag text repository
+        /// </summary>
+        private IMessageTextRepository messagTextRepository;
+
+        /// <summary>
+        /// The message image repository
+        /// </summary>
+        private IMessageImageRepository messageImageRepository;
+
+        /// <summary>
+        /// The message multi media repository
+        /// </summary>
+        private IMessageMultiMediaRepository messageMultiMediaRepository;
+
+        /// <summary>
+        /// The message post thumbnail repository
+        /// </summary>
+        private IMessagePostThumbnailRepository messagePostThumbnailRepository;
+
+        /// <summary>
+        /// The message conversation activity repository
+        /// </summary>
+        private IMessageConversationActivityRepository messageConversationActivityRepository;
+
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="ConversationService"/> class.
         /// </summary>
         /// <param name="conversationItemTypeRepository">The conversation item type repository.</param>
-        public ConversationService(IConversationItemTypeRepository conversationItemTypeRepository, 
-            IMapper mapper, IConversationRepository conversationRepository, 
+        public ConversationService(IConversationItemTypeRepository conversationItemTypeRepository,
+            IMapper mapper, IConversationRepository conversationRepository,
             IHttpContextAccessor httpContextAccessor,
-            IUserRepository userRepository, 
-            IClientGroupRepository clientGroupRepository, 
-            IMessageRepository messageRepository)
+            IUserRepository userRepository,
+            IClientGroupRepository clientGroupRepository,
+            IMessageRepository messageRepository, 
+            IMessageTextRepository messagTextRepository, 
+            IMessageImageRepository messageImageRepository, 
+            IMessageMultiMediaRepository messageMultiMediaRepository, 
+            IMessagePostThumbnailRepository messagePostThumbnailRepository, 
+            IMessageConversationActivityRepository messageConversationActivityRepository)
         {
             this.conversationItemTypeRepository = conversationItemTypeRepository;
             this.mapper = mapper;
@@ -75,6 +106,11 @@ namespace CoStudy.API.Infrastructure.Shared.Services
             this.userRepository = userRepository;
             this.clientGroupRepository = clientGroupRepository;
             this.messageRepository = messageRepository;
+            this.messagTextRepository = messagTextRepository;
+            this.messageImageRepository = messageImageRepository;
+            this.messageMultiMediaRepository = messageMultiMediaRepository;
+            this.messagePostThumbnailRepository = messagePostThumbnailRepository;
+            this.messageConversationActivityRepository = messageConversationActivityRepository;
         }
 
         /// <summary>
@@ -163,7 +199,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services
         /// </summary>
         /// <returns></returns>
         /// <exception cref="Exception">User not found</exception>
-        public GetConversationByUserIdResponse GetConversationByUserId()
+        public async Task <GetConversationByUserIdResponse> GetConversationByUserId()
         {
             User currentUser = Feature.CurrentUser(httpContextAccessor, userRepository);
             if (currentUser == null)
@@ -183,17 +219,26 @@ namespace CoStudy.API.Infrastructure.Shared.Services
 
             foreach (Conversation conversation in conversations)
             {
-                IEnumerable<Message> recentMessage = messageRepository.GetAll().Where(x => x.ConversationId == conversation.Id.ToString()).OrderByDescending(x => x.CreatedDate).Take(5);
-                if (recentMessage.Count() == 0)
-                    recentMessage = new List<Message>();
-                var messageViewModel = mapper.Map<IEnumerable<MessageViewModel>>(recentMessage);
+                var latestTextMessage = (await messagTextRepository.FindListAsync(Builders<MessageText>.Filter.Eq("conversation_id", conversation.OId))).OrderByDescending(x => x.CreatedDate).Take(1);
+                var latestImageMessage = (await messageImageRepository.FindListAsync(Builders<MessageImage>.Filter.Eq("conversation_id", conversation.OId))).OrderByDescending(x => x.CreatedDate).Take(1);
+                var latestPostThumbnailMessage = (await messagePostThumbnailRepository.FindListAsync(Builders<MessagePostThumbnail>.Filter.Eq("conversation_id", conversation.OId))).OrderByDescending(x => x.CreatedDate).Take(1);
+                var latestConversationActivity = (await messageConversationActivityRepository.FindListAsync(Builders<MessageConversationActivity>.Filter.Eq("conversation_id", conversation.OId))).OrderByDescending(x => x.CreatedDate).Take(1);
+                var latestMultiMediaMessage = (await messageMultiMediaRepository.FindListAsync(Builders<MessageMultiMedia>.Filter.Eq("conversation_id", conversation.OId))).OrderByDescending(x => x.CreatedDate).Take(1);
+
+                var messageVM = new List<MessageViewModel>();
+                messageVM.AddRange(mapper.Map<List<MessageViewModel>>(latestTextMessage));
+                messageVM.AddRange(mapper.Map<List<MessageViewModel>>(latestImageMessage));
+                messageVM.AddRange(mapper.Map<List<MessageViewModel>>(latestPostThumbnailMessage));
+                messageVM.AddRange(mapper.Map<List<MessageViewModel>>(latestPostThumbnailMessage));
+                messageVM.AddRange(mapper.Map<List<MessageViewModel>>(latestMultiMediaMessage));
+
 
                 var conversationViewModel = mapper.Map<ConversationViewModel>(conversation);
 
                 listData.Add(new ConversationData()
                 {
                     Conversation = conversationViewModel,
-                    Messages = messageViewModel
+                    Messages = messageVM.Take(1)
                 });
             }
             return new GetConversationByUserIdResponse()

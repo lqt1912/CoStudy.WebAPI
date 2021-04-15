@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using CoStudy.API.Application.Features;
 using CoStudy.API.Application.Repositories;
+using CoStudy.API.Domain.Entities.Application;
 using CoStudy.API.Domain.Entities.Identity.MongoAuthen;
 using CoStudy.API.Infrastructure.Identity.Helpers;
 using CoStudy.API.Infrastructure.Identity.Models.Account.Request;
@@ -159,7 +160,7 @@ namespace CoStudy.API.Infrastructure.Identity.Services.AccountService
             response.JwtToken = jwtToken;
             response.RefreshToken = refreshToken.Token;
 
-            Domain.Entities.Application.User currentUser = userRepository.GetAll().SingleOrDefault(x => x.Email == model.Email);
+           User currentUser = userRepository.GetAll().SingleOrDefault(x => x.Email == model.Email);
 
             CacheHelper.Add($"CurrentUser-{currentUser.Email}", currentUser, DateTime.Now.AddDays(10));
             CacheHelper.Add($"CurrentAccount-{account.Email}", account, DateTime.Now.AddDays(10));

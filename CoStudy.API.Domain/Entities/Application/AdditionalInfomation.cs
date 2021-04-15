@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using MongoDB.Bson.Serialization.Attributes;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -20,6 +21,7 @@ namespace CoStudy.API.Domain.Entities.Application
         /// </value>
         [JsonProperty("information_name")]
         [JsonPropertyName("information_name")]
+        [BsonElement("information_name")]
         public string InformationName { get; set; }
 
 
@@ -31,6 +33,7 @@ namespace CoStudy.API.Domain.Entities.Application
         /// </value>
         [JsonProperty("information_value")]
         [JsonPropertyName("information_value")]
+        [BsonElement("information_value")]
         public string InformationValue { get; set; }
     }
 }

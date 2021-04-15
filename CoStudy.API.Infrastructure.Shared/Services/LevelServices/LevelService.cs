@@ -74,7 +74,6 @@ namespace CoStudy.API.Infrastructure.Shared.Services
             this.httpContextAccessor = httpContextAccessor;
         }
 
-
         /// <summary>
         /// Adds or update user fields.
         /// </summary>
@@ -85,7 +84,6 @@ namespace CoStudy.API.Infrastructure.Shared.Services
         public async Task<UserViewModel> AddOrUpdateUserFields(UserAddFieldRequest request)
         {
             User user = await userRepository.GetByIdAsync(ObjectId.Parse(request.UserId));
-
             if (user != null)
             {
                 FilterDefinition<ObjectLevel> buidler = Builders<ObjectLevel>.Filter.Eq("object_id", request.UserId);
@@ -94,7 +92,15 @@ namespace CoStudy.API.Infrastructure.Shared.Services
 
                 foreach (string item in request.FieldId)
                 {
-                    if (existObjectLevels.FirstOrDefault(x => x.FieldId == item) == null)
+                    var existObjectLevel = existObjectLevels.FirstOrDefault(x => x.FieldId == item);
+                    if(existObjectLevel !=null)
+                    {
+                        if (existObjectLevel.IsActive == false)
+                            existObjectLevel.IsActive = true;
+                        existObjectLevel.ModifiedDate = DateTime.Now;
+                        await objectLevelRepository.UpdateAsync(existObjectLevel, existObjectLevel.Id);
+                    }
+                    else
                     {
                         ObjectLevel objectLevel = new ObjectLevel()
                         {
@@ -104,6 +110,16 @@ namespace CoStudy.API.Infrastructure.Shared.Services
                             Point = 0
                         };
                         await objectLevelRepository.AddAsync(objectLevel);
+                    }
+                }
+
+                foreach (var ex in existObjectLevels)
+                {
+                    if (request.FieldId.FirstOrDefault(x => x == ex.FieldId) ==null)
+                    {
+                        ex.IsActive = false;
+                        ex.ModifiedDate = DateTime.Now;
+                        await objectLevelRepository.UpdateAsync(ex, ex.Id);
                     }
                 }
                 return mapper.Map<UserViewModel>(user);

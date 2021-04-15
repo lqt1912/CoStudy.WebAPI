@@ -83,9 +83,9 @@ namespace CoStudy.API.Application.FCM
             IUserRepository userRepository,
             IHttpContextAccessor httpContextAccessor,
             INofticationRepository nofticationRepository,
-            IMapper mapper, 
-            INotificationDetailRepository notificationDetailRepository, 
-            INotificationObjectRepository notificationObjectRepository, 
+            IMapper mapper,
+            INotificationDetailRepository notificationDetailRepository,
+            INotificationObjectRepository notificationObjectRepository,
             INotificationTypeRepository notificationTypeRepository)
         {
             this.fcmInfoRepository = fcmInfoRepository;
@@ -148,7 +148,10 @@ namespace CoStudy.API.Application.FCM
                 await fcmInfoRepository.UpdateAsync(exist, exist.Id);
                 return exist;
             }
-            else return null;
+            else
+            {
+                return null;
+            }
         }
 
         /// <summary>
@@ -206,7 +209,7 @@ namespace CoStudy.API.Application.FCM
                 ClientGroup clientGroup = await clientGroupRepository.FindAsync(finder);
                 foreach (string receiver in clientGroup.UserIds)
                 {
-                    var finalNotification = new Noftication()
+                    Noftication finalNotification = new Noftication()
                     {
                         CreatedDate = DateTime.Now,
                         AuthorId = noftication.AuthorId,
@@ -220,12 +223,12 @@ namespace CoStudy.API.Application.FCM
                     };
 
                     //Người tạo ra thông báo. 
-                    var creator = noftication.AuthorId;
-                    var userCreator = await userRepository.GetByIdAsync(ObjectId.Parse(creator));
+                    string creator = noftication.AuthorId;
+                    User userCreator = await userRepository.GetByIdAsync(ObjectId.Parse(creator));
 
                     //Chủ sở hữu post
-                    var owner = noftication.OwnerId;
-                    var userOwner = await userRepository.GetByIdAsync(ObjectId.Parse(owner));
+                    string owner = noftication.OwnerId;
+                    User userOwner = await userRepository.GetByIdAsync(ObjectId.Parse(owner));
 
 
                     if (owner == creator)
@@ -315,26 +318,29 @@ namespace CoStudy.API.Application.FCM
         public async Task AddToGroup(AddUserToGroupRequest request)
         {
             if (request.UserIds == null)
+            {
                 request.UserIds = new List<string>();
+            }
 
-            var builder = Builders<ClientGroup>.Filter.Eq("name", request.GroupName);
-            var clientGroup = await clientGroupRepository.FindAsync(builder);
+            FilterDefinition<ClientGroup> builder = Builders<ClientGroup>.Filter.Eq("name", request.GroupName);
+            ClientGroup clientGroup = await clientGroupRepository.FindAsync(builder);
 
             if (clientGroup != null)
             {
-                foreach (var userId in request.UserIds)
+                foreach (string userId in request.UserIds)
                 {
-                    var _userId = clientGroup.UserIds.FirstOrDefault(x => x == userId);
+                    string _userId = clientGroup.UserIds.FirstOrDefault(x => x == userId);
 
                     if (string.IsNullOrEmpty(_userId))
+                    {
                         clientGroup.UserIds.Add(userId);
-
+                    }
                 }
                 await clientGroupRepository.UpdateAsync(clientGroup, clientGroup.Id);
             }
             else
             {
-                var group = new ClientGroup()
+                ClientGroup group = new ClientGroup()
                 {
                     Name = request.GroupName,
                     GroupType = request.Type
@@ -352,14 +358,16 @@ namespace CoStudy.API.Application.FCM
         public async Task RemoveFromGroup(RemoveFromGroupRequest request)
         {
             if (request.UserIds == null)
+            {
                 request.UserIds = new List<string>();
+            }
 
-            var builder = Builders<ClientGroup>.Filter.Eq("name", request.GroupName);
-            var clientGroup = await clientGroupRepository.FindAsync(builder);
+            FilterDefinition<ClientGroup> builder = Builders<ClientGroup>.Filter.Eq("name", request.GroupName);
+            ClientGroup clientGroup = await clientGroupRepository.FindAsync(builder);
 
             if (clientGroup != null)
             {
-                foreach (var userId in request.UserIds)
+                foreach (string userId in request.UserIds)
                 {
                     clientGroup.UserIds.Remove(userId);
                 }
@@ -381,18 +389,18 @@ namespace CoStudy.API.Application.FCM
             FilterDefinition<ClientGroup> finder = Builders<ClientGroup>.Filter.Eq("name", clientGroupName);
             ClientGroup clientGroup = await clientGroupRepository.FindAsync(finder);
 
-            var currentUser = Feature.CurrentUser(httpContextAccessor, userRepository);
+            User currentUser = Feature.CurrentUser(httpContextAccessor, userRepository);
 
             foreach (string receiverId in clientGroup.UserIds)
             {
-                var existNotificationDetailBuilder = Builders<NotificationDetail>.Filter;
-                var existNotificationDetailFilter = existNotificationDetailBuilder.Eq("creator_id", notificationDetail.CreatorId)
+                FilterDefinitionBuilder<NotificationDetail> existNotificationDetailBuilder = Builders<NotificationDetail>.Filter;
+                FilterDefinition<NotificationDetail> existNotificationDetailFilter = existNotificationDetailBuilder.Eq("creator_id", notificationDetail.CreatorId)
                                                     & existNotificationDetailBuilder.Eq("receiver_id", receiverId)
                                                     & existNotificationDetailBuilder.Eq("notification_object_id", notificationDetail.NotificationObjectId);
 
-                var existNotificationDetail = await notificationDetailRepository.FindAsync(existNotificationDetailFilter);
+                NotificationDetail existNotificationDetail = await notificationDetailRepository.FindAsync(existNotificationDetailFilter);
 
-                var finalNotificationDetail = new NotificationDetail();
+                NotificationDetail finalNotificationDetail = new NotificationDetail();
                 if (existNotificationDetail != null)
                 {
                     finalNotificationDetail = existNotificationDetail;
@@ -400,26 +408,27 @@ namespace CoStudy.API.Application.FCM
                     finalNotificationDetail.IsDeleted = false;
                     await notificationDetailRepository.UpdateAsync(finalNotificationDetail, finalNotificationDetail.Id);
                 }
-                else  {
+                else
+                {
                     finalNotificationDetail.CreatorId = notificationDetail.CreatorId;
                     finalNotificationDetail.ReceiverId = receiverId;
                     finalNotificationDetail.NotificationObjectId = notificationDetail.NotificationObjectId;
                     await notificationDetailRepository.AddAsync(finalNotificationDetail);
                 };
 
-                var notificationObject = await notificationObjectRepository.GetByIdAsync(ObjectId.Parse(finalNotificationDetail.NotificationObjectId));
+                NotificationObject notificationObject = await notificationObjectRepository.GetByIdAsync(ObjectId.Parse(finalNotificationDetail.NotificationObjectId));
 
-                var owner = await userRepository.GetByIdAsync(ObjectId.Parse(notificationObject.OwnerId));
+                User owner = await userRepository.GetByIdAsync(ObjectId.Parse(notificationObject.OwnerId));
 
-                var receiver = await userRepository.GetByIdAsync(ObjectId.Parse(receiverId));
+                User receiver = await userRepository.GetByIdAsync(ObjectId.Parse(receiverId));
 
-                var creator = await userRepository.GetByIdAsync(ObjectId.Parse(finalNotificationDetail.CreatorId));
+                User creator = await userRepository.GetByIdAsync(ObjectId.Parse(finalNotificationDetail.CreatorId));
 
-                var notificationTypeFilter = Builders<NotificationType>.Filter.Eq("code", notificationObject.NotificationType);
+                FilterDefinition<NotificationType> notificationTypeFilter = Builders<NotificationType>.Filter.Eq("code", notificationObject.NotificationType);
 
-                var notificationType = await notificationTypeRepository.FindAsync(notificationTypeFilter);
+                NotificationType notificationType = await notificationTypeRepository.FindAsync(notificationTypeFilter);
 
-                var notifyContent = string.Empty;
+                string notifyContent = string.Empty;
 
                 if (owner == creator)
                 {
@@ -444,7 +453,7 @@ namespace CoStudy.API.Application.FCM
                     }
                 }
 
-                var notificationToPush = new PushedNotificationViewModel()
+                PushedNotificationViewModel notificationToPush = new PushedNotificationViewModel()
                 {
                     AuthorName = $"{creator.FirstName} {creator.LastName}",
                     AuthorAvatar = creator.AvatarHash,
@@ -488,6 +497,154 @@ namespace CoStudy.API.Application.FCM
                 {
                     // do nothing 
                 }
+            }
+        }
+
+        /// <summary>
+        /// Pushes the notify report.
+        /// </summary>
+        /// <param name="userId">The user identifier.</param>
+        /// <param name="notificationDetail">The notification detail.</param>
+        public async Task PushNotifyReport(string userId, NotificationDetail notificationDetail)
+        {
+            FilterDefinition<ClientGroup> finder = Builders<ClientGroup>.Filter.Eq("name", userId);
+            ClientGroup clientGroup = await clientGroupRepository.FindAsync(finder);
+
+            User currentUser = Feature.CurrentUser(httpContextAccessor, userRepository);
+
+            foreach (string id in clientGroup.UserIds)
+            {
+                NotificationDetail finalNotificationDetail = new NotificationDetail()
+                {
+                    CreatorId = notificationDetail.CreatorId,
+                    ReceiverId = userId,
+                    NotificationObjectId = notificationDetail.NotificationObjectId
+                };
+                await notificationDetailRepository.AddAsync(finalNotificationDetail);
+
+                NotificationObject notificationObject = await notificationObjectRepository.GetByIdAsync(ObjectId.Parse(finalNotificationDetail.NotificationObjectId));
+
+                FilterDefinition<NotificationType> notificationTypeFilter = Builders<NotificationType>.Filter.Eq("code", notificationObject.NotificationType);
+
+                NotificationType notificationType = await notificationTypeRepository.FindAsync(notificationTypeFilter);
+
+                User creator = await userRepository.GetByIdAsync(ObjectId.Parse(finalNotificationDetail.CreatorId));
+
+                PushedNotificationViewModel notificationToPush = new PushedNotificationViewModel()
+                {
+                    AuthorName = $"{creator.FirstName} {creator.LastName}",
+                    AuthorAvatar = creator.AvatarHash,
+                    AuthorId = creator.OId,
+                    Content = $" Một người {notificationType.ContentTemplate} bạn.",
+                    CreatedDate = DateTime.Now,
+                    IsRead = false,
+                    ModifiedDate = DateTime.Now,
+                    ObjectId = notificationObject.ObjectId,
+                    OId = notificationObject.OId,
+                    OwnerId = userId,
+                    Status = ItemStatus.Active
+                };
+                //Push notification
+                try
+                {
+                    FilterDefinition<FcmInfo> userFilter = Builders<FcmInfo>.Filter.Eq("user_id", userId);
+                    string token = (await fcmInfoRepository.FindAsync(userFilter)).DeviceToken;
+
+                    FirebaseAdmin.Messaging.Message mes = new FirebaseAdmin.Messaging.Message()
+                    {
+                        Token = token,
+                        Data = new Dictionary<string, string>()
+                        {
+                            { "notification",  JsonConvert.SerializeObject(notificationToPush) }
+                        },
+                        Notification = new Notification()
+                        {
+                            Title = creator.LastName,
+                            Body = notificationToPush.Content,
+                            ImageUrl = creator.AvatarHash
+                        }
+                    };
+                    string response = await FirebaseMessaging.DefaultInstance.SendAsync(mes).ConfigureAwait(true);
+                }
+                catch (Exception)
+                {
+                    // do nothing 
+                }
+
+            }
+        }
+
+        /// <summary>
+        /// Pushes the notify approve report.
+        /// </summary>
+        /// <param name="userId">The user identifier.</param>
+        /// <param name="notificationDetail">The notification detail.</param>
+        public async Task PushNotifyApproveReport(string userId, NotificationDetail notificationDetail)
+        {
+            FilterDefinition<ClientGroup> finder = Builders<ClientGroup>.Filter.Eq("name", userId);
+            ClientGroup clientGroup = await clientGroupRepository.FindAsync(finder);
+
+            User currentUser = Feature.CurrentUser(httpContextAccessor, userRepository);
+
+            foreach (string id in clientGroup.UserIds)
+            {
+                NotificationDetail finalNotificationDetail = new NotificationDetail()
+                {
+                    CreatorId = notificationDetail.CreatorId,
+                    ReceiverId = userId,
+                    NotificationObjectId = notificationDetail.NotificationObjectId
+                };
+                await notificationDetailRepository.AddAsync(finalNotificationDetail);
+
+                NotificationObject notificationObject = await notificationObjectRepository.GetByIdAsync(ObjectId.Parse(finalNotificationDetail.NotificationObjectId));
+
+                FilterDefinition<NotificationType> notificationTypeFilter = Builders<NotificationType>.Filter.Eq("code", notificationObject.NotificationType);
+
+                NotificationType notificationType = await notificationTypeRepository.FindAsync(notificationTypeFilter);
+
+                User creator = await userRepository.GetByIdAsync(ObjectId.Parse(finalNotificationDetail.CreatorId));
+
+                PushedNotificationViewModel notificationToPush = new PushedNotificationViewModel()
+                {
+                    AuthorName = $"{creator.FirstName} {creator.LastName}",
+                    AuthorAvatar = creator.AvatarHash,
+                    AuthorId = creator.OId,
+                    Content = $"{notificationType.ContentTemplate}.",
+                    CreatedDate = DateTime.Now,
+                    IsRead = false,
+                    ModifiedDate = DateTime.Now,
+                    ObjectId = notificationObject.ObjectId,
+                    OId = notificationObject.OId,
+                    OwnerId = userId,
+                    Status = ItemStatus.Active
+                };
+                //Push notification
+                try
+                {
+                    FilterDefinition<FcmInfo> userFilter = Builders<FcmInfo>.Filter.Eq("user_id", userId);
+                    string token = (await fcmInfoRepository.FindAsync(userFilter)).DeviceToken;
+
+                    FirebaseAdmin.Messaging.Message mes = new FirebaseAdmin.Messaging.Message()
+                    {
+                        Token = token,
+                        Data = new Dictionary<string, string>()
+                        {
+                            { "notification",  JsonConvert.SerializeObject(notificationToPush) }
+                        },
+                        Notification = new Notification()
+                        {
+                            Title = creator.LastName,
+                            Body = notificationToPush.Content,
+                            ImageUrl = creator.AvatarHash
+                        }
+                    };
+                    string response = await FirebaseMessaging.DefaultInstance.SendAsync(mes).ConfigureAwait(true);
+                }
+                catch (Exception)
+                {
+                    // do nothing 
+                }
+
             }
         }
     }

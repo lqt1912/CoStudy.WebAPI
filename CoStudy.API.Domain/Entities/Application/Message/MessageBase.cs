@@ -37,7 +37,7 @@ namespace CoStudy.API.Domain.Entities.Application
         /// The is edited.
         /// </value>
         [BsonElement("is_edited")]
-        public bool? IsEdited { get; set; } = false;
+        public bool? IsEdited { get; set; } = false; 
 
         /// <summary>
         /// Gets or sets the type of the message.

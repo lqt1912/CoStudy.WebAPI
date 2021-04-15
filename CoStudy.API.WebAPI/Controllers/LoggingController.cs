@@ -43,5 +43,12 @@ namespace CoStudy.API.WebAPI.Controllers
             var data = await loggingServices.Delete(request);
             return Ok(new ApiOkResponse(data));
         }
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetById(String id)
+        {
+            var data = await loggingServices.GetById(id);
+            return Ok(new ApiOkResponse(data));
+        }
     }
 }

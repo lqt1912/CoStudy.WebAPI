@@ -6,10 +6,8 @@ using CoStudy.API.Infrastructure.Shared.Paging;
 using CoStudy.API.Infrastructure.Shared.ViewModels;
 using MongoDB.Bson;
 using MongoDB.Driver;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace CoStudy.API.Infrastructure.Shared.Services
@@ -47,15 +45,15 @@ namespace CoStudy.API.Infrastructure.Shared.Services
         /// <returns></returns>
         public async Task<IEnumerable<int>> CountResultCode()
         {
-            var result = new List<int>();
-            result.Add(0); 
+            List<int> result = new List<int>();
+            result.Add(0);
             result.Add(0);
             result.Add(0);
             result.Add(0);
 
-            var builder400 = Builders<Logging>.Filter.Eq("StatusCode", 400) ;
-            var builder401 = Builders<Logging>.Filter.Eq("StatusCode", 401);
-            var builder200 = Builders<Logging>.Filter.Eq("StatusCode", 200);
+            FilterDefinition<Logging> builder400 = Builders<Logging>.Filter.Eq("StatusCode", 400);
+            FilterDefinition<Logging> builder401 = Builders<Logging>.Filter.Eq("StatusCode", 401);
+            FilterDefinition<Logging> builder200 = Builders<Logging>.Filter.Eq("StatusCode", 200);
 
             result[0] = (await loggingRepository.FindListAsync(builder200)).Count();
             result[1] = (await loggingRepository.FindListAsync(builder400)).Count();
@@ -73,34 +71,40 @@ namespace CoStudy.API.Infrastructure.Shared.Services
         /// <returns></returns>
         public TableResultJson<LoggingViewModel> GetPaged(TableRequest request)
         {
-            var dataSource = loggingRepository.GetAll().OrderByDescending(x => x.CreatedDate.Value).AsEnumerable();
+            IEnumerable<Logging> dataSource = loggingRepository.GetAll().OrderByDescending(x => x.CreatedDate.Value).AsEnumerable();
 
             if (request.columns[0].search != null)
             {
                 if (!string.IsNullOrEmpty(request.columns[0].search.value))
+                {
                     dataSource = dataSource.Where(x => x.RequestMethod.Contains(request.columns[0].search.value));
+                }
             }
 
             if (request.columns[1].search != null)
             {
                 if (!string.IsNullOrEmpty(request.columns[1].search.value))
+                {
                     dataSource = dataSource.Where(x => x.Location.Contains(request.columns[1].search.value));
+                }
             }
 
             if (request.columns[3].search != null)
             {
                 if (!string.IsNullOrEmpty(request.columns[3].search.value))
+                {
                     dataSource = dataSource.Where(x => x.StatusCode.ToString().Contains(request.columns[3].search.value));
+                }
             }
-            var response = new TableResultJson<LoggingViewModel>();
+            TableResultJson<LoggingViewModel> response = new TableResultJson<LoggingViewModel>();
             response.draw = request.draw;
             response.recordsFiltered = dataSource.Count();
 
             dataSource = dataSource.Skip(request.start).Take(request.length);
             response.data = mapper.Map<List<LoggingViewModel>>(dataSource.ToList());
-            foreach (var item in response.data)
+            foreach (LoggingViewModel item in response.data)
             {
-                item.Index = response.data.IndexOf(item)+ request.start +1;
+                item.Index = response.data.IndexOf(item) + request.start + 1;
             }
             return response;
         }
@@ -113,13 +117,15 @@ namespace CoStudy.API.Infrastructure.Shared.Services
         public async Task<string> Delete(DeleteLoggingRequest request)
         {
             if (request.Ids == null)
+            {
                 request.Ids = new List<string>();
+            }
 
             int count = 0;
-            foreach (var id in request.Ids)
+            foreach (string id in request.Ids)
             {
-                var existLogging = await loggingRepository.GetByIdAsync(ObjectId.Parse(id));
-                if(existLogging!=null)
+                Logging existLogging = await loggingRepository.GetByIdAsync(ObjectId.Parse(id));
+                if (existLogging != null)
                 {
                     await loggingRepository.DeleteAsync(existLogging.Id);
                     count++;
@@ -128,5 +134,17 @@ namespace CoStudy.API.Infrastructure.Shared.Services
             return $"Đã xóa {count} đối tượng. ";
 
         }
+
+        /// <summary>
+        /// Gets the by identifier.
+        /// </summary>
+        /// <param name="id">The identifier.</param>
+        /// <returns></returns>
+        public async Task<LoggingViewModel> GetById(string id)
+        {
+            Logging a = await loggingRepository.GetByIdAsync(ObjectId.Parse(id));
+            return mapper.Map<LoggingViewModel>(a);
+        }
     }
+
 }

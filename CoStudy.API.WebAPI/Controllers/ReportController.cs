@@ -1,4 +1,5 @@
 ﻿using CoStudy.API.Domain.Entities.Application;
+using CoStudy.API.Infrastructure.Shared.Models.Request.BaseRequest;
 using CoStudy.API.Infrastructure.Shared.Models.Request.ReportRequest;
 using CoStudy.API.Infrastructure.Shared.Services;
 using CoStudy.API.WebAPI.Middlewares;
@@ -91,6 +92,19 @@ namespace CoStudy.API.WebAPI.Controllers
         public async Task<IActionResult> ApproveReport(IEnumerable<string> ids)
         {
             var data = await reportServices.Approve(ids);
+            return Ok(new ApiOkResponse(data));
+        }
+
+        /// <summary>
+        /// Gets all.
+        /// </summary>
+        /// <param name="request">The request.</param>
+        /// <returns></returns>
+        [HttpPost("all")]
+        public IActionResult GetAll(BaseGetAllRequest request)
+        {
+
+            var data =  reportServices.GetAll(request);
             return Ok(new ApiOkResponse(data));
         }
     }

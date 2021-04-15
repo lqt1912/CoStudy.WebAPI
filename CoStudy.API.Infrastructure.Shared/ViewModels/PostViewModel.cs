@@ -21,6 +21,15 @@ namespace CoStudy.API.Infrastructure.Shared.ViewModels
         [JsonProperty("oid")]
         public string OId { get; set; }
 
+        /// <summary>
+        /// Gets or sets the index.
+        /// </summary>
+        /// <value>
+        /// The index.
+        /// </value>
+        [JsonProperty("index")]
+        [JsonPropertyName("index")]
+        public int? Index { get; set; }
 
         /// <summary>
         /// Gets or sets the title.

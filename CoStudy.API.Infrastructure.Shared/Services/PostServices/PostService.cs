@@ -528,7 +528,6 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
 
             if (filterRequest.ContentFilter != null)
             {
-
                 if (filterRequest.ContentFilter.IsSortDescending == true)
                     posts = posts.OrderByDescending(x => x.Title);
                 else

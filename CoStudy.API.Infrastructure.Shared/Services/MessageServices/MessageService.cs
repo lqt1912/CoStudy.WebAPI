@@ -246,7 +246,6 @@ namespace CoStudy.API.Infrastructure.Shared.Services.MessageServices
         }
 
 
-
         /// <summary>
         /// Gets all.
         /// </summary>

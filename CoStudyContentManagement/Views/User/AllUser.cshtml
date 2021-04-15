@@ -1,0 +1,256 @@
+﻿
+@{
+    ViewData["Title"] = "AllUser";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="w-100 form-row pb-3 ">
+    <div class="col-3 mb-2"> <input id="txtName" class=" form-control" placeholder="Họ và tên" /> </div>
+    <div class="col-3 mb-2"> <input id="txtAddress" class="form-control" placeholder="Địa chỉ" /> </div>
+    <div class="col-3 mb-2"> <input id="txtEmail" class="form-control" placeholder="Email" /></div>
+    <div class="col-3 mb-2">  <input id="txtPhoneNumber" class="form-control" placeholder="Số điện thoại" /></div>
+
+    <div class="col-3 mb-2"> <button id="btnSearch" class="form-control btn btn-info"> Tìm kiếm </button></div>
+    <div class="col-3 mb-2"> <button id="btnClear" class="form-control btn btn-primary"> Refresh  </button></div>
+    <div class="col-3 mb-2"><button id="" type="button" data-toggle="modal" data-target="#deleteConfirmModal" class="form-control btn btn-danger">Xóa </button></div>
+    <div class="col-3 mb-2"><button id="detail" type="button" data-toggle="modal" data-target="" class="form-control btn btn-info">Xem chi tiết </button></div>
+</div>
+
+<div class="row container-fluid">
+
+    <table id="userTable" class="table table-responsive table-striped border" style="font-size: 15px; width: 100% !important">
+        <thead>
+            <tr>
+                <th>STT</th>
+                <th>Họ và tên</th>
+                <th>Email</th>
+                <th>Số điện thoại</th>
+                <th>Địa chỉ</th>
+                <th>Ngày sinh</th>
+                <th>Ngày đăng kí </th>
+                <th>Trạng thái</th>
+            </tr>
+        </thead>
+    </table>
+</div>
+<style>
+    .dataTables_wrapper {
+        width: 100%
+    }
+
+    .custom-toast {
+        width: 400px;
+        color: black;
+        font-weight: bold;
+        background-color: #eb7183;
+    }
+</style>
+
+<script>
+
+    $(document).ready(
+        function () {
+            getConfig();
+            var dt = $("#userTable").DataTable(
+                {
+                    paging: true,
+                    processing: true,
+                    dom: 'lirtp',
+                    serverSide: true, // for process on server side
+                    orderMulti: true,
+                    searching: true,
+                    bSort: false,
+                    bScrollCollapse: true,
+                    bAutoWidth: false,
+                    lengthMenu: [[10, 20, 50, 100], [10, 20, 50, 100]],
+                    language: {
+                        info: "Hiển thị _START_ đến _END_ của _TOTAL_ mục",
+                        infoFiltered: "",
+                        lengthMenu: "Hiển thị _MENU_ mục",
+                        search: "Search",
+                        processing: '<div class="border" style="background-color: #717571; font-size: 20px;line-height: 4; font-weight: bold">Đang tải dữ liệu...</div>',
+                        paginate: {
+                            previous: "Đầu",
+                            next: "Tiếp theo",
+                            last: "Cuối"
+                        },
+                    },
+                    ajax: {
+                        url: "https://localhost:44323/api/Cms/user/paged",
+                        type: "POST",
+                        method: "POST",
+
+                        contentType: "application/json",
+                        dataType: "json",
+                        data: function (d) {
+                            var settings = $("#userTable").dataTable().fnSettings();
+                            d.start = settings._iDisplayStart;
+                            d.length = settings._iDisplayLength;
+
+                            return JSON.stringify(d);
+                        },
+
+                        dataSrc: function (response) {
+                            if (response.data.length > 0) {
+
+                                response.recordsTotal = response.recordsTotal;
+                                response.recordsFiltered = response.recordsFiltered;
+
+                                console.log(response);
+                                return response.data;
+                            }
+                            else {
+                                return [];
+                            };
+
+                        },
+                        dataFilter: function (data) {
+                            console.log(data);
+                            return data;
+                        },
+                        error: function (status) {
+                            console.log(status);
+                        }
+                    },
+                    columns: [
+                        {
+                            data: "index",
+                            name: "index",
+                            width: "5%"
+                        },
+                        {
+                            data: "full_name",
+                            name: "full_name",
+                            width: "10%"
+                        },
+                        {
+                            data: "email",
+                            name: "email",
+                              width: "20%"
+                        },
+                        {
+                            data: "phone_number",
+                            name: "phone_number",
+                            width: "10%"
+                        },
+                        {
+                            data: "full_address",
+                            name: "full_address",
+                            width: "25%"
+                        },
+                        {
+                            data: "date_of_birth",
+                            name: "date_of_birth",
+                            width: "15%"
+                        },
+                        {
+                            data: "created_date",
+                            name: "created_date",
+                            width: "15%"
+                        },
+                        {
+                            name: "status",
+                            data: "status",
+                            width: "15%"
+                        }
+                    ],
+                    columnDefs: [
+
+                        {
+                            "targets": [5],
+                            "render": function (data, type, row) {
+                                var d = new Date(row.date_of_birth);
+                                return d.toLocaleDateString();
+                            }
+                        },
+                        {
+                            "targets": [6],
+                            "render": function (data, type, row) {
+                                var d = new Date(row.created_date);
+                                return d.toLocaleDateString();
+                            }
+                        },
+                        {
+                            "targets": [7],
+                            "render": function (data, type, row) {
+                                if (row.status === 0)
+                                    return "Active";
+                                else if (row.status === 1)
+                                    return "Offline";
+                                else if (row.status === 2)
+                                    return "Blocked";
+                                else if (row.status === 4)
+                                    return "Deleted";
+                                else return "Không xác định"
+                            }
+                        }
+                    ]
+                });
+
+        }
+    );
+
+    $(document).ready(
+        function () {
+
+            $("#btnSearch").click(
+                function () {
+                    oTable = $("#userTable").DataTable();
+                    oTable.columns(1).search($('#txtName').val());
+                    oTable.columns(2).search($('#txtEmail').val());
+                    oTable.columns(3).search($('#txtPhoneNumber').val());
+                    oTable.columns(4).search($('#txtAddress').val());
+                    oTable.draw();
+                }
+            );
+
+            $("#btnClear").click(
+                function () {
+
+                    table = $("#userTable").DataTable();
+                    $("#txtName").val('');
+                    $("#txtEmail").val('');
+                    $("#txtPhoneNumber").val('');
+                    $('#txtAddress').val('');
+                    oTable.columns(1).search($('#txtName').val());
+                    oTable.columns(2).search($('#txtEmail').val());
+                    oTable.columns(3).search($('#txtPhoneNumber').val());
+                    oTable.columns(4).search($('#txtAddress').val());
+                    oTable.draw();
+                }
+            );
+
+            var table = $('#userTable').DataTable();
+            $('#userTable tbody').on('click', 'tr', function () {
+                if ($(this).hasClass('selected')) {
+                    $(this).removeClass('selected');
+                }
+                else {
+                    table.$('tr.selected').removeClass('selected');
+                    $(this).addClass('selected');
+                }
+            });
+
+            $('#detail').click(
+                function () {
+                    oTable = $('#myTable').DataTable();
+                    var loggingSelected = table.rows('.selected').data();
+                    var dataIds = [];
+                    for (var i = 0; i < loggingSelected.length; i++)
+                        dataIds.push(loggingSelected[i].email);
+                    var data = {
+                        ids: dataIds
+                    };
+
+                    goToUserDetail(data.ids[0]);
+                }
+
+            );
+        }
+    );
+
+    function goToUserDetail(email) {
+        window.location.replace('detail?email=' + email);
+    }
+
+</script>

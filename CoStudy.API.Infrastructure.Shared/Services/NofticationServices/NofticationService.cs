@@ -180,6 +180,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.NofticationServices
             NotificationType request = new NotificationType()
             {
                 Code = entity.Code,
+                 ObjectType= entity.ObjectType,
                 ContentTemplate = entity.ContentTemplate
             };
 

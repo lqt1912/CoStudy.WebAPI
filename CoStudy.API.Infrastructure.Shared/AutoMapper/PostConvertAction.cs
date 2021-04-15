@@ -82,7 +82,9 @@ namespace CoStudy.API.Infrastructure.Shared.AutoMapper
         public void Process(Post source, PostViewModel destination, ResolutionContext context)
         {
             var currentUser = Feature.CurrentUser(httpContextAccessor, userRepository);
-            
+
+            if (currentUser == null)
+                throw new Exception("Vui lòng đăng nhập. ");
             var author = userRepository.GetById(ObjectId.Parse(source.AuthorId));
             if (author == null)
                 throw new Exception("Không tim thấy author phù hợp. ");

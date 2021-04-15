@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using CoStudy.API.Application.FCM;
 using CoStudy.API.Application.Features;
 using CoStudy.API.Application.Repositories;
 using CoStudy.API.Domain.Entities.Application;
@@ -11,7 +12,6 @@ using MongoDB.Driver;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace CoStudy.API.Infrastructure.Shared.Services
@@ -57,17 +57,27 @@ namespace CoStudy.API.Infrastructure.Shared.Services
         /// </summary>
         IReplyCommentRepository replyCommentRepository;
 
+        /// <summary>
+        /// The notification object repository
+        /// </summary>
+        INotificationObjectRepository notificationObjectRepository;
+
+        /// <summary>
+        /// The FCM repository
+        /// </summary>
+        IFcmRepository fcmRepository;
+
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ReportServices"/> class.
         /// </summary>
         /// <param name="reportRepository">The report repository.</param>
-        public ReportServices(IReportRepository reportRepository, 
-            IMapper mapper, IUserRepository userRepository, 
+        public ReportServices(IReportRepository reportRepository,
+            IMapper mapper, IUserRepository userRepository,
             IHttpContextAccessor httpContextAccessor,
-            IPostRepository postRepository, 
-            ICommentRepository commentRepository, 
-            IReplyCommentRepository replyCommentRepository)
+            IPostRepository postRepository,
+            ICommentRepository commentRepository,
+            IReplyCommentRepository replyCommentRepository, INotificationObjectRepository notificationObjectRepository, IFcmRepository fcmRepository)
         {
             this.reportRepository = reportRepository;
             this.mapper = mapper;
@@ -76,6 +86,8 @@ namespace CoStudy.API.Infrastructure.Shared.Services
             this.postRepository = postRepository;
             this.commentRepository = commentRepository;
             this.replyCommentRepository = replyCommentRepository;
+            this.notificationObjectRepository = notificationObjectRepository;
+            this.fcmRepository = fcmRepository;
         }
 
 
@@ -86,7 +98,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services
         /// <returns></returns>
         public async Task<ReportViewModel> Add(Report entity)
         {
-            var data = new Report()
+            Report data = new Report()
             {
                 CreatedDate = DateTime.Now,
                 AuthorId = entity.AuthorId,
@@ -106,11 +118,11 @@ namespace CoStudy.API.Infrastructure.Shared.Services
         /// <returns></returns>
         public async Task<ReportViewModel> PostReport(CreatePostReportRequest request)
         {
-            var currentUser = Feature.CurrentUser(httpContextAccessor, userRepository);
+            User currentUser = Feature.CurrentUser(httpContextAccessor, userRepository);
 
-            var post = new Post();
+            Post post = await postRepository.GetByIdAsync(ObjectId.Parse(request.PostId));
 
-            var data = new Report()
+            Report data = new Report()
             {
                 AuthorId = currentUser.OId,
                 Reason = request.Reason.ToList(),
@@ -119,6 +131,36 @@ namespace CoStudy.API.Infrastructure.Shared.Services
             };
 
             await reportRepository.AddAsync(data);
+
+            FilterDefinitionBuilder<NotificationObject> notificationObjectBuilders = Builders<NotificationObject>.Filter;
+
+            FilterDefinition<NotificationObject> notificationObjectFilters = notificationObjectBuilders.Eq("object_id", request.PostId)
+                & notificationObjectBuilders.Eq("notification_type", "REPORT_POST_NOTIFY");
+
+            NotificationObject existNotificationObject = await notificationObjectRepository.FindAsync(notificationObjectFilters);
+
+            string notificationObject = existNotificationObject != null ? existNotificationObject.OId : string.Empty;
+
+            if (existNotificationObject == null)
+            {
+                NotificationObject newNotificationObject = new NotificationObject()
+                {
+                    NotificationType = "REPORT_POST_NOTIFY",
+                    ObjectId = request.PostId,
+                    OwnerId = post.AuthorId
+                };
+                await notificationObjectRepository.AddAsync(newNotificationObject);
+                notificationObject = newNotificationObject.OId;
+            }
+
+            NotificationDetail notificationDetail = new NotificationDetail()
+            {
+                CreatorId = currentUser.OId,
+                NotificationObjectId = notificationObject
+            };
+
+
+            await fcmRepository.PushNotifyReport(post.AuthorId, notificationDetail);
 
             return mapper.Map<ReportViewModel>(data);
 
@@ -131,7 +173,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services
         /// <returns></returns>
         public IEnumerable<ReportViewModel> GetAll(BaseGetAllRequest request)
         {
-            var data = reportRepository.GetAll();
+            IQueryable<Report> data = reportRepository.GetAll();
             if (request.Count.HasValue && request.Skip.HasValue)
             {
                 data = data.Skip(request.Skip.Value).Take(request.Count.Value);
@@ -146,17 +188,19 @@ namespace CoStudy.API.Infrastructure.Shared.Services
         /// <returns></returns>
         public async Task<IEnumerable<ReportViewModel>> Approve(IEnumerable<string> ids)
         {
-            var dataToApprove = new List<Report>();
-            foreach (var item in ids)
+            List<Report> dataToApprove = new List<Report>();
+            foreach (string item in ids)
             {
-                var rp = await reportRepository.GetByIdAsync(ObjectId.Parse(item));
+                Report rp = await reportRepository.GetByIdAsync(ObjectId.Parse(item));
                 if (rp != null)
+                {
                     dataToApprove.Add(rp);
+                }
             }
 
-            var currentUser = Feature.CurrentUser(httpContextAccessor, userRepository);
+            User currentUser = Feature.CurrentUser(httpContextAccessor, userRepository);
 
-            foreach (var item in dataToApprove)
+            foreach (Report item in dataToApprove)
             {
                 item.IsApproved = true;
                 item.ModifiedDate = DateTime.Now;
@@ -164,15 +208,128 @@ namespace CoStudy.API.Infrastructure.Shared.Services
                 item.ApproveDate = DateTime.Now;
                 await reportRepository.UpdateAsync(item, item.Id);
 
-
-                if(item.ObjectType.Contains("Post"))
+                if (item.ObjectType.Contains("Post"))
                 {
+                    Post post = await postRepository.GetByIdAsync(ObjectId.Parse(item.ObjectId));
+                    post.Status = ItemStatus.Blocked;
+                    post.ModifiedDate = DateTime.Now;
+                    await postRepository.UpdateAsync(post, post.Id);
+
+                    //Notify
+
+                    FilterDefinitionBuilder<NotificationObject> notificationObjectBuilders = Builders<NotificationObject>.Filter;
+
+                    FilterDefinition<NotificationObject> notificationObjectFilters = notificationObjectBuilders.Eq("object_id", post.OId)
+                        & notificationObjectBuilders.Eq("notification_type", "APPROVE_POST_REPORT");
+
+                    NotificationObject existNotificationObject = await notificationObjectRepository.FindAsync(notificationObjectFilters);
+
+                    string notificationObject = existNotificationObject != null ? existNotificationObject.OId : string.Empty;
+
+                    if (existNotificationObject == null)
+                    {
+                        NotificationObject newNotificationObject = new NotificationObject()
+                        {
+                            NotificationType = "APPROVE_POST_REPORT",
+                            ObjectId = post.OId,
+                            OwnerId = post.AuthorId
+                        };
+                        await notificationObjectRepository.AddAsync(newNotificationObject);
+                        notificationObject = newNotificationObject.OId;
+                    }
+
+                    NotificationDetail notificationDetail = new NotificationDetail()
+                    {
+                        CreatorId = currentUser.OId,
+                        NotificationObjectId = notificationObject
+                    };
+
+
+                    await fcmRepository.PushNotifyApproveReport(post.AuthorId, notificationDetail);
 
                 }
+                else
+                if (item.ObjectType.Contains("ReplyComment"))
+                {
+                    ReplyComment replyComment = await replyCommentRepository.GetByIdAsync(ObjectId.Parse(item.ObjectId));
+                    replyComment.Status = ItemStatus.Blocked;
+                    replyComment.ModifiedDate = DateTime.Now;
+                    await replyCommentRepository.UpdateAsync(replyComment, replyComment.Id);
+
+                    //Notify
+
+                    FilterDefinitionBuilder<NotificationObject> notificationObjectBuilders = Builders<NotificationObject>.Filter;
+
+                    FilterDefinition<NotificationObject> notificationObjectFilters = notificationObjectBuilders.Eq("object_id", replyComment.OId)
+                        & notificationObjectBuilders.Eq("notification_type", "APPROVE_REPLY_REPORT");
+
+                    NotificationObject existNotificationObject = await notificationObjectRepository.FindAsync(notificationObjectFilters);
+
+                    string notificationObject = existNotificationObject != null ? existNotificationObject.OId : string.Empty;
+
+                    if (existNotificationObject == null)
+                    {
+                        NotificationObject newNotificationObject = new NotificationObject()
+                        {
+                            NotificationType = "APPROVE_REPLY_REPORT",
+                            ObjectId = replyComment.OId,
+                            OwnerId = replyComment.AuthorId
+                        };
+                        await notificationObjectRepository.AddAsync(newNotificationObject);
+                        notificationObject = newNotificationObject.OId;
+                    }
+
+                    NotificationDetail notificationDetail = new NotificationDetail()
+                    {
+                        CreatorId = currentUser.OId,
+                        NotificationObjectId = notificationObject
+                    };
 
 
+                    await fcmRepository.PushNotifyApproveReport(replyComment.AuthorId, notificationDetail);
+                }
+                else
+                if (item.ObjectType.Contains("Comment"))
+                {
+                    Comment comment = await commentRepository.GetByIdAsync(ObjectId.Parse(item.ObjectId));
+                    comment.Status = ItemStatus.Blocked;
+                    comment.ModifiedDate = DateTime.Now;
+                    await commentRepository.UpdateAsync(comment, comment.Id);
+
+                    //Notify
+
+                    FilterDefinitionBuilder<NotificationObject> notificationObjectBuilders = Builders<NotificationObject>.Filter;
+
+                    FilterDefinition<NotificationObject> notificationObjectFilters = notificationObjectBuilders.Eq("object_id", comment.OId)
+                        & notificationObjectBuilders.Eq("notification_type", "APPROVE_REPLY_REPORT");
+
+                    NotificationObject existNotificationObject = await notificationObjectRepository.FindAsync(notificationObjectFilters);
+
+                    string notificationObject = existNotificationObject != null ? existNotificationObject.OId : string.Empty;
+
+                    if (existNotificationObject == null)
+                    {
+                        NotificationObject newNotificationObject = new NotificationObject()
+                        {
+                            NotificationType = "APPROVE_REPLY_REPORT",
+                            ObjectId = comment.OId,
+                            OwnerId = comment.AuthorId
+                        };
+                        await notificationObjectRepository.AddAsync(newNotificationObject);
+                        notificationObject = newNotificationObject.OId;
+                    }
+
+                    NotificationDetail notificationDetail = new NotificationDetail()
+                    {
+                        CreatorId = currentUser.OId,
+                        NotificationObjectId = notificationObject
+                    };
+
+
+                    await fcmRepository.PushNotifyApproveReport(comment.AuthorId, notificationDetail);
+                }
             }
-            return mapper.Map<IEnumerable<ReportViewModel>>( dataToApprove);
+            return mapper.Map<IEnumerable<ReportViewModel>>(dataToApprove);
         }
 
         /// <summary>
@@ -183,11 +340,11 @@ namespace CoStudy.API.Infrastructure.Shared.Services
         /// <exception cref="NotImplementedException"></exception>
         public async Task<ReportViewModel> CommentReport(CreateCommentReportRequest request)
         {
-            var currentUser = Feature.CurrentUser(httpContextAccessor, userRepository);
+            User currentUser = Feature.CurrentUser(httpContextAccessor, userRepository);
 
-            var comment = new Comment();
+            Comment comment = await commentRepository.GetByIdAsync(ObjectId.Parse(request.CommentId));
 
-            var data = new Report()
+            Report data = new Report()
             {
                 AuthorId = currentUser.OId,
                 Reason = request.Reason.ToList(),
@@ -197,16 +354,50 @@ namespace CoStudy.API.Infrastructure.Shared.Services
 
             await reportRepository.AddAsync(data);
 
+            FilterDefinitionBuilder<NotificationObject> notificationObjectBuilders = Builders<NotificationObject>.Filter;
+
+            FilterDefinition<NotificationObject> notificationObjectFilters = notificationObjectBuilders.Eq("object_id", request.CommentId)
+                & notificationObjectBuilders.Eq("notification_type", "REPORT_COMMENT_NOTIFY");
+
+            NotificationObject existNotificationObject = await notificationObjectRepository.FindAsync(notificationObjectFilters);
+
+            string notificationObject = existNotificationObject != null ? existNotificationObject.OId : string.Empty;
+
+            if (existNotificationObject == null)
+            {
+                NotificationObject newNotificationObject = new NotificationObject()
+                {
+                    NotificationType = "REPORT_COMMENT_NOTIFY",
+                    ObjectId = request.CommentId,
+                    OwnerId = comment.AuthorId
+                };
+                await notificationObjectRepository.AddAsync(newNotificationObject);
+                notificationObject = newNotificationObject.OId;
+            }
+
+            NotificationDetail notificationDetail = new NotificationDetail()
+            {
+                CreatorId = currentUser.OId,
+                NotificationObjectId = notificationObject
+            };
+
+            await fcmRepository.PushNotifyReport(comment.AuthorId, notificationDetail);
+
             return mapper.Map<ReportViewModel>(data);
         }
 
+        /// <summary>
+        /// Replies the report.
+        /// </summary>
+        /// <param name="request">The request.</param>
+        /// <returns></returns>
         public async Task<ReportViewModel> ReplyReport(CreateReplyReportRequest request)
         {
-            var currentUser = Feature.CurrentUser(httpContextAccessor, userRepository);
+            User currentUser = Feature.CurrentUser(httpContextAccessor, userRepository);
 
-            var comment = new ReplyComment();
+            ReplyComment comment = await replyCommentRepository.GetByIdAsync(ObjectId.Parse(request.ReplyId));
 
-            var data = new Report()
+            Report data = new Report()
             {
                 AuthorId = currentUser.OId,
                 Reason = request.Reason.ToList(),
@@ -215,6 +406,35 @@ namespace CoStudy.API.Infrastructure.Shared.Services
             };
 
             await reportRepository.AddAsync(data);
+
+            FilterDefinitionBuilder<NotificationObject> notificationObjectBuilders = Builders<NotificationObject>.Filter;
+
+            FilterDefinition<NotificationObject> notificationObjectFilters = notificationObjectBuilders.Eq("object_id", request.ReplyId)
+                & notificationObjectBuilders.Eq("notification_type", "REPORT_REPLY_NOTIFY");
+
+            NotificationObject existNotificationObject = await notificationObjectRepository.FindAsync(notificationObjectFilters);
+
+            string notificationObject = existNotificationObject != null ? existNotificationObject.OId : string.Empty;
+
+            if (existNotificationObject == null)
+            {
+                NotificationObject newNotificationObject = new NotificationObject()
+                {
+                    NotificationType = "REPORT_REPLY_NOTIFY",
+                    ObjectId = request.ReplyId,
+                    OwnerId = comment.AuthorId
+                };
+                await notificationObjectRepository.AddAsync(newNotificationObject);
+                notificationObject = newNotificationObject.OId;
+            }
+
+            NotificationDetail notificationDetail = new NotificationDetail()
+            {
+                CreatorId = currentUser.OId,
+                NotificationObjectId = notificationObject
+            };
+
+            await fcmRepository.PushNotifyReport(comment.AuthorId, notificationDetail);
 
             return mapper.Map<ReportViewModel>(data);
         }

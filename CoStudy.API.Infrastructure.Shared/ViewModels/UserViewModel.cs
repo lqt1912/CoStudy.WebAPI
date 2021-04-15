@@ -23,6 +23,15 @@ namespace CoStudy.API.Infrastructure.Shared.ViewModels
         public string OId { get; set; }
 
         /// <summary>
+        /// Gets or sets the index.
+        /// </summary>
+        /// <value>
+        /// The index.
+        /// </value>
+        [JsonProperty("index")]
+        [JsonPropertyName("index")]
+        public int? Index { get; set; }
+        /// <summary>
         /// Gets or sets the last name.
         /// </summary>
         /// <value>
@@ -92,6 +101,16 @@ namespace CoStudy.API.Infrastructure.Shared.ViewModels
         [JsonProperty("address")]
         [JsonPropertyName("address")]
         public Address Address { get; set; }
+
+        /// <summary>
+        /// Gets or sets the full address.
+        /// </summary>
+        /// <value>
+        /// The full address.
+        /// </value>
+        [JsonProperty("full_address")]
+        [JsonPropertyName("full_address")]
+        public string FullAddress { get; set; }
 
         /// <summary>
         /// Gets or sets the avatar.

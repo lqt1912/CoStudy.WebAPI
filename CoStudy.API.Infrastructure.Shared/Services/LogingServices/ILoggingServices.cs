@@ -34,5 +34,8 @@ namespace CoStudy.API.Infrastructure.Shared.Services
         /// <param name="request">The request.</param>
         /// <returns></returns>
         Task<string> Delete(DeleteLoggingRequest request);
+
+        Task<LoggingViewModel> GetById(string id);
+
     }
 }

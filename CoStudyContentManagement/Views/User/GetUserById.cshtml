@@ -1,0 +1,225 @@
+﻿
+@{
+    ViewData["Title"] = "GetUserById";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h3>Thông tin người dùng </h3>
+
+<style>
+    .infomation-label-header {
+        font-weight: bold;
+        font-style: italic;
+        text-decoration: underline
+    }
+</style>
+
+<div class="container row">
+    <form class="col-6">
+        <div class="form-group row">
+            <label for="full_name" class="col-sm-3 col-form-label infomation-label-header">Họ và tên</label>
+            <div class="col-sm-9">
+                <input type="text" readonly class="form-control-plaintext" id="full_name" />
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="date_of_birth" class="col-sm-3 col-form-label infomation-label-header">Ngày sinh</label>
+            <div class="col-sm-9">
+                <input type="date" readonly class="form-control-plaintext" id="date_of_birth" />
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="email" class="col-sm-3 col-form-label infomation-label-header">Email</label>
+            <div class="col-sm-9">
+                <input type="text" readonly class="form-control-plaintext" id="email" />
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="phone_number" class="col-sm-3 col-form-label infomation-label-header">Số điện thoại</label>
+            <div class="col-sm-9">
+                <input type="text" readonly class="form-control-plaintext" id="phone_number" />
+            </div>
+        </div>
+
+        <div class="form-group row">
+            <label for="full_address" class="col-sm-3 col-form-label infomation-label-header">Địa chỉ</label>
+            <div class="col-sm-9">
+                <input type="text" readonly class="form-control-plaintext" id="full_address" />
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="avatar_hash" class="col-sm-3 col-form-label infomation-label-header">Avatar</label>
+            <div class="col-sm-9">
+                <img id="avatar_hash" class="border" />
+            </div>
+        </div>
+    </form>
+
+    <form class="col-6">
+        <div class="form-group row">
+            <label for="created_date" class="col-sm-3 col-form-label infomation-label-header">Ngày đăng kí</label>
+            <div class="col-sm-9">
+                <input type="date" readonly class="form-control-plaintext" id="created_date" />
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="post_count" class="col-sm-3 col-form-label infomation-label-header">Số bài viết</label>
+            <div class="col-sm-9">
+                <input type="text" readonly class="form-control-plaintext" id="post_count" />
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="status" class="col-sm-3 col-form-label infomation-label-header ">Trạng thái</label>
+            <div class="col-sm-9">
+                <input type="text" readonly class="form-control-plaintext" id="status" />
+            </div>
+        </div>
+
+        <div class="form-group row">
+            <label for="status" class="col-sm-3 col-form-label" style="font-weight:bold; font-style: italic; text-decoration:underline">Thông tin</label>
+            <div class="col-sm-12 row" id="additional_infos">
+
+            </div>
+        </div>
+
+
+        <div class="form-group row">
+            <label for="fields" class="col-sm-3 col-form-label" style="font-weight:bold; font-style: italic; text-decoration:underline">Lĩnh vực</label>
+            <div class="col-sm-12 row" id="fields">
+            </div>
+        </div>
+
+
+    </form>
+</div>
+
+<h3>Thông tin đăng nhập </h3>
+<div class="container row">
+    <form class="col-6">
+        <div class="form-group row">
+            <label for="email" class="col-sm-3 col-form-label infomation-label-header">Email</label>
+            <div class="col-sm-9">
+                <input type="text" readonly class="form-control-plaintext" id="acc_email" />
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="passwordHash" class="col-sm-3 col-form-label infomation-label-header">Mật khẩu </label>
+            <div class="col-sm-9">
+                <input type="text" readonly class="form-control-plaintext" id="passwordHash" />
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="role" class="col-sm-3 col-form-label infomation-label-header">Quyền truy cập </label>
+            <div class="col-sm-9">
+                <input type="text" readonly class="form-control-plaintext" id="role" />
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="verificationToken" class="col-sm-3 col-form-label infomation-label-header">OTP Xác thực</label>
+            <div class="col-sm-9">
+                <input type="text" readonly class="form-control-plaintext" id="verificationToken" />
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="isVerified" class="col-sm-3 col-form-label infomation-label-header">Trạng thái xác thực</label>
+            <div class="col-sm-9">
+                <input type="text" readonly class="form-control-plaintext" id="isVerified" />
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="verified" class="col-sm-3 col-form-label infomation-label-header">Ngày xác thực</label>
+            <div class="col-sm-9">
+                <input type="date" readonly class="form-control-plaintext" id="verified" />
+            </div>
+        </div>
+    </form>
+    <form class="col-6">
+    </form>
+</div>
+<script>
+
+    $(document).ready(
+        function () {
+            getUserDetailByEmail();
+        }
+    );
+
+    function getUserDetailByEmail() {
+        $.ajax({
+            type: 'GET',
+            url: API_URL + 'api/Cms/user?email=' + '@ViewBag.email',
+            success: function (response) {
+                $("#full_name").val(response.result.user.full_name);
+
+                var d = new Date(response.result.user.date_of_birth);
+                $("#date_of_birth").val(d.toISOString().substring(0, 10));
+
+                $("#email").val(response.result.user.email);
+
+                $("#phone_number").val(response.result.user.phone_number);
+
+                $("#full_address").val(response.result.user.full_address);
+
+                $("#avatar_hash").attr("src", response.result.user.avatar_hash);
+
+                var d1 = new Date(response.result.user.created_date);
+                $("#created_date").val(d1.toISOString().substring(0, 10));
+
+                $("#post_count").val(response.result.user.post_count);
+
+                var st = response.result.user.status;
+                if (st === 0)
+                    $("#status").val("Active");
+                else if (st === 1)
+                    $("#status").val("Offline");
+                else if (st === 2)
+                    $("#status").val("Blocked");
+                else if (st === 4)
+                    $("#status").val("Deleted");
+                else
+                    $("#status").val("Không xác định ");
+
+                var d_additional_infos = "";
+                for (var i = 0; i < response.result.user.additional_infos.length; i++) {
+                    d_additional_infos = d_additional_infos + ' <div class="col-12 form-group row"><label for="status" class="col-sm-6 col-form-label">' + response.result.user.additional_infos[i].information_name
+                        + '</label ><div class="col-sm-6 row"><input type="text" readonly class="form-control-plaintext" id="" value="' + response.result.user.additional_infos[i].information_value
+                        + '"/>  </div></div >';
+                }
+
+                $("#additional_infos").html(d_additional_infos);
+
+                var d_fields = "";
+                for (var i = 0; i < response.result.user.fields.length; i++) {
+                    d_fields = d_fields + ' <div class="col-12 form-group row"><label for="status" class="col-sm-4 col-form-label">' + response.result.user.fields[i].field_name
+                        + '</label ><div class="col-sm-4 row"><input type="text" readonly class="form-control-plaintext" id="" value="' + response.result.user.fields[i].level_description
+                        + '"/>  </div> <div class="col-sm-4 row "><input type="text" readonly class="form-control-plaintext" id="" value="' + response.result.user.fields[i].point + ' điểm "/> </div> </div ></div >';
+                }
+
+                $("#fields").html(d_fields);
+
+                var role_num = response.result.account.role;
+                if (role_num === 0)
+                    $("#role").val("Quản trị viên");
+                else $("#role").val("Người dùng");
+
+                $("#verificationToken").val(response.result.account.verificationToken);
+
+                var verified_date = new Date(response.result.account.verified);
+                $("#verified").val(verified_date.toISOString().substring(0, 10));
+
+                var is_verified = response.result.account.isVerified;
+                if (is_verified === true)
+
+                    $("#isVerified").val("Đã xác thực");
+                else $("#isVerified").val("Chưa xác thực");
+
+                $("#passwordHash").val("*******************")
+                $("#acc_email").val(response.result.account.email);
+            },
+            error: function (response) {
+                console.log(response);
+            }
+        });
+    }
+
+</script>

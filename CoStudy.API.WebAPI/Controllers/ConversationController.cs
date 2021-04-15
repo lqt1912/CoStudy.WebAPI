@@ -55,9 +55,9 @@ namespace CoStudy.API.WebAPI.Controllers
         /// <returns></returns>
         [HttpGet]
         [Route("current")]
-        public IActionResult GetCurrentConversationList()
+        public async Task<IActionResult> GetCurrentConversationList()
         {
-            GetConversationByUserIdResponse data = conversationService.GetConversationByUserId();
+            GetConversationByUserIdResponse data =await conversationService.GetConversationByUserId();
             return Ok(new ApiOkResponse(data));
         }
 
