@@ -46,7 +46,6 @@ function getConfig() {
 }
 
 $(document).ready(
- 
     function () {
         var a = getConfig();
         $("#logout").click(

@@ -86,7 +86,10 @@ namespace CoStudy.API.Infrastructure.Shared.AutoMapper
 
             CreateMap<MessageImage, MessageViewModel>().ForMember(dest => dest.Content, opt => opt.MapFrom(src => src.Image)).AfterMap<MessageConvertAction>();
 
+        
             CreateMap<MessageMultiMedia, MessageViewModel>().ForMember(dest => dest.Content, opt => opt.MapFrom(src => src.MediaUrl)).AfterMap<MessageConvertAction>();
+
+            CreateMap<FieldGroup, FieldGroupViewModel>().ForMember(dest =>dest.Fields, opt=>opt.Ignore()).AfterMap<FieldGroupConvertAction>();
         }
     }
 }

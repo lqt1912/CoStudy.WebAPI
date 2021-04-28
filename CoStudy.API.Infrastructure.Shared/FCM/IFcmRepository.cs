@@ -82,5 +82,14 @@ namespace CoStudy.API.Application.FCM
         /// <param name="notificationDetail">The notification detail.</param>
         /// <returns></returns>
         Task PushNotifyApproveReport(string userId, NotificationDetail notificationDetail);
+
+        /// <summary>
+        /// Pushes the notify post match.
+        /// </summary>
+        /// <param name="userId">The user identifier.</param>
+        /// <param name="notificationDetail">The notification detail.</param>
+        /// <returns></returns>
+        Task PushNotifyPostMatch(string userId, NotificationDetail notificationDetail);
+
     }
 }

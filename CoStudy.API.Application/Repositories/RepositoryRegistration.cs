@@ -93,7 +93,8 @@ namespace CoStudy.API.Application.Repositories
             services.AddTransient<IMessageTextRepository, MessageTextRepository>();
 
             services.AddTransient<IMessageConversationActivityRepository, MessageConversationActivityRepository>();
-        }
 
+            services.AddTransient<IFieldGroupRepository, FieldGroupRepository>();
+        }
     }
 }

@@ -101,6 +101,11 @@ namespace CoStudy.API.Infrastructure.Shared.Services
         /// <returns></returns>
         Task<PostViewModel> UpdatePostField(UpdatePostLevelRequest request);
 
-
+        /// <summary>
+        /// Gets the leader board.
+        /// </summary>
+        /// <param name="request">The request.</param>
+        /// <returns></returns>
+        Task<LeaderBoardViewModel> GetLeaderBoard(BaseGetAllRequest request);
     }
 }

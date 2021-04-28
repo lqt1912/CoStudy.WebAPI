@@ -6,7 +6,10 @@ using CoStudy.API.Application.Utitlities;
 using CoStudy.API.Domain.Entities.Application;
 using CoStudy.API.Infrastructure.Shared.Adapters;
 using CoStudy.API.Infrastructure.Shared.Models.Request.BaseRequest;
+using CoStudy.API.Infrastructure.Shared.Models.Request.MessageRequest;
 using CoStudy.API.Infrastructure.Shared.Models.Request.PostRequest;
+using CoStudy.API.Infrastructure.Shared.Models.Response.MessageResponse;
+using CoStudy.API.Infrastructure.Shared.Services.MessageServices;
 using CoStudy.API.Infrastructure.Shared.ViewModels;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
@@ -41,7 +44,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
         /// The post repository
         /// </summary>
         IPostRepository postRepository;
-      
+
         /// <summary>
         /// The follow repository
         /// </summary>
@@ -81,6 +84,19 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
         ILevelService levelService;
 
         /// <summary>
+        /// The field group repository
+        /// </summary>
+        IFieldGroupRepository fieldGroupRepository;
+
+        /// <summary>
+        /// The levelRepository
+        /// </summary>
+        ILevelRepository levelRepository;
+
+        IMessageService messageService;
+
+        IConversationService conversationService;
+        /// <summary>
         /// Initializes a new instance of the <see cref="PostService"/> class.
         /// </summary>
         /// <param name="httpContextAccessor">The HTTP context accessor.</param>
@@ -105,7 +121,11 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
             IDownVoteRepository downVoteRepository,
             IFcmRepository fcmRepository,
             IMapper mapper, IObjectLevelRepository objectLevelRepository,
-            INotificationObjectRepository notificationObjectRepository, ILevelService levelService)
+            INotificationObjectRepository notificationObjectRepository,
+            ILevelService levelService,
+            IFieldGroupRepository fieldGroupRepository,
+            ILevelRepository levelRepository,
+            IMessageService messageService, IConversationService conversationService)
         {
             this.httpContextAccessor = httpContextAccessor;
             this.configuration = configuration;
@@ -119,6 +139,10 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
             this.objectLevelRepository = objectLevelRepository;
             this.notificationObjectRepository = notificationObjectRepository;
             this.levelService = levelService;
+            this.fieldGroupRepository = fieldGroupRepository;
+            this.levelRepository = levelRepository;
+            this.messageService = messageService;
+            this.conversationService = conversationService;
         }
 
         /// <summary>
@@ -159,6 +183,42 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
                 item.ObjectId = post.OId;
 
             await levelService.AddObjectLevel(request.Fields);
+
+            var userMatchs = await GetUsersMatchPostField(post);
+
+            var notificationObjectBuilders = Builders<NotificationObject>.Filter;
+
+            var notificationObjectFilters = notificationObjectBuilders.Eq("object_id", post.OId)
+                & notificationObjectBuilders.Eq("notification_type", "ADD_POST_NOTIFY");
+
+            var existNotificationObject = await notificationObjectRepository.FindAsync(notificationObjectFilters);
+
+            string notificationObject = existNotificationObject != null ? existNotificationObject.OId : string.Empty;
+
+            if (existNotificationObject == null)
+            {
+                var newNotificationObject = new NotificationObject()
+                {
+                    NotificationType = "ADD_POST_NOTIFY",
+                    ObjectId = post.OId,
+                    OwnerId = post.AuthorId
+                };
+                await notificationObjectRepository.AddAsync(newNotificationObject);
+                notificationObject = newNotificationObject.OId;
+            }
+
+            var notificationDetail = new NotificationDetail()
+            {
+                CreatorId = currentUser.OId,
+                NotificationObjectId = notificationObject
+            };
+
+            foreach (var user in userMatchs)
+            {
+                await fcmRepository.PushNotifyPostMatch(user.OId, notificationDetail);
+            }
+
+          
 
             PostViewModel response = mapper.Map<PostViewModel>(post);
             return response;
@@ -287,9 +347,9 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
 
                 var existNotificationObject = await notificationObjectRepository.FindAsync(notificationObjectFilters);
 
-                string notificationObject = existNotificationObject!=null? existNotificationObject.OId: string.Empty;
+                string notificationObject = existNotificationObject != null ? existNotificationObject.OId : string.Empty;
 
-                if(existNotificationObject==null)
+                if (existNotificationObject == null)
                 {
                     var newNotificationObject = new NotificationObject()
                     {
@@ -308,7 +368,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
                 };
 
 
-               await  fcmRepository.PushNotifyDetail(currentPost.OId, notificationDetail);
+                await fcmRepository.PushNotifyDetail(currentPost.OId, notificationDetail);
 
                 return "Upvote thành công. ";
             }
@@ -369,7 +429,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
 
                 var existNotificationObject = await notificationObjectRepository.FindAsync(notificationObjectFilters);
 
-                string notificationObject = existNotificationObject!=null ? existNotificationObject.OId: string.Empty;
+                string notificationObject = existNotificationObject != null ? existNotificationObject.OId : string.Empty;
 
                 if (existNotificationObject == null)
                 {
@@ -390,7 +450,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
                 };
 
                 await fcmRepository.PushNotifyDetail(currentPost.OId, notificationDetail);
-            
+
                 return "Downvote thành công. ";
             }
             catch (Exception)
@@ -500,70 +560,57 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
 
             if (filterRequest.ContentFilter != null)
             {
-                filterParam = filterParam & (builders.Regex("string_contents.content", filterRequest.ContentFilter.KeyWord)
-                    | builders.Regex("title", filterRequest.ContentFilter.KeyWord));
+                filterParam = filterParam & (builders.Regex("string_contents.content", filterRequest.ContentFilter)
+                    | builders.Regex("title", filterRequest.ContentFilter));
             }
 
-            if (filterRequest.CreatedDateFilter != null)
+            if (filterRequest.FromDate != null && filterRequest.ToDate != null)
             {
-                if (filterRequest.CreatedDateFilter.FromDate.HasValue && filterRequest.CreatedDateFilter.ToDate.HasValue)
-                    filterParam = filterParam
-                        & builders.Gt("created_date", filterRequest.CreatedDateFilter.FromDate)
-                        & builders.Lt("created_date", filterRequest.CreatedDateFilter.ToDate);
+                filterParam = filterParam
+                    & builders.Gt("created_date", filterRequest.FromDate)
+                    & builders.Lt("created_date", filterRequest.ToDate);
             }
 
             posts = (await postRepository.FindListAsync(filterParam)).AsQueryable();
 
-
-            if (filterRequest.CreatedDateFilter != null)
-            {
-
-
-
-                if (filterRequest.CreatedDateFilter.IsSortDescending == true)
-                    posts = posts.OrderByDescending(x => x.CreatedDate);
-                else
-                    posts = posts.OrderBy(x => x.CreatedDate);
-            }
-
-            if (filterRequest.ContentFilter != null)
-            {
-                if (filterRequest.ContentFilter.IsSortDescending == true)
-                    posts = posts.OrderByDescending(x => x.Title);
-                else
-                    posts = posts.OrderBy(x => x.Title);
-
-            }
-
             var vm = mapper.Map<IEnumerable<PostViewModel>>(posts);
 
-            if (filterRequest.UpvoteCountFilter != null)
+            if (filterRequest.SortObject.HasValue && filterRequest.SortType.HasValue)
             {
-                if (filterRequest.UpvoteCountFilter.ValueFrom.HasValue && filterRequest.UpvoteCountFilter.ValueTo.HasValue)
+                switch (filterRequest.SortObject.Value)
                 {
-                    vm = vm.Where(x => x.Upvote >= filterRequest.UpvoteCountFilter.ValueFrom.Value && x.Upvote <= filterRequest.UpvoteCountFilter.ValueTo.Value);
-                }
+                    case SortObject.Upvote:
+                        {
+                            var sortType = filterRequest.SortType.Value;
+                            if (sortType == SortType.Ascending)
+                                vm = vm.OrderBy(x => x.Upvote);
+                            else if (sortType == SortType.Descending)
+                                vm = vm.OrderByDescending(x => x.Upvote);
+                            break;
+                        }
+                    case SortObject.Comment:
+                        {
+                            var sortType = filterRequest.SortType.Value;
+                            if (sortType == SortType.Ascending)
+                                vm = vm.OrderBy(x => x.CommentCount);
+                            else if (sortType == SortType.Descending)
+                                vm = vm.OrderByDescending(x => x.CommentCount);
+                            break;
 
-                if (filterRequest.UpvoteCountFilter.IsSortDescending == true)
-                    vm = vm.OrderByDescending(x => x.Upvote);
-                else
-                    vm = vm.OrderBy(x => x.Upvote);
+                        }
+                    case SortObject.CreatedDate:
+                        {
+                            var sortType = filterRequest.SortType.Value;
+                            if (sortType == SortType.Ascending)
+                                vm = vm.OrderBy(x => x.CreatedDate);
+                            else if (sortType == SortType.Descending)
+                                vm = vm.OrderByDescending(x => x.CreatedDate);
+                            break;
+                        }
+                }
             }
 
-            if (filterRequest.CommentCountFilter != null)
-            {
-                if (filterRequest.CommentCountFilter.ValueFrom.HasValue && filterRequest.CommentCountFilter.ValueTo.HasValue)
-                {
 
-                    vm = vm.Where(x => x.CommentCount >= filterRequest.CommentCountFilter.ValueFrom.Value
-                    && x.CommentCount <= filterRequest.CommentCountFilter.ValueTo.Value);
-                }
-
-                if (filterRequest.CommentCountFilter.IsSortDescending == true)
-                    vm = vm.OrderByDescending(x => x.CommentCount);
-                else
-                    vm = vm.OrderBy(x => x.CommentCount);
-            }
 
             var result = new List<PostViewModel>();
             foreach (var post in vm)
@@ -595,24 +642,205 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
 
 
 
+
+   
+
         /// <summary>
-        /// Determines whether the specified post is match.
+        /// Gets the news feed.
+        /// </summary>
+        /// <param name="request">The request.</param>
+        /// <returns></returns>
+        public async Task<IEnumerable<PostViewModel>> GetNewsFeed(NewsFeedRequest request)
+        {
+            var dataSource = new List<Post>();
+
+            //Lấy danh sách post theo ngày
+            if (request.FromDate.HasValue && request.ToDate.HasValue)
+            {
+                var fromDate = request.FromDate.Value;
+                var toDaTe = request.ToDate.Value;
+                var postBuilder = Builders<Post>.Filter;
+                var postFilter = postBuilder.Lt("created_date", toDaTe)
+                    & postBuilder.Gt("created_date", fromDate);
+                var posts = await postRepository.FindListAsync(postFilter);
+                // dataSource = posts;
+            }
+
+            //Lấy danh sách user_id đang theo dõi
+            var currentUser = Feature.CurrentUser(httpContextAccessor, userRepository);
+            var userBuilder = Builders<Follow>.Filter.Eq("from_id", currentUser.OId);
+            var follows = await followRepository.FindListAsync(userBuilder);
+            var followIds = follows.Select(x => x.ToId).Distinct();
+
+            //Lấy danh sách post của chính mình 
+            var postByCurrentBuilder = Builders<Post>.Filter;
+            var posytByCurrentFilter = postByCurrentBuilder.Eq("author_id", currentUser.OId);
+            var postByCurrent = await postRepository.FindListAsync(posytByCurrentFilter);
+            dataSource.AddRange(postByCurrent);
+
+
+            //Duyệt danh sách và lấy ra những post của người dùng đang theo dõi. 
+            foreach (var followId in followIds)
+            {
+                var postByAuthorBuilder = Builders<Post>.Filter;
+                var postByAuthorFilter = postByAuthorBuilder.Eq("author_id", followId)
+                    & postByAuthorBuilder.Eq("status", ItemStatus.Active);
+                var postByAuthor = await postRepository.FindListAsync(postByAuthorFilter);
+                dataSource.AddRange(postByAuthor);
+            }
+
+            //Lấy danh sách field là những thế mạnh của người dùng
+            var userForcesBuilder = Builders<ObjectLevel>.Filter;
+            var userForcesFilter = userForcesBuilder.Eq("object_id", currentUser.OId);
+            var userForcesByObjectLevel = await objectLevelRepository.FindListAsync(userForcesFilter);
+            var userForces = userForcesByObjectLevel.Select(x => x.FieldId).Distinct();
+
+            //Lấy danh sách field_group từ danh sách field bên trên
+            var fieldGroups = fieldGroupRepository.GetAll();
+            var fieldGroupsFinal = new List<FieldGroup>();
+            foreach (var fieldId in userForces)
+            {
+                foreach (var fieldGroup in fieldGroups)
+                {
+                    if (fieldGroup.FieldId.Contains(fieldId))
+                        fieldGroupsFinal.Add(fieldGroup);
+                }
+            }
+            fieldGroupsFinal = fieldGroupsFinal.Distinct().ToList();
+
+            //Duyệt danh sách field_group để lấy các field liên quan trong group.
+            var fieldToFilter = new List<string>();
+            fieldGroupsFinal.ForEach(x => fieldToFilter.AddRange(x.FieldId));
+            fieldToFilter = fieldToFilter.Distinct().ToList();
+
+            //Từ danh sách field mở rộng này, lấy dang sách các object thuộc về field đó
+            var listObjectId = new List<string>();
+            foreach (var x in fieldToFilter)
+            {
+                var objectLevelBuilder = Builders<ObjectLevel>.Filter;
+                var objectLevelFilter = objectLevelBuilder.Eq("field_id", x)
+                    & objectLevelBuilder.Eq("is_active", true);
+                var objectLevels = await objectLevelRepository.FindListAsync(objectLevelFilter);
+                listObjectId.AddRange(objectLevels.Select(x => x.ObjectId));
+            }
+            listObjectId = listObjectId.Distinct().ToList();
+
+            //Lấy danh sách các post có id trong danh sách trên
+            var _posts = new List<Post>();
+            listObjectId.ForEach(async x =>
+            {
+                var post = await postRepository.GetByIdAsync(ObjectId.Parse(x));
+                if (post != null)
+                    _posts.Add(post);
+            });
+            var _postIds = _posts.Select(x => x.OId);
+
+            //Kết hợp với datasoure ban đầu9
+            //dataSource = dataSource.Where(x => _postIds.Contains(x.OId)).Distinct().ToList();
+            dataSource.AddRange(_posts);
+            dataSource = dataSource.GroupBy(x => x.OId).Select(grp => grp.FirstOrDefault()).ToList();
+
+            if (request.Skip.HasValue && request.Count.HasValue)
+                dataSource = dataSource.Skip(request.Skip.Value).Take(request.Count.Value).ToList();
+
+            return mapper.Map<List<PostViewModel>>(dataSource);
+        }
+
+        /// <summary>
+        /// Shares the post.
+        /// </summary>
+        /// <param name="request">The request.</param>
+        /// <returns></returns>
+        public async Task<IEnumerable<MessageViewModel>> SharePost(SharePostRequest request)
+        {
+            var currentUser = Feature.CurrentUser(httpContextAccessor, userRepository);
+            var addConversationRequest = new AddConversationRequest();
+
+            addConversationRequest.Participants.AddRange(
+                new List<ConversationMember>() {
+                new ConversationMember() {  MemberId = request.UserId}
+                });
+
+            var conversation = await conversationService.AddConversation(addConversationRequest);
+
+            var addMessageRequest = new AddMessageRequest()
+            {
+                PostId = request.PostId,
+                MessageType = MessageBaseType.PostThumbnail,
+                ConversationId = conversation.OId
+            };
+            await messageService.AddMessage(addMessageRequest);
+
+            var messageByConversationRequest = new GetMessageByConversationIdRequest()
+            {
+                ConversationId = conversation.OId,
+                Skip = request.Skip,
+                Count = request.Count
+            };
+
+            var result = await messageService.GetMessageByConversationId(messageByConversationRequest);
+            return result;
+        }
+
+
+        /// <summary>
+        /// Gets the users match post field.
         /// </summary>
         /// <param name="post">The post.</param>
-        /// <param name="objectLevel">The object level.</param>
-        /// <returns>
-        ///   <c>true</c> if the specified post is match; otherwise, <c>false</c>.
-        /// </returns>
-        private bool IsMatch(PostViewModel post, ObjectLevel objectLevel)
+        /// <returns></returns>
+        private async Task<List<User>> GetUsersMatchPostField(Post post)
         {
-            var objlvls = objectLevelRepository.GetAll().Where(x => x.ObjectId == post.OId);
+            var postObjectLevelBuilder = Builders<ObjectLevel>.Filter;
+            var postObjectLevelFilter = postObjectLevelBuilder.Eq("object_id", post.OId)
+                & postObjectLevelBuilder.Eq("is_active", true);
+            var postObjectLevels = await objectLevelRepository.FindListAsync(postObjectLevelFilter);
+            var allUsers = userRepository.GetAll();
 
-            if (string.IsNullOrEmpty(objectLevel.FieldId) || string.IsNullOrEmpty(objectLevel.LevelId))
+            var result = new List<User>();
+            foreach (var user in allUsers)
+            {
+                if (true == (await IsUserMatchListObjectLevel(user, postObjectLevels)))
+                    result.Add(user);
+            }
+            return result;
+
+        }
+
+        /// <summary>
+        /// Determines whether [is user match list object level] [the specified user].
+        /// </summary>
+        /// <param name="user">The user.</param>
+        /// <param name="objectLevels">The object levels.</param>
+        /// <returns>
+        ///   <c>true</c> if [is user match list object level] [the specified user]; otherwise, <c>false</c>.
+        /// </returns>
+        private async Task<bool> IsUserMatchListObjectLevel(User user, List<ObjectLevel> objectLevels)
+        {
+            var userObjectLevelBuilder = Builders<ObjectLevel>.Filter;
+            var userObjectLevelFilter = userObjectLevelBuilder.Eq("object_id", user.OId)
+                & userObjectLevelBuilder.Eq("is_active", true);
+            var userObjectLevels = await objectLevelRepository.FindListAsync(userObjectLevelFilter);
+            foreach (var userObjectLevel in userObjectLevels)
+            {
+                var _ = objectLevels.FirstOrDefault(x => x.FieldId == userObjectLevel.FieldId && x.LevelId == userObjectLevel.LevelId);
+                if (_ != null)
+                    return true;
+            }
+            return false;
+        }
+
+        private bool IsMatch(PostViewModel post, LevelFilterItem levelFilterItem)
+        {
+            if (string.IsNullOrEmpty(levelFilterItem.FieldId) || string.IsNullOrEmpty(levelFilterItem.LevelId))
                 return true;
+            var objlvls = objectLevelRepository.GetAll().Where(x => x.ObjectId == post.OId);
 
             foreach (var item in objlvls)
             {
-                if (item.FieldId == objectLevel.FieldId)
+                Level lvlFilter = levelRepository.GetAll().FirstOrDefault(x => x.OId == levelFilterItem.LevelId);
+                Level lvlPost = levelRepository.GetAll().FirstOrDefault(x => x.OId == item.LevelId);
+
+                if (item.FieldId == levelFilterItem.FieldId && lvlFilter.Order <= lvlPost.Order)
                 {
                     return true;
                 }
@@ -620,5 +848,14 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
             return false;
         }
 
+        private bool IsMatch(PostViewModel post, LevelFilter levelFilter)
+        {
+            foreach (var item in levelFilter.FilterItems)
+            {
+                if (IsMatch(post, item) == true)
+                    return true;
+            }
+            return false;
+        }
     }
 }

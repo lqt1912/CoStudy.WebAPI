@@ -180,7 +180,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.NofticationServices
             NotificationType request = new NotificationType()
             {
                 Code = entity.Code,
-                 ObjectType= entity.ObjectType,
+                ObjectType = entity.ObjectType,
                 ContentTemplate = entity.ContentTemplate
             };
 
@@ -228,19 +228,23 @@ namespace CoStudy.API.Infrastructure.Shared.Services.NofticationServices
                     User creator = (await userRepository.GetByIdAsync(ObjectId.Parse(notificationDetails.ElementAt(0).CreatorId)));
 
                     string ownerName = String.Empty;
-                    if (currentUser.OId != notificationObject.OwnerId)
-                    {
-                        User own = await userRepository.GetByIdAsync(ObjectId.Parse(notificationObject.OwnerId));
-                        ownerName = $"{own?.FirstName} {own?.LastName}";
-                    }
-                    else
-                    {
-                        ownerName = "bạn";
-                    }
 
                     FilterDefinition<NotificationType> notificationTypeFilter = Builders<NotificationType>.Filter.Eq("code", notificationObject.NotificationType);
 
                     NotificationType notificationType = await notificationTypeRepository.FindAsync(notificationTypeFilter);
+
+                    if (notificationType.Code != "ADD_POST_NOTIFY")
+                    {
+                        if (currentUser.OId != notificationObject.OwnerId)
+                        {
+                            User own = await userRepository.GetByIdAsync(ObjectId.Parse(notificationObject.OwnerId));
+                            ownerName = $"{own?.FirstName} {own?.LastName}";
+                        }
+                        else
+                        {
+                            ownerName = "bạn";
+                        }
+                    }
 
                     if (notificationDetails.Count() == 1)
                     {
@@ -283,7 +287,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.NofticationServices
                 }
             }
 
-            return result;
+            return result.OrderByDescending(x=>x.ModifiedDate);
         }
 
         /// <summary>
@@ -296,13 +300,13 @@ namespace CoStudy.API.Infrastructure.Shared.Services.NofticationServices
             User currentUser = Feature.CurrentUser(contextAccessor, userRepository);
 
             FilterDefinitionBuilder<NotificationDetail> notificationDetailBuilder = Builders<NotificationDetail>.Filter;
-           
+
             FilterDefinition<NotificationDetail> notificationDetailFilter = notificationDetailBuilder.Eq("is_deleted", false)
                 & notificationDetailBuilder.Eq("notification_object_id", notificationObjectId)
                 & notificationDetailBuilder.Eq("receiver_id", currentUser.OId);
 
             List<NotificationDetail> notificationDetails = await notificationDetailRepository.FindListAsync(notificationDetailFilter);
-            
+
             foreach (NotificationDetail notificationDetail in notificationDetails)
             {
                 notificationDetail.IsDeleted = true;

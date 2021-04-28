@@ -33,7 +33,6 @@ namespace CoStudy.API.WebAPI.Controllers
             this.nofticationService = nofticationService;
         }
 
-
         /// <summary>
         /// Adds the type of the notification.
         /// </summary>
@@ -45,7 +44,6 @@ namespace CoStudy.API.WebAPI.Controllers
             var data = await nofticationService.AddNotificationType(request);
             return Ok(new ApiOkResponse(data));
         }
-
 
         /// <summary>
         /// Adds the noftication.

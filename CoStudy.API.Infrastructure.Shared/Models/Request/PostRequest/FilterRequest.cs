@@ -2,6 +2,7 @@
 using CoStudy.API.Infrastructure.Shared.Models.Request.BaseRequest;
 using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
 namespace CoStudy.API.Infrastructure.Shared.Models.Request.PostRequest
@@ -9,7 +10,7 @@ namespace CoStudy.API.Infrastructure.Shared.Models.Request.PostRequest
     /// <summary>
     /// Enum PostOrder
     /// </summary>
-    public enum PostOrder
+    public enum SortObject
     {
         /// <summary>
         /// The created date
@@ -28,7 +29,7 @@ namespace CoStudy.API.Infrastructure.Shared.Models.Request.PostRequest
     /// <summary>
     /// Enum OrderType
     /// </summary>
-    public enum OrderType
+    public enum SortType
     {
         /// <summary>
         /// The ascending
@@ -46,6 +47,9 @@ namespace CoStudy.API.Infrastructure.Shared.Models.Request.PostRequest
     /// <seealso cref="CoStudy.API.Infrastructure.Shared.Models.Request.BaseRequest.BaseGetAllRequest" />
     public class FilterRequest : BaseGetAllRequest
     {
+
+        #region Filter
+
         /// <summary>
         /// Gets or sets the content filter.
         /// </summary>
@@ -54,59 +58,17 @@ namespace CoStudy.API.Infrastructure.Shared.Models.Request.PostRequest
         /// </value>
         [JsonProperty("content_filter")]
         [JsonPropertyName("content_filter")]
-        public StringFilter ContentFilter { get; set; }
+        public string ContentFilter { get; set; }
 
-        /// <summary>
-        /// Gets or sets the created date filter.
-        /// </summary>
-        /// <value>
-        /// The created date filter.
-        /// </value>
-        [JsonProperty("created_date_filter")]
-        [JsonPropertyName("created_date_filter")]
-        public DateTimeFilter CreatedDateFilter { get; set; }
-
-        /// <summary>
-        /// Gets or sets the upvote count filter.
-        /// </summary>
-        /// <value>
-        /// The upvote count filter.
-        /// </value>
-        [JsonProperty("upvote_count_filter")]
-        [JsonPropertyName("upvote_count_filter")]
-        public NumberRangeFilter UpvoteCountFilter { get; set; }
-
-        /// <summary>
-        /// Gets or sets the comment count filter.
-        /// </summary>
-        /// <value>
-        /// The comment count filter.
-        /// </value>
-        [JsonProperty("comment_count_filter")]
-        [JsonPropertyName("comment_count_filter")]
-        public NumberRangeFilter CommentCountFilter { get; set; }
-
-
-        [JsonProperty("level_filter")]
-        [JsonPropertyName("level_filter")]
-        public ObjectLevel LevelFilter { get; set; }
-    }
-
-    /// <summary>
-    /// Class DateTimeFilter
-    /// </summary>
-    public class DateTimeFilter
-    {
         /// <summary>
         /// Gets or sets from date.
         /// </summary>
         /// <value>
         /// From date.
         /// </value>
-        [JsonPropertyName("from_date")]
         [JsonProperty("from_date")]
+        [JsonPropertyName("from_date")]
         public DateTime? FromDate { get; set; }
-
 
         /// <summary>
         /// Converts to date.
@@ -117,79 +79,82 @@ namespace CoStudy.API.Infrastructure.Shared.Models.Request.PostRequest
         [JsonProperty("to_date")]
         [JsonPropertyName("to_date")]
         public DateTime? ToDate { get; set; }
+        #endregion
 
+        #region  Sort
         /// <summary>
-        /// Gets or sets the is sort descending.
+        /// Gets or sets the sort object.
         /// </summary>
         /// <value>
-        /// The is sort descending.
+        /// The sort object.
         /// </value>
-        [JsonProperty("is_sort_descending")]
-        [JsonPropertyName("is_sort_descending")]
-        public bool? IsSortDescending { get; set; }
+        [JsonProperty("sort_object")]
+        [JsonPropertyName("sort_object")]
+        public SortObject? SortObject { get; set; }
+
+
+        /// <summary>
+        /// Gets or sets the type of the sort.
+        /// </summary>
+        /// <value>
+        /// The type of the sort.
+        /// </value>
+        [JsonProperty("sort_type")]
+        [JsonPropertyName("sort_type")]
+        public SortType? SortType { get; set; }
+        #endregion
+
+        /// <summary>
+        /// Gets or sets the level filter.
+        /// </summary>
+        /// <value>
+        /// The level filter.
+        /// </value>
+        [JsonProperty("level_filter")]
+        [JsonPropertyName("level_filter")]
+        public LevelFilter LevelFilter { get; set; }
+
     }
 
     /// <summary>
-    /// Class StringFilter
+    /// Class LevelFilter
     /// </summary>
-    public class StringFilter
+    public class LevelFilter
     {
         /// <summary>
-        /// Gets or sets the key word.
+        /// Gets or sets the filter items.
         /// </summary>
         /// <value>
-        /// The key word.
+        /// The filter items.
         /// </value>
-        [JsonProperty("keyword")]
-        [JsonPropertyName("keyword")]
-        public string KeyWord { get; set; }
-
-
-        /// <summary>
-        /// Gets or sets the is sort descending.
-        /// </summary>
-        /// <value>
-        /// The is sort descending.
-        /// </value>
-        [JsonProperty("is_sort_descending")]
-        [JsonPropertyName("is_sort_descending")]
-        public bool? IsSortDescending { get; set; }
+        [JsonProperty("filter_items")]
+        [JsonPropertyName("filter_items")]
+        public IEnumerable<LevelFilterItem> FilterItems { get; set; }
     }
 
     /// <summary>
-    /// Class NumberRangeFilter
+    /// Class LevelFilterItem
     /// </summary>
-    public class NumberRangeFilter
+    public class LevelFilterItem
     {
         /// <summary>
-        /// Gets or sets the value from.
+        /// Gets or sets the field identifier.
         /// </summary>
         /// <value>
-        /// The value from.
+        /// The field identifier.
         /// </value>
-        [JsonProperty("value_from")]
-        [JsonPropertyName("value_from")]
-        public int? ValueFrom { get; set; }
+        [JsonProperty("field_id")]
+        [JsonPropertyName("field_id")]
+        public string FieldId { get; set; }
 
         /// <summary>
-        /// Gets or sets the value to.
+        /// Gets or sets the level identifier.
         /// </summary>
         /// <value>
-        /// The value to.
+        /// The level identifier.
         /// </value>
-        [JsonProperty("value_to")]
-        [JsonPropertyName("value_to")]
-        public int? ValueTo { get; set; }
-
-        /// <summary>
-        /// Gets or sets the is sort descending.
-        /// </summary>
-        /// <value>
-        /// The is sort descending.
-        /// </value>
-        [JsonProperty("is_sort_descending")]
-        [JsonPropertyName("is_sort_descending")]
-        public bool? IsSortDescending { get; set; }
+        [JsonProperty("level_id")]
+        [JsonPropertyName("level_id")]
+        public string  LevelId { get; set; }
     }
-
 }

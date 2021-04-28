@@ -142,5 +142,19 @@ namespace CoStudy.API.WebAPI.Controllers
             var data = await levelService.ResetField(request);
             return Ok(new ApiOkResponse(data));
         }
+
+        /// <summary>
+        /// Gets the leader board.
+        /// </summary>
+        /// <param name="request">The request.</param>
+        /// <returns></returns>
+        [HttpGet("leader-board")]
+        public async Task<IActionResult> GetLeaderBoard([FromQuery] BaseGetAllRequest request)
+        {
+            var data = await levelService.GetLeaderBoard(request);
+            return Ok(new ApiOkResponse(data));
+        }
+
+
     }
 }

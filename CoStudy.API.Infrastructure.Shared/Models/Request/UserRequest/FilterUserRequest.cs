@@ -1,5 +1,7 @@
 ﻿using CoStudy.API.Infrastructure.Shared.Models.Request.BaseRequest;
+using CoStudy.API.Infrastructure.Shared.Models.Request.PostRequest;
 using Newtonsoft.Json;
+using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
 namespace CoStudy.API.Infrastructure.Shared.Models.Request.UserRequest
@@ -51,28 +53,7 @@ namespace CoStudy.API.Infrastructure.Shared.Models.Request.UserRequest
         [JsonProperty("keyword")]
         public string KeyWord { get; set; }
 
-        /// <summary>
-        /// Gets or sets the field identifier.
-        /// </summary>
-        /// <value>
-        /// The field identifier.
-        /// </value>
-        [JsonPropertyName("field_id")]
-        [JsonProperty("field_id")]
-        public string FieldId { get; set; }
-
-
-        /// <summary>
-        /// Gets or sets the level identifier.
-        /// </summary>
-        /// <value>
-        /// The level identifier.
-        /// </value>
-        [JsonProperty("level_id")]
-        [JsonPropertyName("level_id")]
-        public string  LevelId { get; set; }
-
-
+    
         /// <summary>
         /// Gets or sets the type of the filter.
         /// </summary>
@@ -93,6 +74,15 @@ namespace CoStudy.API.Infrastructure.Shared.Models.Request.UserRequest
         [JsonProperty("order_type")]
         public OrderTypeUser? OrderType { get; set; }
 
+        /// <summary>
+        /// Gets or sets the level filter.
+        /// </summary>
+        /// <value>
+        /// The level filter.
+        /// </value>
+        [JsonProperty("field_filter")]
+        [JsonPropertyName("field_filter")]
+        public IEnumerable<string> FieldFilter { get; set; }
 
     }
 }

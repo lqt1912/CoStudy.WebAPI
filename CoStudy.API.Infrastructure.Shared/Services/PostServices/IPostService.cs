@@ -80,9 +80,21 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
         /// </summary>
         /// <param name="filterRequest">The filter request.</param>
         /// <returns></returns>
-       Task< IEnumerable<PostViewModel>> Filter(FilterRequest filterRequest);
-       
-       
+        Task<IEnumerable<PostViewModel>> Filter(FilterRequest filterRequest);
+
+        /// <summary>
+        /// Gets the news feed.
+        /// </summary>
+        /// <param name="request">The request.</param>
+        /// <returns></returns>
+        Task<IEnumerable<PostViewModel>> GetNewsFeed(NewsFeedRequest request);
+
+        /// <summary>
+        /// Shares the post.
+        /// </summary>
+        /// <param name="request">The request.</param>
+        /// <returns></returns>
+        Task<IEnumerable<MessageViewModel>> SharePost(SharePostRequest request);
     }
 
 }

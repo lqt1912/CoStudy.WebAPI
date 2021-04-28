@@ -61,6 +61,6 @@ namespace CoStudy.API.Infrastructure.Shared.Models.Request.UserRequest
         /// </value>
         [JsonPropertyName("order_type")]
         [JsonProperty("order_type")]
-        public OrderType OrderType { get; set; }
+        public SortType OrderType { get; set; }
     }
 }

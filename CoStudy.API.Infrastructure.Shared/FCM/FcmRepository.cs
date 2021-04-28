@@ -647,5 +647,80 @@ namespace CoStudy.API.Application.FCM
 
             }
         }
+
+
+        /// <summary>
+        /// Pushes the notify post match.
+        /// </summary>
+        /// <param name="userId">The user identifier.</param>
+        /// <param name="notificationDetail">The notification detail.</param>
+        public async Task PushNotifyPostMatch(string userId, NotificationDetail notificationDetail)
+        {
+            FilterDefinition<ClientGroup> finder = Builders<ClientGroup>.Filter.Eq("name", userId);
+            ClientGroup clientGroup = await clientGroupRepository.FindAsync(finder);
+
+            User currentUser = Feature.CurrentUser(httpContextAccessor, userRepository);
+
+            foreach (string id in clientGroup.UserIds)
+            {
+                NotificationDetail finalNotificationDetail = new NotificationDetail()
+                {
+                    CreatorId = notificationDetail.CreatorId,
+                    ReceiverId = userId,
+                    NotificationObjectId = notificationDetail.NotificationObjectId
+                };
+                await notificationDetailRepository.AddAsync(finalNotificationDetail);
+
+                NotificationObject notificationObject = await notificationObjectRepository.GetByIdAsync(ObjectId.Parse(finalNotificationDetail.NotificationObjectId));
+
+                FilterDefinition<NotificationType> notificationTypeFilter = Builders<NotificationType>.Filter.Eq("code", notificationObject.NotificationType);
+
+                NotificationType notificationType = await notificationTypeRepository.FindAsync(notificationTypeFilter);
+
+                User creator = await userRepository.GetByIdAsync(ObjectId.Parse(finalNotificationDetail.CreatorId));
+
+                PushedNotificationViewModel notificationToPush = new PushedNotificationViewModel()
+                {
+                    AuthorName = $"{creator.FirstName} {creator.LastName}",
+                    AuthorAvatar = creator.AvatarHash,
+                    AuthorId = creator.OId,
+                    Content = $"{notificationType.ContentTemplate}.",
+                    CreatedDate = DateTime.Now,
+                    IsRead = false,
+                    ModifiedDate = DateTime.Now,
+                    ObjectId = notificationObject.ObjectId,
+                    OId = notificationObject.OId,
+                    OwnerId = userId,
+                    Status = ItemStatus.Active
+                };
+                //Push notification
+                try
+                {
+                    FilterDefinition<FcmInfo> userFilter = Builders<FcmInfo>.Filter.Eq("user_id", userId);
+                    string token = (await fcmInfoRepository.FindAsync(userFilter)).DeviceToken;
+
+                    FirebaseAdmin.Messaging.Message mes = new FirebaseAdmin.Messaging.Message()
+                    {
+                        Token = token,
+                        Data = new Dictionary<string, string>()
+                        {
+                            { "notification",  JsonConvert.SerializeObject(notificationToPush) }
+                        },
+                        Notification = new Notification()
+                        {
+                            Title = creator.LastName,
+                            Body = notificationToPush.Content,
+                            ImageUrl = creator.AvatarHash
+                        }
+                    };
+                    string response = await FirebaseMessaging.DefaultInstance.SendAsync(mes).ConfigureAwait(true);
+                }
+                catch (Exception)
+                {
+                    // do nothing 
+                }
+
+            }
+        }
     }
 }

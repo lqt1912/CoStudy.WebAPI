@@ -36,6 +36,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services
             services.AddTransient<IConversationService, ConversationService>();
             services.AddTransient<IFcmRepository, FcmRepository>();
             services.AddTransient<ICmsServices, CmsServices>();
+            services.AddTransient<IFieldServices, FieldServices>();
         }
     }
 }

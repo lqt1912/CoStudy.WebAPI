@@ -211,25 +211,25 @@ namespace CoStudy.API.Infrastructure.Shared.Services.MessageServices
                 var messageTextBuilder = Builders<MessageText>.Filter;
                 var messageTextFilter = messageTextBuilder.Eq("conversation_id", request.ConversationId) & messageTextBuilder.Eq("status", ItemStatus.Active);
                 var messageTexts = await messageTextRepository.FindListAsync(messageTextFilter);
-                var messageTextViewModels = mapper.Map<List<MessageViewModel>>(messageTexts);
+                var messageTextViewModels = mapper.Map<List<MessageViewModel>>(messageTexts.OrderByDescending(x=>x.CreatedDate));
                 result.AddRange(messageTextViewModels);
 
                 var messageImageBuilder = Builders<MessageImage>.Filter;
                 var messageImageFilter = messageImageBuilder.Eq("conversation_id", request.ConversationId) & messageImageBuilder.Eq("status", ItemStatus.Active);
                 var messageImages = await messageImageRepository.FindListAsync(messageImageFilter);
-                var messageImageViewModels = mapper.Map<List<MessageViewModel>>(messageImages);
+                var messageImageViewModels = mapper.Map<List<MessageViewModel>>(messageImages.OrderByDescending(x=>x.CreatedDate));
                 result.AddRange(messageImageViewModels);
 
                 var messagePostThumbnailBuilder = Builders<MessagePostThumbnail>.Filter;
                 var messagePostThumbnailFilter = messagePostThumbnailBuilder.Eq("conversation_id", request.ConversationId) & messagePostThumbnailBuilder.Eq("status", ItemStatus.Active);
                 var messagePostThumnbails = await messagePostThumbnailRepository.FindListAsync(messagePostThumbnailFilter);
-                var messagePostThumbnailViewModels = mapper.Map<List<MessageViewModel>>(messagePostThumnbails);
+                var messagePostThumbnailViewModels = mapper.Map<List<MessageViewModel>>(messagePostThumnbails.OrderByDescending(x=>x.CreatedDate));
                 result.AddRange(messagePostThumbnailViewModels);
 
                 var messageMultiMediaBuilder = Builders<MessageMultiMedia>.Filter;
                 var messageMultiMediaFilter = messageMultiMediaBuilder.Eq("conversation_id", request.ConversationId) & messageMultiMediaBuilder.Eq("status", ItemStatus.Active);
                 var messageMultiMedias = await messageMultiMediaRepository.FindListAsync(messageMultiMediaFilter);
-                var messageMultiMediaViewModels = mapper.Map<List<MessageViewModel>>(messageMultiMedias);
+                var messageMultiMediaViewModels = mapper.Map<List<MessageViewModel>>(messageMultiMedias.OrderByDescending(x => x.CreatedDate));
                 result.AddRange(messageMultiMediaViewModels);
 
                 result = result.OrderByDescending(x => x.CreatedDate).ToList();

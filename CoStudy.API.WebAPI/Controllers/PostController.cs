@@ -123,6 +123,13 @@ namespace CoStudy.API.WebAPI.Controllers
             return Ok(new ApiOkResponse(data));
         }
 
+        [HttpPost]
+        [Route("news-feed")]
+        public async Task<IActionResult> GetNewsFeed(NewsFeedRequest request)
+        {
+            var data = await postService.GetNewsFeed(request);
+            return Ok(new ApiOkResponse(data));
+        }
 
 
         /// <summary>
@@ -217,5 +224,17 @@ namespace CoStudy.API.WebAPI.Controllers
             return Ok(new ApiOkResponse(data));
         }
 
+        /// <summary>
+        /// Shares the post.
+        /// </summary>
+        /// <param name="request">The request.</param>
+        /// <returns></returns>
+        [HttpPost]
+        [Route("share-post")]
+        public async Task<IActionResult> SharePost(SharePostRequest request)
+        {
+            var data = await postService.SharePost(request);
+            return Ok(new ApiOkResponse(data));
+        }    
     }
 }

@@ -188,7 +188,9 @@ namespace CoStudy.API.Infrastructure.Shared.Services
             {
                 UserIds = request.Participants.Select(x => x.MemberId).ToList(),
                 Name = conversation.Id.ToString(),
+                GroupType = Feature.GetTypeName(conversation)
             };
+
             await clientGroupRepository.AddAsync(clientGroup);
             return mapper.Map<ConversationViewModel>(conversation);
         }
@@ -238,7 +240,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services
                 listData.Add(new ConversationData()
                 {
                     Conversation = conversationViewModel,
-                    Messages = messageVM.Take(1)
+                    Messages = messageVM.OrderByDescending(x=>x.CreatedDate).Take(1)
                 });
             }
             return new GetConversationByUserIdResponse()

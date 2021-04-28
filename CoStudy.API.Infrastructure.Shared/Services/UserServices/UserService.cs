@@ -89,7 +89,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
             IAccountRepository accountRepository,
             IPostRepository postRepository,
             IClientGroupRepository clientGroupRepository,
-            IFieldRepository fieldRepository, IFollowRepository followRepository, IMapper mapper)
+            IFieldRepository fieldRepository, IFollowRepository followRepository, IMapper mapper, IObjectLevelRepository objectLevelRepository)
         {
             this.userRepository = userRepository;
             _httpContextAccessor = httpContextAccessor;
@@ -98,8 +98,9 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
             this.postRepository = postRepository;
             this.clientGroupRepository = clientGroupRepository;
             this.fieldRepository = fieldRepository;
-            this.followRepository = followRepository;
+            this.followRepository = followRepository;   
             this.mapper = mapper;
+            this.objectLevelRepository = objectLevelRepository;
         }
 
 
@@ -328,7 +329,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
             if (request.ToDate != null)
                 queryable = queryable.Where(x => x.FollowDate <= request.ToDate);
 
-            if (request.OrderType == OrderType.Ascending)
+            if (request.OrderType == SortType.Ascending)
                 queryable = queryable.OrderBy(x => x.FollowDate);
             else queryable = queryable.OrderByDescending(x => x.FollowDate);
             if (request.Skip.HasValue && request.Count.HasValue)
@@ -352,7 +353,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
             if (request.ToDate != null)
                 queryable = queryable.Where(x => x.FollowDate <= request.ToDate);
 
-            if (request.OrderType == OrderType.Ascending)
+            if (request.OrderType == SortType.Ascending)
                 queryable = queryable.OrderBy(x => x.FollowDate);
             else queryable = queryable.OrderByDescending(x => x.FollowDate);
             if (request.Skip.HasValue && request.Count.HasValue)
@@ -373,24 +374,16 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
                             | builder.Regex("email", request.KeyWord)
                             | builder.Regex("phone_numer", request.KeyWord);
             var users = (await userRepository.FindListAsync(filter)).AsQueryable();
-            var userIds = from s in users select s.OId;
-
-            var objectLevelBuilder = Builders<ObjectLevel>.Filter;
-            var filterObjectLevel = objectLevelBuilder.Regex("level_id", request.LevelId)
-                | objectLevelBuilder.Regex("field_id", request.FieldId);
-
-            var objectLevels = (await objectLevelRepository.FindListAsync(filterObjectLevel)).AsQueryable();
-            var objectIds = (from s in objectLevels select s.ObjectId).ToList();
-
-            var finalUserList = userIds.Where(x => objectIds.Contains(x));
 
             var user = new List<User>();
-            foreach (var userId in finalUserList)
+
+            foreach (var item in users)
             {
-                var _user = await userRepository.GetByIdAsync(ObjectId.Parse(userId));
-                if (_user != null)
-                    user.Add(_user);
+                if (IsUserMatchField(item, request.FieldFilter) == true)
+                    user.Add(item);
+
             }
+
             var userViewModel = mapper.Map<List<UserViewModel>>(user);
             if(request.FilterType.HasValue && request.OrderType.HasValue)
             {
@@ -435,6 +428,26 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
             await userRepository.UpdateAsync(currentuser, currentuser.Id);
             return mapper.Map<UserViewModel>(currentuser);
         }
+
+        private bool IsUserMatchField(User user, IEnumerable<string>  fieldFilter)
+        {
+            var objlvls = objectLevelRepository.GetAll().Where(x => x.ObjectId == user.OId).Select(x => x.FieldId);
+
+            if (fieldFilter.Count() <= 0 )
+                return true;
+            foreach (var f in fieldFilter)
+            {
+                if (string.IsNullOrEmpty(f))
+                    return true;
+            }
+            foreach (var item in objlvls)
+            {
+                if (fieldFilter.Contains(item))
+                    return true;
+            }
+            return false;
+        }
+
     }
 }
 

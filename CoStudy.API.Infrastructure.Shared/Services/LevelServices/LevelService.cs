@@ -93,7 +93,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services
                 foreach (string item in request.FieldId)
                 {
                     var existObjectLevel = existObjectLevels.FirstOrDefault(x => x.FieldId == item);
-                    if(existObjectLevel !=null)
+                    if (existObjectLevel != null)
                     {
                         if (existObjectLevel.IsActive == false)
                             existObjectLevel.IsActive = true;
@@ -115,7 +115,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services
 
                 foreach (var ex in existObjectLevels)
                 {
-                    if (request.FieldId.FirstOrDefault(x => x == ex.FieldId) ==null)
+                    if (request.FieldId.FirstOrDefault(x => x == ex.FieldId) == null)
                     {
                         ex.IsActive = false;
                         ex.ModifiedDate = DateTime.Now;
@@ -281,7 +281,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services
                 {
                     result.Add(user);
                 }
-            } 
+            }
 
             return result;
         }
@@ -318,13 +318,13 @@ namespace CoStudy.API.Infrastructure.Shared.Services
                 {
                     objectLevel.LevelId = levelRepository.GetAll().FirstOrDefault(x => x.Order == 3)?.OId;
                 }
-                else 
+                else
                 {
                     objectLevel.LevelId = levelRepository.GetAll().FirstOrDefault(x => x.Order == 4)?.OId;
                 }
 
                 await objectLevelRepository.UpdateAsync(objectLevel, objectLevel.Id);
-                
+
                 return mapper.Map<ObjectLevelViewModel>(objectLevel);
             }
             else
@@ -411,6 +411,62 @@ namespace CoStudy.API.Infrastructure.Shared.Services
 
             return mapper.Map<PostViewModel>(post);
 
+        }
+
+        private async Task<int> GetUserPoint(string userId)
+        {
+            var objectLevelBuilder = Builders<ObjectLevel>.Filter;
+            var objectLevelFilter = objectLevelBuilder.Eq("object_id", userId) & objectLevelBuilder.Eq("is_active", true);
+            var objlvls = await objectLevelRepository.FindListAsync(objectLevelFilter);
+            var totalPoint = 0;
+            objlvls.ForEach(x => { totalPoint = totalPoint + x.Point.Value; });
+            return totalPoint;
+        }
+
+        /// <summary>
+        /// Gets the leader board.
+        /// </summary>
+        /// <param name="request">The request.</param>
+        /// <returns></returns>
+        public async Task<LeaderBoardViewModel> GetLeaderBoard(BaseGetAllRequest request)
+        {
+            var users = userRepository.GetAll();
+            var currentUser = Feature.CurrentUser(httpContextAccessor, userRepository);
+
+            var result = new LeaderBoardViewModel();
+
+            foreach (var user in users)
+            {
+                var userViewModel = new UserLeaderBoardViewModel()
+                {
+                    TotalPoint = await GetUserPoint(user.OId),
+                    UserAvatar = user.AvatarHash,
+                    UserName = $"{user.FirstName} {user.LastName}",
+                    UserId = user.OId
+                };
+                result.LeaderBoards.Add(userViewModel);
+                if(userViewModel.UserId == currentUser.OId)
+                {
+                    var currentUserLeaderBoard = new CurrentUserLeaderBoardViewModel()
+                    {
+                        TotalPoint = await GetUserPoint(user.OId),
+                        UserAvatar = user.AvatarHash,
+                        UserName = $"{user.FirstName} {user.LastName}",
+                        UserId = user.OId
+                    };
+                    result.CurrentUser = currentUserLeaderBoard;
+                }
+            }
+
+            result.LeaderBoards = result.LeaderBoards.OrderByDescending(x => x.TotalPoint).ToList();
+            int iter = 1;
+            foreach (var item in result.LeaderBoards)
+            {
+                item.Index = iter++;
+                if (result.CurrentUser.UserId == item.UserId)
+                    result.CurrentUser.Index = item.Index;
+            }
+            return result;
         }
     }
 }

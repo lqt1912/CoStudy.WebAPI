@@ -37,6 +37,7 @@ namespace CoStudy.API.WebAPI.Controllers
         /// The HTTP context accessor
         /// </summary>
         private readonly IHttpContextAccessor httpContextAccessor;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="AccountsController"/> class.
         /// </summary>

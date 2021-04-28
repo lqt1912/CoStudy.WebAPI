@@ -31,8 +31,6 @@ namespace CoStudy.API.WebAPI.Controllers
             this.messageService = messageService;
         }
 
-        
-
 
         /// <summary>
         /// Adds the message.
