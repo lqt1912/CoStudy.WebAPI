@@ -161,25 +161,25 @@ namespace CoStudy.API.Application.FCM
         /// <param name="message">The message.</param>
         public async Task SendMessage(string clientGroupName, MessageViewModel message)
         {
-            try
+            FilterDefinition<ClientGroup> finder = Builders<ClientGroup>.Filter.Eq("name", clientGroupName);
+            ClientGroup clientGroup = await clientGroupRepository.FindAsync(finder);
+            foreach (string item in clientGroup.UserIds)
             {
-                FilterDefinition<ClientGroup> finder = Builders<ClientGroup>.Filter.Eq("name", clientGroupName);
-                ClientGroup clientGroup = await clientGroupRepository.FindAsync(finder);
-                foreach (string item in clientGroup.UserIds)
+                try
                 {
+
+
                     FilterDefinition<FcmInfo> user = Builders<FcmInfo>.Filter.Eq("user_id", item);
-                    string token = (await fcmInfoRepository.FindAsync(user)).DeviceToken;
+                    string token = (await fcmInfoRepository.FindAsync(user))?.DeviceToken;
                     User sender = await userRepository.GetByIdAsync(ObjectId.Parse(message.SenderId));
                     FirebaseAdmin.Messaging.Message mes = new FirebaseAdmin.Messaging.Message()
                     {
                         Token = token,
-
                         Data = new Dictionary<string, string>()
                         {
                             { "message",  JsonConvert.SerializeObject(message) }
 
                         },
-
                         Notification = new Notification()
                         {
                             Title = sender.LastName,
@@ -189,10 +189,10 @@ namespace CoStudy.API.Application.FCM
                     };
                     string response = await FirebaseMessaging.DefaultInstance.SendAsync(mes).ConfigureAwait(true);
                 }
-            }
-            catch (Exception)
-            {
-                //Do nothing
+                catch (Exception)
+                {
+                    continue;
+                }
             }
         }
 

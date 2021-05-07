@@ -1,4 +1,6 @@
 ﻿using AutoMapper;
+using Common;
+using Common.Constant;
 using CoStudy.API.Application.FCM;
 using CoStudy.API.Application.Features;
 using CoStudy.API.Application.Repositories;
@@ -19,6 +21,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+
+using static Common.Constant.PostConstant;
+using static Common.Constant.FollowConstant;
+using static Common.Constant.NotificationConstant;
+using static Common.Constants;
+using static Common.Constant.VoteConstant;
 
 namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
 {
@@ -162,11 +170,11 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
             foreach (var stringContent in post.StringContents)
             {
                 if (StringUtils.ValidateAllowString(configuration, stringContent.Content) == false)
-                    throw new Exception("Nội dung có chứa từ ngữ không hợp lệ. ");
+                    throw new Exception(UnAllowContent);
             }
 
             if (StringUtils.ValidateAllowString(configuration, post.Title) == false)
-                throw new Exception("Tiêu đề có chứa từ ngữ không hợp lệ. ");
+                throw new Exception(UnAllowTitle);
 
             await postRepository.AddAsync(post);
 
@@ -188,8 +196,8 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
 
             var notificationObjectBuilders = Builders<NotificationObject>.Filter;
 
-            var notificationObjectFilters = notificationObjectBuilders.Eq("object_id", post.OId)
-                & notificationObjectBuilders.Eq("notification_type", "ADD_POST_NOTIFY");
+            var notificationObjectFilters = notificationObjectBuilders.Eq(ObjectIdCs, post.OId)
+                & notificationObjectBuilders.Eq(NotificationConstant.NotificationType, AddPostNotify);
 
             var existNotificationObject = await notificationObjectRepository.FindAsync(notificationObjectFilters);
 
@@ -199,7 +207,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
             {
                 var newNotificationObject = new NotificationObject()
                 {
-                    NotificationType = "ADD_POST_NOTIFY",
+                    NotificationType =  NotificationConstant.NotificationType,
                     ObjectId = post.OId,
                     OwnerId = post.AuthorId
                 };
@@ -235,7 +243,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
             try
             {
                 FilterDefinitionBuilder<Post> filter = Builders<Post>.Filter;
-                FilterDefinition<Post> match = filter.Eq("author_id", request.UserId) & filter.Eq("status", ItemStatus.Active);
+                FilterDefinition<Post> match = filter.Eq(PostConstant.AuthorId, request.UserId) & filter.Eq(Constants.Status, ItemStatus.Active);
                 User currentuser = Feature.CurrentUser(httpContextAccessor, userRepository);
 
                 User author = await userRepository.GetByIdAsync(ObjectId.Parse(request.UserId));
@@ -251,7 +259,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
             }
             catch (Exception)
             {
-                throw new Exception("Người dùng chưa có bài viết nào");
+                throw new Exception( PostConstant.UserHasNoPost);
             }
         }
 
@@ -264,7 +272,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
         {
             User currentUser = Feature.CurrentUser(httpContextAccessor, userRepository);
 
-            FilterDefinition<Follow> findFilter = Builders<Follow>.Filter.Eq("from_id", currentUser.OId);
+            FilterDefinition<Follow> findFilter = Builders<Follow>.Filter.Eq(FromId, currentUser.OId);
 
             List<Follow> listFollow = await followRepository.FindListAsync(findFilter);
 
@@ -280,7 +288,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
             foreach (string author in listAuthor)
             {
                 FilterDefinitionBuilder<Post> builder = Builders<Post>.Filter;
-                FilterDefinition<Post> postFindFilter = builder.Eq("author_id", author) & builder.Eq("status", ItemStatus.Active);
+                FilterDefinition<Post> postFindFilter = builder.Eq(AuthorId, author) & builder.Eq(Status, ItemStatus.Active);
                 result.AddRange(await postRepository.FindListAsync(postFindFilter));
             }
 
@@ -308,21 +316,21 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
                 Post currentPost = await postRepository.GetByIdAsync(ObjectId.Parse(postId));
 
                 FilterDefinitionBuilder<UpVote> builderUpvote = Builders<UpVote>.Filter;
-                FilterDefinition<UpVote> filterExistUpvote = builderUpvote.Eq("object_vote_id", postId)
-                    & builderUpvote.Eq("upvote_by", currentuser.OId)
-                    & builderUpvote.Eq("is_deleted", false);
+                FilterDefinition<UpVote> filterExistUpvote = builderUpvote.Eq(ObjectVoteId, postId)
+                    & builderUpvote.Eq(UpVoteBy, currentuser.OId)
+                    & builderUpvote.Eq(IsDeleted, false);
 
                 UpVote existUpvote = await upVoteRepository.FindAsync(filterExistUpvote);
                 if (existUpvote != null)
                 {
-                    return "Bạn đã Upvote bài viết rồi";
+                    return UserUpvoteAlready;
                 }
                 else if (existUpvote == null)
                 {
                     FilterDefinitionBuilder<DownVote> builderDownVote = Builders<DownVote>.Filter;
-                    FilterDefinition<DownVote> filterExistDownVote = builderDownVote.Eq("object_vote_id", postId)
-                        & builderDownVote.Eq("downvote_by", currentuser.OId)
-                        & builderDownVote.Eq("is_deleted", false);
+                    FilterDefinition<DownVote> filterExistDownVote = builderDownVote.Eq(ObjectVoteId, postId)
+                        & builderDownVote.Eq(DownVoteBy, currentuser.OId)
+                        & builderDownVote.Eq(IsDeleted, false);
                     DownVote existDownVote = await downVoteRepository.FindAsync(filterExistDownVote);
 
                     if (existDownVote != null)
@@ -337,13 +345,12 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
                         UpVoteBy = currentuser.OId
                     };
                     await upVoteRepository.AddAsync(upvote);
-
                 }
 
                 var notificationObjectBuilders = Builders<NotificationObject>.Filter;
 
-                var notificationObjectFilters = notificationObjectBuilders.Eq("object_id", postId)
-                    & notificationObjectBuilders.Eq("notification_type", "UPVOTE_POST_NOTIFY");
+                var notificationObjectFilters = notificationObjectBuilders.Eq(ObjectIdCs, postId)
+                    & notificationObjectBuilders.Eq(NotificationConstant.NotificationType, UpvotePostNotify);
 
                 var existNotificationObject = await notificationObjectRepository.FindAsync(notificationObjectFilters);
 
@@ -353,7 +360,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
                 {
                     var newNotificationObject = new NotificationObject()
                     {
-                        NotificationType = "UPVOTE_POST_NOTIFY",
+                        NotificationType =UpvotePostNotify,
                         ObjectId = postId,
                         OwnerId = currentPost.AuthorId
                     };
@@ -370,7 +377,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
 
                 await fcmRepository.PushNotifyDetail(currentPost.OId, notificationDetail);
 
-                return "Upvote thành công. ";
+                return UpvoteSuccess;
             }
             catch (Exception)
             {
@@ -392,40 +399,47 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
                 Post currentPost = await postRepository.GetByIdAsync(ObjectId.Parse(postId));
 
                 FilterDefinitionBuilder<DownVote> builderDownVote = Builders<DownVote>.Filter;
-                FilterDefinition<DownVote> filterExistDownvote = builderDownVote.Eq("object_vote_id", postId)
-                    & builderDownVote.Eq("downvote_by", currentuser.OId)
-                    & builderDownVote.Eq("is_deleted", false);
+
+                FilterDefinition<DownVote> filterExistDownvote = builderDownVote.Eq(ObjectVoteId, postId)
+                    & builderDownVote.Eq(DownVoteBy, currentuser.OId)
+                    & builderDownVote.Eq(IsDeleted, false);
 
                 DownVote existDownVote = await downVoteRepository.FindAsync(filterExistDownvote);
+
                 if (existDownVote != null)
                 {
-                    return "Bạn đã Down bài viết rồi";
+                    return UserDownvoteAlready;
                 }
                 else if (existDownVote == null)
                 {
                     FilterDefinitionBuilder<UpVote> builderUpVote = Builders<UpVote>.Filter;
-                    FilterDefinition<UpVote> filterExistUpVote = builderUpVote.Eq("object_vote_id", postId)
-                        & builderUpVote.Eq("upvote_by", currentuser.OId)
-                        & builderUpVote.Eq("is_deleted", false);
+
+                    FilterDefinition<UpVote> filterExistUpVote = builderUpVote.Eq(ObjectVoteId, postId)
+                        & builderUpVote.Eq(UpVoteBy, currentuser.OId)
+                        & builderUpVote.Eq(IsDeleted, false);
+
                     UpVote existUpVote = await upVoteRepository.FindAsync(filterExistUpVote);
+
                     if (existUpVote != null)
                     {
                         existUpVote.IsDeleted = true;
                         await upVoteRepository.DeleteAsync(existUpVote.Id);
                     }
+
                     DownVote downvote = new DownVote()
                     {
                         ObjectVoteId = postId,
                         DownVoteBy = currentuser.OId
                     };
+
                     await downVoteRepository.AddAsync(downvote);
                 }
 
 
                 var notificationObjectBuilders = Builders<NotificationObject>.Filter;
 
-                var notificationObjectFilters = notificationObjectBuilders.Eq("object_id", postId)
-                    & notificationObjectBuilders.Eq("notification_type", "DOWNVOTE_POST_NOTIFY");
+                var notificationObjectFilters = notificationObjectBuilders.Eq(ObjectIdCs, postId)
+                    & notificationObjectBuilders.Eq(NotificationConstant.NotificationType, DownvotePostNotify);
 
                 var existNotificationObject = await notificationObjectRepository.FindAsync(notificationObjectFilters);
 
@@ -435,7 +449,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
                 {
                     var newNotificationObject = new NotificationObject()
                     {
-                        NotificationType = "DOWNVOTE_POST_NOTIFY",
+                        NotificationType = DownvotePostNotify,
                         ObjectId = postId,
                         OwnerId = currentPost.AuthorId
                     };
@@ -451,7 +465,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
 
                 await fcmRepository.PushNotifyDetail(currentPost.OId, notificationDetail);
 
-                return "Downvote thành công. ";
+                return DownvoteSuccess;
             }
             catch (Exception)
             {
@@ -485,7 +499,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
 
                 return response;
             }
-            throw new Exception("Có lỗi xảy ra khi tìm kiếm bài viết. ");
+            throw new Exception(ErrorSearchPost);
         }
 
         /// <summary>
@@ -516,7 +530,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
             }
             else
             {
-                throw new Exception("Bài viết không tồn tại hoặc đã bị xóa. ");
+                throw new Exception(ErrorPostNotFound);
             }
         }
 
@@ -556,19 +570,19 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
             var posts = postRepository.GetAll();
 
             var builders = Builders<Post>.Filter;
-            FilterDefinition<Post> filterParam = builders.Eq("status", ItemStatus.Active);
+            FilterDefinition<Post> filterParam = builders.Eq(Status, ItemStatus.Active);
 
             if (filterRequest.ContentFilter != null)
             {
-                filterParam = filterParam & (builders.Regex("string_contents.content", filterRequest.ContentFilter)
-                    | builders.Regex("title", filterRequest.ContentFilter));
+                filterParam = filterParam & (builders.Regex(PostStringContent, filterRequest.ContentFilter)
+                    | builders.Regex(Title, filterRequest.ContentFilter));
             }
 
             if (filterRequest.FromDate != null && filterRequest.ToDate != null)
             {
                 filterParam = filterParam
-                    & builders.Gt("created_date", filterRequest.FromDate)
-                    & builders.Lt("created_date", filterRequest.ToDate);
+                    & builders.Gt(CreatedDate, filterRequest.FromDate)
+                    & builders.Lt(CreatedDate, filterRequest.ToDate);
             }
 
             posts = (await postRepository.FindListAsync(filterParam)).AsQueryable();
@@ -660,21 +674,21 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
                 var fromDate = request.FromDate.Value;
                 var toDaTe = request.ToDate.Value;
                 var postBuilder = Builders<Post>.Filter;
-                var postFilter = postBuilder.Lt("created_date", toDaTe)
-                    & postBuilder.Gt("created_date", fromDate);
+                var postFilter = postBuilder.Lt(CreatedDate, toDaTe)
+                    & postBuilder.Gt(CreatedDate, fromDate);
                 var posts = await postRepository.FindListAsync(postFilter);
                 // dataSource = posts;
             }
 
             //Lấy danh sách user_id đang theo dõi
             var currentUser = Feature.CurrentUser(httpContextAccessor, userRepository);
-            var userBuilder = Builders<Follow>.Filter.Eq("from_id", currentUser.OId);
+            var userBuilder = Builders<Follow>.Filter.Eq(FromId, currentUser.OId);
             var follows = await followRepository.FindListAsync(userBuilder);
             var followIds = follows.Select(x => x.ToId).Distinct();
 
             //Lấy danh sách post của chính mình 
             var postByCurrentBuilder = Builders<Post>.Filter;
-            var posytByCurrentFilter = postByCurrentBuilder.Eq("author_id", currentUser.OId);
+            var posytByCurrentFilter = postByCurrentBuilder.Eq(AuthorId, currentUser.OId);
             var postByCurrent = await postRepository.FindListAsync(posytByCurrentFilter);
             dataSource.AddRange(postByCurrent);
 
@@ -683,15 +697,15 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
             foreach (var followId in followIds)
             {
                 var postByAuthorBuilder = Builders<Post>.Filter;
-                var postByAuthorFilter = postByAuthorBuilder.Eq("author_id", followId)
-                    & postByAuthorBuilder.Eq("status", ItemStatus.Active);
+                var postByAuthorFilter = postByAuthorBuilder.Eq(AuthorId, followId)
+                    & postByAuthorBuilder.Eq(Status, ItemStatus.Active);
                 var postByAuthor = await postRepository.FindListAsync(postByAuthorFilter);
                 dataSource.AddRange(postByAuthor);
             }
 
             //Lấy danh sách field là những thế mạnh của người dùng
             var userForcesBuilder = Builders<ObjectLevel>.Filter;
-            var userForcesFilter = userForcesBuilder.Eq("object_id", currentUser.OId);
+            var userForcesFilter = userForcesBuilder.Eq(ObjectIdCs, currentUser.OId);
             var userForcesByObjectLevel = await objectLevelRepository.FindListAsync(userForcesFilter);
             var userForces = userForcesByObjectLevel.Select(x => x.FieldId).Distinct();
 
@@ -718,8 +732,8 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
             foreach (var x in fieldToFilter)
             {
                 var objectLevelBuilder = Builders<ObjectLevel>.Filter;
-                var objectLevelFilter = objectLevelBuilder.Eq("field_id", x)
-                    & objectLevelBuilder.Eq("is_active", true);
+                var objectLevelFilter = objectLevelBuilder.Eq(FieldId, x)
+                    & objectLevelBuilder.Eq(IsActive, true);
                 var objectLevels = await objectLevelRepository.FindListAsync(objectLevelFilter);
                 listObjectId.AddRange(objectLevels.Select(x => x.ObjectId));
             }
@@ -791,8 +805,8 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
         private async Task<List<User>> GetUsersMatchPostField(Post post)
         {
             var postObjectLevelBuilder = Builders<ObjectLevel>.Filter;
-            var postObjectLevelFilter = postObjectLevelBuilder.Eq("object_id", post.OId)
-                & postObjectLevelBuilder.Eq("is_active", true);
+            var postObjectLevelFilter = postObjectLevelBuilder.Eq(ObjectIdCs, post.OId)
+                & postObjectLevelBuilder.Eq(IsActive, true);
             var postObjectLevels = await objectLevelRepository.FindListAsync(postObjectLevelFilter);
             var allUsers = userRepository.GetAll();
 
@@ -817,8 +831,8 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
         private async Task<bool> IsUserMatchListObjectLevel(User user, List<ObjectLevel> objectLevels)
         {
             var userObjectLevelBuilder = Builders<ObjectLevel>.Filter;
-            var userObjectLevelFilter = userObjectLevelBuilder.Eq("object_id", user.OId)
-                & userObjectLevelBuilder.Eq("is_active", true);
+            var userObjectLevelFilter = userObjectLevelBuilder.Eq(ObjectIdCs, user.OId)
+                & userObjectLevelBuilder.Eq(IsActive, true);
             var userObjectLevels = await objectLevelRepository.FindListAsync(userObjectLevelFilter);
             foreach (var userObjectLevel in userObjectLevels)
             {
@@ -829,6 +843,14 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
             return false;
         }
 
+        /// <summary>
+        /// Determines whether the specified post is match.
+        /// </summary>
+        /// <param name="post">The post.</param>
+        /// <param name="levelFilterItem">The level filter item.</param>
+        /// <returns>
+        ///   <c>true</c> if the specified post is match; otherwise, <c>false</c>.
+        /// </returns>
         private bool IsMatch(PostViewModel post, LevelFilterItem levelFilterItem)
         {
             if (string.IsNullOrEmpty(levelFilterItem.FieldId) || string.IsNullOrEmpty(levelFilterItem.LevelId))
@@ -848,6 +870,14 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
             return false;
         }
 
+        /// <summary>
+        /// Determines whether the specified post is match.
+        /// </summary>
+        /// <param name="post">The post.</param>
+        /// <param name="levelFilter">The level filter.</param>
+        /// <returns>
+        ///   <c>true</c> if the specified post is match; otherwise, <c>false</c>.
+        /// </returns>
         private bool IsMatch(PostViewModel post, LevelFilter levelFilter)
         {
             foreach (var item in levelFilter.FilterItems)

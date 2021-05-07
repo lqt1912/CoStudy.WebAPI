@@ -99,8 +99,5 @@ namespace CoStudy.API.WebAPI.Controllers
             return Ok(messageService.GetAll());
         }
 
-
-        
-
     }
 }

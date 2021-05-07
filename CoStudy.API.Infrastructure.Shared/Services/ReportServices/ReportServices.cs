@@ -14,6 +14,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
+using static Common.Constant.PostConstant;
+using static Common.Constant.FollowConstant;
+using static Common.Constant.NotificationConstant;
+using static Common.Constants;
+using static Common.Constant.VoteConstant;
+using static Common.Constant.UserConstant;
+using Common.Constant;
+
 namespace CoStudy.API.Infrastructure.Shared.Services
 {
     /// <summary>
@@ -135,7 +143,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services
             FilterDefinitionBuilder<NotificationObject> notificationObjectBuilders = Builders<NotificationObject>.Filter;
 
             FilterDefinition<NotificationObject> notificationObjectFilters = notificationObjectBuilders.Eq("object_id", request.PostId)
-                & notificationObjectBuilders.Eq("notification_type", "REPORT_POST_NOTIFY");
+                & notificationObjectBuilders.Eq(NotificationConstant.NotificationType, "REPORT_POST_NOTIFY");
 
             NotificationObject existNotificationObject = await notificationObjectRepository.FindAsync(notificationObjectFilters);
 
@@ -220,7 +228,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services
                     FilterDefinitionBuilder<NotificationObject> notificationObjectBuilders = Builders<NotificationObject>.Filter;
 
                     FilterDefinition<NotificationObject> notificationObjectFilters = notificationObjectBuilders.Eq("object_id", post.OId)
-                        & notificationObjectBuilders.Eq("notification_type", "APPROVE_POST_REPORT");
+                        & notificationObjectBuilders.Eq(NotificationConstant.NotificationType, "APPROVE_POST_REPORT");
 
                     NotificationObject existNotificationObject = await notificationObjectRepository.FindAsync(notificationObjectFilters);
 
@@ -261,7 +269,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services
                     FilterDefinitionBuilder<NotificationObject> notificationObjectBuilders = Builders<NotificationObject>.Filter;
 
                     FilterDefinition<NotificationObject> notificationObjectFilters = notificationObjectBuilders.Eq("object_id", replyComment.OId)
-                        & notificationObjectBuilders.Eq("notification_type", "APPROVE_REPLY_REPORT");
+                        & notificationObjectBuilders.Eq(NotificationConstant.NotificationType, "APPROVE_REPLY_REPORT");
 
                     NotificationObject existNotificationObject = await notificationObjectRepository.FindAsync(notificationObjectFilters);
 
@@ -301,7 +309,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services
                     FilterDefinitionBuilder<NotificationObject> notificationObjectBuilders = Builders<NotificationObject>.Filter;
 
                     FilterDefinition<NotificationObject> notificationObjectFilters = notificationObjectBuilders.Eq("object_id", comment.OId)
-                        & notificationObjectBuilders.Eq("notification_type", "APPROVE_REPLY_REPORT");
+                        & notificationObjectBuilders.Eq(NotificationConstant.NotificationType, "APPROVE_REPLY_REPORT");
 
                     NotificationObject existNotificationObject = await notificationObjectRepository.FindAsync(notificationObjectFilters);
 
@@ -357,7 +365,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services
             FilterDefinitionBuilder<NotificationObject> notificationObjectBuilders = Builders<NotificationObject>.Filter;
 
             FilterDefinition<NotificationObject> notificationObjectFilters = notificationObjectBuilders.Eq("object_id", request.CommentId)
-                & notificationObjectBuilders.Eq("notification_type", "REPORT_COMMENT_NOTIFY");
+                & notificationObjectBuilders.Eq(NotificationConstant.NotificationType, "REPORT_COMMENT_NOTIFY");
 
             NotificationObject existNotificationObject = await notificationObjectRepository.FindAsync(notificationObjectFilters);
 
@@ -410,7 +418,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services
             FilterDefinitionBuilder<NotificationObject> notificationObjectBuilders = Builders<NotificationObject>.Filter;
 
             FilterDefinition<NotificationObject> notificationObjectFilters = notificationObjectBuilders.Eq("object_id", request.ReplyId)
-                & notificationObjectBuilders.Eq("notification_type", "REPORT_REPLY_NOTIFY");
+                & notificationObjectBuilders.Eq(NotificationConstant.NotificationType, "REPORT_REPLY_NOTIFY");
 
             NotificationObject existNotificationObject = await notificationObjectRepository.FindAsync(notificationObjectFilters);
 

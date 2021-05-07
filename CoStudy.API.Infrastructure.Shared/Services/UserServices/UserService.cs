@@ -3,12 +3,10 @@ using CoStudy.API.Application.Features;
 using CoStudy.API.Application.Repositories;
 using CoStudy.API.Application.Utitlities;
 using CoStudy.API.Domain.Entities.Application;
-using CoStudy.API.Domain.Entities.Identity.MongoAuthen;
 using CoStudy.API.Infrastructure.Identity.Repositories.AccountRepository;
 using CoStudy.API.Infrastructure.Shared.Adapters;
 using CoStudy.API.Infrastructure.Shared.Models.Request.PostRequest;
 using CoStudy.API.Infrastructure.Shared.Models.Request.UserRequest;
-using CoStudy.API.Infrastructure.Shared.Models.Response.UserResponse;
 using CoStudy.API.Infrastructure.Shared.ViewModels;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
@@ -18,6 +16,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using static Common.Constant.FollowConstant;
+using static Common.Constant.UserConstant;
 
 namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
 {
@@ -141,11 +141,11 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
                 if (user != null)
                 {
                     var filter = Builders<Follow>.Filter;
-                    var finder = filter.Eq("from_id", currentUser.OId) & filter.Eq("to_id", item);
+                    var finder = filter.Eq(FromId, currentUser.OId) & filter.Eq(ToId, item);
                     var existFollowing = await followRepository.FindAsync(finder);
                     if (existFollowing != null)
                     {
-                        return "Bạn đã theo dõi người này rồi";
+                        return UserFollowAlready;
                     }
 
                     var follow = new Follow()
@@ -158,7 +158,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
                     await followRepository.AddAsync(follow);
                 }
             }
-            return "Theo dõi thành công";
+            return FollowSuccess;
         }
 
         /// <summary>
@@ -189,7 +189,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
         {
             var user = await userRepository.GetByIdAsync(ObjectId.Parse(id));
             if (user == null)
-                throw new Exception("Không tìm thấy user");
+                throw new Exception(UserNotFound);
             return mapper.Map<UserViewModel>(user);
         }
 
@@ -207,12 +207,12 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
                 var user = Feature.CurrentUser(_httpContextAccessor, userRepository);
 
                 if (user == null)
-                    throw new Exception("Không tìm thấy user");
+                    throw new Exception(UserNotFound);
                 return mapper.Map<UserViewModel>(user);
             }
             catch (Exception)
             {
-                throw new Exception("Không tìm thấy user");
+                throw new Exception(UserNotFound);
             }
         }
 
@@ -226,15 +226,15 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
         {
             try
             {
-                var findFilter = Builders<Follow>.Filter.Eq("to_id", toFollowerId);
+                var findFilter = Builders<Follow>.Filter.Eq(ToId, toFollowerId);
                 var following = await followRepository.FindAsync(findFilter);
                 var followViewModel = mapper.Map<FollowViewModel>(following);
                 await followRepository.DeleteAsync(following.Id);
-                return $"Bạn đã bỏ theo dõi người dùng {followViewModel.ToName}";
+                return $"{UserUnfollow}{followViewModel.ToName}";
             }
             catch (Exception)
             {
-                throw new Exception("Người dùng không tồn tại. Đã có lổi xảy ra");
+                throw new Exception(UserNotFound);
             }
         }
 
@@ -319,7 +319,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
         /// <returns></returns>
         public async Task<IEnumerable<FollowViewModel>> GetFollower(FollowFilterRequest request)
         {
-            var findFilter = Builders<Follow>.Filter.Eq("to_id", request.UserId);
+            var findFilter = Builders<Follow>.Filter.Eq(ToId, request.UserId);
             var queryable = mapper.Map<List<FollowViewModel>>(await followRepository.FindListAsync(findFilter)).AsQueryable();
 
             queryable = queryable.Where(x => x.FromName.NormalizeSearch().Contains(request.KeyWord.NormalizeSearch()));
@@ -344,7 +344,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
         /// <returns></returns>
         public async Task<IEnumerable<FollowViewModel>> GetFollowing(FollowFilterRequest request)
         {
-            var findFilter = Builders<Follow>.Filter.Eq("from_id", request.UserId);
+            var findFilter = Builders<Follow>.Filter.Eq(FromId, request.UserId);
             IQueryable<FollowViewModel> queryable = mapper.Map<List<FollowViewModel>>(await followRepository.FindListAsync(findFilter)).AsQueryable();
 
             queryable = queryable.Where(x => x.ToName.NormalizeSearch().Contains(request.KeyWord.NormalizeSearch()));
@@ -369,10 +369,10 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
         public async Task<IEnumerable<UserViewModel>> FilterUser(FilterUserRequest request)
         {
             var builder = Builders<User>.Filter;
-            var filter = builder.Regex("first_name", request.KeyWord)
-                            | builder.Regex("last_name", request.KeyWord)
-                            | builder.Regex("email", request.KeyWord)
-                            | builder.Regex("phone_numer", request.KeyWord);
+            var filter = builder.Regex(FirstName, request.KeyWord)
+                            | builder.Regex(LastName, request.KeyWord)
+                            | builder.Regex(Email, request.KeyWord)
+                            | builder.Regex(PhoneNumber, request.KeyWord);
             var users = (await userRepository.FindListAsync(filter)).AsQueryable();
 
             var user = new List<User>();

@@ -10,6 +10,31 @@ namespace Common
     public static class Constants
     {
         /// <summary>
+        /// The is active
+        /// </summary>
+        public static string IsActive = "is_active";
+
+        /// <summary>
+        /// The created date
+        /// </summary>
+        public static string CreatedDate = "created_date";
+
+        /// <summary>
+        /// The object identifier
+        /// </summary>
+        public static string ObjectIdCs = "object_id";
+
+        /// <summary>
+        /// The status
+        /// </summary>
+        public static string Status = "status";
+
+        /// <summary>
+        /// The is deleted
+        /// </summary>
+        public static string IsDeleted = "is_deleted";
+
+        /// <summary>
         /// Class ExternalLoginConstants
         /// </summary>
         public static class ExternalLoginConstants

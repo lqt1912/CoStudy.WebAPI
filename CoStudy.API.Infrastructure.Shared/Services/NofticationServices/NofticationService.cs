@@ -14,6 +14,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
+
+using static Common.Constant.PostConstant;
+using static Common.Constant.FollowConstant;
+using static Common.Constant.NotificationConstant;
+using static Common.Constants;
+using static Common.Constant.VoteConstant;
+using static Common.Constant.UserConstant;
+
 namespace CoStudy.API.Infrastructure.Shared.Services.NofticationServices
 {
     /// <summary>
@@ -101,7 +109,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.NofticationServices
         public async Task<IEnumerable<NotificationViewModel>> GetCurrentUserNoftication(BaseGetAllRequest request)
         {
             User currentUser = Feature.CurrentUser(contextAccessor, userRepository);
-            FilterDefinition<Noftication> builder = Builders<Noftication>.Filter.Eq("receiver_id", currentUser.OId);
+            FilterDefinition<Noftication> builder = Builders<Noftication>.Filter.Eq(ReceiverId, currentUser.OId);
 
             IEnumerable<Noftication> result = (await nofticationRepository.FindListAsync(builder)).AsEnumerable();
 
@@ -126,11 +134,11 @@ namespace CoStudy.API.Infrastructure.Shared.Services.NofticationServices
             try
             {
                 await nofticationRepository.DeleteAsync(ObjectId.Parse(id));
-                return "Xóa thành công";
+                return DeleteNotificationSuccess;
             }
             catch (Exception)
             {
-                return "Xóa không thành công";
+                return DeleteNotificationNotSuccess;
             }
         }
 
@@ -147,26 +155,26 @@ namespace CoStudy.API.Infrastructure.Shared.Services.NofticationServices
                 Noftication notification = await nofticationRepository.GetByIdAsync(ObjectId.Parse(id));
                 if (notification == null)
                 {
-                    throw new Exception("Không tìm thấy thông báo");
+                    throw new Exception(NotificationNotFound);
                 }
 
                 notification.IsRead = true;
                 await nofticationRepository.UpdateAsync(notification, notification.Id);
 
-                return "Đã xem thông báo";
+                return NotificationSeen;
             }
             else
             {
                 User currentUser = Feature.CurrentUser(contextAccessor, userRepository);
                 FilterDefinitionBuilder<Noftication> builder = Builders<Noftication>.Filter;
-                FilterDefinition<Noftication> finder = builder.Eq("owner_id", currentUser.OId) & builder.Eq("is_read", false) & builder.Eq("status", ItemStatus.Active);
+                FilterDefinition<Noftication> finder = builder.Eq(OwnerId, currentUser.OId) & builder.Eq(IsRead, false) & builder.Eq(Status, ItemStatus.Active);
                 List<Noftication> notis = await nofticationRepository.FindListAsync(finder);
                 foreach (Noftication noti in notis)
                 {
                     noti.IsRead = true;
                     await nofticationRepository.UpdateAsync(noti, noti.Id);
                 }
-                return "Đã xem tất cả thông báo";
+                return NotificationSeenAll;
             }
         }
 
@@ -195,7 +203,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.NofticationServices
         /// <returns></returns>
         public async Task<NotificationType> GetByCode(string code)
         {
-            FilterDefinition<NotificationType> finder = Builders<NotificationType>.Filter.Eq("code", code);
+            FilterDefinition<NotificationType> finder = Builders<NotificationType>.Filter.Eq(Code, code);
             return await notificationTypeRepository.FindAsync(finder);
         }
 
@@ -229,11 +237,11 @@ namespace CoStudy.API.Infrastructure.Shared.Services.NofticationServices
 
                     string ownerName = String.Empty;
 
-                    FilterDefinition<NotificationType> notificationTypeFilter = Builders<NotificationType>.Filter.Eq("code", notificationObject.NotificationType);
+                    FilterDefinition<NotificationType> notificationTypeFilter = Builders<NotificationType>.Filter.Eq(Code, notificationObject.NotificationType);
 
                     NotificationType notificationType = await notificationTypeRepository.FindAsync(notificationTypeFilter);
 
-                    if (notificationType.Code != "ADD_POST_NOTIFY")
+                    if (notificationType.Code != AddPostNotify)
                     {
                         if (currentUser.OId != notificationObject.OwnerId)
                         {
@@ -301,9 +309,9 @@ namespace CoStudy.API.Infrastructure.Shared.Services.NofticationServices
 
             FilterDefinitionBuilder<NotificationDetail> notificationDetailBuilder = Builders<NotificationDetail>.Filter;
 
-            FilterDefinition<NotificationDetail> notificationDetailFilter = notificationDetailBuilder.Eq("is_deleted", false)
-                & notificationDetailBuilder.Eq("notification_object_id", notificationObjectId)
-                & notificationDetailBuilder.Eq("receiver_id", currentUser.OId);
+            FilterDefinition<NotificationDetail> notificationDetailFilter = notificationDetailBuilder.Eq(IsDeleted, false)
+                & notificationDetailBuilder.Eq(NotificationObjectId, notificationObjectId)
+                & notificationDetailBuilder.Eq(ReceiverId, currentUser.OId);
 
             List<NotificationDetail> notificationDetails = await notificationDetailRepository.FindListAsync(notificationDetailFilter);
 
@@ -313,7 +321,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.NofticationServices
                 await notificationDetailRepository.UpdateAsync(notificationDetail, notificationDetail.Id);
             }
 
-            return "Xóa thành công. ";
+            return DeleteNotificationSuccess;
         }
 
         /// <summary>
@@ -330,10 +338,10 @@ namespace CoStudy.API.Infrastructure.Shared.Services.NofticationServices
             {
                 FilterDefinitionBuilder<NotificationDetail> notificationDetailBuilder = Builders<NotificationDetail>.Filter;
 
-                FilterDefinition<NotificationDetail> notificationDetailFilter = notificationDetailBuilder.Eq("is_read", false)
-                    & notificationDetailBuilder.Eq("is_deleted", false)
-                    & notificationDetailBuilder.Eq("notification_object_id", notificationObjectId)
-                    & notificationDetailBuilder.Eq("receiver_id", currentUser.OId);
+                FilterDefinition<NotificationDetail> notificationDetailFilter = notificationDetailBuilder.Eq(IsRead, false)
+                    & notificationDetailBuilder.Eq(IsDeleted, false)
+                    & notificationDetailBuilder.Eq(NotificationObjectId, notificationObjectId)
+                    & notificationDetailBuilder.Eq(ReceiverId, currentUser.OId);
 
                 List<NotificationDetail> notificationDetails = await notificationDetailRepository.FindListAsync(notificationDetailFilter);
 
@@ -342,15 +350,15 @@ namespace CoStudy.API.Infrastructure.Shared.Services.NofticationServices
                     notificationDetail.IsRead = true;
                     await notificationDetailRepository.UpdateAsync(notificationDetail, notificationDetail.Id);
                 }
-                return "Đã đánh dấu là xem. ";
+                return NotificationSeen;
             }
             else
             {
                 FilterDefinitionBuilder<NotificationDetail> notificationDetailBuilder = Builders<NotificationDetail>.Filter;
 
-                FilterDefinition<NotificationDetail> notificationDetailFilter = notificationDetailBuilder.Eq("is_read", false)
-                    & notificationDetailBuilder.Eq("is_deleted", false)
-                    & notificationDetailBuilder.Eq("receiver_id", currentUser.OId);
+                FilterDefinition<NotificationDetail> notificationDetailFilter = notificationDetailBuilder.Eq(IsRead, false)
+                    & notificationDetailBuilder.Eq(IsDeleted, false)
+                    & notificationDetailBuilder.Eq(ReceiverId, currentUser.OId);
 
                 List<NotificationDetail> notificationDetails = await notificationDetailRepository.FindListAsync(notificationDetailFilter);
 
@@ -360,7 +368,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.NofticationServices
                     await notificationDetailRepository.UpdateAsync(notificationDetail, notificationDetail.Id);
                 }
 
-                return "Tất cả thông báo đã xem. ";
+                return NotificationSeenAll;
             }
 
         }
