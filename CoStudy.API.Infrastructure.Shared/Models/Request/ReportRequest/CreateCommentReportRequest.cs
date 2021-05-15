@@ -1,10 +1,8 @@
 ﻿using Newtonsoft.Json;
-using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Text.Json.Serialization;
 
-namespace CoStudy.API.Infrastructure.Shared.Models.Request.ReportRequest
+namespace CoStudy.API.Infrastructure.Shared.Models.Request
 {
     /// <summary>
     /// Class CreateCommentPostRequest

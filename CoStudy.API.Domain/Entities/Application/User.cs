@@ -93,6 +93,10 @@ namespace CoStudy.API.Domain.Entities.Application
         [JsonPropertyName("avatar_hash")]
         public string AvatarHash { get; set; }
 
+        [BsonElement("call_id")]
+        [JsonPropertyName("call_id")]
+        public string  CallId { get; set; }
+
         /// <summary>
         /// Gets or sets the status.
         /// </summary>

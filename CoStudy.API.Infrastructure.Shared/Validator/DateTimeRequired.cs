@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Globalization;
-using System.Text;
 
 namespace CoStudy.API.Infrastructure.Shared.Validator
 {
@@ -10,7 +8,7 @@ namespace CoStudy.API.Infrastructure.Shared.Validator
     /// DateTime validator attribute
     /// </summary>
     /// <seealso cref="System.ComponentModel.DataAnnotations.ValidationAttribute" />
-    [AttributeUsage( AttributeTargets.Property | AttributeTargets.Field)]
+    [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field)]
     public class DateTimeRequiredAttribute : ValidationAttribute
     {
         /// <summary>
@@ -34,13 +32,19 @@ namespace CoStudy.API.Infrastructure.Shared.Validator
         {
 
             if (value == null)
+            {
                 throw new Exception(ErrorMessage);
+            }
+
             var strDate = (string)value;
             DateTime dt = new DateTime();
 
-            var convertable = DateTime.TryParseExact(strDate, "yyyy-MM-dd",null, DateTimeStyles.None, out dt);
+            var convertable = DateTime.TryParseExact(strDate, "yyyy-MM-dd", null, DateTimeStyles.None, out dt);
             if (!convertable)
+            {
                 throw new Exception(ErrorMessage);
+            }
+
             return true;
         }
     }

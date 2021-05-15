@@ -3,7 +3,6 @@ using AutoMapper;
 using CoStudy.API.Application.Repositories;
 using CoStudy.API.Domain.Entities.Application;
 using CoStudy.API.Infrastructure.Shared.ViewModels;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -63,7 +62,7 @@ namespace CoStudy.API.Infrastructure.Shared.AutoMapper
 
             destination.FullAddress = $"{source.Address?.Detail}, {source.Address?.District}, {source.Address?.City}";
             var objectLevels = mapper.Map<IEnumerable<ObjectLevelViewModel>>(objectLevelRepository.GetAll().Where(x => x.ObjectId == source.OId && x.IsActive == true));
-          
+
             destination.Fields.AddRange(objectLevels);
         }
     }

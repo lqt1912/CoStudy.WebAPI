@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace CoStudy.API.Infrastructure.Shared.Validator
 {
@@ -65,18 +62,26 @@ namespace CoStudy.API.Infrastructure.Shared.Validator
         public override bool IsValid(object value)
         {
             if (value == null)
+            {
                 throw new Exception(ErrorMessage);
+            }
 
             IList list = (IList)value;
 
             if (list.Count == 0)
+            {
                 throw new Exception(ErrorMessage);
+            }
 
             if (list.Count < MinCount)
+            {
                 throw new Exception(LowerLimitMessage);
+            }
 
             if (list.Count > MaxCount)
+            {
                 throw new Exception(UpperLimitMessage);
+            }
 
             return true;
         }

@@ -29,7 +29,7 @@ namespace CoStudy.API.Infrastructure.Shared.ViewModels
         /// </value>
         [JsonProperty("author_name")]
         [JsonPropertyName("author_name")]
-        public string  AuthorName { get; set; }
+        public string AuthorName { get; set; }
 
         /// <summary>
         /// Gets or sets the author avatar.
@@ -39,7 +39,7 @@ namespace CoStudy.API.Infrastructure.Shared.ViewModels
         /// </value>
         [JsonProperty("author_avatar")]
         [JsonPropertyName("author_avatar")]
-        public string  AuthorAvatar { get; set; }
+        public string AuthorAvatar { get; set; }
 
         /// <summary>
         /// Gets or sets the object identifier.
@@ -49,7 +49,7 @@ namespace CoStudy.API.Infrastructure.Shared.ViewModels
         /// </value>
         [JsonProperty("object_id")]
         [JsonPropertyName("object_id")]
-        public string  ObjectId { get; set; }
+        public string ObjectId { get; set; }
 
         /// <summary>
         /// Gets or sets the type of the object.
@@ -59,7 +59,7 @@ namespace CoStudy.API.Infrastructure.Shared.ViewModels
         /// </value>
         [JsonProperty("object_type")]
         [JsonPropertyName("object_type")]
-        public string  ObjectType { get; set; }
+        public string ObjectType { get; set; }
 
         /// <summary>
         /// Gets or sets the report reason.
@@ -109,7 +109,7 @@ namespace CoStudy.API.Infrastructure.Shared.ViewModels
         /// </value>
         [JsonProperty("approve_status")]
         [JsonPropertyName("approve_status")]
-        public string  ApproveStatusName { get; set; }
+        public string ApproveStatusName { get; set; }
 
         /// <summary>
         /// Gets or sets the approved by.
@@ -119,7 +119,7 @@ namespace CoStudy.API.Infrastructure.Shared.ViewModels
         /// </value>
         [JsonProperty("approved_by")]
         [JsonPropertyName("approved_by")]
-        public string  ApprovedBy { get; set; }
+        public string ApprovedBy { get; set; }
 
         /// <summary>
         /// Gets or sets the name of the approved by.
@@ -129,7 +129,7 @@ namespace CoStudy.API.Infrastructure.Shared.ViewModels
         /// </value>
         [JsonProperty("approved_by_name")]
         [JsonPropertyName("approved_by_name")]
-        public string  ApprovedByName { get; set; }
+        public string ApprovedByName { get; set; }
 
         /// <summary>
         /// Gets or sets the approve date.

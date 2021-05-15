@@ -2,14 +2,13 @@
 using CoStudy.API.Application.Features;
 using CoStudy.API.Application.Repositories;
 using CoStudy.API.Domain.Entities.Application;
-using CoStudy.API.Infrastructure.Shared.Models.Request.BaseRequest;
+using CoStudy.API.Infrastructure.Shared.Models.Request;
 using CoStudy.API.Infrastructure.Shared.ViewModels;
 using Microsoft.AspNetCore.Http;
 using MongoDB.Bson;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace CoStudy.API.Infrastructure.Shared.Services
@@ -18,7 +17,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services
     /// The Report reason service. 
     /// </summary>
     /// <seealso cref="CoStudy.API.Infrastructure.Shared.Services.IReportReasonService" />
-    public class ReportReasonService :IReportReasonService
+    public class ReportReasonService : IReportReasonService
     {
         /// <summary>
         /// The report reason repository
@@ -66,7 +65,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services
                 CreatedBy = currentUser.OId
             };
             await reportReasonRepository.AddAsync(data);
-            return mapper.Map<ReportReasonViewModel>( data);
+            return mapper.Map<ReportReasonViewModel>(data);
         }
 
         /// <summary>
@@ -77,11 +76,11 @@ namespace CoStudy.API.Infrastructure.Shared.Services
         public IEnumerable<ReportReasonViewModel> GetAll(BaseGetAllRequest request)
         {
             var data = reportReasonRepository.GetAll();
-            if(request.Count.HasValue && request.Skip.HasValue)
+            if (request.Count.HasValue && request.Skip.HasValue)
             {
                 data = data.Skip(request.Skip.Value).Take(request.Count.Value);
             }
-            return mapper.Map<IEnumerable<ReportReasonViewModel>>( data);
+            return mapper.Map<IEnumerable<ReportReasonViewModel>>(data);
         }
 
 

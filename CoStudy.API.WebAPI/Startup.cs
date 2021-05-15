@@ -1,5 +1,4 @@
 using AspNetCoreRateLimit;
-using AutoMapper;
 using CoStudy.API.Application.Repositories;
 using CoStudy.API.Infrastructure.Identity;
 using CoStudy.API.Infrastructure.Identity.Helpers;
@@ -71,7 +70,7 @@ namespace CoStudy.API.WebAPI
             services.AddSingleton<IWorker, Worker>();
 
             services.AddAutoMapper(typeof(MappingProfile).Assembly);
-           
+
             services.AddCors();
         }
 

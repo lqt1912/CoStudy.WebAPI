@@ -1,7 +1,5 @@
 ﻿using Newtonsoft.Json;
-using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Text.Json.Serialization;
 
 namespace CoStudy.API.Infrastructure.Shared.ViewModels
@@ -29,7 +27,7 @@ namespace CoStudy.API.Infrastructure.Shared.ViewModels
         /// </value>
         [JsonProperty("leaderboard")]
         [JsonPropertyName("leaderboard")]
-        public  List<UserLeaderBoardViewModel> LeaderBoards { get; set; }
+        public List<UserLeaderBoardViewModel> LeaderBoards { get; set; }
 
         public LeaderBoardViewModel()
         {
@@ -80,7 +78,7 @@ namespace CoStudy.API.Infrastructure.Shared.ViewModels
         /// </value>
         [JsonProperty("user_avatar")]
         [JsonPropertyName("user_avatar")]
-        public string  UserAvatar { get; set; }
+        public string UserAvatar { get; set; }
 
         /// <summary>
         /// Gets or sets the total point.

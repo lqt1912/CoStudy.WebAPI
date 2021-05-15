@@ -1,6 +1,4 @@
-﻿using AutoMapper;
-using CoStudy.API.Application.FCM;
-using CoStudy.API.Infrastructure.Shared.AutoMapper;
+﻿using CoStudy.API.Application.FCM;
 using CoStudy.API.Infrastructure.Shared.Services.LocationServices;
 using CoStudy.API.Infrastructure.Shared.Services.MessageServices;
 using CoStudy.API.Infrastructure.Shared.Services.NofticationServices;

@@ -3,9 +3,7 @@ using CoStudy.API.Application.FCM;
 using CoStudy.API.Application.Features;
 using CoStudy.API.Application.Repositories;
 using CoStudy.API.Domain.Entities.Application;
-using CoStudy.API.Infrastructure.Shared.Adapters;
-using CoStudy.API.Infrastructure.Shared.Models.Request.MessageRequest;
-using CoStudy.API.Infrastructure.Shared.Models.Response.MessageResponse;
+using CoStudy.API.Infrastructure.Shared.Models.Request;
 using CoStudy.API.Infrastructure.Shared.ViewModels;
 using Microsoft.AspNetCore.Http;
 using MongoDB.Bson;
@@ -211,19 +209,19 @@ namespace CoStudy.API.Infrastructure.Shared.Services.MessageServices
                 var messageTextBuilder = Builders<MessageText>.Filter;
                 var messageTextFilter = messageTextBuilder.Eq("conversation_id", request.ConversationId) & messageTextBuilder.Eq("status", ItemStatus.Active);
                 var messageTexts = await messageTextRepository.FindListAsync(messageTextFilter);
-                var messageTextViewModels = mapper.Map<List<MessageViewModel>>(messageTexts.OrderByDescending(x=>x.CreatedDate));
+                var messageTextViewModels = mapper.Map<List<MessageViewModel>>(messageTexts.OrderByDescending(x => x.CreatedDate));
                 result.AddRange(messageTextViewModels);
 
                 var messageImageBuilder = Builders<MessageImage>.Filter;
                 var messageImageFilter = messageImageBuilder.Eq("conversation_id", request.ConversationId) & messageImageBuilder.Eq("status", ItemStatus.Active);
                 var messageImages = await messageImageRepository.FindListAsync(messageImageFilter);
-                var messageImageViewModels = mapper.Map<List<MessageViewModel>>(messageImages.OrderByDescending(x=>x.CreatedDate));
+                var messageImageViewModels = mapper.Map<List<MessageViewModel>>(messageImages.OrderByDescending(x => x.CreatedDate));
                 result.AddRange(messageImageViewModels);
 
                 var messagePostThumbnailBuilder = Builders<MessagePostThumbnail>.Filter;
                 var messagePostThumbnailFilter = messagePostThumbnailBuilder.Eq("conversation_id", request.ConversationId) & messagePostThumbnailBuilder.Eq("status", ItemStatus.Active);
                 var messagePostThumnbails = await messagePostThumbnailRepository.FindListAsync(messagePostThumbnailFilter);
-                var messagePostThumbnailViewModels = mapper.Map<List<MessageViewModel>>(messagePostThumnbails.OrderByDescending(x=>x.CreatedDate));
+                var messagePostThumbnailViewModels = mapper.Map<List<MessageViewModel>>(messagePostThumnbails.OrderByDescending(x => x.CreatedDate));
                 result.AddRange(messagePostThumbnailViewModels);
 
                 var messageMultiMediaBuilder = Builders<MessageMultiMedia>.Filter;
@@ -235,7 +233,9 @@ namespace CoStudy.API.Infrastructure.Shared.Services.MessageServices
                 result = result.OrderByDescending(x => x.CreatedDate).ToList();
 
                 if (request.Skip.HasValue && request.Count.HasValue)
+                {
                     result = result.Skip(request.Skip.Value).Take(request.Count.Value).ToList();
+                }
 
                 return result;
             }
@@ -282,7 +282,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.MessageServices
             }
 
             var existMessageMultiMedia = await messageMultiMediaRepository.GetByIdAsync(ObjectId.Parse(id));
-            if(existMessageMultiMedia!=null && existMessageMultiMedia.SenderId == currentUser.OId)
+            if (existMessageMultiMedia != null && existMessageMultiMedia.SenderId == currentUser.OId)
             {
                 existMessageMultiMedia.Status = ItemStatus.Deleted;
                 await messageMultiMediaRepository.UpdateAsync(existMessageMultiMedia, existMessageMultiMedia.Id);
@@ -297,14 +297,17 @@ namespace CoStudy.API.Infrastructure.Shared.Services.MessageServices
                 return ("Xóa tin nhắn thành công");
             }
             var existMessageText = await messageTextRepository.GetByIdAsync(ObjectId.Parse(id));
-            if(existMessageText != null  && existMessageText.SenderId == currentUser.OId)
+            if (existMessageText != null && existMessageText.SenderId == currentUser.OId)
             {
                 existMessageText.Status = ItemStatus.Deleted;
                 await messageTextRepository.UpdateAsync(existMessageText, existMessageText.Id);
                 return ("Xóa tin nhắn thành công");
             }
 
-            else throw new Exception("Đã có lỗi xảy ra");
+            else
+            {
+                throw new Exception("Đã có lỗi xảy ra");
+            }
         }
 
         /// <summary>
@@ -317,7 +320,10 @@ namespace CoStudy.API.Infrastructure.Shared.Services.MessageServices
         {
             Message message = await messageRepository.GetByIdAsync(ObjectId.Parse(request.Id));
             if (message == null)
+            {
                 throw new Exception("Tin nhắn không tìm thấy");
+            }
+
             message.MediaContent = request.Image;
             message.StringContent = request.Content;
             message.IsEdited = true;

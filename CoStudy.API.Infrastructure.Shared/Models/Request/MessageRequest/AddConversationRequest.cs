@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
-namespace CoStudy.API.Infrastructure.Shared.Models.Request.MessageRequest
+namespace CoStudy.API.Infrastructure.Shared.Models.Request
 {
     /// <summary>
     /// Class AddConversatonRequest

@@ -1,8 +1,7 @@
 ﻿using CoStudy.API.Application.Features;
 using CoStudy.API.Application.Repositories;
 using CoStudy.API.Domain.Entities.Application;
-using CoStudy.API.Infrastructure.Shared.Models.Request.MessageRequest;
-using CoStudy.API.Infrastructure.Shared.Models.Response.MessageResponse;
+using CoStudy.API.Infrastructure.Shared.Models.Request;
 using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;

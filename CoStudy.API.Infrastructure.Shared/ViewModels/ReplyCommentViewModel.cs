@@ -1,8 +1,6 @@
 ﻿using CoStudy.API.Domain.Entities.Application;
 using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Text.Json.Serialization;
 
 namespace CoStudy.API.Infrastructure.Shared.ViewModels
@@ -31,7 +29,7 @@ namespace CoStudy.API.Infrastructure.Shared.ViewModels
         /// </value>
         [JsonProperty("oid")]
         [JsonPropertyName("oid")]
-        public string  OId { get; set; }
+        public string OId { get; set; }
 
         /// <summary>
         /// Gets or sets the content.

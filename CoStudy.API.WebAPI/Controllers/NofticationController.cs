@@ -1,12 +1,11 @@
-﻿using CoStudy.API.Infrastructure.Shared.Models.Request.BaseRequest;
-using CoStudy.API.Infrastructure.Shared.Models.Request.NofticationRequest;
+﻿using CoStudy.API.Domain.Entities.Application;
+using CoStudy.API.Infrastructure.Shared.Models.Request;
 using CoStudy.API.Infrastructure.Shared.Services.NofticationServices;
+using CoStudy.API.Infrastructure.Shared.ViewModels;
 using CoStudy.API.WebAPI.Middlewares;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using CoStudy.API.Infrastructure.Shared.ViewModels;
-using CoStudy.API.Domain.Entities.Application;
 
 namespace CoStudy.API.WebAPI.Controllers
 {
@@ -54,7 +53,7 @@ namespace CoStudy.API.WebAPI.Controllers
         [Route("add")]
         public async Task<IActionResult> AddNoftication(AddNofticationRequest request)
         {
-          NotificationViewModel data = await nofticationService.AddNoftication(request);
+            NotificationViewModel data = await nofticationService.AddNoftication(request);
             return Ok(new ApiOkResponse(data));
         }
 

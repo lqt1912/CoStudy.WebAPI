@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
-namespace CoStudy.API.Infrastructure.Shared.Models.Request.LoggingRequest
+namespace CoStudy.API.Infrastructure.Shared.Models.Request
 {
     /// <summary>
     /// Class DeleteLoggingRequest

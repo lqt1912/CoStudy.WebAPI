@@ -3,7 +3,7 @@ using CoStudy.API.Application.Features;
 using CoStudy.API.Application.Repositories;
 using CoStudy.API.Domain.Entities.Application;
 using CoStudy.API.Infrastructure.Shared.Adapters;
-using CoStudy.API.Infrastructure.Shared.Models.Request.MessageRequest;
+using CoStudy.API.Infrastructure.Shared.Models.Request;
 using CoStudy.API.Infrastructure.Shared.Models.Response.MessageResponse;
 using CoStudy.API.Infrastructure.Shared.ViewModels;
 using Microsoft.AspNetCore.Http;
@@ -92,11 +92,11 @@ namespace CoStudy.API.Infrastructure.Shared.Services
             IHttpContextAccessor httpContextAccessor,
             IUserRepository userRepository,
             IClientGroupRepository clientGroupRepository,
-            IMessageRepository messageRepository, 
-            IMessageTextRepository messagTextRepository, 
-            IMessageImageRepository messageImageRepository, 
-            IMessageMultiMediaRepository messageMultiMediaRepository, 
-            IMessagePostThumbnailRepository messagePostThumbnailRepository, 
+            IMessageRepository messageRepository,
+            IMessageTextRepository messagTextRepository,
+            IMessageImageRepository messageImageRepository,
+            IMessageMultiMediaRepository messageMultiMediaRepository,
+            IMessagePostThumbnailRepository messagePostThumbnailRepository,
             IMessageConversationActivityRepository messageConversationActivityRepository)
         {
             this.conversationItemTypeRepository = conversationItemTypeRepository;
@@ -129,7 +129,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services
                 Name = entity.Name
             };
             await conversationItemTypeRepository.AddAsync(data);
-            return mapper.Map<ConversationItemTypeViewModel>( data);
+            return mapper.Map<ConversationItemTypeViewModel>(data);
         }
 
         /// <summary>
@@ -178,7 +178,9 @@ namespace CoStudy.API.Infrastructure.Shared.Services
             }
 
             if (existConversation.Participants.Count != 0)
+            {
                 return mapper.Map<ConversationViewModel>(existConversation);
+            }
 
             Conversation conversation = MessageAdapter.FromRequest(request, httpContextAccessor, userRepository);
 
@@ -201,11 +203,13 @@ namespace CoStudy.API.Infrastructure.Shared.Services
         /// </summary>
         /// <returns></returns>
         /// <exception cref="Exception">User not found</exception>
-        public async Task <GetConversationByUserIdResponse> GetConversationByUserId()
+        public async Task<GetConversationByUserIdResponse> GetConversationByUserId()
         {
             User currentUser = Feature.CurrentUser(httpContextAccessor, userRepository);
             if (currentUser == null)
+            {
                 throw new Exception("User not found");
+            }
 
             var listData = new List<ConversationData>();
 
@@ -215,7 +219,9 @@ namespace CoStudy.API.Infrastructure.Shared.Services
                 foreach (var i in item.Participants)
                 {
                     if (i.MemberId == currentUser.OId)
+                    {
                         conversations.Add(item);
+                    }
                 }
             }
 
@@ -240,7 +246,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services
                 listData.Add(new ConversationData()
                 {
                     Conversation = conversationViewModel,
-                    Messages = messageVM.OrderByDescending(x=>x.CreatedDate).Take(1)
+                    Messages = messageVM.OrderByDescending(x => x.CreatedDate).Take(1)
                 });
             }
             return new GetConversationByUserIdResponse()
@@ -268,11 +274,16 @@ namespace CoStudy.API.Infrastructure.Shared.Services
                 FilterDefinition<ClientGroup> finder = Builders<ClientGroup>.Filter.Eq("name", id);
                 ClientGroup clientGroup = await clientGroupRepository.FindAsync(finder);
                 if (clientGroup != null)
+                {
                     await clientGroupRepository.DeleteAsync(clientGroup.Id);
+                }
 
                 return "Xóa cuộc trò chuyện thành công";
             }
-            else throw new Exception("Đã có lỗi xảy ra");
+            else
+            {
+                throw new Exception("Đã có lỗi xảy ra");
+            }
         }
 
 
@@ -289,7 +300,9 @@ namespace CoStudy.API.Infrastructure.Shared.Services
             var currentUser = Feature.CurrentUser(httpContextAccessor, userRepository);
             var currentMember = conversation.Participants.FirstOrDefault(x => x.MemberId == currentUser.OId);
             if (currentMember.Role != ConversationRole.Admin)
+            {
                 throw new Exception("Bạn không có quyền thêm người dùng mới vào cuộc trò chuyện. ");
+            }
 
             var result = new List<Message>();
 

@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using System.Text.Json.Serialization;
 
-namespace CoStudy.API.Infrastructure.Shared.Models.Request.PostRequest
+namespace CoStudy.API.Infrastructure.Shared.Models.Request
 {
     public class AddMediaRequest
     {

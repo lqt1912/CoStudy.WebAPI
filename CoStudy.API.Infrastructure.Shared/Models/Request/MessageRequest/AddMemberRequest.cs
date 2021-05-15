@@ -1,10 +1,7 @@
 ﻿using CoStudy.API.Infrastructure.Shared.Validator;
-using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Text;
 
-namespace CoStudy.API.Infrastructure.Shared.Models.Request.MessageRequest
+namespace CoStudy.API.Infrastructure.Shared.Models.Request
 {
     /// <summary>
     /// Class AddMemberRequest.

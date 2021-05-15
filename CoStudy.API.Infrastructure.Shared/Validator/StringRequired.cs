@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Text;
 
 namespace CoStudy.API.Infrastructure.Shared.Validator
 {
@@ -9,7 +7,7 @@ namespace CoStudy.API.Infrastructure.Shared.Validator
     /// Required string attribute
     /// </summary>
     /// <seealso cref="System.ComponentModel.DataAnnotations.ValidationAttribute" />
-    [AttributeUsage( AttributeTargets.Property | AttributeTargets.Field)]
+    [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field)]
     public class StringRequiredAttribute : ValidationAttribute
     {
         /// <summary>
@@ -63,16 +61,24 @@ namespace CoStudy.API.Infrastructure.Shared.Validator
         public override bool IsValid(object value)
         {
             if (value == null)
+            {
                 throw new Exception(ErrorMessage);
+            }
 
             if (value.ToString().Length == 0)
+            {
                 throw new Exception(ErrorMessage);
+            }
 
             if (value.ToString().Length < MinLength)
+            {
                 throw new Exception(LowerLimitMessage);
+            }
 
             if (value.ToString().Length > MaxLength)
+            {
                 throw new Exception(UpperLimitMessage);
+            }
 
             return true;
         }

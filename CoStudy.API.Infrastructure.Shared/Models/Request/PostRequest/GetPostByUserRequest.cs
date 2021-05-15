@@ -1,17 +1,13 @@
-﻿using CoStudy.API.Infrastructure.Shared.Models.Request.BaseRequest;
-using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using Newtonsoft.Json;
 using System.Text.Json.Serialization;
 
-namespace CoStudy.API.Infrastructure.Shared.Models.Request.PostRequest
+namespace CoStudy.API.Infrastructure.Shared.Models.Request
 {
     /// <summary>
     /// Class Get Post By User Request
     /// </summary>
-    /// <seealso cref="CoStudy.API.Infrastructure.Shared.Models.Request.BaseRequest.BaseGetAllRequ                     [kkkest" />
-    public class GetPostByUserRequest :BaseGetAllRequest
+    /// <seealso cref="CoStudy.API.Infrastructure.Shared.Models.Request.BaseRequest.BaseGetAllRequest" />
+    public class GetPostByUserRequest : BaseGetAllRequest
     {
         /// <summary>
         /// Gets or sets the user identifier.
@@ -21,6 +17,6 @@ namespace CoStudy.API.Infrastructure.Shared.Models.Request.PostRequest
         /// </value>
         [JsonPropertyName("user_id")]
         [JsonProperty("user_id")]
-        public string  UserId { get; set; }
+        public string UserId { get; set; }
     }
 }

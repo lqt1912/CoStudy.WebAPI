@@ -1,9 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
-using System;
 using System.Collections.Generic;
-using System.Text;
 
-namespace CoStudy.API.Infrastructure.Shared.Models.Request.FileRequest
+namespace CoStudy.API.Infrastructure.Shared.Models.Request
 {
     /// <summary>
     /// Class file upload request

@@ -1,8 +1,6 @@
 ﻿using CoStudy.API.Domain.Entities.Application;
 using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Text.Json.Serialization;
 
 namespace CoStudy.API.Infrastructure.Shared.ViewModels
@@ -20,7 +18,7 @@ namespace CoStudy.API.Infrastructure.Shared.ViewModels
         /// </value>
         [JsonProperty("oid")]
         [JsonPropertyName("oid")]
-        public string  OId { get; set; }
+        public string OId { get; set; }
 
         /// <summary>
         /// Gets or sets the author identifier.
@@ -30,7 +28,7 @@ namespace CoStudy.API.Infrastructure.Shared.ViewModels
         /// </value>
         [JsonProperty("author_id")]
         [JsonPropertyName("author_id")]
-        public string  AuthorId { get; set; }
+        public string AuthorId { get; set; }
 
         /// <summary>
         /// Gets or sets the name of the author.
@@ -40,7 +38,7 @@ namespace CoStudy.API.Infrastructure.Shared.ViewModels
         /// </value>
         [JsonProperty("author_name")]
         [JsonPropertyName("author_name")]
-        public string  AuthorName { get; set; }
+        public string AuthorName { get; set; }
 
         /// <summary>
         /// Gets or sets the author avatar.
@@ -50,7 +48,7 @@ namespace CoStudy.API.Infrastructure.Shared.ViewModels
         /// </value>
         [JsonProperty("author_avatar")]
         [JsonPropertyName("author_avatar")]
-        public string  AuthorAvatar { get; set; }
+        public string AuthorAvatar { get; set; }
 
         /// <summary>
         /// Gets or sets the owner identifier.
@@ -60,7 +58,7 @@ namespace CoStudy.API.Infrastructure.Shared.ViewModels
         /// </value>
         [JsonProperty("owner_id")]
         [JsonPropertyName("owner_id")]
-        public string  OwnerId { get; set; }
+        public string OwnerId { get; set; }
 
         /// <summary>
         /// Gets or sets the content.

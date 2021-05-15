@@ -1,10 +1,8 @@
 ﻿using CoStudy.API.Infrastructure.Shared.Validator;
-using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Text.Json.Serialization;
 
-namespace CoStudy.API.Infrastructure.Shared.Models.Request.LevelRequest
+namespace CoStudy.API.Infrastructure.Shared.Models.Request
 {
     /// <summary>
     /// Class UserAddFieldRequest
@@ -27,7 +25,7 @@ namespace CoStudy.API.Infrastructure.Shared.Models.Request.LevelRequest
         /// <value>
         /// The field identifier.
         /// </value>
-        [ListRequired( MaxCount =10, MinCount =1, UpperLimitMessage ="Vượt quá giới hạn", LowerLimitMessage ="Ít hơn giới hạn")]
+        [ListRequired(MaxCount = 10, MinCount = 1, UpperLimitMessage = "Vượt quá giới hạn", LowerLimitMessage = "Ít hơn giới hạn")]
         [JsonPropertyName("field_id")]
         public IEnumerable<string> FieldId { get; set; }
     }

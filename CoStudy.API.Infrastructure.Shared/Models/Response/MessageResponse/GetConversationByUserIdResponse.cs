@@ -1,8 +1,5 @@
-﻿using CoStudy.API.Domain.Entities.Application;
-using CoStudy.API.Infrastructure.Shared.ViewModels;
-using System;
+﻿using CoStudy.API.Infrastructure.Shared.ViewModels;
 using System.Collections.Generic;
-using System.Text.Json.Serialization;
 
 namespace CoStudy.API.Infrastructure.Shared.Models.Response.MessageResponse
 {

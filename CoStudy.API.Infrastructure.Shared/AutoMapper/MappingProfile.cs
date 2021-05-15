@@ -1,16 +1,9 @@
 ﻿using AutoMapper;
-using CoStudy.API.Application.Features;
-using CoStudy.API.Application.Repositories;
 using CoStudy.API.Domain.Entities.Application;
 using CoStudy.API.Domain.Entities.Identity.MongoAuthen;
 using CoStudy.API.Infrastructure.Identity.Models.Account.Request;
 using CoStudy.API.Infrastructure.Identity.Models.Account.Response;
 using CoStudy.API.Infrastructure.Shared.ViewModels;
-using Microsoft.AspNetCore.Http;
-using MongoDB.Bson;
-using MongoDB.Driver;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace CoStudy.API.Infrastructure.Shared.AutoMapper
 {
@@ -40,11 +33,21 @@ namespace CoStudy.API.Infrastructure.Shared.AutoMapper
                     (src, dest, prop) =>
                     {
                         // ignore null & empty string properties
-                        if (prop == null) return false;
-                        if (prop.GetType() == typeof(string) && string.IsNullOrEmpty((string)prop)) return false;
+                        if (prop == null)
+                        {
+                            return false;
+                        }
+
+                        if (prop.GetType() == typeof(string) && string.IsNullOrEmpty((string)prop))
+                        {
+                            return false;
+                        }
 
                         // ignore null role
-                        if (x.DestinationMember.Name == "Role" && src.Role == null) return false;
+                        if (x.DestinationMember.Name == "Role" && src.Role == null)
+                        {
+                            return false;
+                        }
 
                         return true;
                     }
@@ -53,18 +56,18 @@ namespace CoStudy.API.Infrastructure.Shared.AutoMapper
             CreateMap<Post, PostViewModel>().AfterMap<PostConvertAction>();
 
             CreateMap<Comment, CommentViewModel>().AfterMap<CommentConvertAction>();
-         
+
             CreateMap<ReplyComment, ReplyCommentViewModel>().AfterMap<ReplyCommentConvertAction>();
-           
+
             CreateMap<User, UserViewModel>().AfterMap<UserConvertAction>();
-           
+
             CreateMap<Follow, FollowViewModel>().AfterMap<FollowConvertAction>();
 
-        
+
             CreateMap<ConversationMember, ConversationMemberViewModel>().AfterMap<ConversationMemberConvertAction>();
-        
+
             CreateMap<Conversation, ConversationViewModel>();
-         
+
             CreateMap<ObjectLevel, ObjectLevelViewModel>().AfterMap<ObjectLevelConvertAction>();
 
             CreateMap<Level, LevelViewModel>();
@@ -74,22 +77,22 @@ namespace CoStudy.API.Infrastructure.Shared.AutoMapper
             CreateMap<ReportReason, ReportReasonViewModel>().AfterMap<ReportReasonConvertAction>();
 
             CreateMap<Report, ReportViewModel>().AfterMap<ReportConvertAction>();
-         
+
             CreateMap<ConversationItemType, ConversationItemTypeViewModel>();
 
             CreateMap<MessageText, MessageViewModel>().ForMember(dest => dest.Content, opt => opt.MapFrom(x => x.Content)).AfterMap<MessageConvertAction>();
 
 
-            CreateMap<MessagePostThumbnail, MessageViewModel>().ForMember(dest=>dest.Content, opt=>opt.Ignore())
+            CreateMap<MessagePostThumbnail, MessageViewModel>().ForMember(dest => dest.Content, opt => opt.Ignore())
                 .AfterMap<MessageConvertAction>()
                 .AfterMap<MessagePostThumbnailConvertAction>();
 
             CreateMap<MessageImage, MessageViewModel>().ForMember(dest => dest.Content, opt => opt.MapFrom(src => src.Image)).AfterMap<MessageConvertAction>();
 
-        
+
             CreateMap<MessageMultiMedia, MessageViewModel>().ForMember(dest => dest.Content, opt => opt.MapFrom(src => src.MediaUrl)).AfterMap<MessageConvertAction>();
 
-            CreateMap<FieldGroup, FieldGroupViewModel>().ForMember(dest =>dest.Fields, opt=>opt.Ignore()).AfterMap<FieldGroupConvertAction>();
+            CreateMap<FieldGroup, FieldGroupViewModel>().ForMember(dest => dest.Fields, opt => opt.Ignore()).AfterMap<FieldGroupConvertAction>();
         }
     }
 }

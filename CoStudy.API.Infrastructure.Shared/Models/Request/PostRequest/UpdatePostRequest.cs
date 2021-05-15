@@ -1,9 +1,8 @@
 ﻿using CoStudy.API.Domain.Entities.Application;
-using CoStudy.API.Infrastructure.Shared.Models.Request.LevelRequest;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
-namespace CoStudy.API.Infrastructure.Shared.Models.Request.PostRequest
+namespace CoStudy.API.Infrastructure.Shared.Models.Request
 {
     /// <summary>
     /// Class UpdatePostRequest

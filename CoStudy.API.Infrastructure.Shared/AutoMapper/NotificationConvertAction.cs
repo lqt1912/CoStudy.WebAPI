@@ -3,9 +3,6 @@ using CoStudy.API.Application.Repositories;
 using CoStudy.API.Domain.Entities.Application;
 using CoStudy.API.Infrastructure.Shared.ViewModels;
 using MongoDB.Bson;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace CoStudy.API.Infrastructure.Shared.AutoMapper
 {

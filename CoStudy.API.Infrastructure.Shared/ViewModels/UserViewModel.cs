@@ -2,7 +2,6 @@
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Text.Json.Serialization;
 
 namespace CoStudy.API.Infrastructure.Shared.ViewModels
@@ -49,7 +48,7 @@ namespace CoStudy.API.Infrastructure.Shared.ViewModels
         /// </value>
         [JsonPropertyName("first_name")]
         [JsonProperty("first_name")]
-        public string  FirstName { get; set; }
+        public string FirstName { get; set; }
 
         /// <summary>
         /// Gets or sets the full name.
@@ -59,7 +58,7 @@ namespace CoStudy.API.Infrastructure.Shared.ViewModels
         /// </value>
         [JsonProperty("full_name")]
         [JsonPropertyName("full_name")]
-        public string  FullName { get; set; }
+        public string FullName { get; set; }
 
         /// <summary>
         /// Gets or sets the date of birth.
@@ -241,5 +240,16 @@ namespace CoStudy.API.Infrastructure.Shared.ViewModels
         [JsonProperty("post_saved")]
         [JsonPropertyName("post_saved")]
         public List<string> PostSaved { get; set; }
+
+        /// <summary>
+        /// Gets or sets the call identifier.
+        /// </summary>
+        /// <value>
+        /// The call identifier.
+        /// </value>
+        [JsonProperty("call_id")]
+        [JsonPropertyName("call_id")]
+        public string CallId { get; set; }
+
     }
 }

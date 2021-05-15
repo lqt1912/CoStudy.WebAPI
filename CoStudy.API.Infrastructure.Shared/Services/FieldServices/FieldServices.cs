@@ -1,15 +1,13 @@
 ﻿using AutoMapper;
 using CoStudy.API.Application.Repositories;
 using CoStudy.API.Domain.Entities.Application;
-using CoStudy.API.Infrastructure.Shared.Models.Request.BaseRequest;
-using CoStudy.API.Infrastructure.Shared.Models.Request.FieldRequest;
+using CoStudy.API.Infrastructure.Shared.Models.Request;
 using CoStudy.API.Infrastructure.Shared.ViewModels;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace CoStudy.API.Infrastructure.Shared.Services
@@ -18,7 +16,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services
     /// The Field Service. 
     /// </summary>
     /// <seealso cref="CoStudy.API.Infrastructure.Shared.Services.IFieldServices" />
-    public class FieldServices:IFieldServices
+    public class FieldServices : IFieldServices
     {
         /// <summary>
         /// The field repository
@@ -68,7 +66,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services
         {
             var data = fieldRepository.GetAll();
 
-            if(request.Count.HasValue && request.Skip.HasValue)
+            if (request.Count.HasValue && request.Skip.HasValue)
             {
                 data = data.Skip(request.Skip.Value).Take(request.Count.Value);
             }
@@ -88,7 +86,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services
                 await fieldRepository.DeleteAsync(ObjectId.Parse(id));
                 return "Xóa thành công";
             }
-            catch(Exception)
+            catch (Exception)
             {
                 throw new Exception("Xóa thất bại.");
             }
@@ -100,18 +98,22 @@ namespace CoStudy.API.Infrastructure.Shared.Services
         /// <param name="request">The request.</param>
         /// <returns></returns>
         /// <exception cref="Exception">Không tìm thấy nhóm lĩnh vực.</exception>
-        public async  Task<FieldGroupViewModel> AddFieldToGroup(AddFieldToGroupRequest request )
+        public async Task<FieldGroupViewModel> AddFieldToGroup(AddFieldToGroupRequest request)
         {
 
             var group = await fieldGroupRepository.GetByIdAsync(ObjectId.Parse(request.GroupId));
             if (group == null)
+            {
                 throw new Exception("Không tìm thấy nhóm lĩnh vực. ");
+            }
 
             foreach (var fieldId in request.FieldIds)
             {
                 var field = await fieldRepository.GetByIdAsync(ObjectId.Parse(fieldId));
                 if (field != null)
+                {
                     group.FieldId.Add(fieldId);
+                }
             }
             await fieldGroupRepository.UpdateAsync(group, group.Id);
 
@@ -140,7 +142,10 @@ namespace CoStudy.API.Infrastructure.Shared.Services
         {
             var group = await fieldGroupRepository.GetByIdAsync(ObjectId.Parse(groupId));
             if (group == null)
+            {
                 throw new Exception("Không tìm thấy nhóm lĩnh vực. ");
+            }
+
             var groupViewModel = mapper.Map<FieldGroupViewModel>(group);
 
             return groupViewModel.Fields;

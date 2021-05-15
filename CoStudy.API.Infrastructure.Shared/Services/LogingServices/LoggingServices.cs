@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using CoStudy.API.Application.Repositories;
 using CoStudy.API.Domain.Entities.Application;
-using CoStudy.API.Infrastructure.Shared.Models.Request.LoggingRequest;
+using CoStudy.API.Infrastructure.Shared.Models.Request;
 using CoStudy.API.Infrastructure.Shared.Paging;
 using CoStudy.API.Infrastructure.Shared.ViewModels;
 using MongoDB.Bson;

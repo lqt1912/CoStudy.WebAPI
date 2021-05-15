@@ -1,17 +1,14 @@
-﻿using CoStudy.API.Infrastructure.Shared.Models.Request.BaseRequest;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Text.Json.Serialization;
 
-namespace CoStudy.API.Infrastructure.Shared.Models.Request.PostRequest
+namespace CoStudy.API.Infrastructure.Shared.Models.Request
 {
     /// <summary>
     /// Class NewsFeedRequest
     /// </summary>
     /// <seealso cref="CoStudy.API.Infrastructure.Shared.Models.Request.BaseRequest.BaseGetAllRequest" />
-    public class NewsFeedRequest :BaseGetAllRequest
+    public class NewsFeedRequest : BaseGetAllRequest
     {
         /// <summary>
         /// Gets or sets from date.

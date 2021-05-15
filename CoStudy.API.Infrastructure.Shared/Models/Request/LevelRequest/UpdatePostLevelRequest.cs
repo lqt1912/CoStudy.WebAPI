@@ -1,11 +1,9 @@
 ﻿using CoStudy.API.Domain.Entities.Application;
 using Newtonsoft.Json;
-using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Text.Json.Serialization;
 
-namespace CoStudy.API.Infrastructure.Shared.Models.Request.LevelRequest
+namespace CoStudy.API.Infrastructure.Shared.Models.Request
 {
     /// <summary>
     /// Class UpdatePostLevelRequest
@@ -20,7 +18,7 @@ namespace CoStudy.API.Infrastructure.Shared.Models.Request.LevelRequest
         /// </value>
         [JsonProperty("post_id")]
         [JsonPropertyName("post_id")]
-        public string  PostId { get; set; }
+        public string PostId { get; set; }
 
 
         /// <summary>

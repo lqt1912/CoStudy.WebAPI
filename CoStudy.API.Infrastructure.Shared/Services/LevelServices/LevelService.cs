@@ -3,8 +3,7 @@ using Common;
 using CoStudy.API.Application.Features;
 using CoStudy.API.Application.Repositories;
 using CoStudy.API.Domain.Entities.Application;
-using CoStudy.API.Infrastructure.Shared.Models.Request.BaseRequest;
-using CoStudy.API.Infrastructure.Shared.Models.Request.LevelRequest;
+using CoStudy.API.Infrastructure.Shared.Models.Request;
 using CoStudy.API.Infrastructure.Shared.ViewModels;
 using Microsoft.AspNetCore.Http;
 using MongoDB.Bson;
@@ -96,7 +95,10 @@ namespace CoStudy.API.Infrastructure.Shared.Services
                     if (existObjectLevel != null)
                     {
                         if (existObjectLevel.IsActive == false)
+                        {
                             existObjectLevel.IsActive = true;
+                        }
+
                         existObjectLevel.ModifiedDate = DateTime.Now;
                         await objectLevelRepository.UpdateAsync(existObjectLevel, existObjectLevel.Id);
                     }
@@ -445,7 +447,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services
                     UserId = user.OId
                 };
                 result.LeaderBoards.Add(userViewModel);
-                if(userViewModel.UserId == currentUser.OId)
+                if (userViewModel.UserId == currentUser.OId)
                 {
                     var currentUserLeaderBoard = new CurrentUserLeaderBoardViewModel()
                     {
@@ -464,7 +466,9 @@ namespace CoStudy.API.Infrastructure.Shared.Services
             {
                 item.Index = iter++;
                 if (result.CurrentUser.UserId == item.UserId)
+                {
                     result.CurrentUser.Index = item.Index;
+                }
             }
             return result;
         }

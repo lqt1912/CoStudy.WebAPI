@@ -1,14 +1,12 @@
-﻿using CoStudy.API.Infrastructure.Shared.Validator;
-using Newtonsoft.Json;
-using System.Collections.Generic;
+﻿using Newtonsoft.Json;
 using System.Text.Json.Serialization;
 
 namespace CoStudy.API.Infrastructure.Shared.Models.Request
 {
     /// <summary>
-    /// Class UserResetFieldRequest
+    /// 
     /// </summary>
-    public class UserResetFieldRequest
+    public class AddOrUpdateCallIdRequest
     {
         /// <summary>
         /// Gets or sets the user identifier.
@@ -16,20 +14,18 @@ namespace CoStudy.API.Infrastructure.Shared.Models.Request
         /// <value>
         /// The user identifier.
         /// </value>
-        [StringRequired]
-        [JsonProperty("user_id")]
         [JsonPropertyName("user_id")]
+        [JsonProperty("user_id")]
         public string UserId { get; set; }
 
-
         /// <summary>
-        /// Gets or sets the field identifier.
+        /// Gets or sets the call identifier.
         /// </summary>
         /// <value>
-        /// The field identifier.
+        /// The call identifier.
         /// </value>
-        [JsonProperty("field_id")]
-        [JsonPropertyName("field_id")]
-        public IEnumerable<string> FieldId { get; set; }
+        [JsonProperty("call_id")]
+        [JsonPropertyName("call_id")]
+        public string CallId { get; set; }
     }
 }

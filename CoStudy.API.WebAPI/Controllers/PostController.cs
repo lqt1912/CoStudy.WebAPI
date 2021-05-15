@@ -1,15 +1,9 @@
-﻿using CoStudy.API.Domain.Entities.Application;
-using CoStudy.API.Infrastructure.Shared.Models.Request.BaseRequest;
-using CoStudy.API.Infrastructure.Shared.Models.Request.LevelRequest;
-using CoStudy.API.Infrastructure.Shared.Models.Request.PostRequest;
-using CoStudy.API.Infrastructure.Shared.Models.Response.PostResponse;
+﻿using CoStudy.API.Infrastructure.Shared.Models.Request;
 using CoStudy.API.Infrastructure.Shared.Services;
 using CoStudy.API.Infrastructure.Shared.Services.PostServices;
 using CoStudy.API.Infrastructure.Shared.ViewModels;
 using CoStudy.API.WebAPI.Middlewares;
 using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace CoStudy.API.WebAPI.Controllers
@@ -106,7 +100,7 @@ namespace CoStudy.API.WebAPI.Controllers
         [Route("user")]
         public async Task<IActionResult> GetByUserId(GetPostByUserRequest request)
         {
-           var data = await postService.GetPostByUserId(request);
+            var data = await postService.GetPostByUserId(request);
             return Ok(new ApiOkResponse(data));
         }
 
@@ -119,7 +113,7 @@ namespace CoStudy.API.WebAPI.Controllers
         [Route("timeline")]
         public async Task<IActionResult> GetPostTimeline(BaseGetAllRequest request)
         {
-          var data = await postService.GetPostTimelineAsync(request);
+            var data = await postService.GetPostTimelineAsync(request);
             return Ok(new ApiOkResponse(data));
         }
 
@@ -167,7 +161,7 @@ namespace CoStudy.API.WebAPI.Controllers
         [Route("update")]
         public async Task<IActionResult> Update(UpdatePostRequest request)
         {
-           var data = await postService.UpdatePost(request);
+            var data = await postService.UpdatePost(request);
             return Ok(new ApiOkResponse(data));
         }
 
@@ -191,9 +185,9 @@ namespace CoStudy.API.WebAPI.Controllers
         /// <returns></returns>
         [HttpGet]
         [Route("save")]
-        public async Task<IActionResult> GetSavedPost([FromQuery]BaseGetAllRequest request)
+        public async Task<IActionResult> GetSavedPost([FromQuery] BaseGetAllRequest request)
         {
-           var data = await postService.GetSavedPost(request);
+            var data = await postService.GetSavedPost(request);
             return Ok(new ApiOkResponse(data));
         }
 
@@ -235,6 +229,6 @@ namespace CoStudy.API.WebAPI.Controllers
         {
             var data = await postService.SharePost(request);
             return Ok(new ApiOkResponse(data));
-        }    
+        }
     }
 }

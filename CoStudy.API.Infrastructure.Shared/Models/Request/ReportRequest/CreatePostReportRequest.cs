@@ -1,10 +1,8 @@
 ﻿using Newtonsoft.Json;
-using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Text.Json.Serialization;
 
-namespace CoStudy.API.Infrastructure.Shared.Models.Request.ReportRequest
+namespace CoStudy.API.Infrastructure.Shared.Models.Request
 {
     /// <summary>
     /// Class CreatePostRequest
@@ -19,7 +17,7 @@ namespace CoStudy.API.Infrastructure.Shared.Models.Request.ReportRequest
         /// </value>
         [JsonProperty("post_id")]
         [JsonPropertyName("post_id")]
-        public string PostId   { get; set; }
+        public string PostId { get; set; }
 
 
         /// <summary>
@@ -30,7 +28,7 @@ namespace CoStudy.API.Infrastructure.Shared.Models.Request.ReportRequest
         /// </value>
         [JsonProperty("reason")]
         [JsonPropertyName("reason")]
-        public IEnumerable<string > Reason { get; set; }
+        public IEnumerable<string> Reason { get; set; }
 
 
         /// <summary>
@@ -41,6 +39,6 @@ namespace CoStudy.API.Infrastructure.Shared.Models.Request.ReportRequest
         /// </value>
         [JsonProperty("external_reason")]
         [JsonPropertyName("external_reason")]
-        public string  ExternalReason { get; set; }
+        public string ExternalReason { get; set; }
     }
 }

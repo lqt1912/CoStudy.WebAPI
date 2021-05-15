@@ -2,7 +2,7 @@
 using CoStudy.API.Domain.Entities.Application;
 using CoStudy.API.Infrastructure.Identity.Models.Account.Request;
 using CoStudy.API.Infrastructure.Identity.Services.AccountService;
-using CoStudy.API.Infrastructure.Shared.Models.Request.UserRequest;
+using CoStudy.API.Infrastructure.Shared.Models.Request;
 using CoStudy.API.Infrastructure.Shared.Services.UserServices;
 using CoStudy.API.WebAPI.Middlewares;
 using Microsoft.AspNetCore.Http;
@@ -208,7 +208,7 @@ namespace CoStudy.API.WebAPI.Controllers
         /// <returns></returns>
         [HttpPost]
         [Route("get-follower")]
-        public async Task<IActionResult> GetFollower( FollowFilterRequest request)
+        public async Task<IActionResult> GetFollower(FollowFilterRequest request)
         {
             var data = await userService.GetFollower(request);
             return Ok(new ApiOkResponse(data));
@@ -221,7 +221,7 @@ namespace CoStudy.API.WebAPI.Controllers
         /// <returns></returns>
         [HttpPost]
         [Route("get-following")]
-        public async Task<IActionResult> GetFollowing( FollowFilterRequest request)
+        public async Task<IActionResult> GetFollowing(FollowFilterRequest request)
         {
             var data = await userService.GetFollowing(request);
             return Ok(new ApiOkResponse(data));
@@ -275,6 +275,32 @@ namespace CoStudy.API.WebAPI.Controllers
         public IActionResult GetCache(string email)
         {
             var data = CacheHelper.GetValue($"CurrentUser-{email}") as User;
+            return Ok(new ApiOkResponse(data));
+        }
+
+
+        /// <summary>
+        /// Gets the nearby user.
+        /// </summary>
+        /// <param name="request">The request.</param>
+        /// <returns></returns>
+        [HttpGet("near-by")]
+        public IActionResult GetNearbyUser([FromQuery] BaseGetAllRequest request)
+        {
+            var data = userService.GetNearbyUser(request);
+            return Ok(new ApiOkResponse(data));
+        }
+
+        /// <summary>
+        /// Adds the or update call identifier.
+        /// </summary>
+        /// <param name="request">The request.</param>
+        /// <returns></returns>
+        [HttpPost]
+        [Route("call-id")]
+        public async Task<IActionResult> AddOrUpdateCallId(AddOrUpdateCallIdRequest request)
+        {
+            var data = await userService.AddOrUpdateCallId(request);
             return Ok(new ApiOkResponse(data));
         }
     }

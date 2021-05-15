@@ -1,9 +1,6 @@
 ﻿using CoStudy.API.Domain.Entities.Identity.MongoAuthen;
 using CoStudy.API.Infrastructure.Identity.Models.GoogleAuth;
 using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Text.Json.Serialization;
 
 namespace CoStudy.API.Infrastructure.Shared.ViewModels
@@ -41,6 +38,6 @@ namespace CoStudy.API.Infrastructure.Shared.ViewModels
         /// </value>
         [JsonProperty("external_login")]
         [JsonPropertyName("external_login")]
-        public ExternalLogin?  ExternalLogin { get; set; }
+        public ExternalLogin? ExternalLogin { get; set; }
     }
 }

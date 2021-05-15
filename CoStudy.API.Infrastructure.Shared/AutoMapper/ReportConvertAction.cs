@@ -5,7 +5,6 @@ using CoStudy.API.Infrastructure.Shared.ViewModels;
 using MongoDB.Bson;
 using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace CoStudy.API.Infrastructure.Shared.AutoMapper
 {
@@ -54,7 +53,9 @@ namespace CoStudy.API.Infrastructure.Shared.AutoMapper
         {
             var author = userRepository.GetById(ObjectId.Parse(source.AuthorId));
             if (author == null)
+            {
                 throw new Exception("Không tìm thấy user. ");
+            }
 
             destination.AuthorName = $"{author.FirstName} {author.LastName}";
             destination.AuthorAvatar = author.AvatarHash;
@@ -65,14 +66,21 @@ namespace CoStudy.API.Infrastructure.Shared.AutoMapper
             {
                 var reportReason = reportReasonRepository.GetById(ObjectId.Parse(reportReasonId));
                 if (reportReason != null)
+                {
                     reportReasons.Add(reportReason);
+                }
             }
             destination.ReportReason = new List<ReportReasonViewModel>();
             destination.ReportReason.AddRange(mapper.Map<List<ReportReasonViewModel>>(reportReasons));
 
             if (source.IsApproved == true)
+            {
                 destination.ApproveStatusName = "Đã duyệt";
-            else destination.ApproveStatusName = "Chưa duyệt";
+            }
+            else
+            {
+                destination.ApproveStatusName = "Chưa duyệt";
+            }
 
             if (!string.IsNullOrEmpty(source.ApprovedBy))
             {
@@ -80,7 +88,9 @@ namespace CoStudy.API.Infrastructure.Shared.AutoMapper
 
                 var approver = userRepository.GetById(ObjectId.Parse(source.ApprovedBy));
                 if (approver != null)
+                {
                     destination.ApprovedByName = $"{approver.FirstName} {approver.LastName}";
+                }
             }
         }
     }

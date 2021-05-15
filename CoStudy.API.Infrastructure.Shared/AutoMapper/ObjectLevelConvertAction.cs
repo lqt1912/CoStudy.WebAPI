@@ -4,8 +4,6 @@ using CoStudy.API.Domain.Entities.Application;
 using CoStudy.API.Infrastructure.Shared.ViewModels;
 using MongoDB.Bson;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace CoStudy.API.Infrastructure.Shared.AutoMapper
 {
@@ -46,11 +44,15 @@ namespace CoStudy.API.Infrastructure.Shared.AutoMapper
             var level = levelRepository.GetById(ObjectId.Parse(source.LevelId));
 
             if (level == null)
+            {
                 throw new Exception("Id level không hợp lệ. ");
+            }
 
             var field = fieldRepository.GetById(ObjectId.Parse(source.FieldId));
             if (field == null)
+            {
                 throw new Exception("Id field không hợp lệ. ");
+            }
 
             destination.LevelName = level.Name;
             destination.LevelDescription = level.Description;

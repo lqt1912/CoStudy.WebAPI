@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System.Text.Json.Serialization;
 
-namespace CoStudy.API.Infrastructure.Shared.Models.Request.NofticationRequest
+namespace CoStudy.API.Infrastructure.Shared.Models.Request
 {
     /// <summary>
     /// Class AddNofticationRequest
@@ -42,6 +42,6 @@ namespace CoStudy.API.Infrastructure.Shared.Models.Request.NofticationRequest
         /// </value>
         [JsonPropertyName("object_id")]
         [JsonProperty("object_id")]
-        public string  ObjectId { get; set; }
+        public string ObjectId { get; set; }
     }
 }

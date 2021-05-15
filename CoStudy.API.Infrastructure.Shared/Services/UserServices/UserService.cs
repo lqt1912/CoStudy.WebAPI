@@ -5,8 +5,7 @@ using CoStudy.API.Application.Utitlities;
 using CoStudy.API.Domain.Entities.Application;
 using CoStudy.API.Infrastructure.Identity.Repositories.AccountRepository;
 using CoStudy.API.Infrastructure.Shared.Adapters;
-using CoStudy.API.Infrastructure.Shared.Models.Request.PostRequest;
-using CoStudy.API.Infrastructure.Shared.Models.Request.UserRequest;
+using CoStudy.API.Infrastructure.Shared.Models.Request;
 using CoStudy.API.Infrastructure.Shared.ViewModels;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
@@ -98,7 +97,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
             this.postRepository = postRepository;
             this.clientGroupRepository = clientGroupRepository;
             this.fieldRepository = fieldRepository;
-            this.followRepository = followRepository;   
+            this.followRepository = followRepository;
             this.mapper = mapper;
             this.objectLevelRepository = objectLevelRepository;
         }
@@ -189,7 +188,10 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
         {
             var user = await userRepository.GetByIdAsync(ObjectId.Parse(id));
             if (user == null)
+            {
                 throw new Exception(UserNotFound);
+            }
+
             return mapper.Map<UserViewModel>(user);
         }
 
@@ -207,7 +209,10 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
                 var user = Feature.CurrentUser(_httpContextAccessor, userRepository);
 
                 if (user == null)
+                {
                     throw new Exception(UserNotFound);
+                }
+
                 return mapper.Map<UserViewModel>(user);
             }
             catch (Exception)
@@ -325,15 +330,29 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
             queryable = queryable.Where(x => x.FromName.NormalizeSearch().Contains(request.KeyWord.NormalizeSearch()));
 
             if (request.FromDate != null)
+            {
                 queryable = queryable.Where(x => x.FollowDate >= request.FromDate);
+            }
+
             if (request.ToDate != null)
+            {
                 queryable = queryable.Where(x => x.FollowDate <= request.ToDate);
+            }
 
             if (request.OrderType == SortType.Ascending)
+            {
                 queryable = queryable.OrderBy(x => x.FollowDate);
-            else queryable = queryable.OrderByDescending(x => x.FollowDate);
+            }
+            else
+            {
+                queryable = queryable.OrderByDescending(x => x.FollowDate);
+            }
+
             if (request.Skip.HasValue && request.Count.HasValue)
+            {
                 queryable = queryable.Skip(request.Skip.Value).Take(request.Count.Value);
+            }
+
             return queryable.ToList();
         }
 
@@ -349,15 +368,29 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
 
             queryable = queryable.Where(x => x.ToName.NormalizeSearch().Contains(request.KeyWord.NormalizeSearch()));
             if (request.FromDate != null)
+            {
                 queryable = queryable.Where(x => x.FollowDate >= request.FromDate);
+            }
+
             if (request.ToDate != null)
+            {
                 queryable = queryable.Where(x => x.FollowDate <= request.ToDate);
+            }
 
             if (request.OrderType == SortType.Ascending)
+            {
                 queryable = queryable.OrderBy(x => x.FollowDate);
-            else queryable = queryable.OrderByDescending(x => x.FollowDate);
+            }
+            else
+            {
+                queryable = queryable.OrderByDescending(x => x.FollowDate);
+            }
+
             if (request.Skip.HasValue && request.Count.HasValue)
+            {
                 queryable = queryable.Skip(request.Skip.Value).Take(request.Count.Value);
+            }
+
             return queryable.ToList();
         }
 
@@ -380,33 +413,46 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
             foreach (var item in users)
             {
                 if (IsUserMatchField(item, request.FieldFilter) == true)
+                {
                     user.Add(item);
-
+                }
             }
 
             var userViewModel = mapper.Map<List<UserViewModel>>(user);
-            if(request.FilterType.HasValue && request.OrderType.HasValue)
+            if (request.FilterType.HasValue && request.OrderType.HasValue)
             {
-                switch(request.FilterType.Value)
+                switch (request.FilterType.Value)
                 {
                     case UserFilterType.PostCount:
                         {
                             if (request.OrderType.Value == OrderTypeUser.Descending)
+                            {
                                 userViewModel = userViewModel.OrderByDescending(x => x.PostCount).ToList();
-                            else userViewModel = userViewModel.OrderBy(x => x.PostCount).ToList();
+                            }
+                            else
+                            {
+                                userViewModel = userViewModel.OrderBy(x => x.PostCount).ToList();
+                            }
+
                             break;
                         }
                     case UserFilterType.Follower:
                         {
                             if (request.OrderType.Value == OrderTypeUser.Descending)
+                            {
                                 userViewModel = userViewModel.OrderByDescending(x => x.Followers).ToList();
-                            else userViewModel = userViewModel.OrderBy(x => x.Followers).ToList();
+                            }
+                            else
+                            {
+                                userViewModel = userViewModel.OrderBy(x => x.Followers).ToList();
+                            }
+
                             break;
                         }
                 }
             }
 
-            if(request.Skip.HasValue && request.Count.HasValue)
+            if (request.Skip.HasValue && request.Count.HasValue)
             {
                 userViewModel = userViewModel.Skip(request.Skip.Value).Take(request.Count.Value).ToList();
             }
@@ -429,25 +475,83 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
             return mapper.Map<UserViewModel>(currentuser);
         }
 
-        private bool IsUserMatchField(User user, IEnumerable<string>  fieldFilter)
+        private bool IsUserMatchField(User user, IEnumerable<string> fieldFilter)
         {
             var objlvls = objectLevelRepository.GetAll().Where(x => x.ObjectId == user.OId).Select(x => x.FieldId);
 
-            if (fieldFilter.Count() <= 0 )
+            if (fieldFilter.Count() <= 0)
+            {
                 return true;
+            }
+
             foreach (var f in fieldFilter)
             {
                 if (string.IsNullOrEmpty(f))
+                {
                     return true;
+                }
             }
             foreach (var item in objlvls)
             {
                 if (fieldFilter.Contains(item))
+                {
                     return true;
+                }
             }
             return false;
         }
 
+        public IEnumerable<UserNearbyViewModel> GetNearbyUser(BaseGetAllRequest baseGetAllRequest)
+        {
+            var currentUser = Feature.CurrentUser(_httpContextAccessor, userRepository);
+            var currentLocation = new Location()
+            {
+                Latitude = Feature.ParseDouble(currentUser.Address.Latitude),
+                Longitude = Feature.ParseDouble(currentUser.Address.Longtitude)
+
+            };
+            var userNearbys = new List<UserNearbyViewModel>();
+            foreach (var x in userRepository.GetAll())
+            {
+                var a = new UserNearbyViewModel
+                {
+                    UserId = x.OId,
+                    FullName = $"{x.FirstName} {x.LastName}",
+                    Avatar = x.AvatarHash,
+                    Location = new Location()
+                    {
+                        Longitude = Feature.ParseDouble(x.Address.Longtitude),
+                        Latitude = Feature.ParseDouble(x.Address.Latitude)
+                    },
+                    Distance = 0.0
+                };
+                a.Distance = Math.Round((Feature.CalculateDistance(currentLocation, a.Location) * 1.0 / 1000), 2);
+                userNearbys.Add(a);
+            }
+
+
+            if (baseGetAllRequest.Skip.HasValue && baseGetAllRequest.Count.HasValue)
+            {
+                userNearbys = userNearbys.Skip(baseGetAllRequest.Skip.Value).Take(baseGetAllRequest.Count.Value).ToList();
+            }
+
+            return userNearbys;
+        }
+
+
+        public async Task<UserViewModel> AddOrUpdateCallId(AddOrUpdateCallIdRequest request)
+        {
+            var user = await userRepository.GetByIdAsync(ObjectId.Parse(request.UserId));
+
+            if (user != null)
+            {
+                user.CallId = request.CallId;
+                await userRepository.UpdateAsync(user, user.Id);
+                return mapper.Map<UserViewModel>(user);
+            }
+
+            else throw new Exception();
+        }
     }
 }
 

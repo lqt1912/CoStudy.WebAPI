@@ -1,8 +1,6 @@
 ﻿using CoStudy.API.Domain.Entities.Application;
 using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Text.Json.Serialization;
 
 namespace CoStudy.API.Infrastructure.Shared.ViewModels
@@ -20,11 +18,11 @@ namespace CoStudy.API.Infrastructure.Shared.ViewModels
 
         [JsonPropertyName("nickname")]
         [JsonProperty("nickname")]
-        public string  Nickname { get; set; }
+        public string Nickname { get; set; }
 
         [JsonProperty("member_avatar")]
         [JsonPropertyName("member_avatar")]
-        public string  MemberAvatar { get; set; }
+        public string MemberAvatar { get; set; }
 
         [JsonProperty("date_join")]
         [JsonPropertyName("date_join")]
@@ -32,11 +30,11 @@ namespace CoStudy.API.Infrastructure.Shared.ViewModels
 
         [JsonProperty("join_by")]
         [JsonPropertyName("join_by")]
-        public string  JoinBy { get; set; }
+        public string JoinBy { get; set; }
 
         [JsonProperty("join_by_name")]
         [JsonPropertyName("join_by_name")]
-        public string  JoinByName { get; set; }
+        public string JoinByName { get; set; }
 
         [JsonProperty("role")]
         [JsonPropertyName("role")]

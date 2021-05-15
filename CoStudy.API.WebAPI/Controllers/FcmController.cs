@@ -1,8 +1,6 @@
 ﻿using CoStudy.API.Application.FCM;
-using CoStudy.API.Infrastructure.Shared.Models.Request.NofticationRequest;
 using CoStudy.API.WebAPI.Middlewares;
 using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace CoStudy.API.WebAPI.Controllers

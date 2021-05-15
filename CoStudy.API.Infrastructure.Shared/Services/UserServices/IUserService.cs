@@ -1,6 +1,5 @@
 ﻿using CoStudy.API.Domain.Entities.Application;
-using CoStudy.API.Infrastructure.Shared.Models.Request.UserRequest;
-using CoStudy.API.Infrastructure.Shared.Models.Response.UserResponse;
+using CoStudy.API.Infrastructure.Shared.Models.Request;
 using CoStudy.API.Infrastructure.Shared.ViewModels;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -60,7 +59,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
         /// <param name="id">The identifier.</param>
         /// <returns></returns>
         Task<UserViewModel> GetUserById(string id);
-      
+
 
         /// <summary>
         /// Removes the following.
@@ -108,5 +107,18 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
         /// </summary>
         /// <returns></returns>
         UserViewModel GetCurrentUser();
+
+        /// <summary>
+        /// Gets the nearby user.
+        /// </summary>
+        /// <returns></returns>
+        IEnumerable<UserNearbyViewModel> GetNearbyUser(BaseGetAllRequest baseGetAllRequest);
+
+        /// <summary>
+        /// Adds the or update call identifier.
+        /// </summary>
+        /// <param name="request">The request.</param>
+        /// <returns></returns>
+        Task<UserViewModel> AddOrUpdateCallId(AddOrUpdateCallIdRequest request);
     }
 }

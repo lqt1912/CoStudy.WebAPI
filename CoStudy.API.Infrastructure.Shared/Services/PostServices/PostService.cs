@@ -7,10 +7,7 @@ using CoStudy.API.Application.Repositories;
 using CoStudy.API.Application.Utitlities;
 using CoStudy.API.Domain.Entities.Application;
 using CoStudy.API.Infrastructure.Shared.Adapters;
-using CoStudy.API.Infrastructure.Shared.Models.Request.BaseRequest;
-using CoStudy.API.Infrastructure.Shared.Models.Request.MessageRequest;
-using CoStudy.API.Infrastructure.Shared.Models.Request.PostRequest;
-using CoStudy.API.Infrastructure.Shared.Models.Response.MessageResponse;
+using CoStudy.API.Infrastructure.Shared.Models.Request;
 using CoStudy.API.Infrastructure.Shared.Services.MessageServices;
 using CoStudy.API.Infrastructure.Shared.ViewModels;
 using Microsoft.AspNetCore.Http;
@@ -21,12 +18,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-
-using static Common.Constant.PostConstant;
 using static Common.Constant.FollowConstant;
 using static Common.Constant.NotificationConstant;
-using static Common.Constants;
+using static Common.Constant.PostConstant;
 using static Common.Constant.VoteConstant;
+using static Common.Constants;
 
 namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
 {
@@ -170,11 +166,15 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
             foreach (var stringContent in post.StringContents)
             {
                 if (StringUtils.ValidateAllowString(configuration, stringContent.Content) == false)
+                {
                     throw new Exception(UnAllowContent);
+                }
             }
 
             if (StringUtils.ValidateAllowString(configuration, post.Title) == false)
+            {
                 throw new Exception(UnAllowTitle);
+            }
 
             await postRepository.AddAsync(post);
 
@@ -188,7 +188,9 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
                      );
 
             foreach (var item in request.Fields)
+            {
                 item.ObjectId = post.OId;
+            }
 
             await levelService.AddObjectLevel(request.Fields);
 
@@ -207,7 +209,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
             {
                 var newNotificationObject = new NotificationObject()
                 {
-                    NotificationType =  NotificationConstant.NotificationType,
+                    NotificationType = NotificationConstant.NotificationType,
                     ObjectId = post.OId,
                     OwnerId = post.AuthorId
                 };
@@ -226,7 +228,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
                 await fcmRepository.PushNotifyPostMatch(user.OId, notificationDetail);
             }
 
-          
+
 
             PostViewModel response = mapper.Map<PostViewModel>(post);
             return response;
@@ -259,7 +261,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
             }
             catch (Exception)
             {
-                throw new Exception( PostConstant.UserHasNoPost);
+                throw new Exception(PostConstant.UserHasNoPost);
             }
         }
 
@@ -360,7 +362,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
                 {
                     var newNotificationObject = new NotificationObject()
                     {
-                        NotificationType =UpvotePostNotify,
+                        NotificationType = UpvotePostNotify,
                         ObjectId = postId,
                         OwnerId = currentPost.AuthorId
                     };
@@ -597,18 +599,28 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
                         {
                             var sortType = filterRequest.SortType.Value;
                             if (sortType == SortType.Ascending)
+                            {
                                 vm = vm.OrderBy(x => x.Upvote);
+                            }
                             else if (sortType == SortType.Descending)
+                            {
                                 vm = vm.OrderByDescending(x => x.Upvote);
+                            }
+
                             break;
                         }
                     case SortObject.Comment:
                         {
                             var sortType = filterRequest.SortType.Value;
                             if (sortType == SortType.Ascending)
+                            {
                                 vm = vm.OrderBy(x => x.CommentCount);
+                            }
                             else if (sortType == SortType.Descending)
+                            {
                                 vm = vm.OrderByDescending(x => x.CommentCount);
+                            }
+
                             break;
 
                         }
@@ -616,9 +628,14 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
                         {
                             var sortType = filterRequest.SortType.Value;
                             if (sortType == SortType.Ascending)
+                            {
                                 vm = vm.OrderBy(x => x.CreatedDate);
+                            }
                             else if (sortType == SortType.Descending)
+                            {
                                 vm = vm.OrderByDescending(x => x.CreatedDate);
+                            }
+
                             break;
                         }
                 }
@@ -630,7 +647,9 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
             foreach (var post in vm)
             {
                 if (IsMatch(post, filterRequest.LevelFilter) == true)
+                {
                     result.Add(post);
+                }
             }
 
             return result;
@@ -657,7 +676,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
 
 
 
-   
+
 
         /// <summary>
         /// Gets the news feed.
@@ -717,7 +736,9 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
                 foreach (var fieldGroup in fieldGroups)
                 {
                     if (fieldGroup.FieldId.Contains(fieldId))
+                    {
                         fieldGroupsFinal.Add(fieldGroup);
+                    }
                 }
             }
             fieldGroupsFinal = fieldGroupsFinal.Distinct().ToList();
@@ -745,7 +766,9 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
             {
                 var post = await postRepository.GetByIdAsync(ObjectId.Parse(x));
                 if (post != null)
+                {
                     _posts.Add(post);
+                }
             });
             var _postIds = _posts.Select(x => x.OId);
 
@@ -755,7 +778,9 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
             dataSource = dataSource.GroupBy(x => x.OId).Select(grp => grp.FirstOrDefault()).ToList();
 
             if (request.Skip.HasValue && request.Count.HasValue)
+            {
                 dataSource = dataSource.Skip(request.Skip.Value).Take(request.Count.Value).ToList();
+            }
 
             return mapper.Map<List<PostViewModel>>(dataSource);
         }
@@ -814,7 +839,9 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
             foreach (var user in allUsers)
             {
                 if (true == (await IsUserMatchListObjectLevel(user, postObjectLevels)))
+                {
                     result.Add(user);
+                }
             }
             return result;
 
@@ -838,7 +865,9 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
             {
                 var _ = objectLevels.FirstOrDefault(x => x.FieldId == userObjectLevel.FieldId && x.LevelId == userObjectLevel.LevelId);
                 if (_ != null)
+                {
                     return true;
+                }
             }
             return false;
         }
@@ -854,7 +883,10 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
         private bool IsMatch(PostViewModel post, LevelFilterItem levelFilterItem)
         {
             if (string.IsNullOrEmpty(levelFilterItem.FieldId) || string.IsNullOrEmpty(levelFilterItem.LevelId))
+            {
                 return true;
+            }
+
             var objlvls = objectLevelRepository.GetAll().Where(x => x.ObjectId == post.OId);
 
             foreach (var item in objlvls)
@@ -883,7 +915,9 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
             foreach (var item in levelFilter.FilterItems)
             {
                 if (IsMatch(post, item) == true)
+                {
                     return true;
+                }
             }
             return false;
         }

@@ -1,5 +1,4 @@
-﻿using CoStudy.API.Domain.Entities.BaseEntity;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using System;
 using System.Text.Json.Serialization;
 
@@ -37,7 +36,7 @@ namespace CoStudy.API.Infrastructure.Shared.ViewModels
 
         [JsonProperty("created_by_name")]
         [JsonPropertyName("created_by_name")]
-        public string  CreatedByName { get; set; }
+        public string CreatedByName { get; set; }
 
         /// <summary>
         /// Gets or sets the created date.

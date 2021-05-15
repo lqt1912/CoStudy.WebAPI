@@ -1,10 +1,7 @@
 ﻿using CoStudy.API.Domain.Entities.Application;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Text.Json.Serialization;
 
-namespace CoStudy.API.Infrastructure.Shared.Models.Response
+namespace CoStudy.API.Infrastructure.Shared.Models
 {
     public class GetFieldsResponse
     {
@@ -12,17 +9,17 @@ namespace CoStudy.API.Infrastructure.Shared.Models.Response
         public Level Level { get; set; }
     }
 
-    public class UserGetFieldResponse :GetFieldsResponse
+    public class UserGetFieldResponse : GetFieldsResponse
     {
         [JsonPropertyName("user_id")]
-        public string  UserId { get; set; }
-        
+        public string UserId { get; set; }
+
         [JsonPropertyName("point")]
-        public int?  Point { get; set; }
+        public int? Point { get; set; }
     }
 
 
-    public class PostGetFieldResponse:GetFieldsResponse
+    public class PostGetFieldResponse : GetFieldsResponse
     {
         [JsonPropertyName("post_id")]
         public string PostId { get; set; }

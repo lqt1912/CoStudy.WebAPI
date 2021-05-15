@@ -1,5 +1,4 @@
-﻿using CoStudy.API.Infrastructure.Shared.Models.Request.MessageRequest;
-using CoStudy.API.Infrastructure.Shared.Models.Response.MessageResponse;
+﻿using CoStudy.API.Infrastructure.Shared.Models.Request;
 using CoStudy.API.Infrastructure.Shared.Services.MessageServices;
 using CoStudy.API.Infrastructure.Shared.ViewModels;
 using CoStudy.API.WebAPI.Middlewares;

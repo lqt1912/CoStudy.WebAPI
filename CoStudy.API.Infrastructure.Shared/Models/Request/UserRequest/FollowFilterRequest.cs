@@ -1,10 +1,8 @@
-﻿using CoStudy.API.Infrastructure.Shared.Models.Request.BaseRequest;
-using CoStudy.API.Infrastructure.Shared.Models.Request.PostRequest;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using System;
 using System.Text.Json.Serialization;
 
-namespace CoStudy.API.Infrastructure.Shared.Models.Request.UserRequest
+namespace CoStudy.API.Infrastructure.Shared.Models.Request
 {
     /// <summary>
     /// Class FollowFilterRequest

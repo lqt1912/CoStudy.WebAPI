@@ -1,10 +1,8 @@
 ﻿using CoStudy.API.Domain.Entities.Application;
-using CoStudy.API.Infrastructure.Shared.Models.Request.MessageRequest;
+using CoStudy.API.Infrastructure.Shared.Models.Request;
 using CoStudy.API.Infrastructure.Shared.Models.Response.MessageResponse;
 using CoStudy.API.Infrastructure.Shared.ViewModels;
-using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace CoStudy.API.Infrastructure.Shared.Services
@@ -58,4 +56,4 @@ namespace CoStudy.API.Infrastructure.Shared.Services
         Task<string> DeleteConversation(string id);
     }
 
-} 
+}

@@ -3,8 +3,7 @@ using CoStudy.API.Application.Features;
 using CoStudy.API.Application.Repositories;
 using CoStudy.API.Domain.Entities.Application;
 using CoStudy.API.Infrastructure.Shared.Adapters;
-using CoStudy.API.Infrastructure.Shared.Models.Request.BaseRequest;
-using CoStudy.API.Infrastructure.Shared.Models.Request.NofticationRequest;
+using CoStudy.API.Infrastructure.Shared.Models.Request;
 using CoStudy.API.Infrastructure.Shared.ViewModels;
 using Microsoft.AspNetCore.Http;
 using MongoDB.Bson;
@@ -13,14 +12,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-
-
-using static Common.Constant.PostConstant;
-using static Common.Constant.FollowConstant;
 using static Common.Constant.NotificationConstant;
 using static Common.Constants;
-using static Common.Constant.VoteConstant;
-using static Common.Constant.UserConstant;
 
 namespace CoStudy.API.Infrastructure.Shared.Services.NofticationServices
 {
@@ -295,7 +288,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.NofticationServices
                 }
             }
 
-            return result.OrderByDescending(x=>x.ModifiedDate);
+            return result.OrderByDescending(x => x.ModifiedDate);
         }
 
         /// <summary>

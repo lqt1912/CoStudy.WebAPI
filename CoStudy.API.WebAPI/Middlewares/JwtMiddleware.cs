@@ -48,7 +48,9 @@ namespace CoStudy.API.WebAPI.Middlewares
             string token = context.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
 
             if (token != null)
+            {
                 await attachAccountToContext(context, token, accountRepository);
+            }
 
             await _next(context);
         }

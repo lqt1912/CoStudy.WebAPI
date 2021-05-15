@@ -1,4 +1,4 @@
-﻿using CoStudy.API.Infrastructure.Shared.Models.Request.PostRequest;
+﻿using CoStudy.API.Infrastructure.Shared.Models.Request;
 using CoStudy.API.Infrastructure.Shared.Services;
 using CoStudy.API.WebAPI.Middlewares;
 using Microsoft.AspNetCore.Mvc;
@@ -21,7 +21,7 @@ namespace CoStudy.API.WebAPI.Controllers
         [Route("add")]
         public async Task<IActionResult> AddComment(AddCommentRequest request)
         {
-          var data = await commentService.AddComment(request);
+            var data = await commentService.AddComment(request);
             return Ok(new ApiOkResponse(data));
         }
 
@@ -29,7 +29,7 @@ namespace CoStudy.API.WebAPI.Controllers
         [Route("reply")]
         public async Task<IActionResult> Addreply(ReplyCommentRequest request)
         {
-           var data = await commentService.ReplyComment(request);
+            var data = await commentService.ReplyComment(request);
             return Ok(new ApiOkResponse(data));
         }
 
@@ -37,7 +37,7 @@ namespace CoStudy.API.WebAPI.Controllers
         [Route("get/post")]
         public async Task<IActionResult> GetCommentByPostId([FromQuery] CommentFilterRequest request)
         {
-           var  data = await commentService.GetCommentByPostId(request);
+            var data = await commentService.GetCommentByPostId(request);
             return Ok(new ApiOkResponse(data));
         }
 
@@ -45,7 +45,7 @@ namespace CoStudy.API.WebAPI.Controllers
         [Route("get/replies/{commentId}")]
         public async Task<IActionResult> GetReplyByCommentId(string commentId, int skip, int count)
         {
-           var data = await commentService.GetReplyCommentByCommentId(commentId, skip, count);
+            var data = await commentService.GetReplyCommentByCommentId(commentId, skip, count);
             return Ok(new ApiOkResponse(data));
         }
 
@@ -103,7 +103,7 @@ namespace CoStudy.API.WebAPI.Controllers
         [Route("comment/update")]
         public async Task<IActionResult> UpdateComment(UpdateCommentRequest request)
         {
-            var  data = await commentService.UpdateComment(request);
+            var data = await commentService.UpdateComment(request);
             return Ok(new ApiOkResponse(data));
         }
 

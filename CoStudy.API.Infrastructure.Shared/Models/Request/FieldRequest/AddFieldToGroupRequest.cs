@@ -1,11 +1,8 @@
 ﻿using Newtonsoft.Json;
-using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Text;
 using System.Text.Json.Serialization;
 
-namespace CoStudy.API.Infrastructure.Shared.Models.Request.FieldRequest
+namespace CoStudy.API.Infrastructure.Shared.Models.Request
 {
     /// <summary>
     /// Class AddFieldToGroupRequest
@@ -20,7 +17,7 @@ namespace CoStudy.API.Infrastructure.Shared.Models.Request.FieldRequest
         /// </value>
         [JsonPropertyName("group_id")]
         [JsonProperty("group_id")]
-        public string  GroupId { get; set; }
+        public string GroupId { get; set; }
 
 
         /// <summary>

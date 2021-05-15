@@ -1,7 +1,4 @@
 ﻿using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Text.Json.Serialization;
 
 namespace CoStudy.API.Infrastructure.Shared.ViewModels
@@ -14,16 +11,16 @@ namespace CoStudy.API.Infrastructure.Shared.ViewModels
 
         [JsonProperty("creator_name")]
         [JsonPropertyName("creator_name")]
-        public string  CreatorName { get; set; }
+        public string CreatorName { get; set; }
 
 
         [JsonProperty("creator_id")]
         [JsonPropertyName("creator_id")]
-        public string  CreatorId { get; set; }
+        public string CreatorId { get; set; }
 
         [JsonProperty("receiver_id")]
         [JsonPropertyName("receiver_id")]
-        public string  ReceiverId { get; set; }
+        public string ReceiverId { get; set; }
 
         [JsonProperty("is_read")]
         [JsonPropertyName("is_read")]

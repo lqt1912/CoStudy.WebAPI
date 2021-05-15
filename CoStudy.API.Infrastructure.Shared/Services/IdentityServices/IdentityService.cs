@@ -2,14 +2,11 @@
 using CoStudy.API.Domain.Entities.Application;
 using CoStudy.API.Domain.Entities.Identity.MongoAuthen;
 using CoStudy.API.Infrastructure.Identity.Repositories.AccountRepository;
-using CoStudy.API.Infrastructure.Identity.Services.AccountService;
-using CoStudy.API.Infrastructure.Shared.Models.Request.BaseRequest;
-using CoStudy.API.Infrastructure.Shared.Services.UserServices;
+using CoStudy.API.Infrastructure.Shared.Models.Request;
 using MongoDB.Bson;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace CoStudy.API.Infrastructure.Shared.Services
@@ -18,7 +15,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services
     /// The identity  service. 
     /// </summary>
     /// <seealso cref="CoStudy.API.Infrastructure.Shared.Services.IIdentityService" />
-    public class IdentityService :IIdentityService
+    public class IdentityService : IIdentityService
     {
         /// <summary>
         /// The user repository
@@ -47,10 +44,10 @@ namespace CoStudy.API.Infrastructure.Shared.Services
         /// </summary>
         /// <param name="request">The request.</param>
         /// <returns></returns>
-        public IEnumerable<User>  GetAllUser(BaseGetAllRequest request )
+        public IEnumerable<User> GetAllUser(BaseGetAllRequest request)
         {
             var data = userRepository.GetAll();
-            if(request.Count.HasValue && request.Skip.HasValue)
+            if (request.Count.HasValue && request.Skip.HasValue)
             {
                 data = data.Skip(request.Skip.Value).Take(request.Count.Value);
             }
@@ -65,8 +62,8 @@ namespace CoStudy.API.Infrastructure.Shared.Services
         /// <returns></returns>
         public IEnumerable<Account> GetAllAccount(BaseGetAllRequest request)
         {
-            var data =accountRepository.GetAll();
-            if(request.Skip.HasValue & request.Count.HasValue)
+            var data = accountRepository.GetAll();
+            if (request.Skip.HasValue & request.Count.HasValue)
             {
                 data = data.Skip(request.Skip.Value).Take(request.Count.Value);
             }
@@ -82,9 +79,9 @@ namespace CoStudy.API.Infrastructure.Shared.Services
         public async Task<IEnumerable<RefreshToken>> GetByAccount(string accountId)
         {
             var account = await accountRepository.GetByIdAsync(ObjectId.Parse(accountId));
-            if(account!=null)
+            if (account != null)
             {
-                return account.RefreshTokens;                     
+                return account.RefreshTokens;
             }
             throw new Exception("KHông tìm thấy tài khoản. ");
         }

@@ -4,8 +4,6 @@ using CoStudy.API.Domain.Entities.Application;
 using CoStudy.API.Infrastructure.Shared.ViewModels;
 using MongoDB.Bson;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace CoStudy.API.Infrastructure.Shared.AutoMapper
 {
@@ -43,11 +41,13 @@ namespace CoStudy.API.Infrastructure.Shared.AutoMapper
             var joinBy = userRepository.GetById(ObjectId.Parse(source.JoinBy));
 
             if (user == null || joinBy == null)
+            {
                 throw new Exception("Không tìm thấy người dùng hợp lệ. ");
+            }
 
-                destination.MemberName = $"{user?.FirstName} {user?.LastName}";
-                destination.MemberAvatar = user?.AvatarHash;
-                destination.JoinByName = $"{joinBy?.FirstName} {joinBy?.LastName}";
+            destination.MemberName = $"{user?.FirstName} {user?.LastName}";
+            destination.MemberAvatar = user?.AvatarHash;
+            destination.JoinByName = $"{joinBy?.FirstName} {joinBy?.LastName}";
 
         }
     }

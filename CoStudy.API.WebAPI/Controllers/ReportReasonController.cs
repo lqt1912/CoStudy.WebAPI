@@ -1,12 +1,8 @@
 ﻿using CoStudy.API.Domain.Entities.Application;
-using CoStudy.API.Infrastructure.Shared.Models.Request.BaseRequest;
+using CoStudy.API.Infrastructure.Shared.Models.Request;
 using CoStudy.API.Infrastructure.Shared.Services;
 using CoStudy.API.WebAPI.Middlewares;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace CoStudy.API.WebAPI.Controllers
@@ -52,7 +48,7 @@ namespace CoStudy.API.WebAPI.Controllers
         /// <param name="request">The request.</param>
         /// <returns></returns>
         [HttpGet]
-        public IActionResult GetAll([FromQuery]BaseGetAllRequest request)
+        public IActionResult GetAll([FromQuery] BaseGetAllRequest request)
         {
             var data = reportReasonService.GetAll(request);
             return Ok(new ApiOkResponse(data));

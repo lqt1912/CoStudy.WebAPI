@@ -1,6 +1,5 @@
 ﻿using CoStudy.API.Domain.Entities.Application;
 using CoStudy.API.Infrastructure.Shared.ViewModels;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace CoStudy.API.Application.FCM

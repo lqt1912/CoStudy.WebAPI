@@ -6,9 +6,7 @@ using CoStudy.API.Infrastructure.Shared.ViewModels;
 using Microsoft.AspNetCore.Http;
 using MongoDB.Bson;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace CoStudy.API.Infrastructure.Shared.AutoMapper
 {
@@ -43,9 +41,9 @@ namespace CoStudy.API.Infrastructure.Shared.AutoMapper
         /// <param name="upVoteRepository">Up vote repository.</param>
         /// <param name="downVoteRepository">Down vote repository.</param>
         /// <param name="httpContextAccessor">The HTTP context accessor.</param>
-        public ReplyCommentConvertAction(IUserRepository userRepository, 
+        public ReplyCommentConvertAction(IUserRepository userRepository,
             IUpVoteRepository upVoteRepository,
-            IDownVoteRepository downVoteRepository, 
+            IDownVoteRepository downVoteRepository,
             IHttpContextAccessor httpContextAccessor)
         {
             this.userRepository = userRepository;
@@ -65,7 +63,9 @@ namespace CoStudy.API.Infrastructure.Shared.AutoMapper
             var currentUser = Feature.CurrentUser(httpContextAccessor, userRepository);
             var author = userRepository.GetById(ObjectId.Parse(source.AuthorId));
             if (author == null)
+            {
                 throw new Exception("Không tìm thấy author. ");
+            }
 
             destination.AuthorName = $"{author.FirstName} {author.LastName}";
             destination.AuthorAvatar = author.AvatarHash;

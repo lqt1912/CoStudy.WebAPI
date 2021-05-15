@@ -1,7 +1,5 @@
 ﻿using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Text.Json.Serialization;
 
 namespace CoStudy.API.Infrastructure.Shared.ViewModels
@@ -29,7 +27,7 @@ namespace CoStudy.API.Infrastructure.Shared.ViewModels
         /// </value>
         [JsonProperty("object_id")]
         [JsonPropertyName("object_id")]
-        public string  ObjectId { get; set; }
+        public string ObjectId { get; set; }
 
         /// <summary>
         /// Gets or sets the field identifier.
@@ -39,7 +37,7 @@ namespace CoStudy.API.Infrastructure.Shared.ViewModels
         /// </value>
         [JsonProperty("field_id")]
         [JsonPropertyName("field_id")]
-        public string  FieldId { get; set; }
+        public string FieldId { get; set; }
 
         /// <summary>
         /// Gets or sets the name of the field.
@@ -49,7 +47,7 @@ namespace CoStudy.API.Infrastructure.Shared.ViewModels
         /// </value>
         [JsonProperty("field_name")]
         [JsonPropertyName("field_name")]
-        public string  FieldName { get; set; }
+        public string FieldName { get; set; }
 
         /// <summary>
         /// Gets or sets the level identifier.
@@ -69,7 +67,7 @@ namespace CoStudy.API.Infrastructure.Shared.ViewModels
         /// </value>
         [JsonProperty("level_name")]
         [JsonPropertyName("level_name")]
-        public string  LevelName { get; set; }
+        public string LevelName { get; set; }
 
         [JsonProperty("level_description")]
         [JsonPropertyName("level_description")]

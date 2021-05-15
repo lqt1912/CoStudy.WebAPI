@@ -48,8 +48,9 @@ namespace CoStudy.API.Infrastructure.Shared.AutoMapper
             User sender = userRepository.GetById(ObjectId.Parse(source.SenderId));
 
             if (receiver == null || sender == null)
+            {
                 throw new Exception("Không tìm thấy người dùng gửi tin phù hợp. ");
-
+            }
 
             destination.SenderName = $"{sender.FirstName} {sender.LastName}";
             destination.SenderAvatar = sender.AvatarHash;

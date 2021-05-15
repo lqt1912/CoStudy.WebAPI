@@ -1,11 +1,9 @@
-﻿using CoStudy.API.Domain.Entities.Application;
-using CoStudy.API.Infrastructure.Shared.Models.Request.BaseRequest;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
-namespace CoStudy.API.Infrastructure.Shared.Models.Request.PostRequest
+namespace CoStudy.API.Infrastructure.Shared.Models.Request
 {
     /// <summary>
     /// Enum PostOrder
@@ -155,6 +153,6 @@ namespace CoStudy.API.Infrastructure.Shared.Models.Request.PostRequest
         /// </value>
         [JsonProperty("level_id")]
         [JsonPropertyName("level_id")]
-        public string  LevelId { get; set; }
+        public string LevelId { get; set; }
     }
 }

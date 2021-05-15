@@ -1,14 +1,13 @@
-﻿using CoStudy.API.Infrastructure.Shared.Models.Request.BaseRequest;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using System.Text.Json.Serialization;
 
-namespace CoStudy.API.Infrastructure.Shared.Models.Request.MessageRequest
+namespace CoStudy.API.Infrastructure.Shared.Models.Request
 {
     /// <summary>
     /// Class GetMessageByConversationIdRequest
     /// </summary>
     /// <seealso cref="CoStudy.API.Infrastructure.Shared.Models.Request.BaseRequest.BaseGetAllRequest" />
-    public class GetMessageByConversationIdRequest :BaseGetAllRequest
+    public class GetMessageByConversationIdRequest : BaseGetAllRequest
     {
         /// <summary>
         /// Gets or sets the conversation identifier.

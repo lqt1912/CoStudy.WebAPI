@@ -5,14 +5,11 @@ using CoStudy.API.Domain.Entities.Identity.MongoAuthen;
 using CoStudy.API.Infrastructure.Identity.Models.GoogleAuth;
 using CoStudy.API.Infrastructure.Identity.Repositories.AccountRepository;
 using CoStudy.API.Infrastructure.Identity.Repositories.ExternalLoginRepository;
-using CoStudy.API.Infrastructure.Identity.Services.AccountService;
 using CoStudy.API.Infrastructure.Shared.Paging;
 using CoStudy.API.Infrastructure.Shared.ViewModels;
 using MongoDB.Driver;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace CoStudy.API.Infrastructure.Shared.Services
@@ -72,35 +69,43 @@ namespace CoStudy.API.Infrastructure.Shared.Services
         public TableResultJson<UserViewModel> GetUserPaged(TableRequest request)
         {
             var dataSource = userRepository.GetAll().OrderByDescending(x => x.CreatedDate).AsEnumerable();
-            
+
             var dataSourceViewModels = mapper.Map<List<UserViewModel>>(dataSource).AsEnumerable();
 
             TableResultJson<UserViewModel> response = new TableResultJson<UserViewModel>();
             response.draw = request.draw;
             response.recordsFiltered = dataSourceViewModels.Count();
 
-            if(request.columns[1].search!=null)
+            if (request.columns[1].search != null)
             {
                 if (!string.IsNullOrEmpty(request.columns[1].search.value))
+                {
                     dataSourceViewModels = dataSourceViewModels.Where(x => x.FullName.Contains(request.columns[1].search.value));
+                }
             }
 
-            if(request.columns[2].search!=null)
+            if (request.columns[2].search != null)
             {
                 if (!string.IsNullOrEmpty(request.columns[2].search.value))
+                {
                     dataSourceViewModels = dataSourceViewModels.Where(x => x.Email.Contains(request.columns[2].search.value));
+                }
             }
 
-            if(request.columns[3].search!=null)
+            if (request.columns[3].search != null)
             {
                 if (!string.IsNullOrEmpty(request.columns[3].search.value))
+                {
                     dataSourceViewModels = dataSourceViewModels.Where(x => x.PhoneNumber.Contains(request.columns[3].search.value));
+                }
             }
 
-            if(request.columns[4].search!=null)
+            if (request.columns[4].search != null)
             {
                 if (!string.IsNullOrEmpty(request.columns[4].search.value))
+                {
                     dataSourceViewModels = dataSourceViewModels.Where(x => (x.FullAddress.Contains(request.columns[4].search.value)));
+                }
             }
             dataSourceViewModels = dataSourceViewModels.Skip(request.start).Take(request.length);
             response.data = dataSourceViewModels.ToList();
@@ -124,16 +129,20 @@ namespace CoStudy.API.Infrastructure.Shared.Services
 
             var dataSourceViewModel = mapper.Map<List<PostViewModel>>(dataSource).AsEnumerable();
 
-            if(request.columns[1].search !=null)
+            if (request.columns[1].search != null)
             {
                 if (!string.IsNullOrEmpty(request.columns[1].search.value))
+                {
                     dataSourceViewModel = dataSourceViewModel.Where(x => x.AuthorName.Contains(request.columns[1].search.value));
+                }
             }
 
-            if(request.columns[2].search!=null)
+            if (request.columns[2].search != null)
             {
                 if (!string.IsNullOrEmpty(request.columns[2].search.value))
+                {
                     dataSourceViewModel = dataSourceViewModel.Where(x => x.Title.Contains(request.columns[2].search.value));
+                }
             }
 
             TableResultJson<PostViewModel> response = new TableResultJson<PostViewModel>();
@@ -149,12 +158,12 @@ namespace CoStudy.API.Infrastructure.Shared.Services
             return response;
         }
 
-            /// <summary>
-            /// Gets the by email.
-            /// </summary>
-            /// <param name="email">The email.</param>
-            /// <returns></returns>
-            public async Task<UserProfileViewModel> GetByEmail(string email)
+        /// <summary>
+        /// Gets the by email.
+        /// </summary>
+        /// <param name="email">The email.</param>
+        /// <returns></returns>
+        public async Task<UserProfileViewModel> GetByEmail(string email)
         {
 
             var accountFilter = Builders<Account>.Filter.Eq("Email", email);

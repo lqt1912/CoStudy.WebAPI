@@ -1,6 +1,6 @@
 ﻿using CoStudy.API.Application.Features;
 using CoStudy.API.Domain.Entities.Application;
-using CoStudy.API.Infrastructure.Shared.Models.Request.PostRequest;
+using CoStudy.API.Infrastructure.Shared.Models.Request;
 using CoStudy.API.Infrastructure.Shared.Models.Response.PostResponse;
 using Microsoft.AspNetCore.Http;
 using System;
@@ -126,6 +126,6 @@ namespace CoStudy.API.Infrastructure.Shared.Adapters
             };
         }
 
-      
+
     }
 }

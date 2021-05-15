@@ -1,4 +1,4 @@
-﻿using CoStudy.API.Infrastructure.Shared.Models.Request.PostRequest;
+﻿using CoStudy.API.Infrastructure.Shared.Models.Request;
 using CoStudy.API.Infrastructure.Shared.ViewModels;
 using System.Collections.Generic;
 using System.Threading.Tasks;

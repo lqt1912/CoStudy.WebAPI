@@ -1,14 +1,10 @@
-﻿using CoStudy.API.Domain.Entities.Application;
-using CoStudy.API.Infrastructure.Shared.Models.Request.MessageRequest;
+﻿using CoStudy.API.Infrastructure.Shared.Models.Request;
 using CoStudy.API.Infrastructure.Shared.Models.Response.MessageResponse;
 using CoStudy.API.Infrastructure.Shared.Services;
 using CoStudy.API.Infrastructure.Shared.ViewModels;
 using CoStudy.API.WebAPI.Middlewares;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace CoStudy.API.WebAPI.Controllers
@@ -57,7 +53,7 @@ namespace CoStudy.API.WebAPI.Controllers
         [Route("current")]
         public async Task<IActionResult> GetCurrentConversationList()
         {
-            GetConversationByUserIdResponse data =await conversationService.GetConversationByUserId();
+            GetConversationByUserIdResponse data = await conversationService.GetConversationByUserId();
             return Ok(new ApiOkResponse(data));
         }
 

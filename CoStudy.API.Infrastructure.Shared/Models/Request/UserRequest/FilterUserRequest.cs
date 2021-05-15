@@ -1,10 +1,8 @@
-﻿using CoStudy.API.Infrastructure.Shared.Models.Request.BaseRequest;
-using CoStudy.API.Infrastructure.Shared.Models.Request.PostRequest;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
-namespace CoStudy.API.Infrastructure.Shared.Models.Request.UserRequest
+namespace CoStudy.API.Infrastructure.Shared.Models.Request
 {
     /// <summary>
     /// Enum UserFilterType
@@ -41,7 +39,7 @@ namespace CoStudy.API.Infrastructure.Shared.Models.Request.UserRequest
     /// Class FilterUserRequest
     /// </summary>
     /// <seealso cref="CoStudy.API.Infrastructure.Shared.Models.Request.BaseRequest.BaseGetAllRequest" />
-    public class FilterUserRequest:BaseGetAllRequest
+    public class FilterUserRequest : BaseGetAllRequest
     {
         /// <summary>
         /// Gets or sets the key word.
@@ -53,7 +51,7 @@ namespace CoStudy.API.Infrastructure.Shared.Models.Request.UserRequest
         [JsonProperty("keyword")]
         public string KeyWord { get; set; }
 
-    
+
         /// <summary>
         /// Gets or sets the type of the filter.
         /// </summary>

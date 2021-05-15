@@ -1,14 +1,9 @@
 ﻿using CoStudy.API.Domain.Entities.Application;
-using CoStudy.API.Infrastructure.Shared.Models.Request.BaseRequest;
-using CoStudy.API.Infrastructure.Shared.Models.Request.LevelRequest;
+using CoStudy.API.Infrastructure.Shared.Models.Request;
 using CoStudy.API.Infrastructure.Shared.Services;
 using CoStudy.API.WebAPI.Middlewares;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using MongoDB.Bson;
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace CoStudy.API.WebAPI.Controllers
@@ -41,7 +36,7 @@ namespace CoStudy.API.WebAPI.Controllers
         /// <param name="level">The level.</param>
         /// <returns></returns>
         [HttpPost, Route("level/add")]
-        public async Task<IActionResult>  AddLevel(IEnumerable<Level> level)
+        public async Task<IActionResult> AddLevel(IEnumerable<Level> level)
         {
             var data = await levelService.AddLevel(level);
             return Ok(data);
@@ -52,9 +47,9 @@ namespace CoStudy.API.WebAPI.Controllers
         /// <param name="request">The request.</param>
         /// <returns></returns>
         [HttpGet, Route("level/all")]
-        public IActionResult GetAllLevel([FromQuery]BaseGetAllRequest request)
+        public IActionResult GetAllLevel([FromQuery] BaseGetAllRequest request)
         {
-            var data =  levelService.GetAllLevel(request);
+            var data = levelService.GetAllLevel(request);
             return Ok(new ApiOkResponse(data));
         }
 
@@ -66,7 +61,7 @@ namespace CoStudy.API.WebAPI.Controllers
         [HttpGet, Route("level/{id}")]
         public async Task<IActionResult> ById(string id)
         {
-            var data =await  levelService.GetById(id);
+            var data = await levelService.GetById(id);
             return Ok(new ApiOkResponse(data));
         }
 
@@ -87,7 +82,7 @@ namespace CoStudy.API.WebAPI.Controllers
         /// </summary>
         /// <param name="objectId">The object identifier.</param>
         /// <returns></returns>
-        [HttpGet,Route("objectlevel/{objectId}")]
+        [HttpGet, Route("objectlevel/{objectId}")]
         public async Task<IActionResult> GetLevelByObjectId(string objectId)
         {
             var data = await levelService.GetLevelByObject(objectId);

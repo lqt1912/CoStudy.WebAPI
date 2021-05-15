@@ -1,10 +1,10 @@
 ﻿using AutoMapper;
+using Common.Constant;
 using CoStudy.API.Application.FCM;
 using CoStudy.API.Application.Features;
 using CoStudy.API.Application.Repositories;
 using CoStudy.API.Domain.Entities.Application;
-using CoStudy.API.Infrastructure.Shared.Models.Request.BaseRequest;
-using CoStudy.API.Infrastructure.Shared.Models.Request.ReportRequest;
+using CoStudy.API.Infrastructure.Shared.Models.Request;
 using CoStudy.API.Infrastructure.Shared.ViewModels;
 using Microsoft.AspNetCore.Http;
 using MongoDB.Bson;
@@ -13,14 +13,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-
-using static Common.Constant.PostConstant;
-using static Common.Constant.FollowConstant;
-using static Common.Constant.NotificationConstant;
-using static Common.Constants;
-using static Common.Constant.VoteConstant;
-using static Common.Constant.UserConstant;
-using Common.Constant;
 
 namespace CoStudy.API.Infrastructure.Shared.Services
 {

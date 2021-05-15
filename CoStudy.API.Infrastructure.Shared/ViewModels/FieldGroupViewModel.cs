@@ -28,7 +28,7 @@ namespace CoStudy.API.Infrastructure.Shared.ViewModels
         /// </value>
         [JsonProperty("group_name")]
         [JsonPropertyName("group_name")]
-        public string  GroupName { get; set; }
+        public string GroupName { get; set; }
         /// <summary>
         /// Gets or sets the fields.
         /// </summary>

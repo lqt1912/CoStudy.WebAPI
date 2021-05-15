@@ -1,10 +1,8 @@
 ﻿using CoStudy.API.Domain.Entities.Application;
-using CoStudy.API.Infrastructure.Shared.Models.Request.UserRequest;
-using CoStudy.API.Infrastructure.Shared.Models.Response.UserResponse;
+using CoStudy.API.Infrastructure.Shared.Models.Request;
 using Microsoft.AspNetCore.Http;
 using MongoDB.Bson;
 using System;
-using System.Collections.Generic;
 
 namespace CoStudy.API.Infrastructure.Shared.Adapters
 {
@@ -55,6 +53,6 @@ namespace CoStudy.API.Infrastructure.Shared.Adapters
 
 
 
-    
+
     }
 }

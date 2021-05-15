@@ -6,9 +6,6 @@ using CoStudy.API.Infrastructure.Shared.ViewModels;
 using Microsoft.AspNetCore.Http;
 using MongoDB.Bson;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace CoStudy.API.Infrastructure.Shared.AutoMapper
 {
@@ -36,8 +33,8 @@ namespace CoStudy.API.Infrastructure.Shared.AutoMapper
         /// <param name="userRepository">The user repository.</param>
         /// <param name="followRepository">The follow repository.</param>
         /// <param name="httpContextAccessor">The HTTP context accessor.</param>
-        public FollowConvertAction(IUserRepository userRepository, 
-            IFollowRepository followRepository, 
+        public FollowConvertAction(IUserRepository userRepository,
+            IFollowRepository followRepository,
             IHttpContextAccessor httpContextAccessor)
         {
             this.userRepository = userRepository;
@@ -61,18 +58,25 @@ namespace CoStudy.API.Infrastructure.Shared.AutoMapper
             var toUser = userRepository.GetById(ObjectId.Parse(source.ToId));
 
             if (fromUser == null || toUser == null)
+            {
                 throw new Exception("Không tìm thấy người theo dõi phù hợp. ");
+            }
 
             if (fromUser.OId == currentUser.OId)
+            {
                 destination.IsFollowByCurrent = true;
-            else destination.IsFollowByCurrent = false;
+            }
+            else
+            {
+                destination.IsFollowByCurrent = false;
+            }
 
             destination.FromAvatar = fromUser.AvatarHash;
             destination.FromName = $"{fromUser.FirstName} {fromUser.LastName}";
 
             destination.ToAvatar = toUser.AvatarHash;
             destination.ToName = $"{toUser.FirstName} {toUser.LastName}";
-            
+
         }
     }
 }

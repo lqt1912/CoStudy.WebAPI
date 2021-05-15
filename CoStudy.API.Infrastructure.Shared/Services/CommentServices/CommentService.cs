@@ -4,8 +4,7 @@ using CoStudy.API.Application.Features;
 using CoStudy.API.Application.Repositories;
 using CoStudy.API.Domain.Entities.Application;
 using CoStudy.API.Infrastructure.Shared.Adapters;
-using CoStudy.API.Infrastructure.Shared.Models.Request.PostRequest;
-using CoStudy.API.Infrastructure.Shared.Models.Response.PostResponse;
+using CoStudy.API.Infrastructure.Shared.Models.Request;
 using CoStudy.API.Infrastructure.Shared.ViewModels;
 using Microsoft.AspNetCore.Http;
 using MongoDB.Bson;
@@ -108,9 +107,9 @@ namespace CoStudy.API.Infrastructure.Shared.Services
             IClientGroupRepository clientGroupRepository,
             IFcmRepository fcmRepository,
             INofticationRepository nofticationRepository,
-            IMapper mapper, 
-            INotificationObjectRepository notificationObjectRepository, 
-            INotificationDetailRepository notificationDetailRepository, 
+            IMapper mapper,
+            INotificationObjectRepository notificationObjectRepository,
+            INotificationDetailRepository notificationDetailRepository,
             INotificationTypeRepository notificationTypeRepository)
         {
             this.httpContextAccessor = httpContextAccessor;
@@ -150,7 +149,8 @@ namespace CoStudy.API.Infrastructure.Shared.Services
                 await commentRepository.AddAsync(comment);
 
                 await fcmRepository.AddToGroup(
-                new AddUserToGroupRequest(){
+                new AddUserToGroupRequest()
+                {
                     GroupName = currentPost.OId,
                     Type = Feature.GetTypeName(currentPost),
                     UserIds = new List<string> { currentUser.OId }
@@ -192,7 +192,10 @@ namespace CoStudy.API.Infrastructure.Shared.Services
                 //Update again
                 return mapper.Map<CommentViewModel>(comment);
             }
-            else throw new Exception("Post đã bị xóa");
+            else
+            {
+                throw new Exception("Post đã bị xóa");
+            }
         }
 
         /// <summary>
@@ -213,7 +216,10 @@ namespace CoStudy.API.Infrastructure.Shared.Services
                 await postRepository.UpdateAsync(currentPost, currentPost.Id);
                 return "Xóa bình luận thành công";
             }
-            else throw new Exception("Comment không tồn tại hoặc đã bị xóa");
+            else
+            {
+                throw new Exception("Comment không tồn tại hoặc đã bị xóa");
+            }
         }
 
         /// <summary>
@@ -231,7 +237,10 @@ namespace CoStudy.API.Infrastructure.Shared.Services
                 await replyCommentRepository.UpdateAsync(currentReply, currentReply.Id);
                 return "Xóa câu trả lời thành công";
             }
-            else throw new Exception("Câu rả lời không tồn tại hoặc đã bị xóa");
+            else
+            {
+                throw new Exception("Câu rả lời không tồn tại hoặc đã bị xóa");
+            }
         }
 
         /// <summary>
@@ -247,7 +256,9 @@ namespace CoStudy.API.Infrastructure.Shared.Services
         public async Task<IEnumerable<CommentViewModel>> GetCommentByPostId(CommentFilterRequest request)
         {
             if (String.IsNullOrEmpty(request.PostId))
+            {
                 throw new Exception("Không tồn tại bài post");
+            }
 
             FilterDefinitionBuilder<Comment> builder = Builders<Comment>.Filter;
             FilterDefinition<Comment> filter = builder.Eq("post_id", request.PostId) & builder.Eq("status", ItemStatus.Active);
@@ -259,7 +270,9 @@ namespace CoStudy.API.Infrastructure.Shared.Services
                 IEnumerable<CommentViewModel> cmts = mapper.Map<IEnumerable<CommentViewModel>>(comments.AsEnumerable());
 
                 if (request.Skip.HasValue && request.Count.HasValue)
+                {
                     cmts = cmts.Skip(request.Skip.Value).Take(request.Count.Value);
+                }
 
                 if (request.Filter.HasValue && request.ArrangeType.HasValue)
                 {
@@ -268,15 +281,27 @@ namespace CoStudy.API.Infrastructure.Shared.Services
                         case CommentFilterType.CreatedDate:
                             {
                                 if (request.ArrangeType.Value == ArrangeType.Ascending)
+                                {
                                     cmts = cmts.OrderBy(x => x.CreatedDate);
-                                else cmts = cmts.OrderByDescending(x => x.CreatedDate);
+                                }
+                                else
+                                {
+                                    cmts = cmts.OrderByDescending(x => x.CreatedDate);
+                                }
+
                                 break;
                             }
                         case CommentFilterType.Upvote:
                             {
                                 if (request.ArrangeType.Value == ArrangeType.Ascending)
+                                {
                                     cmts = cmts.OrderBy(x => x.UpvoteCount);
-                                else cmts = cmts.OrderByDescending(x => x.UpvoteCount);
+                                }
+                                else
+                                {
+                                    cmts = cmts.OrderByDescending(x => x.UpvoteCount);
+                                }
+
                                 break;
                             }
                         default:
@@ -286,7 +311,9 @@ namespace CoStudy.API.Infrastructure.Shared.Services
                 }
 
                 if (!String.IsNullOrEmpty(request.Keyword))
+                {
                     cmts = cmts.Where(x => x.Content.Contains(request.Keyword));
+                }
 
                 foreach (CommentViewModel item in cmts)
                 {
@@ -294,17 +321,24 @@ namespace CoStudy.API.Infrastructure.Shared.Services
                     FilterDefinition<UpVote> finderUpvote = builderUpvote.Eq("object_vote_id", item.OId) & builderUpvote.Eq("upvote_by", currentUser.OId);
                     UpVote upvote = await upVoteRepository.FindAsync(finderUpvote);
                     if (upvote != null)
+                    {
                         item.IsVoteByCurrent = true;
+                    }
 
                     FilterDefinitionBuilder<DownVote> builderDownvote = Builders<DownVote>.Filter;
                     FilterDefinition<DownVote> finderDownvote = builderDownvote.Eq("object_vote_id", item.OId) & builderDownvote.Eq("downvote_by", currentUser.OId);
                     DownVote downvote = await downVoteRepository.FindAsync(finderDownvote);
                     if (downvote != null)
+                    {
                         item.IsDownVoteByCurrent = true;
+                    }
                 }
                 return cmts;
             }
-            else throw new Exception("Post không tồn tại hoặc đã bị xóa");
+            else
+            {
+                throw new Exception("Post không tồn tại hoặc đã bị xóa");
+            }
         }
         /// <summary>
         /// Gets the reply comment by comment identifier.
@@ -329,17 +363,24 @@ namespace CoStudy.API.Infrastructure.Shared.Services
                     FilterDefinition<UpVote> finderUpvote = builderUpvote.Eq("object_vote_id", item.OId) & builderUpvote.Eq("upvote_by", currentUser.OId);
                     UpVote upvote = await upVoteRepository.FindAsync(finderUpvote);
                     if (upvote != null)
+                    {
                         item.IsVoteByCurrent = true;
+                    }
 
                     FilterDefinitionBuilder<DownVote> builderDownvote = Builders<DownVote>.Filter;
                     FilterDefinition<DownVote> finderDownvote = builderDownvote.Eq("object_vote_id", item.OId) & builderDownvote.Eq("downvote_by", currentUser.OId);
                     DownVote downvote = await downVoteRepository.FindAsync(finderDownvote);
                     if (downvote != null)
+                    {
                         item.IsDownVoteByCurrent = true;
+                    }
                 }
                 return cmts;
             }
-            else throw new Exception("Bình luận không tồn tại hoặc đã bị xóa");
+            else
+            {
+                throw new Exception("Bình luận không tồn tại hoặc đã bị xóa");
+            }
         }
 
         /// <summary>
@@ -404,8 +445,10 @@ namespace CoStudy.API.Infrastructure.Shared.Services
 
                 return mapper.Map<ReplyCommentViewModel>(replyComment);
             }
-            else throw new Exception("Bình luận đã bị xóa");
-
+            else
+            {
+                throw new Exception("Bình luận đã bị xóa");
+            }
         }
         /// <summary>
         /// Upvotes the comment.
@@ -424,7 +467,9 @@ namespace CoStudy.API.Infrastructure.Shared.Services
 
             DownVote existDownvote = await downVoteRepository.FindAsync(downvoteFinder);
             if (existDownvote != null)
+            {
                 await downVoteRepository.DeleteAsync(existDownvote.Id);
+            }
 
             FilterDefinitionBuilder<UpVote> upvotebuilder = Builders<UpVote>.Filter;
             FilterDefinition<UpVote> upvoteFinder = upvotebuilder.Eq("object_vote_id", commentId) & upvotebuilder.Eq("upvote_by", currentUser.OId);
@@ -472,7 +517,10 @@ namespace CoStudy.API.Infrastructure.Shared.Services
                 return "Upvote thành công";
             }
 
-            else return "Bạn đã upvote rồi";
+            else
+            {
+                return "Bạn đã upvote rồi";
+            }
         }
 
         /// <summary>
@@ -490,7 +538,9 @@ namespace CoStudy.API.Infrastructure.Shared.Services
             UpVote existUpvote = await upVoteRepository.FindAsync(finder);
 
             if (existUpvote != null)
+            {
                 await upVoteRepository.DeleteAsync(existUpvote.Id);
+            }
 
             FilterDefinitionBuilder<DownVote> builderDownVote = Builders<DownVote>.Filter;
 
@@ -541,7 +591,10 @@ namespace CoStudy.API.Infrastructure.Shared.Services
 
                 return "Downvote thành công";
             }
-            else return "Bạn đã downvote rồi";
+            else
+            {
+                return "Bạn đã downvote rồi";
+            }
         }
 
 
@@ -562,7 +615,9 @@ namespace CoStudy.API.Infrastructure.Shared.Services
 
             DownVote existDownvote = await downVoteRepository.FindAsync(downvoteFinder);
             if (existDownvote != null)
+            {
                 await downVoteRepository.DeleteAsync(existDownvote.Id);
+            }
 
             FilterDefinitionBuilder<UpVote> upvotebuilder = Builders<UpVote>.Filter;
             FilterDefinition<UpVote> upvoteFinder = upvotebuilder.Eq("object_vote_id", commentId) & upvotebuilder.Eq("upvote_by", currentUser.OId);
@@ -610,7 +665,10 @@ namespace CoStudy.API.Infrastructure.Shared.Services
                 return "Upvote thành công";
             }
 
-            else return "Bạn đã upvote rồi";
+            else
+            {
+                return "Bạn đã upvote rồi";
+            }
         }
 
         /// <summary>
@@ -628,7 +686,9 @@ namespace CoStudy.API.Infrastructure.Shared.Services
             UpVote existUpvote = await upVoteRepository.FindAsync(finder);
 
             if (existUpvote != null)
+            {
                 await upVoteRepository.DeleteAsync(existUpvote.Id);
+            }
 
             FilterDefinitionBuilder<DownVote> builderDownVote = Builders<DownVote>.Filter;
 
@@ -679,7 +739,10 @@ namespace CoStudy.API.Infrastructure.Shared.Services
 
                 return "Downvote thành công";
             }
-            else return "Bạn đã downvote rồi";
+            else
+            {
+                return "Bạn đã downvote rồi";
+            }
         }
 
 
@@ -693,7 +756,9 @@ namespace CoStudy.API.Infrastructure.Shared.Services
         {
             Comment comment = await commentRepository.GetByIdAsync(ObjectId.Parse(request.Id));
             if (comment == null)
+            {
                 throw new Exception("Không tìm thấy bình luận");
+            }
 
             comment.Content = request.Content;
             comment.Image = request.Image;
@@ -713,7 +778,10 @@ namespace CoStudy.API.Infrastructure.Shared.Services
         {
             ReplyComment reply = await replyCommentRepository.GetByIdAsync(ObjectId.Parse(request.Id));
             if (reply == null)
+            {
                 throw new Exception("Không tìm thấy câu trả lời");
+            }
+
             reply.Content = request.Content;
             reply.IsEdited = true;
             reply.ModifiedDate = DateTime.Now;

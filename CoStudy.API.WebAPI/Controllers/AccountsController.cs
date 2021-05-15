@@ -69,9 +69,9 @@ namespace CoStudy.API.WebAPI.Controllers
 
 
         [HttpPost("google-login")]
-        public async  Task<ActionResult<object>> GoogleLogin(GoogleAuthenticationRequest request)
+        public async Task<ActionResult<object>> GoogleLogin(GoogleAuthenticationRequest request)
         {
-            var data =await  googleAuthServices.ExternalLogin(request, ipAddress());
+            var data = await googleAuthServices.ExternalLogin(request, ipAddress());
 
             return Ok(new ApiOkResponse(data));
         }
@@ -102,11 +102,15 @@ namespace CoStudy.API.WebAPI.Controllers
             string token = model.Token ?? Request.Cookies["refreshToken"];
 
             if (string.IsNullOrEmpty(token))
+            {
                 return BadRequest(new { message = "Token is required" });
+            }
 
             // users can revoke their own tokens and admins can revoke any tokens
             if (!Account.OwnsToken(token) && Account.Role != Role.Admin)
+            {
                 return Unauthorized(new { message = "Unauthorized" });
+            }
 
             _accountService.RevokeToken(token, ipAddress());
             return Ok(new ApiOkResponse("Token revoked"));
@@ -191,7 +195,9 @@ namespace CoStudy.API.WebAPI.Controllers
         {
             // users can get their own account and admins can get any account
             if (id != Account.Id.ToString() && Account.Role != Role.Admin)
+            {
                 return Unauthorized(new { message = "Unauthorized" });
+            }
 
             AccountResponse account = _accountService.GetById(id);
             return Ok(new ApiOkResponse(account));
@@ -222,11 +228,15 @@ namespace CoStudy.API.WebAPI.Controllers
         {
             // users can update their own account and admins can update any account
             if (id != Account.Id.ToString() && Account.Role != Role.Admin)
+            {
                 return Unauthorized(new { message = "Unauthorized" });
+            }
 
             // only admins can update role
             if (Account.Role != Role.Admin)
+            {
                 model.Role = null;
+            }
 
             AccountResponse account = _accountService.Update(id, model);
             return Ok(new ApiOkResponse(account));
@@ -273,9 +283,13 @@ namespace CoStudy.API.WebAPI.Controllers
         private string ipAddress()
         {
             if (Request.Headers.ContainsKey("X-Forwarded-For"))
+            {
                 return Request.Headers["X-Forwarded-For"];
+            }
             else
+            {
                 return HttpContext.Connection.RemoteIpAddress.MapToIPv4().ToString();
+            }
         }
 
         /// <summary>

@@ -8,7 +8,6 @@ using MongoDB.Bson;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace CoStudy.API.Infrastructure.Shared.AutoMapper
 {
@@ -84,11 +83,15 @@ namespace CoStudy.API.Infrastructure.Shared.AutoMapper
             var currentUser = Feature.CurrentUser(httpContextAccessor, userRepository);
 
             if (currentUser == null)
+            {
                 throw new Exception("Vui lòng đăng nhập. ");
+            }
+
             var author = userRepository.GetById(ObjectId.Parse(source.AuthorId));
             if (author == null)
+            {
                 throw new Exception("Không tim thấy author phù hợp. ");
-
+            }
 
             destination.AuthorName = $"{author?.FirstName} {author?.LastName}";
             destination.AuthorAvatar = author?.AvatarHash;

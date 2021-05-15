@@ -1,10 +1,7 @@
 ﻿using CoStudy.API.Domain.Entities.Application;
-using CoStudy.API.Infrastructure.Shared.Models.Request.BaseRequest;
-using CoStudy.API.Infrastructure.Shared.Models.Request.ReportRequest;
+using CoStudy.API.Infrastructure.Shared.Models.Request;
 using CoStudy.API.Infrastructure.Shared.ViewModels;
-using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace CoStudy.API.Infrastructure.Shared.Services
@@ -47,7 +44,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services
         /// </summary>
         /// <param name="request">The request.</param>
         /// <returns></returns>
-        Task<ReportViewModel> CommentReport( CreateCommentReportRequest request);
+        Task<ReportViewModel> CommentReport(CreateCommentReportRequest request);
 
         /// <summary>
         /// Replies the report.
