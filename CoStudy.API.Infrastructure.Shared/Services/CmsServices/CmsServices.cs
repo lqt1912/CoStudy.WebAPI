@@ -7,65 +7,46 @@ using CoStudy.API.Infrastructure.Identity.Repositories.AccountRepository;
 using CoStudy.API.Infrastructure.Identity.Repositories.ExternalLoginRepository;
 using CoStudy.API.Infrastructure.Shared.Paging;
 using CoStudy.API.Infrastructure.Shared.ViewModels;
+using MongoDB.Bson;
 using MongoDB.Driver;
+using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace CoStudy.API.Infrastructure.Shared.Services
 {
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <seealso cref="CoStudy.API.Infrastructure.Shared.Services.ICmsServices" />
     public class CmsServices : ICmsServices
     {
-
-        /// <summary>
-        /// The user repository
-        /// </summary>
         IUserRepository userRepository;
 
-        /// <summary>
-        /// The account repository
-        /// </summary>
         IAccountRepository accountRepository;
 
-        /// <summary>
-        /// The mapper
-        /// </summary>
         IMapper mapper;
 
-        /// <summary>
-        /// The external login repository
-        /// </summary>
         IExternalLoginRepository externalLoginRepository;
 
-        /// <summary>
-        /// The post repository
-        /// </summary>
         IPostRepository postRepository;
 
+        ICommentRepository commentRepository;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="CmsServices"/> class.
-        /// </summary>
-        /// <param name="userRepository">The user repository.</param>
-        /// <param name="mapper">The mapper.</param>
-        public CmsServices(IUserRepository userRepository, IMapper mapper, IAccountRepository accountRepository, IExternalLoginRepository externalLoginRepository, IPostRepository postRepository)
+        IReplyCommentRepository replyCommentRepository;
+
+        private IReportRepository reportRepository;
+
+        public CmsServices(IUserRepository userRepository, IMapper mapper, IAccountRepository accountRepository, IExternalLoginRepository externalLoginRepository, IPostRepository postRepository, ICommentRepository commentRepository, IReplyCommentRepository replyCommentRepository, IReportRepository reportRepository)
         {
             this.userRepository = userRepository;
             this.mapper = mapper;
             this.accountRepository = accountRepository;
             this.externalLoginRepository = externalLoginRepository;
             this.postRepository = postRepository;
+            this.commentRepository = commentRepository;
+            this.replyCommentRepository = replyCommentRepository;
+            this.reportRepository = reportRepository;
         }
 
-        /// <summary>
-        /// Gets the user paged.
-        /// </summary>
-        /// <param name="request">The request.</param>
-        /// <returns></returns>
         public TableResultJson<UserViewModel> GetUserPaged(TableRequest request)
         {
             var dataSource = userRepository.GetAll().OrderByDescending(x => x.CreatedDate).AsEnumerable();
@@ -117,12 +98,22 @@ namespace CoStudy.API.Infrastructure.Shared.Services
             return response;
         }
 
+        public TableResultJson<ReportViewModel> GetReportPaged(TableRequest request)
+        {
+            var dataSource = reportRepository.GetAll();
+            var dataSourceViewModel = mapper.Map<List<ReportViewModel>>(dataSource).AsEnumerable();
+            var response = new TableResultJson<ReportViewModel>();
+            response.draw = request.draw;
+            response.recordsFiltered = dataSourceViewModel.Count();
+            dataSourceViewModel = dataSourceViewModel.Skip(request.start).Take(request.length);
+            response.data = dataSourceViewModel.ToList();
+            foreach (var item in response.data)
+            {
+                item.Index = response.data.IndexOf(item) + request.start + 1;
+            }
 
-        /// <summary>
-        /// Gets the post paged.
-        /// </summary>
-        /// <param name="request">The request.</param>
-        /// <returns></returns>
+            return response;
+        }
         public TableResultJson<PostViewModel> GetPostPaged(TableRequest request)
         {
             var dataSource = postRepository.GetAll().OrderByDescending(x => x.CreatedDate).ToList();
@@ -144,28 +135,119 @@ namespace CoStudy.API.Infrastructure.Shared.Services
                     dataSourceViewModel = dataSourceViewModel.Where(x => x.Title.Contains(request.columns[2].search.value));
                 }
             }
-
+            if (request.columns[4].search != null)
+            {
+                if (!string.IsNullOrEmpty(request.columns[4].search.value))
+                {
+                    var dt = DateTime.TryParseExact(request.columns[4].search.value, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out var datetime);
+                    if (dt)
+                        dataSourceViewModel = dataSourceViewModel.Where(x => x.CreatedDate.Date == datetime);
+                }
+            }
             TableResultJson<PostViewModel> response = new TableResultJson<PostViewModel>();
             response.draw = request.draw;
             response.recordsFiltered = dataSourceViewModel.Count();
             dataSourceViewModel = dataSourceViewModel.Skip(request.start).Take(request.length);
             response.data = dataSourceViewModel.ToList();
 
-            foreach (PostViewModel item in response.data)
-            {
-                item.Index = response.data.IndexOf(item) + request.start + 1;
-            }
+            response.data.ForEach(x => { x.Index = response.data.IndexOf(x) + request.start + 1; });
+
             return response;
         }
 
-        /// <summary>
-        /// Gets the by email.
-        /// </summary>
-        /// <param name="email">The email.</param>
-        /// <returns></returns>
+        public TableResultJson<CommentViewModel> GetCommentPaged(TableRequest request)
+        {
+            var dataSource = commentRepository.GetAll().OrderByDescending(x => x.CreatedDate).ToList();
+            var dataSourceViewModel = mapper.Map<List<CommentViewModel>>(dataSource).AsEnumerable();
+
+            if (request.columns[1].search != null)
+            {
+                if (!string.IsNullOrEmpty(request.columns[1].search.value))
+                    dataSourceViewModel = dataSourceViewModel.Where(x => x.OId.Contains(request.columns[1].search.value));
+            }
+
+            if (request.columns[2].search != null)
+            {
+                if (!string.IsNullOrEmpty(request.columns[2].search.value))
+                    dataSourceViewModel = dataSourceViewModel.Where(x => x.AuthorName.Contains(request.columns[2].search.value));
+            }
+
+            if (request.columns[3].search != null)
+            {
+                if (!string.IsNullOrEmpty(request.columns[3].search.value))
+                {
+                    var dt = DateTime.TryParseExact(request.columns[3].search.value, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out var datetime);
+                    if (dt)
+                        dataSourceViewModel = dataSourceViewModel.Where(x => x.CreatedDate.Value.Date == datetime);
+                }
+            }
+
+            if (request.columns[10].search != null)
+            {
+                var _value = request.columns[10].search.value;
+                if (!String.IsNullOrEmpty(_value))
+                    dataSourceViewModel = dataSourceViewModel.Where(x => x.Content.Contains(_value));
+            }
+
+            TableResultJson<CommentViewModel> response = new TableResultJson<CommentViewModel>();
+            response.draw = request.draw;
+            response.recordsFiltered = dataSourceViewModel.Count();
+            dataSourceViewModel = dataSourceViewModel.Skip(request.start).Take(request.length);
+            response.data = dataSourceViewModel.ToList();
+
+            response.data.ForEach(x => { x.Index = response.data.IndexOf(x) + request.start + 1; });
+            return response;
+        }
+
+        public TableResultJson<ReplyCommentViewModel> GetReplyCommentPaged(TableRequest request)
+        {
+            var dataSource = replyCommentRepository.GetAll().OrderByDescending(x => x.CreatedDate).ToList();
+            var dataSourceViewModel = (mapper.Map<List<ReplyCommentViewModel>>(dataSource)).AsEnumerable();
+
+            if (request.columns[1].search != null)
+            {
+                var _value1 = request.columns[1].search.value;
+                if (!string.IsNullOrEmpty(_value1))
+                    dataSourceViewModel = dataSourceViewModel.Where(x => x.OId.Contains(_value1));
+            }
+
+            if (request.columns[2].search != null)
+            {
+                var _value2 = request.columns[2].search.value;
+                if (!string.IsNullOrEmpty(_value2))
+                    dataSourceViewModel = dataSourceViewModel.Where(x => x.AuthorName.Contains(_value2));
+            }
+
+            if (request.columns[3].search != null)
+            {
+                if (!string.IsNullOrEmpty(request.columns[3].search.value))
+                {
+                    var dt = DateTime.TryParseExact(request.columns[3].search.value, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out var datetime);
+                    if (dt)
+                        dataSourceViewModel = dataSourceViewModel.Where(x => x.CreatedDate.Value.Date == datetime);
+                }
+            }
+
+            if (request.columns[8].search != null)
+            {
+                var _value4 = request.columns[8].search.value;
+                if (!string.IsNullOrEmpty(_value4))
+                    dataSourceViewModel = dataSourceViewModel.Where(x => x.Content.Contains(_value4));
+            }
+
+            var response = new TableResultJson<ReplyCommentViewModel>();
+            response.draw = request.draw;
+            response.recordsFiltered = dataSourceViewModel.Count();
+            dataSourceViewModel = dataSourceViewModel.Skip(request.start).Take(request.length);
+            response.data = dataSourceViewModel.ToList();
+
+            response.data.ForEach(x=> { x.Index = response.data.IndexOf(x) + request.start + 1; });
+            return response;
+
+        }
+
         public async Task<UserProfileViewModel> GetByEmail(string email)
         {
-
             var accountFilter = Builders<Account>.Filter.Eq("Email", email);
             var account = await accountRepository.FindAsync(accountFilter);
 
@@ -182,6 +264,27 @@ namespace CoStudy.API.Infrastructure.Shared.Services
                 ExternalLogin = external,
                 User = userViewModel
             };
+            return result;
+        }
+
+        public async Task<CommentViewModel> GetCommentById(string id)
+        {
+            var comment = await commentRepository.GetByIdAsync(ObjectId.Parse(id));
+            var result = mapper.Map<CommentViewModel>(comment);
+            return result;
+        }
+
+        public async Task<ReplyCommentViewModel> GetReplyCommentById(string id)
+        {
+            var replyComment = await replyCommentRepository.GetByIdAsync(ObjectId.Parse(id));
+            var result = mapper.Map<ReplyCommentViewModel>(replyComment);
+            return result;
+        }
+
+        public async Task<PostViewModel> GetPostById(string id)
+        {
+            var post = await postRepository.GetByIdAsync(ObjectId.Parse(id));
+            var result = mapper.Map<PostViewModel>(post);
             return result;
         }
     }

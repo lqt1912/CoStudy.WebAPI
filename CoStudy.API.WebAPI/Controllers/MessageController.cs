@@ -8,35 +8,19 @@ using System.Threading.Tasks;
 
 namespace CoStudy.API.WebAPI.Controllers
 {
-    /// <summary>
-    /// The Message Controller.
-    /// </summary>
-    /// <seealso cref="Microsoft.AspNetCore.Mvc.ControllerBase" />
-    [Route("api/[controller]")]
+        [Route("api/[controller]")]
     [ApiController]
 
     public class MessageController : ControllerBase
     {
-        /// <summary>
-        /// The message service
-        /// </summary>
-        IMessageService messageService;
-        /// <summary>
-        /// Initializes a new instance of the <see cref="MessageController"/> class.
-        /// </summary>
-        /// <param name="messageService">The message service.</param>
-        public MessageController(IMessageService messageService)
+           IMessageService messageService;
+            public MessageController(IMessageService messageService)
         {
             this.messageService = messageService;
         }
 
 
-        /// <summary>
-        /// Adds the message.
-        /// </summary>
-        /// <param name="request">The request.</param>
-        /// <returns></returns>
-        [Authorize]
+             [Authorize]
         [HttpPost]
         [Route("message/add")]
         public async Task<IActionResult> AddMessage(AddMessageRequest request)
@@ -46,12 +30,7 @@ namespace CoStudy.API.WebAPI.Controllers
             return Ok(new ApiOkResponse(data));
         }
 
-        /// <summary>
-        /// Gets the message by conversation identifier.
-        /// </summary>
-        /// <param name="request">The request.</param>
-        /// <returns></returns>
-        [HttpGet]
+             [HttpGet]
         [Route("message/get/conversation")]
         public async Task<IActionResult> GetMessageByConversationId([FromQuery] GetMessageByConversationIdRequest request)
         {
@@ -61,12 +40,7 @@ namespace CoStudy.API.WebAPI.Controllers
 
 
 
-        /// <summary>
-        /// Deletes the message.
-        /// </summary>
-        /// <param name="id">The identifier.</param>
-        /// <returns></returns>
-        [HttpDelete]
+             [HttpDelete]
         [Route("message/{id}")]
         public async Task<IActionResult> DeleteMessage(string id)
         {
@@ -74,12 +48,7 @@ namespace CoStudy.API.WebAPI.Controllers
             return Ok(new ApiOkResponse(data));
         }
 
-        /// <summary>
-        /// Edits the message.
-        /// </summary>
-        /// <param name="request">The request.</param>
-        /// <returns></returns>
-        [HttpPut]
+             [HttpPut]
         [Route("update")]
         public async Task<IActionResult> EditMessage(UpdateMessageRequest request)
         {
@@ -87,11 +56,7 @@ namespace CoStudy.API.WebAPI.Controllers
             return Ok(new ApiOkResponse(data));
         }
 
-        /// <summary>
-        /// Gets all.
-        /// </summary>
-        /// <returns></returns>
-        [HttpGet]
+            [HttpGet]
         [Route("all")]
         public IActionResult GetAll()
         {

@@ -1,6 +1,8 @@
-﻿using CoStudy.API.Domain.Entities.BaseEntity;
+﻿using System;
+using CoStudy.API.Domain.Entities.BaseEntity;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
+using Newtonsoft.Json;
 using System.Text.Json.Serialization;
 
 namespace CoStudy.API.Domain.Entities.Application
@@ -28,5 +30,17 @@ namespace CoStudy.API.Domain.Entities.Application
         [BsonElement("value")]
         [JsonPropertyName("value")]
         public string Value { get; set; }
+
+        [JsonPropertyName("status")]
+        [JsonProperty("status")]
+        [BsonElement("status")]
+        public ItemStatus Status { get; set; }
+
+        [BsonElement("created_date")]
+        public DateTime CreatedDate { get; set; } = DateTime.Now;
+
+        [BsonElement("modified_date")]
+        public DateTime Modified_Date { get; set; } =DateTime.Now;
+
     }
 }

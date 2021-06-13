@@ -9,34 +9,18 @@ using System.Threading.Tasks;
 
 namespace CoStudy.API.WebAPI.Controllers
 {
-    /// <summary>
-    /// Class NotificationController
-    /// </summary>
-    /// <seealso cref="Microsoft.AspNetCore.Mvc.ControllerBase" />
     [Route("api/[controller]")]
     [ApiController]
     [Authorize]
     public class NofticationController : ControllerBase
     {
-        /// <summary>
-        /// The noftication service
-        /// </summary>
         INofticationService nofticationService;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="NofticationController"/> class.
-        /// </summary>
-        /// <param name="nofticationService">The noftication service.</param>
         public NofticationController(INofticationService nofticationService)
         {
             this.nofticationService = nofticationService;
         }
 
-        /// <summary>
-        /// Adds the type of the notification.
-        /// </summary>
-        /// <param name="requst">The requst.</param>
-        /// <returns></returns>
         [HttpPost("add-type")]
         public async Task<IActionResult> AddNotificationType(NotificationType request)
         {
@@ -44,11 +28,6 @@ namespace CoStudy.API.WebAPI.Controllers
             return Ok(new ApiOkResponse(data));
         }
 
-        /// <summary>
-        /// Adds the noftication.
-        /// </summary>
-        /// <param name="request">The request.</param>
-        /// <returns></returns>
         [HttpPost]
         [Route("add")]
         public async Task<IActionResult> AddNoftication(AddNofticationRequest request)
@@ -57,10 +36,6 @@ namespace CoStudy.API.WebAPI.Controllers
             return Ok(new ApiOkResponse(data));
         }
 
-        /// <summary>
-        /// Gets the current user noftication.
-        /// </summary>
-        /// <returns></returns>
         [HttpGet]
         [Route("current")]
         public async Task<IActionResult> GetCurrentUserNoftication()
@@ -69,11 +44,6 @@ namespace CoStudy.API.WebAPI.Controllers
             return Ok(new ApiOkResponse(data));
         }
 
-        /// <summary>
-        /// Deletes the specified identifier.
-        /// </summary>
-        /// <param name="id">The identifier.</param>
-        /// <returns></returns>
         [HttpDelete]
         [Route("{id}")]
         public async Task<IActionResult> Delete(string id)
@@ -82,11 +52,6 @@ namespace CoStudy.API.WebAPI.Controllers
             return Ok(new ApiOkResponse(data));
         }
 
-        /// <summary>
-        /// Marks as read.
-        /// </summary>
-        /// <param name="id">The identifier.</param>
-        /// <returns></returns>
         [HttpPut]
         [Route("read")]
         public async Task<IActionResult> MarkAsRead(string id)

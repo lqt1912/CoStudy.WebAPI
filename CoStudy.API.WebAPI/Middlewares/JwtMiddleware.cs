@@ -9,40 +9,27 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using CoStudy.API.Application.Repositories;
+using CoStudy.API.Domain.Entities.Application;
+using MongoDB.Driver;
 
 namespace CoStudy.API.WebAPI.Middlewares
 {
-    /// <summary>
-    /// Jwt middleware
-    /// </summary>
     public class JwtMiddleware
     {
-        /// <summary>
-        /// The next
-        /// </summary>
         private readonly RequestDelegate _next;
-        /// <summary>
-        /// The application settings
-        /// </summary>
         private readonly AppSettings _appSettings;
+        private readonly IUserRepository userRepository;
 
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="JwtMiddleware"/> class.
-        /// </summary>
-        /// <param name="next">The next.</param>
-        /// <param name="appSettings">The application settings.</param>
-        public JwtMiddleware(RequestDelegate next, IOptions<AppSettings> appSettings)
+
+        public JwtMiddleware(RequestDelegate next, IOptions<AppSettings> appSettings, IUserRepository userRepository)
         {
             _next = next;
+            this.userRepository = userRepository;
             _appSettings = appSettings.Value;
         }
 
-        /// <summary>
-        /// Invokes the specified context.
-        /// </summary>
-        /// <param name="context">The context.</param>
-        /// <param name="accountRepository">The account repository.</param>
         public async Task Invoke(HttpContext context, IAccountRepository accountRepository)
         {
             string token = context.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
@@ -55,12 +42,6 @@ namespace CoStudy.API.WebAPI.Middlewares
             await _next(context);
         }
 
-        /// <summary>
-        /// Attaches the account to context.
-        /// </summary>
-        /// <param name="context">The context.</param>
-        /// <param name="token">The token.</param>
-        /// <param name="accountRepository">The account repository.</param>
         private async Task attachAccountToContext(HttpContext context, string token, IAccountRepository accountRepository)
         {
             try
@@ -79,7 +60,12 @@ namespace CoStudy.API.WebAPI.Middlewares
 
                 JwtSecurityToken jwtToken = (JwtSecurityToken)validatedToken;
                 string accountId = jwtToken.Claims.First(x => x.Type == "_id").Value;
+                string accountEmail = jwtToken.Claims.First(x => x.Type == "_email").Value;
 
+                var user = await userRepository.FindAsync(Builders<User>.Filter.Eq("email", accountEmail));
+                var isExist = user.JwtTokens.Any(x=>x==token);
+                if (!isExist)
+                    throw new ArgumentNullException();
                 // attach account to context on successful jwt validation
                 context.Items["Account"] = await accountRepository.GetByIdAsync(ObjectId.Parse(accountId));
             }

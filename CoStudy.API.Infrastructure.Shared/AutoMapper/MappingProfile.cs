@@ -7,22 +7,15 @@ using CoStudy.API.Infrastructure.Shared.ViewModels;
 
 namespace CoStudy.API.Infrastructure.Shared.AutoMapper
 {
-    /// <summary>
-    /// Class MappingProfile
-    /// </summary>
-    /// <seealso cref="AutoMapper.Profile" />
     public class MappingProfile : Profile
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="MappingProfile" /> class.
-        /// </summary>
         public MappingProfile()
         {
             CreateMap<Logging, LoggingViewModel>()
                 .ForMember(dest => dest.CreatedDate, opt => opt.MapFrom(dest => dest.CreatedDate.Value.ToString("dd/MM/yyyy")));
 
             CreateMap<Account, AccountResponse>().ReverseMap();
-
+                
             CreateMap<Account, AuthenticateResponse>();
 
             CreateMap<RegisterRequest, Account>();
@@ -93,6 +86,7 @@ namespace CoStudy.API.Infrastructure.Shared.AutoMapper
             CreateMap<MessageMultiMedia, MessageViewModel>().ForMember(dest => dest.Content, opt => opt.MapFrom(src => src.MediaUrl)).AfterMap<MessageConvertAction>();
 
             CreateMap<FieldGroup, FieldGroupViewModel>().ForMember(dest => dest.Fields, opt => opt.Ignore()).AfterMap<FieldGroupConvertAction>();
+            CreateMap<Field, FieldViewModel>().AfterMap<FieldConvertAction>();
         }
     }
 }

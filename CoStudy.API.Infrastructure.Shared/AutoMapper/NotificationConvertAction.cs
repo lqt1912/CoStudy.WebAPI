@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using System;
+using AutoMapper;
 using CoStudy.API.Application.Repositories;
 using CoStudy.API.Domain.Entities.Application;
 using CoStudy.API.Infrastructure.Shared.ViewModels;
@@ -17,9 +18,18 @@ namespace CoStudy.API.Infrastructure.Shared.AutoMapper
 
         public void Process(Noftication source, NotificationViewModel destination, ResolutionContext context)
         {
-            var author = userRepository.GetById(ObjectId.Parse(source.AuthorId));
-            destination.AuthorAvatar = author?.AvatarHash;
-            destination.AuthorName = $"{author?.FirstName} {author?.LastName}";
+            try
+            {
+                var author = userRepository.GetById(ObjectId.Parse(source.AuthorId));
+                destination.AuthorAvatar = author?.AvatarHash;
+                destination.AuthorName = $"{author?.FirstName} {author?.LastName}";
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+           
         }
     }
 }

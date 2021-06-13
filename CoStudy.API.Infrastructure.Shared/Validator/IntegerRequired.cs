@@ -18,15 +18,14 @@ namespace CoStudy.API.Infrastructure.Shared.Validator
                 return true;
             }
 
-            string strVal = (string)value;
+            var strVal = (string)value;
 
-            int intVal;
-            if (!int.TryParse(strVal, out intVal))
+            if (!int.TryParse(strVal, out var intVal))
             {
                 throw new Exception("Không chuyển đổi được");
             }
-            else
-                if (intVal < 0)
+
+            if (intVal < 0)
             {
                 throw new Exception("Vui lòng nhập số dương");
             }

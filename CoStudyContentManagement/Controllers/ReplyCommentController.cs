@@ -25,7 +25,8 @@ namespace CoStudyContentManagement.Controllers
         /// </summary>
         /// <param name="replyCommentId">The reply comment identifier.</param>
         /// <returns></returns>
-        public IActionResult GetById(string replyCommentId)
+        [Route("detail")]
+        public IActionResult GetById([FromQuery]string replyCommentId)
         {
             ViewBag.replyCommentId = replyCommentId;
             return View();

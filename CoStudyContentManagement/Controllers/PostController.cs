@@ -25,8 +25,9 @@ namespace CoStudyContentManagement.Controllers
         /// </summary>
         /// <returns></returns>
         [Route("detail")]
-        public IActionResult PostDetail()
+        public IActionResult PostDetail([FromQuery] string postId)
         {
+            ViewBag.postId = postId;
             return View();
         }
     }

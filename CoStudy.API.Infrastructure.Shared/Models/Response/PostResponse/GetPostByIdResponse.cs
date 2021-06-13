@@ -29,31 +29,17 @@ namespace CoStudy.API.Infrastructure.Shared.Models.Response.PostResponse
         [JsonPropertyName("modified_date")]
         public DateTime ModifiedDate { get; set; }
 
-        /// <summary>
-        /// String content of posts
-        /// </summary>
-        [JsonPropertyName("string_contents")]
+           [JsonPropertyName("string_contents")]
         public List<PostContent> StringContents { get; set; }
 
 
-        /// <summary>
-        /// Media content of post
-        /// </summary>
-        [JsonPropertyName("image_contents")]
+           [JsonPropertyName("image_contents")]
         public List<Image> MediaContents { get; set; }
 
-        /// <summary>
-        /// Bình luận
-        /// </summary>
-        /// 
-        [JsonPropertyName("comments")]
+            [JsonPropertyName("comments")]
         public List<Comment> Comments { get; set; }
 
-        /// <summary>
-        /// Lĩnh vực của bài post
-        /// </summary>
-        /// 
-        [JsonPropertyName("fields")]
+            [JsonPropertyName("fields")]
         public List<Field> Fields { get; set; }
     }
 }

@@ -7,6 +7,7 @@ using Microsoft.Extensions.Options;
 using MimeKit;
 using MimeKit.Text;
 using System.IO;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace CoStudy.API.Infrastructure.Identity.Services.Implements
@@ -53,7 +54,11 @@ namespace CoStudy.API.Infrastructure.Identity.Services.Implements
         public async Task SendEmailAsync(MailRequest mailRequest)
         {
             MimeMessage email = new MimeMessage();
-            email.Sender = new MailboxAddress(_mailSettings.DisplayName, _mailSettings.Mail);
+
+            email.Sender = new MailboxAddress(Encoding.UTF8, _mailSettings.DisplayName, _mailSettings.Mail);
+
+            email.From.Add(email.Sender);
+
             email.To.Add(MailboxAddress.Parse(mailRequest.ToEmail));
             email.Subject = mailRequest.Subject;
             BodyBuilder builder = new BodyBuilder();

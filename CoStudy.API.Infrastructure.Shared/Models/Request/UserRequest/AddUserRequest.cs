@@ -7,9 +7,11 @@ namespace CoStudy.API.Infrastructure.Shared.Models.Request
 {
     public class AddUserRequest
     {
+        [Required]
         [JsonPropertyName("first_name")]
         public string FisrtName { get; set; }
 
+        [Required]
         [JsonPropertyName("last_name")]
         public string LastName { get; set; }
 
@@ -17,10 +19,11 @@ namespace CoStudy.API.Infrastructure.Shared.Models.Request
         [JsonPropertyName("date_of_birth")]
         public DateTime DateOfBirth { get; set; }
 
+        [EmailAddress]
         [JsonPropertyName("email")]
         public string Email { get; set; }
 
-
+        [Required]
         [JsonPropertyName("phone_number")]
         public string PhoneNumber { get; set; }
 
@@ -28,22 +31,21 @@ namespace CoStudy.API.Infrastructure.Shared.Models.Request
         public Address Address { get; set; }
 
 
-        /// <summary>
-        /// for authentication
-        /// </summary>
         [JsonPropertyName("accept_term")]
         [Range(typeof(bool), "true", "true")]
         public bool AcceptTerms { get; set; }
 
-        //   [Required]
+        [Required]
         [MinLength(6)]
         public string Password { get; set; }
 
-        //   [Required]
+        [Required]
         [Compare("Password")]
         public string ConfirmPassword { get; set; }
 
         //   [Required]
         public string Title { get; set; }
+
+        public bool IsExternalRegister { get; set; } 
     }
 }

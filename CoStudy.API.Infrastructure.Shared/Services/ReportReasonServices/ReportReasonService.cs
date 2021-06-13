@@ -13,37 +13,17 @@ using System.Threading.Tasks;
 
 namespace CoStudy.API.Infrastructure.Shared.Services
 {
-    /// <summary>
-    /// The Report reason service. 
-    /// </summary>
-    /// <seealso cref="CoStudy.API.Infrastructure.Shared.Services.IReportReasonService" />
-    public class ReportReasonService : IReportReasonService
+        public class ReportReasonService : IReportReasonService
     {
-        /// <summary>
-        /// The report reason repository
-        /// </summary>
-        IReportReasonRepository reportReasonRepository;
+           IReportReasonRepository reportReasonRepository;
 
-        /// <summary>
-        /// The HTTP context accessor
-        /// </summary>
-        IHttpContextAccessor httpContextAccessor;
+           IHttpContextAccessor httpContextAccessor;
 
-        /// <summary>
-        /// The user repository
-        /// </summary>
-        IUserRepository userRepository;
+           IUserRepository userRepository;
 
-        /// <summary>
-        /// The mapper
-        /// </summary>
-        IMapper mapper;
+           IMapper mapper;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ReportReasonService"/> class.
-        /// </summary>
-        /// <param name="reportReasonRepository">The report reason repository.</param>
-        public ReportReasonService(IReportReasonRepository reportReasonRepository, IMapper mapper, IHttpContextAccessor httpContextAccessor, IUserRepository userRepository)
+            public ReportReasonService(IReportReasonRepository reportReasonRepository, IMapper mapper, IHttpContextAccessor httpContextAccessor, IUserRepository userRepository)
         {
             this.reportReasonRepository = reportReasonRepository;
             this.mapper = mapper;
@@ -51,12 +31,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services
             this.userRepository = userRepository;
         }
 
-        /// <summary>
-        /// Adds the specified entity.
-        /// </summary>
-        /// <param name="entity">The entity.</param>
-        /// <returns></returns>
-        public async Task<ReportReasonViewModel> Add(ReportReason entity)
+             public async Task<ReportReasonViewModel> Add(ReportReason entity)
         {
             var currentUser = Feature.CurrentUser(httpContextAccessor, userRepository);
             var data = new ReportReason()
@@ -68,12 +43,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services
             return mapper.Map<ReportReasonViewModel>(data);
         }
 
-        /// <summary>
-        /// Gets all.
-        /// </summary>
-        /// <param name="request">The request.</param>
-        /// <returns></returns>
-        public IEnumerable<ReportReasonViewModel> GetAll(BaseGetAllRequest request)
+             public IEnumerable<ReportReasonViewModel> GetAll(BaseGetAllRequest request)
         {
             var data = reportReasonRepository.GetAll();
             if (request.Count.HasValue && request.Skip.HasValue)
@@ -84,13 +54,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services
         }
 
 
-        /// <summary>
-        /// Deletes the specified identifier.
-        /// </summary>
-        /// <param name="id">The identifier.</param>
-        /// <returns></returns>
-        /// <exception cref="Exception">Xóa thất bại</exception>
-        public async Task<string> Delete(string id)
+              public async Task<string> Delete(string id)
         {
             try
             {

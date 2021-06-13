@@ -14,36 +14,17 @@ using System.Threading.Tasks;
 
 namespace CoStudy.API.WebAPI.Controllers
 {
-    /// <summary>
-    /// Class AccountController
-    /// </summary>
-    /// <seealso cref="CoStudy.API.WebAPI.Controllers.BaseController" />
     [Route("api/[controller]")]
     [ApiController]
     public class AccountsController : BaseController
     {
-        /// <summary>
-        /// The account service
-        /// </summary>
         private readonly IAccountService _accountService;
 
         private readonly IGoogleAuthServices googleAuthServices;
 
-        /// <summary>
-        /// The mapper
-        /// </summary>
         private readonly IMapper _mapper;
-        /// <summary>
-        /// The HTTP context accessor
-        /// </summary>
         private readonly IHttpContextAccessor httpContextAccessor;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="AccountsController"/> class.
-        /// </summary>
-        /// <param name="accountService">The account service.</param>
-        /// <param name="mapper">The mapper.</param>
-        /// <param name="httpContextAccessor">The HTTP context accessor.</param>
         public AccountsController(
             IAccountService accountService,
             IMapper mapper, IHttpContextAccessor httpContextAccessor, IGoogleAuthServices googleAuthServices)
@@ -54,19 +35,12 @@ namespace CoStudy.API.WebAPI.Controllers
             this.googleAuthServices = googleAuthServices;
         }
 
-        /// <summary>
-        /// Authenticates the specified model.
-        /// </summary>
-        /// <param name="model">The model.</param>
-        /// <returns></returns>
         [HttpPost("login")]
-        public ActionResult<AuthenticateResponse> Authenticate(AuthenticateRequest model)
+        public async Task<ActionResult<AuthenticateResponse>> Authenticate(AuthenticateRequest model)
         {
-            AuthenticateResponse response = _accountService.Authenticate(model, ipAddress());
-            setTokenCookie(response.RefreshToken);
+            var response = await _accountService.Authenticate(model, ipAddress());
             return Ok(new ApiOkResponse(response));
         }
-
 
         [HttpPost("google-login")]
         public async Task<ActionResult<object>> GoogleLogin(GoogleAuthenticationRequest request)
@@ -76,40 +50,29 @@ namespace CoStudy.API.WebAPI.Controllers
             return Ok(new ApiOkResponse(data));
         }
 
-        /// <summary>
-        /// Refreshes the token.
-        /// </summary>
-        /// <returns></returns>
         [HttpPost("refresh-token")]
-        public ActionResult<AuthenticateResponse> RefreshToken()
+        public async Task<ActionResult<AuthenticateResponse>> RefreshToken([FromQuery] string refreshToken)
         {
-            string refreshToken = Request.Cookies["refreshToken"];
-            AuthenticateResponse response = _accountService.RefreshToken(refreshToken, ipAddress());
-            setTokenCookie(response.RefreshToken);
+            var response =await _accountService.RefreshToken(refreshToken, ipAddress());
             return Ok(new ApiOkResponse(response));
         }
 
-        /// <summary>
-        /// Revokes the token.
-        /// </summary>
-        /// <param name="model">The model.</param>
-        /// <returns></returns>
         [Authorize]
         [HttpPost("revoke-token")]
-        public IActionResult RevokeToken(RevokeTokenRequest model)
+        public IActionResult RevokeToken(RevokeTokenRequest model)  
         {
             // accept token from request body or cookie
-            string token = model.Token ?? Request.Cookies["refreshToken"];
+            var token = model.Token ?? Request.Cookies["refreshToken"];
 
             if (string.IsNullOrEmpty(token))
             {
-                return BadRequest(new { message = "Token is required" });
+                return BadRequest(new {message = "Token is required"});
             }
 
             // users can revoke their own tokens and admins can revoke any tokens
             if (!Account.OwnsToken(token) && Account.Role != Role.Admin)
             {
-                return Unauthorized(new { message = "Unauthorized" });
+                return Unauthorized(new {message = "Unauthorized"});
             }
 
             _accountService.RevokeToken(token, ipAddress());
@@ -123,11 +86,6 @@ namespace CoStudy.API.WebAPI.Controllers
         //    return Ok(new ApiOkResponse( "Registration successful, please check your email for verification instructions" ));
         //}
 
-        /// <summary>
-        /// Verifies the email.
-        /// </summary>
-        /// <param name="token">The token.</param>
-        /// <returns></returns>
         [HttpPost("verify-email")]
         public IActionResult VerifyEmail(string token)
         {
@@ -135,11 +93,6 @@ namespace CoStudy.API.WebAPI.Controllers
             return Ok(new ApiOkResponse("Verification successful, you can now login"));
         }
 
-        /// <summary>
-        /// Forgots the password.
-        /// </summary>
-        /// <param name="model">The model.</param>
-        /// <returns></returns>
         [HttpPost("forgot-password")]
         public async Task<IActionResult> ForgotPassword(ForgotPasswordRequest model)
         {
@@ -148,11 +101,6 @@ namespace CoStudy.API.WebAPI.Controllers
             return Ok(new ApiOkResponse("Please check your email for password reset instructions"));
         }
 
-        /// <summary>
-        /// Validates the reset token.
-        /// </summary>
-        /// <param name="model">The model.</param>
-        /// <returns></returns>
         [HttpPost("validate-reset-token")]
         public IActionResult ValidateResetToken(ValidateResetTokenRequest model)
         {
@@ -160,11 +108,6 @@ namespace CoStudy.API.WebAPI.Controllers
             return Ok(new ApiOkResponse("Token is valid"));
         }
 
-        /// <summary>
-        /// Resets the password.
-        /// </summary>
-        /// <param name="model">The model.</param>
-        /// <returns></returns>
         [HttpPost("reset-password")]
         public IActionResult ResetPassword(ResetPasswordRequest model)
         {
@@ -172,23 +115,14 @@ namespace CoStudy.API.WebAPI.Controllers
             return Ok(new ApiOkResponse("Password reset successful, you can now login"));
         }
 
-        /// <summary>
-        /// Gets all.
-        /// </summary>
-        /// <returns></returns>
         [Authorize(Role.Admin)]
         [HttpGet]
         public ActionResult<IEnumerable<AccountResponse>> GetAll()
         {
-            IEnumerable<AccountResponse> accounts = _accountService.GetAll();
+            var accounts = _accountService.GetAll();
             return Ok(new ApiOkResponse(accounts));
         }
 
-        /// <summary>
-        /// Gets the by identifier.
-        /// </summary>
-        /// <param name="id">The identifier.</param>
-        /// <returns></returns>
         [Authorize]
         [HttpGet("{id}")]
         public ActionResult<AccountResponse> GetById(string id)
@@ -196,32 +130,21 @@ namespace CoStudy.API.WebAPI.Controllers
             // users can get their own account and admins can get any account
             if (id != Account.Id.ToString() && Account.Role != Role.Admin)
             {
-                return Unauthorized(new { message = "Unauthorized" });
+                return Unauthorized(new {message = "Unauthorized"});
             }
 
-            AccountResponse account = _accountService.GetById(id);
+            var account = _accountService.GetById(id);
             return Ok(new ApiOkResponse(account));
         }
 
-        /// <summary>
-        /// Creates the specified model.
-        /// </summary>
-        /// <param name="model">The model.</param>
-        /// <returns></returns>
         [Authorize(Role.Admin)]
         [HttpPost]
         public ActionResult<AccountResponse> Create(CreateRequest model)
         {
-            AccountResponse account = _accountService.Create(model);
+            var account = _accountService.Create(model);
             return Ok(new ApiOkResponse(account));
         }
 
-        /// <summary>
-        /// Updates the specified identifier.
-        /// </summary>
-        /// <param name="id">The identifier.</param>
-        /// <param name="model">The model.</param>
-        /// <returns></returns>
         [Authorize]
         [HttpPut("{id}")]
         public ActionResult<AccountResponse> Update(string id, UpdateRequest model)
@@ -229,7 +152,7 @@ namespace CoStudy.API.WebAPI.Controllers
             // users can update their own account and admins can update any account
             if (id != Account.Id.ToString() && Account.Role != Role.Admin)
             {
-                return Unauthorized(new { message = "Unauthorized" });
+                return Unauthorized(new {message = "Unauthorized"});
             }
 
             // only admins can update role
@@ -238,16 +161,11 @@ namespace CoStudy.API.WebAPI.Controllers
                 model.Role = null;
             }
 
-            AccountResponse account = _accountService.Update(id, model);
+            var account = _accountService.Update(id, model);
             return Ok(new ApiOkResponse(account));
         }
 
         // [Authorize]
-        /// <summary>
-        /// Deletes the specified identifier.
-        /// </summary>
-        /// <param name="id">The identifier.</param>
-        /// <returns></returns>
         [HttpDelete("{id}")]
         public IActionResult Delete(string id)
         {
@@ -259,16 +177,11 @@ namespace CoStudy.API.WebAPI.Controllers
             return Ok(new ApiOkResponse("Account deleted successfully"));
         }
 
-
         // helper methods
 
-        /// <summary>
-        /// Sets the token cookie.
-        /// </summary>
-        /// <param name="token">The token.</param>
         private void setTokenCookie(string token)
         {
-            CookieOptions cookieOptions = new CookieOptions
+            var cookieOptions = new CookieOptions
             {
                 HttpOnly = true,
                 Expires = DateTime.UtcNow.AddDays(7)
@@ -276,10 +189,6 @@ namespace CoStudy.API.WebAPI.Controllers
             Response.Cookies.Append("refreshToken", token, cookieOptions);
         }
 
-        /// <summary>
-        /// Ips the address.
-        /// </summary>
-        /// <returns></returns>
         private string ipAddress()
         {
             if (Request.Headers.ContainsKey("X-Forwarded-For"))
@@ -292,16 +201,12 @@ namespace CoStudy.API.WebAPI.Controllers
             }
         }
 
-        /// <summary>
-        /// Gets the host URL.
-        /// </summary>
-        /// <returns></returns>
         private string GetHostUrl()
         {
-            string scheme = httpContextAccessor.HttpContext.Request.Scheme;
-            HostString host = httpContextAccessor.HttpContext.Request.Host;
-            PathString pathBase = httpContextAccessor.HttpContext.Request.PathBase;
-            string location = $"{scheme}://{host}{pathBase}";
+            var scheme = httpContextAccessor.HttpContext.Request.Scheme;
+            var host = httpContextAccessor.HttpContext.Request.Host;
+            var pathBase = httpContextAccessor.HttpContext.Request.PathBase;
+            var location = $"{scheme}://{host}{pathBase}";
             return location;
         }
     }

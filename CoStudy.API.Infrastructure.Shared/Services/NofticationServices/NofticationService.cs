@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using CoStudy.API.Application.FCM;
 using CoStudy.API.Application.Features;
 using CoStudy.API.Application.Repositories;
 using CoStudy.API.Domain.Entities.Application;
@@ -17,57 +18,22 @@ using static Common.Constants;
 
 namespace CoStudy.API.Infrastructure.Shared.Services.NofticationServices
 {
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <seealso cref="CoStudy.API.Infrastructure.Shared.Services.NofticationServices.INofticationService" />
     public class NofticationService : INofticationService
     {
-        /// <summary>
-        /// The noftication repository
-        /// </summary>
         INofticationRepository nofticationRepository;
 
-        /// <summary>
-        /// The user repository
-        /// </summary>
         IUserRepository userRepository;
 
-        /// <summary>
-        /// The context accessor
-        /// </summary>
         IHttpContextAccessor contextAccessor;
 
-        /// <summary>
-        /// The mapper
-        /// </summary>
         IMapper mapper;
 
-        /// <summary>
-        /// The notification type repository
-        /// </summary>
         INotificationTypeRepository notificationTypeRepository;
 
-        /// <summary>
-        /// The notification detail repository
-        /// </summary>
         INotificationDetailRepository notificationDetailRepository;
 
-        /// <summary>
-        /// The notification object repository
-        /// </summary>
         INotificationObjectRepository notificationObjectRepository;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="NofticationService"/> class.
-        /// </summary>
-        /// <param name="nofticationRepository">The noftication repository.</param>
-        /// <param name="userRepository">The user repository.</param>
-        /// <param name="contextAccessor">The context accessor.</param>
-        /// <param name="mapper">The mapper.</param>
-        /// <param name="notificationTypeRepository">The notification type repository.</param>
-        /// <param name="notificationDetailRepository">The notification detail repository.</param>
-        /// <param name="notificationObjectRepository">The notification object repository.</param>
         public NofticationService(INofticationRepository nofticationRepository, IUserRepository userRepository, IHttpContextAccessor contextAccessor, IMapper mapper, INotificationTypeRepository notificationTypeRepository, INotificationDetailRepository notificationDetailRepository, INotificationObjectRepository notificationObjectRepository)
         {
             this.nofticationRepository = nofticationRepository;
@@ -79,11 +45,6 @@ namespace CoStudy.API.Infrastructure.Shared.Services.NofticationServices
             this.notificationObjectRepository = notificationObjectRepository;
         }
 
-        /// <summary>
-        /// Adds the noftication.
-        /// </summary>
-        /// <param name="request">The request.</param>
-        /// <returns></returns>
         public async Task<NotificationViewModel> AddNoftication(AddNofticationRequest request)
         {
 
@@ -93,12 +54,6 @@ namespace CoStudy.API.Infrastructure.Shared.Services.NofticationServices
             return mapper.Map<NotificationViewModel>(noftication);
         }
 
-        /// <summary>
-        /// Gets the current user noftication.
-        /// </summary>
-        /// <param name="skip">The skip.</param>
-        /// <param name="count">The count.</param>
-        /// <returns></returns>
         public async Task<IEnumerable<NotificationViewModel>> GetCurrentUserNoftication(BaseGetAllRequest request)
         {
             User currentUser = Feature.CurrentUser(contextAccessor, userRepository);
@@ -117,11 +72,6 @@ namespace CoStudy.API.Infrastructure.Shared.Services.NofticationServices
             return mapper.Map<IEnumerable<NotificationViewModel>>(result);
         }
 
-        /// <summary>
-        /// Deletes the notification.
-        /// </summary>
-        /// <param name="id">The identifier.</param>
-        /// <returns></returns>
         public async Task<string> DeleteNotification(string id)
         {
             try
@@ -135,12 +85,6 @@ namespace CoStudy.API.Infrastructure.Shared.Services.NofticationServices
             }
         }
 
-        /// <summary>
-        /// Marks as read.
-        /// </summary>
-        /// <param name="id">The identifier.</param>
-        /// <returns></returns>
-        /// <exception cref="Exception">Không tìm thấy thông báo</exception>
         public async Task<string> MarkAsRead(string id)
         {
             if (!string.IsNullOrEmpty(id))
@@ -171,11 +115,6 @@ namespace CoStudy.API.Infrastructure.Shared.Services.NofticationServices
             }
         }
 
-        /// <summary>
-        /// Adds the type of the notification.
-        /// </summary>
-        /// <param name="entity">The entity.</param>
-        /// <returns></returns>
         public async Task<NotificationType> AddNotificationType(NotificationType entity)
         {
             NotificationType request = new NotificationType()
@@ -189,21 +128,12 @@ namespace CoStudy.API.Infrastructure.Shared.Services.NofticationServices
             return request;
         }
 
-        /// <summary>
-        /// Gets the by code.
-        /// </summary>
-        /// <param name="code">The code.</param>
-        /// <returns></returns>
         public async Task<NotificationType> GetByCode(string code)
         {
             FilterDefinition<NotificationType> finder = Builders<NotificationType>.Filter.Eq(Code, code);
             return await notificationTypeRepository.FindAsync(finder);
         }
 
-        /// <summary>
-        /// Gets the current user notification list.
-        /// </summary>
-        /// <returns></returns>
         public async Task<IEnumerable<NotificationViewModel>> GetCurrentUserNotificationList()
         {
             List<NotificationViewModel> result = new List<NotificationViewModel>();
@@ -224,7 +154,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.NofticationServices
 
                 NotificationDetail isNotRead = notificationDetails.FirstOrDefault(x => x.IsRead == false);
 
-                if (notificationDetails.Count() > 0)
+                if (notificationDetails.Any())
                 {
                     User creator = (await userRepository.GetByIdAsync(ObjectId.Parse(notificationDetails.ElementAt(0).CreatorId)));
 
@@ -233,6 +163,38 @@ namespace CoStudy.API.Infrastructure.Shared.Services.NofticationServices
                     FilterDefinition<NotificationType> notificationTypeFilter = Builders<NotificationType>.Filter.Eq(Code, notificationObject.NotificationType);
 
                     NotificationType notificationType = await notificationTypeRepository.FindAsync(notificationTypeFilter);
+
+                    var notificationViewModelType = PushedNotificationType.Other;
+
+                    switch (notificationType.Code)
+                    {
+                        case "ADD_POST_NOTIFY":
+                        case "UPVOTE_POST_NOTIFY":
+                        case "DOWNVOTE_POST_NOTIFY":
+                            notificationViewModelType = PushedNotificationType.Post;
+                            break;
+
+                        case "UPVOTE_COMMENT_NOTIFY":
+                        case "DOWNVOTE_COMMENT_NOTIFY":
+                        case "COMMENT_NOTIFY":
+                            notificationViewModelType = PushedNotificationType.Comment;
+                            break;
+
+                        case "UPVOTE_REPLY_NOTIFY":
+                        case "DOWNVOTE_REPLY_NOTIFY":
+                        case "REPLY_COMMENT_NOTIFY":
+                            notificationViewModelType = PushedNotificationType.Reply;
+                            break;
+
+                        case "FOLLOW_NOTIFY":
+                            notificationViewModelType = PushedNotificationType.User;
+                            break;
+
+                        default:
+                            notificationViewModelType = PushedNotificationType.Other;
+                            break;
+                    }
+
 
                     if (notificationType.Code != AddPostNotify)
                     {
@@ -261,7 +223,8 @@ namespace CoStudy.API.Infrastructure.Shared.Services.NofticationServices
                             CreatedDate = DateTime.Now,
                             ModifiedDate = DateTime.Now,
                             Status = ItemStatus.Active,
-                            OId = notificationObject.OId
+                            OId = notificationObject.OId,
+                            NotificationType = notificationViewModelType
                         };
 
                         result.Add(notificationViewModel);
@@ -280,7 +243,8 @@ namespace CoStudy.API.Infrastructure.Shared.Services.NofticationServices
                             CreatedDate = DateTime.Now,
                             ModifiedDate = DateTime.Now,
                             Status = ItemStatus.Active,
-                            OId = notificationObject.OId
+                            OId = notificationObject.OId,
+                            NotificationType = notificationViewModelType
                         };
 
                         result.Add(notificationViewModel);
@@ -291,11 +255,6 @@ namespace CoStudy.API.Infrastructure.Shared.Services.NofticationServices
             return result.OrderByDescending(x => x.ModifiedDate);
         }
 
-        /// <summary>
-        /// Deletes the current notification.
-        /// </summary>
-        /// <param name="notificationObjectId">The notification object identifier.</param>
-        /// <returns></returns>
         public async Task<string> DeleteCurrentNotification(string notificationObjectId)
         {
             User currentUser = Feature.CurrentUser(contextAccessor, userRepository);
@@ -317,11 +276,6 @@ namespace CoStudy.API.Infrastructure.Shared.Services.NofticationServices
             return DeleteNotificationSuccess;
         }
 
-        /// <summary>
-        /// Marks the notificaions as read.
-        /// </summary>
-        /// <param name="notificationObjectId">The notification object identifier.</param>
-        /// <returns></returns>
         public async Task<string> MarkNotificaionsAsRead(string notificationObjectId)
         {
 

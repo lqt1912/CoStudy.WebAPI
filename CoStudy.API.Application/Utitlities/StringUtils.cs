@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -78,7 +79,9 @@ namespace CoStudy.API.Application.Utitlities
         public static bool ValidateAllowString(IConfiguration configuration, string inputString)
         {
             string[] unAllowStrings = configuration.GetSection("UnAllowWord").Get<string[]>();
-            foreach (var unallowString in unAllowStrings )
+            if (unAllowStrings == null)
+                return true;
+            foreach (var unallowString in unAllowStrings.ToList() )
             {
                 if (NormalizeSearch(inputString).Contains(NormalizeSearch( unallowString)))
                     return false;

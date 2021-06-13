@@ -1,8 +1,38 @@
-﻿
-@{
-    ViewData["Title"] = "GetAll";
+﻿@{
+    ViewData["Title"] = "Danh sách bình luận";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
+<div class="row pl-3 ">
+    <h3>Quản lý bình luận</h3>
+</div>
+<div class="w-100 form-row pb-3">
+    <div class="col-2 mb-2"> <input id="txt_title" class=" form-control" placeholder="Mã bình luận" /> </div>
+    <div class="col-2 mb-2"> <input id="txt_author_name" class="form-control" placeholder="Tác giả" /> </div>
+    <div class="col-2 mb-2"> <input type="date" id="dt_createddate" class="form-control" placeholder="Ngày đăng" /> </div>
+    <div class="col-2 mb-2"> <input type="text" id="txt_content" class="form-control" placeholder="Nội dung" /> </div>
 
-<h1>GetAll</h1>
+    <div class="col-2 mb-2"> <button id="btnSearch" class="form-control btn btn-info"> Tìm kiếm </button></div>
+    <div class="col-2 mb-2"> <button id="btnClear" class="form-control btn btn-primary"> Refresh  </button></div>
+</div>
 
+<div class="row container-fluid">
+    <table id="commentTable" class="table table-responsive table-striped border" style="font-size: 15px; width: 100% !important">
+        <thead>
+            <tr>
+                <th>STT</th>
+                <th>Mã bình luận</th>
+                <th>Tác giả</th>
+                <th>Ngày đăng</th>
+                <th>Hình ảnh</th>
+                <th>Downvote</th>
+                <th>Upvote</th>
+                <th>Trả lời</th>
+                <th>Trạng thái</th>
+                <th>Hoạt động</th>
+                <th class="d-none">Nội dung</th>
+            </tr>
+        </thead>
+    </table>
+</div>
+
+<script src="~/js/GetAllComment.js"></script>

@@ -1,0 +1,852 @@
+2021-06-08 09:07:58.177 +07:00 [ERR] HTTP GET / responded 500 in 24810.5011 ms
+System.NullReferenceException: Object reference not set to an instance of an object.
+   at CoStudy.API.WebAPI.RequestResponseLoggingMiddleware.Invoke(HttpContext context) in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.WebAPI\Logging\RequestResponseLoggingMiddleware.cs:line 25
+   at CoStudy.API.WebAPI.SerilogMiddleware.Invoke(HttpContext httpContext) in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.WebAPI\Logging\SerilogMiddleware.cs:line 33
+2021-06-08 09:07:59.491 +07:00 [ERR] HTTP GET /favicon.ico responded 500 in 803.7832 ms
+System.NullReferenceException: Object reference not set to an instance of an object.
+   at CoStudy.API.WebAPI.RequestResponseLoggingMiddleware.Invoke(HttpContext context) in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.WebAPI\Logging\RequestResponseLoggingMiddleware.cs:line 25
+   at CoStudy.API.WebAPI.SerilogMiddleware.Invoke(HttpContext httpContext) in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.WebAPI\Logging\SerilogMiddleware.cs:line 33
+2021-06-08 09:08:00.326 +07:00 [ERR] HTTP GET /api/Logging/count responded 500 in 765.5533 ms
+System.NullReferenceException: Object reference not set to an instance of an object.
+   at CoStudy.API.WebAPI.RequestResponseLoggingMiddleware.Invoke(HttpContext context) in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.WebAPI\Logging\RequestResponseLoggingMiddleware.cs:line 25
+   at CoStudy.API.WebAPI.SerilogMiddleware.Invoke(HttpContext httpContext) in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.WebAPI\Logging\SerilogMiddleware.cs:line 33
+2021-06-08 09:08:01.227 +07:00 [ERR] HTTP POST /api/Logging/paged responded 500 in 891.1927 ms
+System.NullReferenceException: Object reference not set to an instance of an object.
+   at CoStudy.API.WebAPI.RequestResponseLoggingMiddleware.Invoke(HttpContext context) in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.WebAPI\Logging\RequestResponseLoggingMiddleware.cs:line 25
+   at CoStudy.API.WebAPI.SerilogMiddleware.Invoke(HttpContext httpContext) in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.WebAPI\Logging\SerilogMiddleware.cs:line 33
+2021-06-08 09:10:15.921 +07:00 [ERR] HTTP GET /swagger-ui-bundle.js.map responded 500 in 65366.5406 ms
+System.NullReferenceException: Object reference not set to an instance of an object.
+   at CoStudy.API.WebAPI.RequestResponseLoggingMiddleware.Invoke(HttpContext context) in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.WebAPI\Logging\RequestResponseLoggingMiddleware.cs:line 25
+   at CoStudy.API.WebAPI.SerilogMiddleware.Invoke(HttpContext httpContext) in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.WebAPI\Logging\SerilogMiddleware.cs:line 33
+2021-06-08 09:10:17.826 +07:00 [INF] HTTP GET /api/Logging/count responded 200 in 1896.4525 ms
+2021-06-08 09:10:18.998 +07:00 [ERR] HTTP GET /swagger-ui-standalone-preset.js.map responded 500 in 1154.4052 ms
+System.NullReferenceException: Object reference not set to an instance of an object.
+   at CoStudy.API.WebAPI.RequestResponseLoggingMiddleware.Invoke(HttpContext context) in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.WebAPI\Logging\RequestResponseLoggingMiddleware.cs:line 25
+   at CoStudy.API.WebAPI.SerilogMiddleware.Invoke(HttpContext httpContext) in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.WebAPI\Logging\SerilogMiddleware.cs:line 33
+2021-06-08 09:10:21.646 +07:00 [INF] HTTP POST /api/Logging/paged responded 200 in 5716.2111 ms
+2021-06-08 09:10:25.752 +07:00 [INF] HTTP POST /api/Cms/post/paged responded 200 in 101.1775 ms
+2021-06-08 09:10:35.278 +07:00 [INF] HTTP POST /api/MasterData/field/all responded 200 in 14.0405 ms
+2021-06-08 09:10:36.944 +07:00 [INF] HTTP POST /api/Cms/report/paged responded 200 in 42.8259 ms
+2021-06-08 09:11:33.580 +07:00 [ERR] HTTP GET /swagger-ui-bundle.js.map responded 500 in 9910.8219 ms
+System.NullReferenceException: Object reference not set to an instance of an object.
+   at CoStudy.API.WebAPI.RequestResponseLoggingMiddleware.Invoke(HttpContext context) in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.WebAPI\Logging\RequestResponseLoggingMiddleware.cs:line 25
+   at CoStudy.API.WebAPI.SerilogMiddleware.Invoke(HttpContext httpContext) in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.WebAPI\Logging\SerilogMiddleware.cs:line 33
+2021-06-08 09:11:36.127 +07:00 [INF] HTTP GET /api/Logging/count responded 200 in 2537.0944 ms
+2021-06-08 09:11:36.144 +07:00 [INF] HTTP POST /api/Logging/paged responded 200 in 2554.0585 ms
+2021-06-08 09:11:37.096 +07:00 [ERR] HTTP GET /swagger-ui-standalone-preset.js.map responded 500 in 817.4810 ms
+System.NullReferenceException: Object reference not set to an instance of an object.
+   at CoStudy.API.WebAPI.RequestResponseLoggingMiddleware.Invoke(HttpContext context) in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.WebAPI\Logging\RequestResponseLoggingMiddleware.cs:line 25
+   at CoStudy.API.WebAPI.SerilogMiddleware.Invoke(HttpContext httpContext) in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.WebAPI\Logging\SerilogMiddleware.cs:line 33
+2021-06-08 09:13:06.367 +07:00 [ERR] HTTP POST /api/Logging/paged responded 500 in 39.8712 ms
+Microsoft.AspNetCore.Connections.ConnectionResetException: The client has disconnected
+ ---> System.Runtime.InteropServices.COMException (0x800704CD): An operation was attempted on a nonexistent network connection. (0x800704CD)
+   --- End of inner exception stack trace ---
+   at Microsoft.AspNetCore.Server.IIS.Core.IO.AsyncIOOperation.GetResult(Int16 token)
+   at Microsoft.AspNetCore.Server.IIS.Core.IISHttpContext.ReadBody()
+   at System.IO.Pipelines.PipeCompletion.ThrowLatchedException()
+   at System.IO.Pipelines.Pipe.GetReadResult(ReadResult& result)
+   at System.IO.Pipelines.Pipe.ReadAsync(CancellationToken token)
+   at System.IO.Pipelines.Pipe.DefaultPipeReader.ReadAsync(CancellationToken cancellationToken)
+   at Microsoft.AspNetCore.Server.IIS.Core.IISHttpContext.ReadAsync(Memory`1 memory, CancellationToken cancellationToken)
+   at Microsoft.AspNetCore.Server.IIS.Core.HttpRequestStream.ReadAsyncInternal(Memory`1 buffer, CancellationToken cancellationToken)
+   at Microsoft.AspNetCore.WebUtilities.FileBufferingReadStream.ReadAsync(Byte[] buffer, Int32 offset, Int32 count, CancellationToken cancellationToken)
+   at System.Text.Json.JsonSerializer.ReadAsync[TValue](Stream utf8Json, Type returnType, JsonSerializerOptions options, CancellationToken cancellationToken)
+   at Microsoft.AspNetCore.Mvc.Formatters.SystemTextJsonInputFormatter.ReadRequestBodyAsync(InputFormatterContext context, Encoding encoding)
+   at Microsoft.AspNetCore.Mvc.Formatters.SystemTextJsonInputFormatter.ReadRequestBodyAsync(InputFormatterContext context, Encoding encoding)
+   at Microsoft.AspNetCore.Mvc.ModelBinding.Binders.BodyModelBinder.BindModelAsync(ModelBindingContext bindingContext)
+   at Microsoft.AspNetCore.Mvc.ModelBinding.ParameterBinder.BindModelAsync(ActionContext actionContext, IModelBinder modelBinder, IValueProvider valueProvider, ParameterDescriptor parameter, ModelMetadata metadata, Object value)
+   at Microsoft.AspNetCore.Mvc.Controllers.ControllerBinderDelegateProvider.<>c__DisplayClass0_0.<<CreateBinderDelegate>g__Bind|0>d.MoveNext()
+--- End of stack trace from previous location where exception was thrown ---
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeInnerFilterAsync>g__Awaited|13_0(ControllerActionInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeFilterPipelineAsync>g__Awaited|19_0(ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Awaited|17_0(ResourceInvoker invoker, Task task, IDisposable scope)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.<Invoke>g__AwaitRequestTask|6_0(Endpoint endpoint, Task requestTask, ILogger logger)
+   at CoStudy.API.WebAPI.SerilogMiddleware.Invoke(HttpContext httpContext) in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.WebAPI\Logging\SerilogMiddleware.cs:line 33
+2021-06-08 09:13:06.724 +07:00 [INF] HTTP GET /api/Logging/count responded 200 in 409.1520 ms
+2021-06-08 09:13:10.156 +07:00 [INF] HTTP POST /api/Accounts/login responded 200 in 314.0619 ms
+2021-06-08 09:13:10.422 +07:00 [INF] HTTP POST /api/Cms/user/paged responded 200 in 155.7908 ms
+2021-06-08 09:13:11.501 +07:00 [INF] HTTP POST /api/Cms/post/paged responded 200 in 44.0858 ms
+2021-06-08 09:13:12.073 +07:00 [INF] HTTP POST /api/Cms/comment/paged responded 200 in 31.9433 ms
+2021-06-08 09:13:12.476 +07:00 [INF] HTTP POST /api/Cms/reply-comment/paged responded 200 in 28.6942 ms
+2021-06-08 09:13:12.848 +07:00 [INF] HTTP POST /api/MasterData/field/all responded 200 in 13.0175 ms
+2021-06-08 09:13:13.526 +07:00 [INF] HTTP POST /api/Cms/report/paged responded 200 in 36.6630 ms
+2021-06-08 09:13:13.821 +07:00 [INF] HTTP POST /api/MasterData/level/all responded 200 in 17.8100 ms
+2021-06-08 09:13:14.212 +07:00 [INF] HTTP POST /api/Cms/reply-comment/paged responded 200 in 11.3873 ms
+2021-06-08 09:13:14.529 +07:00 [INF] HTTP POST /api/Cms/comment/paged responded 200 in 20.9195 ms
+2021-06-08 09:13:14.830 +07:00 [INF] HTTP POST /api/Cms/post/paged responded 200 in 14.1409 ms
+2021-06-08 09:13:15.085 +07:00 [INF] HTTP POST /api/Cms/user/paged responded 200 in 22.2135 ms
+2021-06-08 09:13:15.481 +07:00 [INF] HTTP GET /api/Logging/count responded 200 in 118.2090 ms
+2021-06-08 09:13:15.508 +07:00 [INF] HTTP POST /api/Logging/paged responded 200 in 144.9465 ms
+2021-06-08 09:13:15.801 +07:00 [INF] HTTP POST /api/Cms/user/paged responded 200 in 19.0909 ms
+2021-06-08 09:13:16.167 +07:00 [INF] HTTP POST /api/Cms/post/paged responded 200 in 13.8953 ms
+2021-06-08 09:13:16.517 +07:00 [INF] HTTP POST /api/Cms/comment/paged responded 200 in 10.4267 ms
+2021-06-08 09:13:16.817 +07:00 [INF] HTTP POST /api/Cms/reply-comment/paged responded 200 in 7.9491 ms
+2021-06-08 09:13:17.131 +07:00 [INF] HTTP POST /api/MasterData/field/all responded 200 in 3.6425 ms
+2021-06-08 09:13:17.413 +07:00 [INF] HTTP POST /api/MasterData/level/all responded 200 in 3.4032 ms
+2021-06-08 09:13:17.892 +07:00 [INF] HTTP POST /api/Cms/report/paged responded 200 in 8.2020 ms
+2021-06-08 09:15:33.917 +07:00 [ERR] HTTP GET /swagger-ui-bundle.js.map responded 500 in 99641.8826 ms
+System.NullReferenceException: Object reference not set to an instance of an object.
+   at CoStudy.API.WebAPI.RequestResponseLoggingMiddleware.Invoke(HttpContext context) in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.WebAPI\Logging\RequestResponseLoggingMiddleware.cs:line 25
+   at CoStudy.API.WebAPI.SerilogMiddleware.Invoke(HttpContext httpContext) in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.WebAPI\Logging\SerilogMiddleware.cs:line 33
+2021-06-08 09:15:37.134 +07:00 [INF] HTTP GET /api/Logging/count responded 200 in 3200.9759 ms
+2021-06-08 09:15:37.147 +07:00 [INF] HTTP POST /api/Logging/paged responded 200 in 3213.8596 ms
+2021-06-08 09:15:46.124 +07:00 [ERR] HTTP GET /swagger-ui-bundle.js.map responded 500 in 4295.1314 ms
+System.NullReferenceException: Object reference not set to an instance of an object.
+   at CoStudy.API.WebAPI.RequestResponseLoggingMiddleware.Invoke(HttpContext context) in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.WebAPI\Logging\RequestResponseLoggingMiddleware.cs:line 25
+   at CoStudy.API.WebAPI.SerilogMiddleware.Invoke(HttpContext httpContext) in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.WebAPI\Logging\SerilogMiddleware.cs:line 33
+2021-06-08 09:15:49.415 +07:00 [ERR] HTTP GET /swagger-ui-standalone-preset.js.map responded 500 in 749.4713 ms
+System.NullReferenceException: Object reference not set to an instance of an object.
+   at CoStudy.API.WebAPI.RequestResponseLoggingMiddleware.Invoke(HttpContext context) in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.WebAPI\Logging\RequestResponseLoggingMiddleware.cs:line 25
+   at CoStudy.API.WebAPI.SerilogMiddleware.Invoke(HttpContext httpContext) in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.WebAPI\Logging\SerilogMiddleware.cs:line 33
+2021-06-08 09:18:16.197 +07:00 [ERR] HTTP GET /swagger-ui-bundle.js.map responded 500 in 10259.2628 ms
+System.NullReferenceException: Object reference not set to an instance of an object.
+   at CoStudy.API.WebAPI.RequestResponseLoggingMiddleware.Invoke(HttpContext context) in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.WebAPI\Logging\RequestResponseLoggingMiddleware.cs:line 25
+   at CoStudy.API.WebAPI.SerilogMiddleware.Invoke(HttpContext httpContext) in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.WebAPI\Logging\SerilogMiddleware.cs:line 33
+2021-06-08 09:18:20.128 +07:00 [INF] HTTP GET /api/Logging/count responded 200 in 3915.6569 ms
+2021-06-08 09:18:20.143 +07:00 [INF] HTTP POST /api/Logging/paged responded 200 in 3930.5112 ms
+2021-06-08 09:24:44.053 +07:00 [ERR] HTTP GET /swagger-ui-bundle.js.map responded 500 in 2951.7756 ms
+System.NullReferenceException: Object reference not set to an instance of an object.
+   at CoStudy.API.WebAPI.RequestResponseLoggingMiddleware.Invoke(HttpContext context) in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.WebAPI\Logging\RequestResponseLoggingMiddleware.cs:line 25
+   at CoStudy.API.WebAPI.SerilogMiddleware.Invoke(HttpContext httpContext) in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.WebAPI\Logging\SerilogMiddleware.cs:line 33
+2021-06-08 09:24:47.787 +07:00 [ERR] HTTP GET /swagger-ui-standalone-preset.js.map responded 500 in 1238.0563 ms
+System.NullReferenceException: Object reference not set to an instance of an object.
+   at CoStudy.API.WebAPI.RequestResponseLoggingMiddleware.Invoke(HttpContext context) in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.WebAPI\Logging\RequestResponseLoggingMiddleware.cs:line 25
+   at CoStudy.API.WebAPI.SerilogMiddleware.Invoke(HttpContext httpContext) in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.WebAPI\Logging\SerilogMiddleware.cs:line 33
+2021-06-08 09:24:49.168 +07:00 [INF] HTTP GET /api/Logging/count responded 200 in 5104.5889 ms
+2021-06-08 09:24:49.179 +07:00 [INF] HTTP POST /api/Logging/paged responded 200 in 5115.5521 ms
+2021-06-08 09:24:55.456 +07:00 [ERR] HTTP GET /favicon.ico responded 500 in 2169.4321 ms
+System.NullReferenceException: Object reference not set to an instance of an object.
+   at CoStudy.API.WebAPI.RequestResponseLoggingMiddleware.Invoke(HttpContext context) in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.WebAPI\Logging\RequestResponseLoggingMiddleware.cs:line 25
+   at CoStudy.API.WebAPI.SerilogMiddleware.Invoke(HttpContext httpContext) in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.WebAPI\Logging\SerilogMiddleware.cs:line 33
+2021-06-08 09:25:03.722 +07:00 [ERR] HTTP GET /swagger-ui-bundle.js.map responded 500 in 2424.8358 ms
+System.NullReferenceException: Object reference not set to an instance of an object.
+   at CoStudy.API.WebAPI.RequestResponseLoggingMiddleware.Invoke(HttpContext context) in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.WebAPI\Logging\RequestResponseLoggingMiddleware.cs:line 25
+   at CoStudy.API.WebAPI.SerilogMiddleware.Invoke(HttpContext httpContext) in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.WebAPI\Logging\SerilogMiddleware.cs:line 33
+2021-06-08 09:25:03.722 +07:00 [ERR] HTTP GET /swagger-ui-standalone-preset.js.map responded 500 in 2424.8358 ms
+System.NullReferenceException: Object reference not set to an instance of an object.
+   at CoStudy.API.WebAPI.RequestResponseLoggingMiddleware.Invoke(HttpContext context) in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.WebAPI\Logging\RequestResponseLoggingMiddleware.cs:line 25
+   at CoStudy.API.WebAPI.SerilogMiddleware.Invoke(HttpContext httpContext) in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.WebAPI\Logging\SerilogMiddleware.cs:line 33
+2021-06-08 09:25:06.803 +07:00 [ERR] HTTP GET /swagger-ui.css.map responded 500 in 1075.6222 ms
+System.NullReferenceException: Object reference not set to an instance of an object.
+   at CoStudy.API.WebAPI.RequestResponseLoggingMiddleware.Invoke(HttpContext context) in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.WebAPI\Logging\RequestResponseLoggingMiddleware.cs:line 25
+   at CoStudy.API.WebAPI.SerilogMiddleware.Invoke(HttpContext httpContext) in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.WebAPI\Logging\SerilogMiddleware.cs:line 33
+2021-06-08 09:29:04.330 +07:00 [ERR] HTTP GET /swagger-ui-bundle.js.map responded 500 in 6256.6106 ms
+System.NullReferenceException: Object reference not set to an instance of an object.
+   at CoStudy.API.WebAPI.RequestResponseLoggingMiddleware.Invoke(HttpContext context) in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.WebAPI\Logging\RequestResponseLoggingMiddleware.cs:line 25
+   at CoStudy.API.WebAPI.SerilogMiddleware.Invoke(HttpContext httpContext) in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.WebAPI\Logging\SerilogMiddleware.cs:line 33
+2021-06-08 09:29:10.881 +07:00 [INF] HTTP POST /api/Logging/paged responded 400 in 6540.7409 ms
+2021-06-08 09:29:12.156 +07:00 [ERR] HTTP GET /swagger-ui-standalone-preset.js.map responded 500 in 1267.8757 ms
+System.NullReferenceException: Object reference not set to an instance of an object.
+   at CoStudy.API.WebAPI.RequestResponseLoggingMiddleware.Invoke(HttpContext context) in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.WebAPI\Logging\RequestResponseLoggingMiddleware.cs:line 25
+   at CoStudy.API.WebAPI.SerilogMiddleware.Invoke(HttpContext httpContext) in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.WebAPI\Logging\SerilogMiddleware.cs:line 33
+2021-06-08 09:29:13.806 +07:00 [INF] HTTP GET /api/Logging/count responded 200 in 9465.9831 ms
+2021-06-08 09:29:21.800 +07:00 [ERR] HTTP GET /swagger-ui-standalone-preset.js.map responded 500 in 4276.4301 ms
+System.NullReferenceException: Object reference not set to an instance of an object.
+   at CoStudy.API.WebAPI.RequestResponseLoggingMiddleware.Invoke(HttpContext context) in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.WebAPI\Logging\RequestResponseLoggingMiddleware.cs:line 25
+   at CoStudy.API.WebAPI.SerilogMiddleware.Invoke(HttpContext httpContext) in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.WebAPI\Logging\SerilogMiddleware.cs:line 33
+2021-06-08 09:29:21.800 +07:00 [ERR] HTTP GET /swagger-ui.css.map responded 500 in 4276.4308 ms
+System.NullReferenceException: Object reference not set to an instance of an object.
+   at CoStudy.API.WebAPI.RequestResponseLoggingMiddleware.Invoke(HttpContext context) in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.WebAPI\Logging\RequestResponseLoggingMiddleware.cs:line 25
+   at CoStudy.API.WebAPI.SerilogMiddleware.Invoke(HttpContext httpContext) in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.WebAPI\Logging\SerilogMiddleware.cs:line 33
+2021-06-08 09:29:21.800 +07:00 [ERR] HTTP GET /swagger-ui-bundle.js.map responded 500 in 4276.4310 ms
+System.NullReferenceException: Object reference not set to an instance of an object.
+   at CoStudy.API.WebAPI.RequestResponseLoggingMiddleware.Invoke(HttpContext context) in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.WebAPI\Logging\RequestResponseLoggingMiddleware.cs:line 25
+   at CoStudy.API.WebAPI.SerilogMiddleware.Invoke(HttpContext httpContext) in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.WebAPI\Logging\SerilogMiddleware.cs:line 33
+2021-06-08 09:30:50.910 +07:00 [ERR] HTTP GET /swagger-ui-bundle.js.map responded 500 in 3808.1585 ms
+System.NullReferenceException: Object reference not set to an instance of an object.
+   at CoStudy.API.WebAPI.RequestResponseLoggingMiddleware.Invoke(HttpContext context) in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.WebAPI\Logging\RequestResponseLoggingMiddleware.cs:line 25
+   at CoStudy.API.WebAPI.SerilogMiddleware.Invoke(HttpContext httpContext) in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.WebAPI\Logging\SerilogMiddleware.cs:line 33
+2021-06-08 09:30:52.865 +07:00 [ERR] HTTP GET /swagger-ui-standalone-preset.js.map responded 500 in 645.6506 ms
+System.NullReferenceException: Object reference not set to an instance of an object.
+   at CoStudy.API.WebAPI.RequestResponseLoggingMiddleware.Invoke(HttpContext context) in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.WebAPI\Logging\RequestResponseLoggingMiddleware.cs:line 25
+   at CoStudy.API.WebAPI.SerilogMiddleware.Invoke(HttpContext httpContext) in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.WebAPI\Logging\SerilogMiddleware.cs:line 33
+2021-06-08 09:33:37.154 +07:00 [ERR] HTTP GET /swagger-ui-bundle.js.map responded 500 in 6533.4665 ms
+System.NullReferenceException: Object reference not set to an instance of an object.
+   at CoStudy.API.WebAPI.RequestResponseLoggingMiddleware.Invoke(HttpContext context) in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.WebAPI\Logging\RequestResponseLoggingMiddleware.cs:line 25
+   at CoStudy.API.WebAPI.SerilogMiddleware.Invoke(HttpContext httpContext) in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.WebAPI\Logging\SerilogMiddleware.cs:line 33
+2021-06-08 09:33:39.346 +07:00 [ERR] HTTP GET /swagger-ui-standalone-preset.js.map responded 500 in 809.3914 ms
+System.NullReferenceException: Object reference not set to an instance of an object.
+   at CoStudy.API.WebAPI.RequestResponseLoggingMiddleware.Invoke(HttpContext context) in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.WebAPI\Logging\RequestResponseLoggingMiddleware.cs:line 25
+   at CoStudy.API.WebAPI.SerilogMiddleware.Invoke(HttpContext httpContext) in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.WebAPI\Logging\SerilogMiddleware.cs:line 33
+2021-06-08 09:33:40.441 +07:00 [INF] HTTP GET /api/Logging/count responded 200 in 3272.4677 ms
+2021-06-08 09:33:40.447 +07:00 [INF] HTTP POST /api/Logging/paged responded 200 in 3277.6862 ms
+2021-06-08 09:36:29.193 +07:00 [ERR] HTTP GET /swagger-ui-bundle.js.map responded 500 in 3709.3327 ms
+System.NullReferenceException: Object reference not set to an instance of an object.
+   at CoStudy.API.WebAPI.RequestResponseLoggingMiddleware.Invoke(HttpContext context) in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.WebAPI\Logging\RequestResponseLoggingMiddleware.cs:line 25
+   at CoStudy.API.WebAPI.SerilogMiddleware.Invoke(HttpContext httpContext) in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.WebAPI\Logging\SerilogMiddleware.cs:line 33
+2021-06-08 09:36:30.384 +07:00 [ERR] HTTP GET /swagger-ui-standalone-preset.js.map responded 500 in 386.7550 ms
+System.NullReferenceException: Object reference not set to an instance of an object.
+   at CoStudy.API.WebAPI.RequestResponseLoggingMiddleware.Invoke(HttpContext context) in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.WebAPI\Logging\RequestResponseLoggingMiddleware.cs:line 25
+   at CoStudy.API.WebAPI.SerilogMiddleware.Invoke(HttpContext httpContext) in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.WebAPI\Logging\SerilogMiddleware.cs:line 33
+2021-06-08 09:36:30.848 +07:00 [INF] HTTP POST /api/Logging/paged responded 200 in 1638.9212 ms
+2021-06-08 09:36:30.849 +07:00 [INF] HTTP GET /api/Logging/count responded 200 in 1640.4586 ms
+2021-06-08 09:38:44.280 +07:00 [ERR] HTTP GET /swagger-ui-bundle.js.map responded 500 in 21517.1754 ms
+System.NullReferenceException: Object reference not set to an instance of an object.
+   at CoStudy.API.WebAPI.RequestResponseLoggingMiddleware.Invoke(HttpContext context) in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.WebAPI\Logging\RequestResponseLoggingMiddleware.cs:line 25
+   at CoStudy.API.WebAPI.SerilogMiddleware.Invoke(HttpContext httpContext) in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.WebAPI\Logging\SerilogMiddleware.cs:line 33
+2021-06-08 09:38:45.207 +07:00 [INF] HTTP GET /api/Logging/count responded 200 in 909.4533 ms
+2021-06-08 09:38:47.129 +07:00 [ERR] HTTP GET /swagger-ui-standalone-preset.js.map responded 500 in 1916.5289 ms
+System.NullReferenceException: Object reference not set to an instance of an object.
+   at CoStudy.API.WebAPI.RequestResponseLoggingMiddleware.Invoke(HttpContext context) in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.WebAPI\Logging\RequestResponseLoggingMiddleware.cs:line 25
+   at CoStudy.API.WebAPI.SerilogMiddleware.Invoke(HttpContext httpContext) in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.WebAPI\Logging\SerilogMiddleware.cs:line 33
+2021-06-08 09:38:48.007 +07:00 [INF] HTTP POST /api/Logging/paged responded 200 in 3709.1726 ms
+2021-06-08 09:59:40.987 +07:00 [INF] HTTP GET /swagger-ui-bundle.js.map responded 200 in 2438.6960 ms
+2021-06-08 09:59:42.403 +07:00 [INF] HTTP GET /swagger-ui-standalone-preset.js.map responded 200 in 1109.9149 ms
+2021-06-08 09:59:42.509 +07:00 [INF] HTTP GET /api/Logging/count responded 200 in 1489.8061 ms
+2021-06-08 09:59:42.527 +07:00 [INF] HTTP POST /api/Logging/paged responded 200 in 1507.3813 ms
+2021-06-08 10:07:22.188 +07:00 [INF] HTTP GET /swagger-ui-bundle.js.map responded 200 in 46868.8040 ms
+2021-06-08 10:07:22.547 +07:00 [INF] HTTP GET /api/Logging/count responded 200 in 47261.2480 ms
+2021-06-08 10:07:22.555 +07:00 [INF] HTTP POST /api/Logging/paged responded 200 in 47269.3404 ms
+2021-06-08 10:08:57.948 +07:00 [INF] HTTP GET /favicon.ico responded 200 in 1924.6195 ms
+2021-06-08 10:08:57.948 +07:00 [INF] HTTP GET /swagger-ui-bundle.js.map responded 200 in 61855.6411 ms
+2021-06-08 10:08:58.950 +07:00 [INF] HTTP GET /swagger-ui-standalone-preset.js.map responded 200 in 734.1837 ms
+2021-06-08 10:09:03.860 +07:00 [INF] HTTP GET /swagger-ui-bundle.js.map responded 200 in 2202.6486 ms
+2021-06-08 10:09:03.860 +07:00 [INF] HTTP GET /swagger-ui-standalone-preset.js.map responded 200 in 2202.7584 ms
+2021-06-08 10:09:04.303 +07:00 [INF] HTTP GET /swagger-ui.css.map responded 200 in 441.1159 ms
+2021-06-08 10:09:10.769 +07:00 [INF] HTTP GET /swagger-ui-bundle.js.map responded 200 in 1802.7849 ms
+2021-06-08 10:09:11.211 +07:00 [INF] HTTP GET /favicon.ico responded 200 in 423.7731 ms
+2021-06-08 10:12:51.100 +07:00 [INF] HTTP GET /swagger-ui-bundle.js.map responded 200 in 10144.8351 ms
+2021-06-08 10:12:52.641 +07:00 [INF] HTTP GET /swagger-ui-standalone-preset.js.map responded 200 in 1295.0648 ms
+2021-06-08 10:17:24.752 +07:00 [INF] HTTP GET /swagger-ui-standalone-preset.js.map responded 200 in 1695.8434 ms
+2021-06-08 10:26:23.940 +07:00 [INF] HTTP GET /swagger-ui-bundle.js.map responded 404 in 2724.6666 ms
+2021-06-08 10:26:26.686 +07:00 [INF] HTTP GET /swagger-ui-standalone-preset.js.map responded 404 in 2491.1259 ms
+2021-06-08 10:26:53.888 +07:00 [ERR] HTTP POST /api/Accounts/forgot-password responded 500 in 7890.0299 ms
+MailKit.Net.Smtp.SmtpCommandException: 5.1.5 Recipient address reserved by RFC 2606
+   at MailKit.Net.Smtp.SmtpClient.OnRecipientNotAccepted(MimeMessage message, MailboxAddress mailbox, SmtpResponse response)
+   at MailKit.Net.Smtp.SmtpClient.ProcessRcptToResponse(MimeMessage message, MailboxAddress mailbox, SmtpResponse response)
+   at MailKit.Net.Smtp.SmtpClient.FlushCommandQueueAsync(MimeMessage message, MailboxAddress sender, IList`1 recipients, Boolean doAsync, CancellationToken cancellationToken)
+   at MailKit.Net.Smtp.SmtpClient.SendAsync(FormatOptions options, MimeMessage message, MailboxAddress sender, IList`1 recipients, Boolean doAsync, CancellationToken cancellationToken, ITransferProgress progress)
+   at MailKit.Net.Smtp.SmtpClient.SendAsync(FormatOptions options, MimeMessage message, MailboxAddress sender, IList`1 recipients, Boolean doAsync, CancellationToken cancellationToken, ITransferProgress progress)
+   at CoStudy.API.Infrastructure.Identity.Services.Implements.EmailService.SendEmailAsync(MailRequest mailRequest) in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.Infrastructure.Identity\Services\Implements\EmailService.cs:line 86
+   at CoStudy.API.Infrastructure.Identity.Services.AccountService.AccountService.sendPasswordResetEmail(Account account, String origin) in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.Infrastructure.Identity\Services\AccountService\AccountService.cs:line 343
+   at CoStudy.API.Infrastructure.Identity.Services.AccountService.AccountService.ForgotPassword(ForgotPasswordRequest model, String origin) in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.Infrastructure.Identity\Services\AccountService\AccountService.cs:line 174
+   at CoStudy.API.WebAPI.Controllers.AccountsController.ForgotPassword(ForgotPasswordRequest model) in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.WebAPI\Controllers\AccountsController.cs:line 99
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ActionMethodExecutor.TaskOfIActionResultExecutor.Execute(IActionResultTypeMapper mapper, ObjectMethodExecutor executor, Object controller, Object[] arguments)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeActionMethodAsync>g__Awaited|12_0(ControllerActionInvoker invoker, ValueTask`1 actionResultValueTask)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeNextActionFilterAsync>g__Awaited|10_0(ControllerActionInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Rethrow(ActionExecutedContextSealed context)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeInnerFilterAsync>g__Awaited|13_0(ControllerActionInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeFilterPipelineAsync>g__Awaited|19_0(ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Awaited|17_0(ResourceInvoker invoker, Task task, IDisposable scope)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.<Invoke>g__AwaitRequestTask|6_0(Endpoint endpoint, Task requestTask, ILogger logger)
+   at CoStudy.API.WebAPI.Extensions.AppExtensions.<>c.<<UseErrorHandlingMiddleware>b__1_0>d.MoveNext() in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.WebAPI\Extensions\AppExtensions.cs:line 29
+--- End of stack trace from previous location where exception was thrown ---
+   at CoStudy.API.WebAPI.RequestResponseLoggingMiddleware.Invoke(HttpContext context) in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.WebAPI\Logging\RequestResponseLoggingMiddleware.cs:line 57
+   at CoStudy.API.WebAPI.SerilogMiddleware.Invoke(HttpContext httpContext) in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.WebAPI\Logging\SerilogMiddleware.cs:line 33
+2021-06-08 10:28:00.687 +07:00 [INF] HTTP GET /swagger-ui-standalone-preset.js.map responded 404 in 1.7202 ms
+2021-06-08 10:28:46.023 +07:00 [INF] HTTP GET /swagger-ui-bundle.js.map responded 404 in 0.0863 ms
+2021-06-08 10:28:50.919 +07:00 [INF] HTTP GET /swagger-ui-bundle.js.map responded 404 in 0.0529 ms
+2021-06-08 10:28:50.976 +07:00 [INF] HTTP GET /swagger-ui-standalone-preset.js.map responded 404 in 0.0304 ms
+2021-06-08 10:29:30.575 +07:00 [INF] HTTP GET /swagger-ui-bundle.js.map responded 404 in 2.1137 ms
+2021-06-08 10:29:30.889 +07:00 [INF] HTTP GET /swagger-ui-standalone-preset.js.map responded 404 in 0.0741 ms
+2021-06-08 10:29:31.797 +07:00 [INF] HTTP GET /api/Logging/count responded 200 in 308.5564 ms
+2021-06-08 10:29:31.838 +07:00 [INF] HTTP POST /api/Logging/paged responded 200 in 348.9193 ms
+2021-06-08 10:29:51.957 +07:00 [INF] HTTP POST /api/Cms/post/paged responded 200 in 98.4347 ms
+2021-06-08 10:29:53.590 +07:00 [INF] HTTP POST /api/Cms/comment/paged responded 200 in 35.4870 ms
+2021-06-08 10:29:54.774 +07:00 [INF] HTTP GET /api/Logging/count responded 200 in 135.6892 ms
+2021-06-08 10:29:54.790 +07:00 [INF] HTTP POST /api/Logging/paged responded 200 in 151.1065 ms
+2021-06-08 14:34:14.332 +07:00 [INF] HTTP GET /swagger-ui-standalone-preset.js.map responded 404 in 1.6594 ms
+2021-06-08 14:34:16.382 +07:00 [INF] HTTP GET /api/Logging/count responded 200 in 351.2075 ms
+2021-06-08 14:34:16.468 +07:00 [INF] HTTP POST /api/Logging/paged responded 200 in 437.8303 ms
+2021-06-08 14:34:19.566 +07:00 [INF] HTTP GET /api/Logging/count responded 200 in 188.0845 ms
+2021-06-08 14:34:19.587 +07:00 [INF] HTTP POST /api/Logging/paged responded 200 in 209.5376 ms
+2021-06-08 14:34:23.044 +07:00 [INF] HTTP POST /api/Cms/post/paged responded 200 in 104.5920 ms
+2021-06-08 14:34:26.031 +07:00 [INF] HTTP POST /api/Cms/comment/paged responded 200 in 33.4871 ms
+2021-06-08 14:34:29.240 +07:00 [INF] HTTP POST /api/Cms/reply-comment/paged responded 200 in 30.2980 ms
+2021-06-08 14:34:33.569 +07:00 [INF] HTTP POST /api/Cms/report/paged responded 200 in 37.7816 ms
+2021-06-08 14:34:37.600 +07:00 [INF] HTTP POST /api/MasterData/level/all responded 200 in 23.6302 ms
+2021-06-08 14:34:39.698 +07:00 [INF] HTTP POST /api/MasterData/field/all responded 200 in 12.5959 ms
+2021-06-08 14:34:47.399 +07:00 [INF] HTTP POST /api/MasterData/field/all responded 200 in 4.5149 ms
+2021-06-08 15:22:40.854 +07:00 [INF] HTTP GET /swagger-ui-bundle.js.map responded 404 in 1.6092 ms
+2021-06-08 15:22:41.260 +07:00 [INF] HTTP GET /swagger-ui-standalone-preset.js.map responded 404 in 0.0751 ms
+2021-06-08 15:22:42.306 +07:00 [INF] HTTP GET /api/Logging/count responded 200 in 411.1623 ms
+2021-06-08 15:22:42.356 +07:00 [INF] HTTP POST /api/Logging/paged responded 200 in 461.2510 ms
+2021-06-08 15:22:56.591 +07:00 [INF] HTTP GET /api/Logging/count responded 200 in 151.1541 ms
+2021-06-08 15:22:56.605 +07:00 [INF] HTTP POST /api/Logging/paged responded 200 in 164.4157 ms
+2021-06-08 15:24:39.476 +07:00 [INF] HTTP POST /api/Accounts/login responded 200 in 404.4900 ms
+2021-06-08 15:25:14.674 +07:00 [ERR] HTTP POST /api/Comment/add responded 500 in 138.6184 ms
+System.FormatException: 'string' is not a valid 24 digit hex string.
+   at MongoDB.Bson.ObjectId.Parse(String s)
+   at CoStudy.API.Infrastructure.Shared.Services.CommentService.AddComment(AddCommentRequest request) in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.Infrastructure.Shared\Services\CommentServices\CommentService.cs:line 67
+   at CoStudy.API.WebAPI.Controllers.CommentController.AddComment(AddCommentRequest request) in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.WebAPI\Controllers\CommentController.cs:line 24
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ActionMethodExecutor.TaskOfIActionResultExecutor.Execute(IActionResultTypeMapper mapper, ObjectMethodExecutor executor, Object controller, Object[] arguments)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeActionMethodAsync>g__Awaited|12_0(ControllerActionInvoker invoker, ValueTask`1 actionResultValueTask)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeNextActionFilterAsync>g__Awaited|10_0(ControllerActionInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Rethrow(ActionExecutedContextSealed context)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.InvokeInnerFilterAsync()
+--- End of stack trace from previous location where exception was thrown ---
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeFilterPipelineAsync>g__Awaited|19_0(ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Awaited|17_0(ResourceInvoker invoker, Task task, IDisposable scope)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.<Invoke>g__AwaitRequestTask|6_0(Endpoint endpoint, Task requestTask, ILogger logger)
+   at CoStudy.API.WebAPI.Extensions.AppExtensions.<>c.<<UseErrorHandlingMiddleware>b__1_0>d.MoveNext() in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.WebAPI\Extensions\AppExtensions.cs:line 29
+--- End of stack trace from previous location where exception was thrown ---
+   at CoStudy.API.WebAPI.RequestResponseLoggingMiddleware.Invoke(HttpContext context) in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.WebAPI\Logging\RequestResponseLoggingMiddleware.cs:line 55
+   at CoStudy.API.WebAPI.SerilogMiddleware.Invoke(HttpContext httpContext) in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.WebAPI\Logging\SerilogMiddleware.cs:line 33
+2021-06-08 15:25:42.061 +07:00 [ERR] HTTP POST /api/Comment/add responded 500 in 171.3157 ms
+System.Exception: Post đã bị xóa
+   at CoStudy.API.Infrastructure.Shared.Services.CommentService.AddComment(AddCommentRequest request) in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.Infrastructure.Shared\Services\CommentServices\CommentService.cs:line 125
+   at CoStudy.API.WebAPI.Controllers.CommentController.AddComment(AddCommentRequest request) in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.WebAPI\Controllers\CommentController.cs:line 24
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ActionMethodExecutor.TaskOfIActionResultExecutor.Execute(IActionResultTypeMapper mapper, ObjectMethodExecutor executor, Object controller, Object[] arguments)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeActionMethodAsync>g__Awaited|12_0(ControllerActionInvoker invoker, ValueTask`1 actionResultValueTask)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeNextActionFilterAsync>g__Awaited|10_0(ControllerActionInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Rethrow(ActionExecutedContextSealed context)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeInnerFilterAsync>g__Awaited|13_0(ControllerActionInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeFilterPipelineAsync>g__Awaited|19_0(ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Awaited|17_0(ResourceInvoker invoker, Task task, IDisposable scope)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.<Invoke>g__AwaitRequestTask|6_0(Endpoint endpoint, Task requestTask, ILogger logger)
+   at CoStudy.API.WebAPI.Extensions.AppExtensions.<>c.<<UseErrorHandlingMiddleware>b__1_0>d.MoveNext() in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.WebAPI\Extensions\AppExtensions.cs:line 29
+--- End of stack trace from previous location where exception was thrown ---
+   at CoStudy.API.WebAPI.RequestResponseLoggingMiddleware.Invoke(HttpContext context) in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.WebAPI\Logging\RequestResponseLoggingMiddleware.cs:line 55
+   at CoStudy.API.WebAPI.SerilogMiddleware.Invoke(HttpContext httpContext) in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.WebAPI\Logging\SerilogMiddleware.cs:line 33
+2021-06-08 15:26:04.371 +07:00 [ERR] HTTP POST /api/Comment/add responded 500 in 165.5628 ms
+System.Exception: Post đã bị xóa
+   at CoStudy.API.Infrastructure.Shared.Services.CommentService.AddComment(AddCommentRequest request) in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.Infrastructure.Shared\Services\CommentServices\CommentService.cs:line 125
+   at CoStudy.API.WebAPI.Controllers.CommentController.AddComment(AddCommentRequest request) in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.WebAPI\Controllers\CommentController.cs:line 24
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ActionMethodExecutor.TaskOfIActionResultExecutor.Execute(IActionResultTypeMapper mapper, ObjectMethodExecutor executor, Object controller, Object[] arguments)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeActionMethodAsync>g__Awaited|12_0(ControllerActionInvoker invoker, ValueTask`1 actionResultValueTask)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeNextActionFilterAsync>g__Awaited|10_0(ControllerActionInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Rethrow(ActionExecutedContextSealed context)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeInnerFilterAsync>g__Awaited|13_0(ControllerActionInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeFilterPipelineAsync>g__Awaited|19_0(ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Awaited|17_0(ResourceInvoker invoker, Task task, IDisposable scope)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.<Invoke>g__AwaitRequestTask|6_0(Endpoint endpoint, Task requestTask, ILogger logger)
+   at CoStudy.API.WebAPI.Extensions.AppExtensions.<>c.<<UseErrorHandlingMiddleware>b__1_0>d.MoveNext() in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.WebAPI\Extensions\AppExtensions.cs:line 29
+--- End of stack trace from previous location where exception was thrown ---
+   at CoStudy.API.WebAPI.RequestResponseLoggingMiddleware.Invoke(HttpContext context) in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.WebAPI\Logging\RequestResponseLoggingMiddleware.cs:line 55
+   at CoStudy.API.WebAPI.SerilogMiddleware.Invoke(HttpContext httpContext) in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.WebAPI\Logging\SerilogMiddleware.cs:line 33
+2021-06-08 15:26:30.930 +07:00 [INF] HTTP POST /api/Comment/add responded 200 in 15596.3948 ms
+2021-06-08 15:31:41.257 +07:00 [INF] HTTP GET /swagger-ui-bundle.js.map responded 404 in 1.7271 ms
+2021-06-08 15:31:42.371 +07:00 [INF] HTTP GET /api/Logging/count responded 200 in 303.2964 ms
+2021-06-08 15:31:42.415 +07:00 [INF] HTTP POST /api/Logging/paged responded 200 in 347.5646 ms
+2021-06-08 15:36:46.894 +07:00 [INF] HTTP POST /api/Cms/post/paged responded 200 in 107.1198 ms
+2021-06-08 15:36:49.052 +07:00 [INF] HTTP POST /api/Cms/user/paged responded 200 in 50.6939 ms
+2021-06-08 15:36:50.950 +07:00 [INF] HTTP POST /api/Cms/reply-comment/paged responded 200 in 29.5934 ms
+2021-06-08 15:36:52.712 +07:00 [INF] HTTP POST /api/Cms/comment/paged responded 200 in 60.2852 ms
+2021-06-08 15:36:55.113 +07:00 [INF] HTTP POST /api/MasterData/field/all responded 200 in 14.2348 ms
+2021-06-08 15:44:13.368 +07:00 [INF] HTTP POST /api/Cms/post/paged responded 200 in 14.1971 ms
+2021-06-08 15:44:15.589 +07:00 [INF] HTTP GET /api/Cms/post/60bc32131b593403a146d09a responded 200 in 25.2646 ms
+2021-06-08 15:44:30.723 +07:00 [INF] HTTP GET /swagger-ui-bundle.js.map responded 404 in 0.0881 ms
+2021-06-08 15:44:30.815 +07:00 [INF] HTTP GET /swagger-ui-standalone-preset.js.map responded 404 in 0.0251 ms
+2021-06-08 15:44:48.248 +07:00 [INF] HTTP GET /api/Post/60bc32131b593403a146d09a responded 200 in 26.6678 ms
+2021-06-08 15:45:35.234 +07:00 [INF] HTTP GET /api/Cms/post/60bc32131b593403a146d09a responded 200 in 16.1136 ms
+2021-06-08 15:56:06.890 +07:00 [INF] HTTP GET /swagger-ui-standalone-preset.js.map responded 404 in 2.1613 ms
+2021-06-08 15:56:06.890 +07:00 [INF] HTTP GET /swagger-ui-bundle.js.map responded 404 in 2.1650 ms
+2021-06-08 15:56:07.488 +07:00 [INF] HTTP GET /api/Logging/count responded 200 in 361.9388 ms
+2021-06-08 15:56:07.536 +07:00 [INF] HTTP POST /api/Logging/paged responded 200 in 410.7212 ms
+2021-06-08 15:56:58.434 +07:00 [INF] HTTP POST /api/Cms/user/paged responded 200 in 105.7243 ms
+2021-06-08 15:56:59.149 +07:00 [INF] HTTP POST /api/Cms/post/paged responded 200 in 49.3525 ms
+2021-06-08 15:57:00.232 +07:00 [INF] HTTP POST /api/Cms/user/paged responded 200 in 24.1292 ms
+2021-06-08 15:57:01.410 +07:00 [INF] HTTP POST /api/Cms/report/paged responded 200 in 36.8890 ms
+2021-06-08 15:57:03.625 +07:00 [INF] HTTP POST /api/MasterData/level/all responded 200 in 19.4813 ms
+2021-06-08 15:57:04.316 +07:00 [INF] HTTP POST /api/MasterData/field/all responded 200 in 13.7192 ms
+2021-06-08 15:57:05.238 +07:00 [INF] HTTP POST /api/Cms/reply-comment/paged responded 200 in 27.5767 ms
+2021-06-08 15:57:05.597 +07:00 [INF] HTTP POST /api/Cms/comment/paged responded 200 in 46.6782 ms
+2021-06-08 15:57:05.952 +07:00 [INF] HTTP POST /api/Cms/post/paged responded 200 in 12.7502 ms
+2021-06-08 15:57:07.358 +07:00 [INF] HTTP GET /api/Cms/post/60bc32131b593403a146d09a responded 200 in 25.7632 ms
+2021-06-08 16:00:47.093 +07:00 [INF] HTTP GET /swagger-ui-bundle.js.map responded 404 in 2.3022 ms
+2021-06-08 16:00:47.162 +07:00 [INF] HTTP GET /swagger-ui-standalone-preset.js.map responded 404 in 0.0559 ms
+2021-06-08 16:00:47.545 +07:00 [INF] HTTP GET /api/Logging/count responded 200 in 362.8500 ms
+2021-06-08 16:00:47.571 +07:00 [INF] HTTP POST /api/Logging/paged responded 200 in 389.2387 ms
+2021-06-08 16:01:17.467 +07:00 [INF] HTTP POST /api/Cms/post/paged responded 200 in 105.2223 ms
+2021-06-08 16:01:18.758 +07:00 [INF] HTTP GET /api/Cms/post/60bc32131b593403a146d09a responded 200 in 31.5502 ms
+2021-06-08 16:01:37.322 +07:00 [INF] HTTP GET /api/Cms/post/60bc32131b593403a146d09a responded 200 in 22.5781 ms
+2021-06-08 16:02:21.469 +07:00 [INF] HTTP GET /api/Cms/post/60bc32131b593403a146d09a responded 200 in 19.4544 ms
+2021-06-08 16:02:58.858 +07:00 [INF] HTTP GET /api/Cms/post/60bc32131b593403a146d09a responded 200 in 38.1397 ms
+2021-06-08 16:03:05.857 +07:00 [INF] HTTP POST /api/Cms/user/paged responded 200 in 44.2208 ms
+2021-06-08 16:03:13.160 +07:00 [INF] HTTP GET /api/Cms/user responded 200 in 36.4787 ms
+2021-06-08 16:03:15.686 +07:00 [INF] HTTP GET /api/Cms/user responded 200 in 23.5923 ms
+2021-06-08 20:12:25.387 +07:00 [INF] HTTP GET /swagger-ui-bundle.js.map responded 404 in 1.8049 ms
+2021-06-08 20:12:25.387 +07:00 [INF] HTTP GET /swagger-ui-standalone-preset.js.map responded 404 in 1.6429 ms
+2021-06-08 20:13:23.618 +07:00 [INF] HTTP GET /api/Logging/count responded 200 in 522.7836 ms
+2021-06-08 20:13:23.619 +07:00 [INF] HTTP POST /api/Logging/paged responded 200 in 531.3122 ms
+2021-06-08 20:13:23.938 +07:00 [INF] HTTP GET /swagger-ui-standalone-preset.js.map responded 404 in 0.1487 ms
+2021-06-08 20:13:23.938 +07:00 [INF] HTTP GET /swagger-ui-bundle.js.map responded 404 in 0.1487 ms
+2021-06-08 20:13:45.174 +07:00 [INF] HTTP GET /swagger-ui-standalone-preset.js.map responded 404 in 2.2405 ms
+2021-06-08 20:13:45.174 +07:00 [INF] HTTP GET /swagger-ui-bundle.js.map responded 404 in 2.2356 ms
+2021-06-08 20:13:47.054 +07:00 [INF] HTTP GET /api/Logging/count responded 200 in 325.0688 ms
+2021-06-08 20:13:47.098 +07:00 [INF] HTTP POST /api/Logging/paged responded 200 in 369.3686 ms
+2021-06-08 20:14:14.067 +07:00 [INF] HTTP POST /api/Cms/user/paged responded 200 in 11.5528 ms
+2021-06-08 20:14:37.285 +07:00 [INF] HTTP POST /api/Cms/user/paged responded 200 in 3.1955 ms
+2021-06-08 20:15:37.392 +07:00 [INF] HTTP POST /api/Cms/user/paged responded 200 in 2.7187 ms
+2021-06-08 20:15:40.741 +07:00 [INF] HTTP POST /api/Accounts/login responded 200 in 375.1514 ms
+2021-06-08 20:15:41.575 +07:00 [INF] HTTP POST /api/Cms/user/paged responded 200 in 188.2854 ms
+2021-06-08 20:15:44.670 +07:00 [INF] HTTP POST /api/Cms/post/paged responded 200 in 61.9042 ms
+2021-06-08 20:15:47.191 +07:00 [INF] HTTP POST /api/Cms/comment/paged responded 200 in 55.1508 ms
+2021-06-08 20:15:50.883 +07:00 [INF] HTTP POST /api/Cms/reply-comment/paged responded 200 in 30.9920 ms
+2021-06-08 20:15:54.669 +07:00 [INF] HTTP POST /api/MasterData/field/all responded 200 in 16.4362 ms
+2021-06-08 20:16:00.197 +07:00 [INF] HTTP POST /api/Cms/report/paged responded 200 in 66.8565 ms
+2021-06-08 20:16:06.430 +07:00 [INF] HTTP GET /api/Logging/count responded 200 in 151.4749 ms
+2021-06-08 20:16:06.446 +07:00 [INF] HTTP POST /api/Logging/paged responded 200 in 167.7587 ms
+2021-06-08 20:16:07.962 +07:00 [INF] HTTP POST /api/Logging/paged responded 200 in 162.0489 ms
+2021-06-08 20:16:12.184 +07:00 [INF] HTTP POST /api/Logging/paged responded 200 in 167.2000 ms
+2021-06-08 20:16:16.077 +07:00 [INF] HTTP POST /api/Logging/paged responded 200 in 171.4008 ms
+2021-06-08 20:16:16.866 +07:00 [INF] HTTP POST /api/Logging/paged responded 200 in 171.3377 ms
+2021-06-08 20:16:18.591 +07:00 [INF] HTTP POST /api/Logging/paged responded 200 in 187.6446 ms
+2021-06-08 20:16:20.835 +07:00 [INF] HTTP POST /api/Logging/paged responded 200 in 105.4291 ms
+2021-06-08 20:16:28.386 +07:00 [INF] HTTP POST /api/Cms/post/paged responded 200 in 18.0408 ms
+2021-06-08 20:16:35.445 +07:00 [INF] HTTP GET /api/Cms/post/60bc32131b593403a146d09a responded 200 in 33.5284 ms
+2021-06-08 20:16:47.994 +07:00 [INF] HTTP POST /api/Post/modified-post-status responded 200 in 35.4961 ms
+2021-06-08 20:16:48.021 +07:00 [INF] HTTP GET /api/Cms/post/60bc32131b593403a146d09a responded 200 in 15.1993 ms
+2021-06-08 20:16:53.997 +07:00 [INF] HTTP POST /api/Post/modified-post-status responded 200 in 23.3531 ms
+2021-06-08 20:16:54.025 +07:00 [INF] HTTP GET /api/Cms/post/60bc32131b593403a146d09a responded 200 in 16.7619 ms
+2021-06-08 20:17:06.746 +07:00 [INF] HTTP POST /api/Cms/post/paged responded 200 in 14.4010 ms
+2021-06-08 20:17:11.475 +07:00 [INF] HTTP POST /api/Cms/post/paged responded 200 in 16.5308 ms
+2021-06-08 20:17:19.546 +07:00 [INF] HTTP GET /api/Cms/post/60bc32131b593403a146d09a responded 200 in 14.7491 ms
+2021-06-08 20:17:22.092 +07:00 [INF] HTTP POST /api/Post/modified-post-status responded 200 in 23.9814 ms
+2021-06-08 20:17:22.120 +07:00 [INF] HTTP GET /api/Cms/post/60bc32131b593403a146d09a responded 200 in 15.2049 ms
+2021-06-08 20:17:28.357 +07:00 [INF] HTTP POST /api/Cms/post/paged responded 200 in 13.6488 ms
+2021-06-08 20:17:44.345 +07:00 [INF] HTTP GET /api/Cms/post/60bc32131b593403a146d09a responded 200 in 14.1314 ms
+2021-06-08 20:17:50.957 +07:00 [INF] HTTP POST /api/Cms/comment/paged responded 200 in 16.0177 ms
+2021-06-08 20:17:56.355 +07:00 [INF] HTTP GET /api/Cms/comment/60bf29a7890901eb2db3533f responded 200 in 39.1722 ms
+2021-06-08 20:18:01.418 +07:00 [INF] HTTP GET /api/Cms/post/60bc32131b593403a146d09a responded 200 in 13.0608 ms
+2021-06-08 20:18:06.114 +07:00 [INF] HTTP POST /api/Cms/comment/paged responded 200 in 15.4934 ms
+2021-06-08 20:23:48.859 +07:00 [INF] HTTP POST /api/Cms/report/paged responded 200 in 7.3442 ms
+2021-06-08 20:23:49.955 +07:00 [INF] HTTP GET /api/Report/60bc933a271861175eb8eee1 responded 200 in 37.9867 ms
+2021-06-08 20:23:53.528 +07:00 [ERR] HTTP GET /api/Report/undefined responded 500 in 126.1990 ms
+System.FormatException: 'undefined' is not a valid 24 digit hex string.
+   at MongoDB.Bson.ObjectId.Parse(String s)
+   at CoStudy.API.Infrastructure.Shared.Services.ReportServices.GetReportById(String id) in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.Infrastructure.Shared\Services\ReportServices\ReportServices.cs:line 387
+   at CoStudy.API.WebAPI.Controllers.ReportController.GetReportById(String id) in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.WebAPI\Controllers\ReportController.cs:line 68
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ActionMethodExecutor.TaskOfIActionResultExecutor.Execute(IActionResultTypeMapper mapper, ObjectMethodExecutor executor, Object controller, Object[] arguments)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeActionMethodAsync>g__Awaited|12_0(ControllerActionInvoker invoker, ValueTask`1 actionResultValueTask)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeNextActionFilterAsync>g__Awaited|10_0(ControllerActionInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Rethrow(ActionExecutedContextSealed context)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.InvokeInnerFilterAsync()
+--- End of stack trace from previous location where exception was thrown ---
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeFilterPipelineAsync>g__Awaited|19_0(ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Awaited|17_0(ResourceInvoker invoker, Task task, IDisposable scope)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.<Invoke>g__AwaitRequestTask|6_0(Endpoint endpoint, Task requestTask, ILogger logger)
+   at CoStudy.API.WebAPI.Extensions.AppExtensions.<>c.<<UseErrorHandlingMiddleware>b__1_0>d.MoveNext() in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.WebAPI\Extensions\AppExtensions.cs:line 29
+--- End of stack trace from previous location where exception was thrown ---
+   at CoStudy.API.WebAPI.RequestResponseLoggingMiddleware.Invoke(HttpContext context) in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.WebAPI\Logging\RequestResponseLoggingMiddleware.cs:line 55
+   at CoStudy.API.WebAPI.SerilogMiddleware.Invoke(HttpContext httpContext) in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.WebAPI\Logging\SerilogMiddleware.cs:line 33
+2021-06-08 20:28:50.061 +07:00 [INF] HTTP POST /api/Cms/report/paged responded 200 in 7.0155 ms
+2021-06-08 20:28:51.241 +07:00 [INF] HTTP GET /api/Report/60bc933a271861175eb8eee1 responded 200 in 5.7110 ms
+2021-06-08 20:28:53.471 +07:00 [INF] HTTP GET /api/Report/60bc934e271861175eb8ef34 responded 200 in 5.3681 ms
+2021-06-08 20:29:10.906 +07:00 [INF] HTTP POST /api/Cms/report/paged responded 200 in 5.3542 ms
+2021-06-08 20:29:12.041 +07:00 [INF] HTTP GET /api/Report/60bc933a271861175eb8eee1 responded 200 in 5.0106 ms
+2021-06-08 20:29:18.487 +07:00 [INF] HTTP GET /api/Report/60bc934e271861175eb8ef34 responded 200 in 4.6182 ms
+2021-06-08 20:29:19.158 +07:00 [INF] HTTP GET /api/Report/60bc933a271861175eb8eee1 responded 200 in 5.0305 ms
+2021-06-08 20:30:36.841 +07:00 [ERR] HTTP GET /api/Report/undefined responded 500 in 123.7339 ms
+System.FormatException: 'undefined' is not a valid 24 digit hex string.
+   at MongoDB.Bson.ObjectId.Parse(String s)
+   at CoStudy.API.Infrastructure.Shared.Services.ReportServices.GetReportById(String id) in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.Infrastructure.Shared\Services\ReportServices\ReportServices.cs:line 387
+   at CoStudy.API.WebAPI.Controllers.ReportController.GetReportById(String id) in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.WebAPI\Controllers\ReportController.cs:line 68
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ActionMethodExecutor.TaskOfIActionResultExecutor.Execute(IActionResultTypeMapper mapper, ObjectMethodExecutor executor, Object controller, Object[] arguments)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeActionMethodAsync>g__Awaited|12_0(ControllerActionInvoker invoker, ValueTask`1 actionResultValueTask)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeNextActionFilterAsync>g__Awaited|10_0(ControllerActionInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Rethrow(ActionExecutedContextSealed context)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.InvokeInnerFilterAsync()
+--- End of stack trace from previous location where exception was thrown ---
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeFilterPipelineAsync>g__Awaited|19_0(ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Awaited|17_0(ResourceInvoker invoker, Task task, IDisposable scope)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.<Invoke>g__AwaitRequestTask|6_0(Endpoint endpoint, Task requestTask, ILogger logger)
+   at CoStudy.API.WebAPI.Extensions.AppExtensions.<>c.<<UseErrorHandlingMiddleware>b__1_0>d.MoveNext() in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.WebAPI\Extensions\AppExtensions.cs:line 29
+--- End of stack trace from previous location where exception was thrown ---
+   at CoStudy.API.WebAPI.RequestResponseLoggingMiddleware.Invoke(HttpContext context) in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.WebAPI\Logging\RequestResponseLoggingMiddleware.cs:line 55
+   at CoStudy.API.WebAPI.SerilogMiddleware.Invoke(HttpContext httpContext) in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.WebAPI\Logging\SerilogMiddleware.cs:line 33
+2021-06-08 20:30:43.798 +07:00 [INF] HTTP POST /api/Cms/report/paged responded 200 in 8.0824 ms
+2021-06-08 20:30:45.028 +07:00 [INF] HTTP GET /api/Report/60bc933a271861175eb8eee1 responded 200 in 4.9511 ms
+2021-06-08 20:32:01.164 +07:00 [INF] HTTP POST /api/Cms/report/paged responded 200 in 6.4441 ms
+2021-06-08 20:32:06.191 +07:00 [INF] HTTP GET /api/Report/60bc933a271861175eb8eee1 responded 200 in 8.6666 ms
+2021-06-08 20:33:50.658 +07:00 [INF] HTTP POST /api/Cms/report/paged responded 200 in 8.1123 ms
+2021-06-08 20:33:52.065 +07:00 [INF] HTTP GET /api/Report/60bc933a271861175eb8eee1 responded 200 in 5.0005 ms
+2021-06-08 20:34:51.444 +07:00 [INF] HTTP POST /api/Cms/report/paged responded 200 in 7.1063 ms
+2021-06-08 20:34:53.249 +07:00 [INF] HTTP GET /api/Report/60bc933a271861175eb8eee1 responded 200 in 8.3485 ms
+2021-06-08 20:34:55.250 +07:00 [ERR] HTTP GET /api/Report/undefined responded 500 in 122.7993 ms
+System.FormatException: 'undefined' is not a valid 24 digit hex string.
+   at MongoDB.Bson.ObjectId.Parse(String s)
+   at CoStudy.API.Infrastructure.Shared.Services.ReportServices.GetReportById(String id) in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.Infrastructure.Shared\Services\ReportServices\ReportServices.cs:line 387
+   at CoStudy.API.WebAPI.Controllers.ReportController.GetReportById(String id) in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.WebAPI\Controllers\ReportController.cs:line 68
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ActionMethodExecutor.TaskOfIActionResultExecutor.Execute(IActionResultTypeMapper mapper, ObjectMethodExecutor executor, Object controller, Object[] arguments)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeActionMethodAsync>g__Awaited|12_0(ControllerActionInvoker invoker, ValueTask`1 actionResultValueTask)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeNextActionFilterAsync>g__Awaited|10_0(ControllerActionInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Rethrow(ActionExecutedContextSealed context)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.InvokeInnerFilterAsync()
+--- End of stack trace from previous location where exception was thrown ---
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeFilterPipelineAsync>g__Awaited|19_0(ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Awaited|17_0(ResourceInvoker invoker, Task task, IDisposable scope)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.<Invoke>g__AwaitRequestTask|6_0(Endpoint endpoint, Task requestTask, ILogger logger)
+   at CoStudy.API.WebAPI.Extensions.AppExtensions.<>c.<<UseErrorHandlingMiddleware>b__1_0>d.MoveNext() in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.WebAPI\Extensions\AppExtensions.cs:line 29
+--- End of stack trace from previous location where exception was thrown ---
+   at CoStudy.API.WebAPI.RequestResponseLoggingMiddleware.Invoke(HttpContext context) in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.WebAPI\Logging\RequestResponseLoggingMiddleware.cs:line 55
+   at CoStudy.API.WebAPI.SerilogMiddleware.Invoke(HttpContext httpContext) in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.WebAPI\Logging\SerilogMiddleware.cs:line 33
+2021-06-08 20:35:34.231 +07:00 [INF] HTTP GET /api/Report/60bc934e271861175eb8ef34 responded 200 in 5.4349 ms
+2021-06-08 20:35:35.990 +07:00 [INF] HTTP POST /api/Cms/report/paged responded 200 in 8.2693 ms
+2021-06-08 20:35:40.926 +07:00 [INF] HTTP GET /api/Report/60bc933a271861175eb8eee1 responded 200 in 5.2790 ms
+2021-06-08 20:35:44.833 +07:00 [INF] HTTP POST /api/Cms/report/paged responded 200 in 7.7835 ms
+2021-06-08 20:38:25.609 +07:00 [INF] HTTP POST /api/Cms/report/paged responded 200 in 6.4703 ms
+2021-06-08 20:38:26.698 +07:00 [INF] HTTP GET /api/Report/60bc933a271861175eb8eee1 responded 200 in 5.6895 ms
+2021-06-08 20:38:28.806 +07:00 [INF] HTTP GET /api/Report/60bc934e271861175eb8ef34 responded 200 in 4.8942 ms
+2021-06-08 20:38:29.138 +07:00 [INF] HTTP GET /api/Report/60bc933a271861175eb8eee1 responded 200 in 7.6176 ms
+2021-06-08 20:38:29.600 +07:00 [ERR] HTTP GET /api/Report/undefined responded 500 in 84.7668 ms
+System.FormatException: 'undefined' is not a valid 24 digit hex string.
+   at MongoDB.Bson.ObjectId.Parse(String s)
+   at CoStudy.API.Infrastructure.Shared.Services.ReportServices.GetReportById(String id) in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.Infrastructure.Shared\Services\ReportServices\ReportServices.cs:line 387
+   at CoStudy.API.WebAPI.Controllers.ReportController.GetReportById(String id) in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.WebAPI\Controllers\ReportController.cs:line 68
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ActionMethodExecutor.TaskOfIActionResultExecutor.Execute(IActionResultTypeMapper mapper, ObjectMethodExecutor executor, Object controller, Object[] arguments)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeActionMethodAsync>g__Awaited|12_0(ControllerActionInvoker invoker, ValueTask`1 actionResultValueTask)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeNextActionFilterAsync>g__Awaited|10_0(ControllerActionInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Rethrow(ActionExecutedContextSealed context)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.InvokeInnerFilterAsync()
+--- End of stack trace from previous location where exception was thrown ---
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeFilterPipelineAsync>g__Awaited|19_0(ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Awaited|17_0(ResourceInvoker invoker, Task task, IDisposable scope)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.<Invoke>g__AwaitRequestTask|6_0(Endpoint endpoint, Task requestTask, ILogger logger)
+   at CoStudy.API.WebAPI.Extensions.AppExtensions.<>c.<<UseErrorHandlingMiddleware>b__1_0>d.MoveNext() in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.WebAPI\Extensions\AppExtensions.cs:line 29
+--- End of stack trace from previous location where exception was thrown ---
+   at CoStudy.API.WebAPI.RequestResponseLoggingMiddleware.Invoke(HttpContext context) in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.WebAPI\Logging\RequestResponseLoggingMiddleware.cs:line 55
+   at CoStudy.API.WebAPI.SerilogMiddleware.Invoke(HttpContext httpContext) in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.WebAPI\Logging\SerilogMiddleware.cs:line 33
+2021-06-08 20:39:49.588 +07:00 [INF] HTTP POST /api/Cms/report/paged responded 200 in 7.6546 ms
+2021-06-08 20:39:50.108 +07:00 [INF] HTTP GET /api/Report/60bc933a271861175eb8eee1 responded 200 in 9.6043 ms
+2021-06-08 20:39:52.341 +07:00 [ERR] HTTP GET /api/Report/undefined responded 500 in 58.1421 ms
+System.FormatException: 'undefined' is not a valid 24 digit hex string.
+   at MongoDB.Bson.ObjectId.Parse(String s)
+   at CoStudy.API.Infrastructure.Shared.Services.ReportServices.GetReportById(String id) in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.Infrastructure.Shared\Services\ReportServices\ReportServices.cs:line 387
+   at CoStudy.API.WebAPI.Controllers.ReportController.GetReportById(String id) in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.WebAPI\Controllers\ReportController.cs:line 68
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ActionMethodExecutor.TaskOfIActionResultExecutor.Execute(IActionResultTypeMapper mapper, ObjectMethodExecutor executor, Object controller, Object[] arguments)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeActionMethodAsync>g__Awaited|12_0(ControllerActionInvoker invoker, ValueTask`1 actionResultValueTask)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeNextActionFilterAsync>g__Awaited|10_0(ControllerActionInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Rethrow(ActionExecutedContextSealed context)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.InvokeInnerFilterAsync()
+--- End of stack trace from previous location where exception was thrown ---
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeFilterPipelineAsync>g__Awaited|19_0(ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Awaited|17_0(ResourceInvoker invoker, Task task, IDisposable scope)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.<Invoke>g__AwaitRequestTask|6_0(Endpoint endpoint, Task requestTask, ILogger logger)
+   at CoStudy.API.WebAPI.Extensions.AppExtensions.<>c.<<UseErrorHandlingMiddleware>b__1_0>d.MoveNext() in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.WebAPI\Extensions\AppExtensions.cs:line 29
+--- End of stack trace from previous location where exception was thrown ---
+   at CoStudy.API.WebAPI.RequestResponseLoggingMiddleware.Invoke(HttpContext context) in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.WebAPI\Logging\RequestResponseLoggingMiddleware.cs:line 55
+   at CoStudy.API.WebAPI.SerilogMiddleware.Invoke(HttpContext httpContext) in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.WebAPI\Logging\SerilogMiddleware.cs:line 33
+2021-06-08 20:39:55.443 +07:00 [INF] HTTP GET /api/Report/60bc933a271861175eb8eee1 responded 200 in 5.3087 ms
+2021-06-08 20:42:52.810 +07:00 [INF] HTTP POST /api/Cms/report/paged responded 200 in 6.6152 ms
+2021-06-08 20:42:54.343 +07:00 [INF] HTTP GET /api/Report/60bc933a271861175eb8eee1 responded 200 in 5.2257 ms
+2021-06-08 20:43:00.756 +07:00 [ERR] HTTP GET /api/Report/undefined responded 500 in 79.1741 ms
+System.FormatException: 'undefined' is not a valid 24 digit hex string.
+   at MongoDB.Bson.ObjectId.Parse(String s)
+   at CoStudy.API.Infrastructure.Shared.Services.ReportServices.GetReportById(String id) in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.Infrastructure.Shared\Services\ReportServices\ReportServices.cs:line 387
+   at CoStudy.API.WebAPI.Controllers.ReportController.GetReportById(String id) in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.WebAPI\Controllers\ReportController.cs:line 68
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ActionMethodExecutor.TaskOfIActionResultExecutor.Execute(IActionResultTypeMapper mapper, ObjectMethodExecutor executor, Object controller, Object[] arguments)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeActionMethodAsync>g__Awaited|12_0(ControllerActionInvoker invoker, ValueTask`1 actionResultValueTask)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeNextActionFilterAsync>g__Awaited|10_0(ControllerActionInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Rethrow(ActionExecutedContextSealed context)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.InvokeInnerFilterAsync()
+--- End of stack trace from previous location where exception was thrown ---
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeFilterPipelineAsync>g__Awaited|19_0(ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Awaited|17_0(ResourceInvoker invoker, Task task, IDisposable scope)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.<Invoke>g__AwaitRequestTask|6_0(Endpoint endpoint, Task requestTask, ILogger logger)
+   at CoStudy.API.WebAPI.Extensions.AppExtensions.<>c.<<UseErrorHandlingMiddleware>b__1_0>d.MoveNext() in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.WebAPI\Extensions\AppExtensions.cs:line 29
+--- End of stack trace from previous location where exception was thrown ---
+   at CoStudy.API.WebAPI.RequestResponseLoggingMiddleware.Invoke(HttpContext context) in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.WebAPI\Logging\RequestResponseLoggingMiddleware.cs:line 55
+   at CoStudy.API.WebAPI.SerilogMiddleware.Invoke(HttpContext httpContext) in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.WebAPI\Logging\SerilogMiddleware.cs:line 33
+2021-06-08 20:43:03.629 +07:00 [INF] HTTP GET /api/Report/60bc934e271861175eb8ef34 responded 200 in 5.0556 ms
+2021-06-08 20:43:06.799 +07:00 [INF] HTTP GET /api/Report/60bc933a271861175eb8eee1 responded 200 in 5.4725 ms
+2021-06-08 20:43:09.964 +07:00 [INF] HTTP GET /api/Report/60bc934e271861175eb8ef34 responded 200 in 4.6768 ms
+2021-06-08 20:43:12.821 +07:00 [INF] HTTP POST /api/Cms/report/paged responded 200 in 8.3120 ms
+2021-06-08 20:43:13.974 +07:00 [INF] HTTP GET /api/Report/60bc933a271861175eb8eee1 responded 200 in 5.2672 ms
+2021-06-08 20:43:17.121 +07:00 [INF] HTTP GET /api/Report/60bc934e271861175eb8ef34 responded 200 in 5.5823 ms
+2021-06-08 20:43:19.603 +07:00 [INF] HTTP GET /api/Report/60bc933a271861175eb8eee1 responded 200 in 4.5336 ms
+2021-06-08 20:43:21.955 +07:00 [ERR] HTTP GET /api/Report/undefined responded 500 in 77.2545 ms
+System.FormatException: 'undefined' is not a valid 24 digit hex string.
+   at MongoDB.Bson.ObjectId.Parse(String s)
+   at CoStudy.API.Infrastructure.Shared.Services.ReportServices.GetReportById(String id) in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.Infrastructure.Shared\Services\ReportServices\ReportServices.cs:line 387
+   at CoStudy.API.WebAPI.Controllers.ReportController.GetReportById(String id) in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.WebAPI\Controllers\ReportController.cs:line 68
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ActionMethodExecutor.TaskOfIActionResultExecutor.Execute(IActionResultTypeMapper mapper, ObjectMethodExecutor executor, Object controller, Object[] arguments)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeActionMethodAsync>g__Awaited|12_0(ControllerActionInvoker invoker, ValueTask`1 actionResultValueTask)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeNextActionFilterAsync>g__Awaited|10_0(ControllerActionInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Rethrow(ActionExecutedContextSealed context)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.InvokeInnerFilterAsync()
+--- End of stack trace from previous location where exception was thrown ---
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeFilterPipelineAsync>g__Awaited|19_0(ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Awaited|17_0(ResourceInvoker invoker, Task task, IDisposable scope)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.<Invoke>g__AwaitRequestTask|6_0(Endpoint endpoint, Task requestTask, ILogger logger)
+   at CoStudy.API.WebAPI.Extensions.AppExtensions.<>c.<<UseErrorHandlingMiddleware>b__1_0>d.MoveNext() in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.WebAPI\Extensions\AppExtensions.cs:line 29
+--- End of stack trace from previous location where exception was thrown ---
+   at CoStudy.API.WebAPI.RequestResponseLoggingMiddleware.Invoke(HttpContext context) in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.WebAPI\Logging\RequestResponseLoggingMiddleware.cs:line 55
+   at CoStudy.API.WebAPI.SerilogMiddleware.Invoke(HttpContext httpContext) in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.WebAPI\Logging\SerilogMiddleware.cs:line 33
+2021-06-08 20:43:22.550 +07:00 [INF] HTTP GET /api/Report/60bc933a271861175eb8eee1 responded 200 in 4.8138 ms
+2021-06-08 20:43:22.780 +07:00 [ERR] HTTP GET /api/Report/undefined responded 500 in 69.8957 ms
+System.FormatException: 'undefined' is not a valid 24 digit hex string.
+   at MongoDB.Bson.ObjectId.Parse(String s)
+   at CoStudy.API.Infrastructure.Shared.Services.ReportServices.GetReportById(String id) in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.Infrastructure.Shared\Services\ReportServices\ReportServices.cs:line 387
+   at CoStudy.API.WebAPI.Controllers.ReportController.GetReportById(String id) in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.WebAPI\Controllers\ReportController.cs:line 68
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ActionMethodExecutor.TaskOfIActionResultExecutor.Execute(IActionResultTypeMapper mapper, ObjectMethodExecutor executor, Object controller, Object[] arguments)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeActionMethodAsync>g__Awaited|12_0(ControllerActionInvoker invoker, ValueTask`1 actionResultValueTask)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeNextActionFilterAsync>g__Awaited|10_0(ControllerActionInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Rethrow(ActionExecutedContextSealed context)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.InvokeInnerFilterAsync()
+--- End of stack trace from previous location where exception was thrown ---
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeFilterPipelineAsync>g__Awaited|19_0(ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Awaited|17_0(ResourceInvoker invoker, Task task, IDisposable scope)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.<Invoke>g__AwaitRequestTask|6_0(Endpoint endpoint, Task requestTask, ILogger logger)
+   at CoStudy.API.WebAPI.Extensions.AppExtensions.<>c.<<UseErrorHandlingMiddleware>b__1_0>d.MoveNext() in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.WebAPI\Extensions\AppExtensions.cs:line 29
+--- End of stack trace from previous location where exception was thrown ---
+   at CoStudy.API.WebAPI.RequestResponseLoggingMiddleware.Invoke(HttpContext context) in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.WebAPI\Logging\RequestResponseLoggingMiddleware.cs:line 55
+   at CoStudy.API.WebAPI.SerilogMiddleware.Invoke(HttpContext httpContext) in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.WebAPI\Logging\SerilogMiddleware.cs:line 33
+2021-06-08 20:43:24.169 +07:00 [INF] HTTP GET /api/Report/60bc933a271861175eb8eee1 responded 200 in 4.6971 ms
+2021-06-08 20:43:24.428 +07:00 [ERR] HTTP GET /api/Report/undefined responded 500 in 97.8346 ms
+System.FormatException: 'undefined' is not a valid 24 digit hex string.
+   at MongoDB.Bson.ObjectId.Parse(String s)
+   at CoStudy.API.Infrastructure.Shared.Services.ReportServices.GetReportById(String id) in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.Infrastructure.Shared\Services\ReportServices\ReportServices.cs:line 387
+   at CoStudy.API.WebAPI.Controllers.ReportController.GetReportById(String id) in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.WebAPI\Controllers\ReportController.cs:line 68
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ActionMethodExecutor.TaskOfIActionResultExecutor.Execute(IActionResultTypeMapper mapper, ObjectMethodExecutor executor, Object controller, Object[] arguments)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeActionMethodAsync>g__Awaited|12_0(ControllerActionInvoker invoker, ValueTask`1 actionResultValueTask)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeNextActionFilterAsync>g__Awaited|10_0(ControllerActionInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Rethrow(ActionExecutedContextSealed context)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.InvokeInnerFilterAsync()
+--- End of stack trace from previous location where exception was thrown ---
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeFilterPipelineAsync>g__Awaited|19_0(ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Awaited|17_0(ResourceInvoker invoker, Task task, IDisposable scope)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.<Invoke>g__AwaitRequestTask|6_0(Endpoint endpoint, Task requestTask, ILogger logger)
+   at CoStudy.API.WebAPI.Extensions.AppExtensions.<>c.<<UseErrorHandlingMiddleware>b__1_0>d.MoveNext() in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.WebAPI\Extensions\AppExtensions.cs:line 29
+--- End of stack trace from previous location where exception was thrown ---
+   at CoStudy.API.WebAPI.RequestResponseLoggingMiddleware.Invoke(HttpContext context) in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.WebAPI\Logging\RequestResponseLoggingMiddleware.cs:line 55
+   at CoStudy.API.WebAPI.SerilogMiddleware.Invoke(HttpContext httpContext) in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.WebAPI\Logging\SerilogMiddleware.cs:line 33
+2021-06-08 20:43:24.956 +07:00 [INF] HTTP GET /api/Report/60bc933a271861175eb8eee1 responded 200 in 4.7022 ms
+2021-06-08 20:43:25.193 +07:00 [ERR] HTTP GET /api/Report/undefined responded 500 in 67.8098 ms
+System.FormatException: 'undefined' is not a valid 24 digit hex string.
+   at MongoDB.Bson.ObjectId.Parse(String s)
+   at CoStudy.API.Infrastructure.Shared.Services.ReportServices.GetReportById(String id) in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.Infrastructure.Shared\Services\ReportServices\ReportServices.cs:line 387
+   at CoStudy.API.WebAPI.Controllers.ReportController.GetReportById(String id) in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.WebAPI\Controllers\ReportController.cs:line 68
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ActionMethodExecutor.TaskOfIActionResultExecutor.Execute(IActionResultTypeMapper mapper, ObjectMethodExecutor executor, Object controller, Object[] arguments)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeActionMethodAsync>g__Awaited|12_0(ControllerActionInvoker invoker, ValueTask`1 actionResultValueTask)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeNextActionFilterAsync>g__Awaited|10_0(ControllerActionInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Rethrow(ActionExecutedContextSealed context)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.InvokeInnerFilterAsync()
+--- End of stack trace from previous location where exception was thrown ---
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeFilterPipelineAsync>g__Awaited|19_0(ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Awaited|17_0(ResourceInvoker invoker, Task task, IDisposable scope)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.<Invoke>g__AwaitRequestTask|6_0(Endpoint endpoint, Task requestTask, ILogger logger)
+   at CoStudy.API.WebAPI.Extensions.AppExtensions.<>c.<<UseErrorHandlingMiddleware>b__1_0>d.MoveNext() in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.WebAPI\Extensions\AppExtensions.cs:line 29
+--- End of stack trace from previous location where exception was thrown ---
+   at CoStudy.API.WebAPI.RequestResponseLoggingMiddleware.Invoke(HttpContext context) in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.WebAPI\Logging\RequestResponseLoggingMiddleware.cs:line 55
+   at CoStudy.API.WebAPI.SerilogMiddleware.Invoke(HttpContext httpContext) in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.WebAPI\Logging\SerilogMiddleware.cs:line 33
+2021-06-08 20:43:25.745 +07:00 [INF] HTTP GET /api/Report/60bc934e271861175eb8ef34 responded 200 in 5.3708 ms
+2021-06-08 20:43:25.970 +07:00 [ERR] HTTP GET /api/Report/undefined responded 500 in 65.3625 ms
+System.FormatException: 'undefined' is not a valid 24 digit hex string.
+   at MongoDB.Bson.ObjectId.Parse(String s)
+   at CoStudy.API.Infrastructure.Shared.Services.ReportServices.GetReportById(String id) in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.Infrastructure.Shared\Services\ReportServices\ReportServices.cs:line 387
+   at CoStudy.API.WebAPI.Controllers.ReportController.GetReportById(String id) in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.WebAPI\Controllers\ReportController.cs:line 68
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ActionMethodExecutor.TaskOfIActionResultExecutor.Execute(IActionResultTypeMapper mapper, ObjectMethodExecutor executor, Object controller, Object[] arguments)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeActionMethodAsync>g__Awaited|12_0(ControllerActionInvoker invoker, ValueTask`1 actionResultValueTask)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeNextActionFilterAsync>g__Awaited|10_0(ControllerActionInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Rethrow(ActionExecutedContextSealed context)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.InvokeInnerFilterAsync()
+--- End of stack trace from previous location where exception was thrown ---
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeFilterPipelineAsync>g__Awaited|19_0(ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Awaited|17_0(ResourceInvoker invoker, Task task, IDisposable scope)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.<Invoke>g__AwaitRequestTask|6_0(Endpoint endpoint, Task requestTask, ILogger logger)
+   at CoStudy.API.WebAPI.Extensions.AppExtensions.<>c.<<UseErrorHandlingMiddleware>b__1_0>d.MoveNext() in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.WebAPI\Extensions\AppExtensions.cs:line 29
+--- End of stack trace from previous location where exception was thrown ---
+   at CoStudy.API.WebAPI.RequestResponseLoggingMiddleware.Invoke(HttpContext context) in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.WebAPI\Logging\RequestResponseLoggingMiddleware.cs:line 55
+   at CoStudy.API.WebAPI.SerilogMiddleware.Invoke(HttpContext httpContext) in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.WebAPI\Logging\SerilogMiddleware.cs:line 33
+2021-06-08 20:43:35.019 +07:00 [INF] HTTP GET /api/Report/60bc933a271861175eb8eee1 responded 200 in 4.9229 ms
+2021-06-08 20:44:19.342 +07:00 [INF] HTTP POST /api/Cms/report/paged responded 200 in 5.6007 ms
+2021-06-08 20:44:20.132 +07:00 [INF] HTTP GET /api/Report/60bc933a271861175eb8eee1 responded 200 in 5.1809 ms
+2021-06-08 20:44:28.685 +07:00 [INF] HTTP POST /api/Cms/report/paged responded 200 in 7.4394 ms
+2021-06-08 20:44:29.470 +07:00 [INF] HTTP GET /api/Report/60bc933a271861175eb8eee1 responded 200 in 4.9022 ms
+2021-06-08 20:44:31.906 +07:00 [INF] HTTP GET /api/Report/60bc934e271861175eb8ef34 responded 200 in 5.1165 ms
+2021-06-08 20:44:33.464 +07:00 [INF] HTTP GET /api/Report/60bc933a271861175eb8eee1 responded 200 in 4.8088 ms
+2021-06-08 20:45:20.316 +07:00 [INF] HTTP POST /api/Cms/report/paged responded 200 in 8.6841 ms
+2021-06-08 20:45:30.395 +07:00 [INF] HTTP POST /api/Cms/report/paged responded 200 in 8.5660 ms
+2021-06-08 20:45:31.474 +07:00 [INF] HTTP GET /api/Report/60bc933a271861175eb8eee1 responded 200 in 4.9615 ms
+2021-06-08 20:45:35.212 +07:00 [ERR] HTTP GET /api/Report/undefined responded 500 in 78.7834 ms
+System.FormatException: 'undefined' is not a valid 24 digit hex string.
+   at MongoDB.Bson.ObjectId.Parse(String s)
+   at CoStudy.API.Infrastructure.Shared.Services.ReportServices.GetReportById(String id) in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.Infrastructure.Shared\Services\ReportServices\ReportServices.cs:line 387
+   at CoStudy.API.WebAPI.Controllers.ReportController.GetReportById(String id) in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.WebAPI\Controllers\ReportController.cs:line 68
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ActionMethodExecutor.TaskOfIActionResultExecutor.Execute(IActionResultTypeMapper mapper, ObjectMethodExecutor executor, Object controller, Object[] arguments)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeActionMethodAsync>g__Awaited|12_0(ControllerActionInvoker invoker, ValueTask`1 actionResultValueTask)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeNextActionFilterAsync>g__Awaited|10_0(ControllerActionInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Rethrow(ActionExecutedContextSealed context)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.InvokeInnerFilterAsync()
+--- End of stack trace from previous location where exception was thrown ---
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeFilterPipelineAsync>g__Awaited|19_0(ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Awaited|17_0(ResourceInvoker invoker, Task task, IDisposable scope)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.<Invoke>g__AwaitRequestTask|6_0(Endpoint endpoint, Task requestTask, ILogger logger)
+   at CoStudy.API.WebAPI.Extensions.AppExtensions.<>c.<<UseErrorHandlingMiddleware>b__1_0>d.MoveNext() in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.WebAPI\Extensions\AppExtensions.cs:line 29
+--- End of stack trace from previous location where exception was thrown ---
+   at CoStudy.API.WebAPI.RequestResponseLoggingMiddleware.Invoke(HttpContext context) in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.WebAPI\Logging\RequestResponseLoggingMiddleware.cs:line 55
+   at CoStudy.API.WebAPI.SerilogMiddleware.Invoke(HttpContext httpContext) in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.WebAPI\Logging\SerilogMiddleware.cs:line 33
+2021-06-08 20:45:36.376 +07:00 [INF] HTTP GET /api/Report/60bc934e271861175eb8ef34 responded 200 in 5.0526 ms
+2021-06-08 20:45:37.993 +07:00 [INF] HTTP GET /api/Report/60bc933a271861175eb8eee1 responded 200 in 5.0430 ms
+2021-06-08 20:45:40.234 +07:00 [ERR] HTTP GET /api/Report/undefined responded 500 in 75.0125 ms
+System.FormatException: 'undefined' is not a valid 24 digit hex string.
+   at MongoDB.Bson.ObjectId.Parse(String s)
+   at CoStudy.API.Infrastructure.Shared.Services.ReportServices.GetReportById(String id) in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.Infrastructure.Shared\Services\ReportServices\ReportServices.cs:line 387
+   at CoStudy.API.WebAPI.Controllers.ReportController.GetReportById(String id) in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.WebAPI\Controllers\ReportController.cs:line 68
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ActionMethodExecutor.TaskOfIActionResultExecutor.Execute(IActionResultTypeMapper mapper, ObjectMethodExecutor executor, Object controller, Object[] arguments)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeActionMethodAsync>g__Awaited|12_0(ControllerActionInvoker invoker, ValueTask`1 actionResultValueTask)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeNextActionFilterAsync>g__Awaited|10_0(ControllerActionInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Rethrow(ActionExecutedContextSealed context)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.InvokeInnerFilterAsync()
+--- End of stack trace from previous location where exception was thrown ---
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeFilterPipelineAsync>g__Awaited|19_0(ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Awaited|17_0(ResourceInvoker invoker, Task task, IDisposable scope)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.<Invoke>g__AwaitRequestTask|6_0(Endpoint endpoint, Task requestTask, ILogger logger)
+   at CoStudy.API.WebAPI.Extensions.AppExtensions.<>c.<<UseErrorHandlingMiddleware>b__1_0>d.MoveNext() in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.WebAPI\Extensions\AppExtensions.cs:line 29
+--- End of stack trace from previous location where exception was thrown ---
+   at CoStudy.API.WebAPI.RequestResponseLoggingMiddleware.Invoke(HttpContext context) in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.WebAPI\Logging\RequestResponseLoggingMiddleware.cs:line 55
+   at CoStudy.API.WebAPI.SerilogMiddleware.Invoke(HttpContext httpContext) in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.WebAPI\Logging\SerilogMiddleware.cs:line 33
+2021-06-08 20:45:42.810 +07:00 [INF] HTTP GET /api/Report/60bc934e271861175eb8ef34 responded 200 in 4.8973 ms
+2021-06-08 20:45:45.221 +07:00 [ERR] HTTP GET /api/Report/undefined responded 500 in 70.6731 ms
+System.FormatException: 'undefined' is not a valid 24 digit hex string.
+   at MongoDB.Bson.ObjectId.Parse(String s)
+   at CoStudy.API.Infrastructure.Shared.Services.ReportServices.GetReportById(String id) in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.Infrastructure.Shared\Services\ReportServices\ReportServices.cs:line 387
+   at CoStudy.API.WebAPI.Controllers.ReportController.GetReportById(String id) in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.WebAPI\Controllers\ReportController.cs:line 68
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ActionMethodExecutor.TaskOfIActionResultExecutor.Execute(IActionResultTypeMapper mapper, ObjectMethodExecutor executor, Object controller, Object[] arguments)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeActionMethodAsync>g__Awaited|12_0(ControllerActionInvoker invoker, ValueTask`1 actionResultValueTask)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeNextActionFilterAsync>g__Awaited|10_0(ControllerActionInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Rethrow(ActionExecutedContextSealed context)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.InvokeInnerFilterAsync()
+--- End of stack trace from previous location where exception was thrown ---
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeFilterPipelineAsync>g__Awaited|19_0(ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Awaited|17_0(ResourceInvoker invoker, Task task, IDisposable scope)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.<Invoke>g__AwaitRequestTask|6_0(Endpoint endpoint, Task requestTask, ILogger logger)
+   at CoStudy.API.WebAPI.Extensions.AppExtensions.<>c.<<UseErrorHandlingMiddleware>b__1_0>d.MoveNext() in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.WebAPI\Extensions\AppExtensions.cs:line 29
+--- End of stack trace from previous location where exception was thrown ---
+   at CoStudy.API.WebAPI.RequestResponseLoggingMiddleware.Invoke(HttpContext context) in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.WebAPI\Logging\RequestResponseLoggingMiddleware.cs:line 55
+   at CoStudy.API.WebAPI.SerilogMiddleware.Invoke(HttpContext httpContext) in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.WebAPI\Logging\SerilogMiddleware.cs:line 33
+2021-06-08 20:46:47.471 +07:00 [INF] HTTP POST /api/Cms/report/paged responded 200 in 6.5552 ms
+2021-06-08 20:46:55.473 +07:00 [INF] HTTP GET /api/Report/60bc933a271861175eb8eee1 responded 200 in 5.0848 ms
+2021-06-08 20:47:03.550 +07:00 [ERR] HTTP GET /api/Report/undefined responded 500 in 79.6423 ms
+System.FormatException: 'undefined' is not a valid 24 digit hex string.
+   at MongoDB.Bson.ObjectId.Parse(String s)
+   at CoStudy.API.Infrastructure.Shared.Services.ReportServices.GetReportById(String id) in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.Infrastructure.Shared\Services\ReportServices\ReportServices.cs:line 387
+   at CoStudy.API.WebAPI.Controllers.ReportController.GetReportById(String id) in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.WebAPI\Controllers\ReportController.cs:line 68
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ActionMethodExecutor.TaskOfIActionResultExecutor.Execute(IActionResultTypeMapper mapper, ObjectMethodExecutor executor, Object controller, Object[] arguments)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeActionMethodAsync>g__Awaited|12_0(ControllerActionInvoker invoker, ValueTask`1 actionResultValueTask)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeNextActionFilterAsync>g__Awaited|10_0(ControllerActionInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Rethrow(ActionExecutedContextSealed context)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.InvokeInnerFilterAsync()
+--- End of stack trace from previous location where exception was thrown ---
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeFilterPipelineAsync>g__Awaited|19_0(ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Awaited|17_0(ResourceInvoker invoker, Task task, IDisposable scope)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.<Invoke>g__AwaitRequestTask|6_0(Endpoint endpoint, Task requestTask, ILogger logger)
+   at CoStudy.API.WebAPI.Extensions.AppExtensions.<>c.<<UseErrorHandlingMiddleware>b__1_0>d.MoveNext() in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.WebAPI\Extensions\AppExtensions.cs:line 29
+--- End of stack trace from previous location where exception was thrown ---
+   at CoStudy.API.WebAPI.RequestResponseLoggingMiddleware.Invoke(HttpContext context) in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.WebAPI\Logging\RequestResponseLoggingMiddleware.cs:line 55
+   at CoStudy.API.WebAPI.SerilogMiddleware.Invoke(HttpContext httpContext) in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.WebAPI\Logging\SerilogMiddleware.cs:line 33
+2021-06-08 20:51:36.724 +07:00 [INF] HTTP POST /api/Cms/report/paged responded 200 in 5.8887 ms
+2021-06-08 20:51:38.749 +07:00 [INF] HTTP GET /api/Report/60bc933a271861175eb8eee1 responded 200 in 5.2483 ms
+2021-06-08 20:55:10.099 +07:00 [INF] HTTP POST /api/Cms/report/paged responded 200 in 8.8765 ms
+2021-06-08 20:55:10.650 +07:00 [INF] HTTP GET /api/Report/60bc933a271861175eb8eee1 responded 200 in 5.3349 ms
+2021-06-08 20:55:56.466 +07:00 [INF] HTTP POST /api/Cms/report/paged responded 200 in 6.6595 ms
+2021-06-08 20:56:02.256 +07:00 [INF] HTTP GET /api/Report/60bc933a271861175eb8eee1 responded 200 in 5.6598 ms
+2021-06-08 20:57:59.016 +07:00 [INF] HTTP POST /api/Cms/report/paged responded 200 in 6.3259 ms
+2021-06-08 20:58:00.507 +07:00 [INF] HTTP GET /api/Report/60bc933a271861175eb8eee1 responded 200 in 4.2678 ms
+2021-06-08 21:01:30.781 +07:00 [INF] HTTP POST /api/Cms/report/paged responded 200 in 7.6944 ms
+2021-06-08 21:01:31.763 +07:00 [INF] HTTP GET /api/Report/60bc933a271861175eb8eee1 responded 200 in 8.9588 ms
+2021-06-08 21:02:01.361 +07:00 [INF] HTTP POST /api/Cms/report/paged responded 200 in 6.3113 ms
+2021-06-08 21:02:04.715 +07:00 [INF] HTTP POST /api/Cms/report/paged responded 200 in 7.5609 ms
+2021-06-08 21:02:05.200 +07:00 [INF] HTTP GET /api/Report/60bc933a271861175eb8eee1 responded 200 in 5.3969 ms
+2021-06-08 21:03:14.189 +07:00 [INF] HTTP POST /api/Cms/report/paged responded 200 in 6.8230 ms
+2021-06-08 21:03:14.737 +07:00 [INF] HTTP GET /api/Report/60bc933a271861175eb8eee1 responded 200 in 4.8689 ms
+2021-06-08 21:03:16.622 +07:00 [INF] HTTP GET /api/Report/60bc934e271861175eb8ef34 responded 200 in 4.6098 ms
+2021-06-08 21:03:19.628 +07:00 [INF] HTTP GET /api/Report/60bc933a271861175eb8eee1 responded 200 in 4.6764 ms
+2021-06-08 21:03:48.521 +07:00 [INF] HTTP POST /api/Cms/report/paged responded 200 in 7.0940 ms
+2021-06-08 21:03:49.662 +07:00 [INF] HTTP GET /api/Report/60bc933a271861175eb8eee1 responded 200 in 5.0974 ms
+2021-06-08 21:03:51.005 +07:00 [INF] HTTP GET /api/Report/60bc934e271861175eb8ef34 responded 200 in 6.3581 ms
+2021-06-08 21:04:29.797 +07:00 [INF] HTTP POST /api/Cms/report/paged responded 200 in 7.1858 ms
+2021-06-08 21:04:30.610 +07:00 [INF] HTTP GET /api/Report/60bc934e271861175eb8ef34 responded 200 in 9.3408 ms
+2021-06-08 21:04:32.036 +07:00 [INF] HTTP GET /api/Report/60bc933a271861175eb8eee1 responded 200 in 4.4283 ms
+2021-06-08 21:04:33.004 +07:00 [ERR] HTTP GET /api/Report/undefined responded 500 in 124.6314 ms
+System.FormatException: 'undefined' is not a valid 24 digit hex string.
+   at MongoDB.Bson.ObjectId.Parse(String s)
+   at CoStudy.API.Infrastructure.Shared.Services.ReportServices.GetReportById(String id) in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.Infrastructure.Shared\Services\ReportServices\ReportServices.cs:line 387
+   at CoStudy.API.WebAPI.Controllers.ReportController.GetReportById(String id) in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.WebAPI\Controllers\ReportController.cs:line 68
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ActionMethodExecutor.TaskOfIActionResultExecutor.Execute(IActionResultTypeMapper mapper, ObjectMethodExecutor executor, Object controller, Object[] arguments)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeActionMethodAsync>g__Awaited|12_0(ControllerActionInvoker invoker, ValueTask`1 actionResultValueTask)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeNextActionFilterAsync>g__Awaited|10_0(ControllerActionInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Rethrow(ActionExecutedContextSealed context)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.InvokeInnerFilterAsync()
+--- End of stack trace from previous location where exception was thrown ---
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeFilterPipelineAsync>g__Awaited|19_0(ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Awaited|17_0(ResourceInvoker invoker, Task task, IDisposable scope)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.<Invoke>g__AwaitRequestTask|6_0(Endpoint endpoint, Task requestTask, ILogger logger)
+   at CoStudy.API.WebAPI.Extensions.AppExtensions.<>c.<<UseErrorHandlingMiddleware>b__1_0>d.MoveNext() in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.WebAPI\Extensions\AppExtensions.cs:line 29
+--- End of stack trace from previous location where exception was thrown ---
+   at CoStudy.API.WebAPI.RequestResponseLoggingMiddleware.Invoke(HttpContext context) in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.WebAPI\Logging\RequestResponseLoggingMiddleware.cs:line 55
+   at CoStudy.API.WebAPI.SerilogMiddleware.Invoke(HttpContext httpContext) in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.WebAPI\Logging\SerilogMiddleware.cs:line 33
+2021-06-08 21:04:38.307 +07:00 [INF] HTTP POST /api/Cms/report/paged responded 200 in 8.1937 ms
+2021-06-08 21:04:56.150 +07:00 [INF] HTTP POST /api/Cms/report/paged responded 200 in 6.9396 ms
+2021-06-08 21:04:56.639 +07:00 [INF] HTTP GET /api/Report/60bc933a271861175eb8eee1 responded 200 in 5.3048 ms
+2021-06-08 21:04:58.437 +07:00 [INF] HTTP GET /api/Report/60bc934e271861175eb8ef34 responded 200 in 5.1908 ms
+2021-06-08 21:05:18.077 +07:00 [ERR] HTTP GET /api/Report/undefined responded 500 in 87.3364 ms
+System.FormatException: 'undefined' is not a valid 24 digit hex string.
+   at MongoDB.Bson.ObjectId.Parse(String s)
+   at CoStudy.API.Infrastructure.Shared.Services.ReportServices.GetReportById(String id) in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.Infrastructure.Shared\Services\ReportServices\ReportServices.cs:line 387
+   at CoStudy.API.WebAPI.Controllers.ReportController.GetReportById(String id) in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.WebAPI\Controllers\ReportController.cs:line 68
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ActionMethodExecutor.TaskOfIActionResultExecutor.Execute(IActionResultTypeMapper mapper, ObjectMethodExecutor executor, Object controller, Object[] arguments)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeActionMethodAsync>g__Awaited|12_0(ControllerActionInvoker invoker, ValueTask`1 actionResultValueTask)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeNextActionFilterAsync>g__Awaited|10_0(ControllerActionInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Rethrow(ActionExecutedContextSealed context)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.InvokeInnerFilterAsync()
+--- End of stack trace from previous location where exception was thrown ---
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeFilterPipelineAsync>g__Awaited|19_0(ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Awaited|17_0(ResourceInvoker invoker, Task task, IDisposable scope)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.<Invoke>g__AwaitRequestTask|6_0(Endpoint endpoint, Task requestTask, ILogger logger)
+   at CoStudy.API.WebAPI.Extensions.AppExtensions.<>c.<<UseErrorHandlingMiddleware>b__1_0>d.MoveNext() in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.WebAPI\Extensions\AppExtensions.cs:line 29
+--- End of stack trace from previous location where exception was thrown ---
+   at CoStudy.API.WebAPI.RequestResponseLoggingMiddleware.Invoke(HttpContext context) in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.WebAPI\Logging\RequestResponseLoggingMiddleware.cs:line 55
+   at CoStudy.API.WebAPI.SerilogMiddleware.Invoke(HttpContext httpContext) in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.WebAPI\Logging\SerilogMiddleware.cs:line 33
+2021-06-08 21:05:19.152 +07:00 [INF] HTTP GET /api/Report/60bc933a271861175eb8eee1 responded 200 in 5.1043 ms
+2021-06-08 21:05:26.177 +07:00 [INF] HTTP POST /api/Report/approve-report responded 200 in 4785.8102 ms
+2021-06-08 21:05:31.188 +07:00 [ERR] HTTP GET /api/Report/undefined responded 500 in 74.4146 ms
+System.FormatException: 'undefined' is not a valid 24 digit hex string.
+   at MongoDB.Bson.ObjectId.Parse(String s)
+   at CoStudy.API.Infrastructure.Shared.Services.ReportServices.GetReportById(String id) in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.Infrastructure.Shared\Services\ReportServices\ReportServices.cs:line 387
+   at CoStudy.API.WebAPI.Controllers.ReportController.GetReportById(String id) in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.WebAPI\Controllers\ReportController.cs:line 68
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ActionMethodExecutor.TaskOfIActionResultExecutor.Execute(IActionResultTypeMapper mapper, ObjectMethodExecutor executor, Object controller, Object[] arguments)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeActionMethodAsync>g__Awaited|12_0(ControllerActionInvoker invoker, ValueTask`1 actionResultValueTask)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeNextActionFilterAsync>g__Awaited|10_0(ControllerActionInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Rethrow(ActionExecutedContextSealed context)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.InvokeInnerFilterAsync()
+--- End of stack trace from previous location where exception was thrown ---
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeFilterPipelineAsync>g__Awaited|19_0(ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Awaited|17_0(ResourceInvoker invoker, Task task, IDisposable scope)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.<Invoke>g__AwaitRequestTask|6_0(Endpoint endpoint, Task requestTask, ILogger logger)
+   at CoStudy.API.WebAPI.Extensions.AppExtensions.<>c.<<UseErrorHandlingMiddleware>b__1_0>d.MoveNext() in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.WebAPI\Extensions\AppExtensions.cs:line 29
+--- End of stack trace from previous location where exception was thrown ---
+   at CoStudy.API.WebAPI.RequestResponseLoggingMiddleware.Invoke(HttpContext context) in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.WebAPI\Logging\RequestResponseLoggingMiddleware.cs:line 55
+   at CoStudy.API.WebAPI.SerilogMiddleware.Invoke(HttpContext httpContext) in C:\Users\thang\Documents\GitHub\CoStudy.WebAPI\CoStudy.API.WebAPI\Logging\SerilogMiddleware.cs:line 33
+2021-06-08 21:05:31.515 +07:00 [INF] HTTP GET /api/Report/60bc934e271861175eb8ef34 responded 200 in 4.3428 ms
+2021-06-08 21:05:33.800 +07:00 [INF] HTTP POST /api/Cms/report/paged responded 200 in 8.1751 ms
+2021-06-08 21:06:05.815 +07:00 [INF] HTTP GET /api/Report/60bc934e271861175eb8ef34 responded 200 in 4.6124 ms
+2021-06-08 21:06:16.365 +07:00 [INF] HTTP POST /api/MasterData/level/all responded 200 in 15.6706 ms
+2021-06-08 21:06:19.201 +07:00 [INF] HTTP POST /api/MasterData/level/all responded 200 in 2.4607 ms
+2021-06-08 21:06:21.053 +07:00 [INF] HTTP POST /api/Cms/report/paged responded 200 in 5.5864 ms
+2021-06-08 21:06:22.032 +07:00 [INF] HTTP GET /api/Report/60bc933a271861175eb8eee1 responded 200 in 4.3067 ms
+2021-06-08 21:09:33.885 +07:00 [INF] HTTP GET /api/Report/60bc934e271861175eb8ef34 responded 200 in 5.0630 ms
+2021-06-08 21:09:38.096 +07:00 [INF] HTTP POST /api/MasterData/field/all responded 200 in 2.1730 ms
+2021-06-08 21:10:12.343 +07:00 [INF] HTTP POST /api/MasterData/field/all responded 200 in 1.4926 ms
+2021-06-08 21:10:13.362 +07:00 [INF] HTTP POST /api/MasterData/field/all responded 200 in 1.4138 ms
+2021-06-08 21:10:14.184 +07:00 [INF] HTTP POST /api/MasterData/field/all responded 200 in 1.5773 ms
+2021-06-08 21:10:15.024 +07:00 [INF] HTTP POST /api/MasterData/field/all responded 200 in 1.4049 ms
+2021-06-08 21:10:15.841 +07:00 [INF] HTTP POST /api/MasterData/field/all responded 200 in 1.3623 ms
+2021-06-08 21:10:16.749 +07:00 [INF] HTTP POST /api/MasterData/field/all responded 200 in 1.4672 ms
+2021-06-08 21:51:09.670 +07:00 [INF] HTTP GET /swagger-ui-standalone-preset.js.map responded 404 in 2.1849 ms
+2021-06-08 21:51:09.670 +07:00 [INF] HTTP GET /swagger-ui-bundle.js.map responded 404 in 2.1806 ms
+2021-06-08 21:51:16.159 +07:00 [INF] HTTP GET /api/Logging/count responded 200 in 350.9688 ms
+2021-06-08 21:51:16.218 +07:00 [INF] HTTP POST /api/Logging/paged responded 200 in 410.3903 ms

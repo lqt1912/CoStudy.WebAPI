@@ -7,33 +7,17 @@ using System.Threading.Tasks;
 
 namespace CoStudy.API.WebAPI.Controllers
 {
-    /// <summary>
-    /// Class ReportReasonController
-    /// </summary>
-    /// <seealso cref="Microsoft.AspNetCore.Mvc.ControllerBase" />
     [Route("api/[controller]")]
     [ApiController]
     public class ReportReasonController : ControllerBase
     {
-        /// <summary>
-        /// The report reason service
-        /// </summary>
         IReportReasonService reportReasonService;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ReportReasonController"/> class.
-        /// </summary>
-        /// <param name="reportReasonService">The report reason service.</param>
         public ReportReasonController(IReportReasonService reportReasonService)
         {
             this.reportReasonService = reportReasonService;
         }
 
-        /// <summary>
-        /// Adds the specified entity.
-        /// </summary>
-        /// <param name="entity">The entity.</param>
-        /// <returns></returns>
         [HttpPost]
         public async Task<IActionResult> Add(ReportReason entity)
         {
@@ -41,12 +25,6 @@ namespace CoStudy.API.WebAPI.Controllers
             return Ok(new ApiOkResponse(data));
         }
 
-
-        /// <summary>
-        /// Gets all.
-        /// </summary>
-        /// <param name="request">The request.</param>
-        /// <returns></returns>
         [HttpGet]
         public IActionResult GetAll([FromQuery] BaseGetAllRequest request)
         {
@@ -54,17 +32,11 @@ namespace CoStudy.API.WebAPI.Controllers
             return Ok(new ApiOkResponse(data));
         }
 
-        /// <summary>
-        /// Deletes the specified identifier.
-        /// </summary>
-        /// <param name="id">The identifier.</param>
-        /// <returns></returns>
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(string id)
         {
             var data = await reportReasonService.Delete(id);
             return Ok(new ApiOkResponse(data));
         }
-
     }
 }

@@ -5,42 +5,26 @@ using CoStudy.API.Infrastructure.Shared.ViewModels;
 using CoStudy.API.WebAPI.Middlewares;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
+using CoStudy.API.Domain.Entities.Identity.MongoAuthen;
+using CoStudy.API.Infrastructure.Shared.Models.Request.PostRequest;
 
 namespace CoStudy.API.WebAPI.Controllers
 {
-    /// <summary>
-    /// The Post Controller
-    /// </summary>
-    /// <seealso cref="Microsoft.AspNetCore.Mvc.ControllerBase" />
     [Route("api/[controller]")]
     [ApiController]
     [Authorize]
     public class PostController : ControllerBase
     {
 
-        /// <summary>
-        /// The post service
-        /// </summary>
         IPostService postService;
 
-        /// <summary>The level service</summary>
         ILevelService levelService;
-        /// <summary>
-        /// Initializes a new instance of the <see cref="PostController" /> class.
-        /// </summary>
-        /// <param name="postService">The post service.</param>
-        /// <param name="levelService">The level service.</param>
         public PostController(IPostService postService, ILevelService levelService)
         {
             this.postService = postService;
             this.levelService = levelService;
         }
 
-        /// <summary>
-        /// Adds the post.
-        /// </summary>
-        /// <param name="request">The request.</param>
-        /// <returns></returns>
         [HttpPost]
         public async Task<IActionResult> AddPost(AddPostRequest request)
         {
@@ -78,11 +62,6 @@ namespace CoStudy.API.WebAPI.Controllers
             return Ok(new ApiOkResponse(data));
         }
 
-        /// <summary>
-        /// Gets the by identifier.
-        /// </summary>
-        /// <param name="id">The identifier.</param>
-        /// <returns></returns>
         [HttpGet]
         [Route("{id}")]
         public async Task<IActionResult> GetById(string id)
@@ -91,11 +70,6 @@ namespace CoStudy.API.WebAPI.Controllers
             return Ok(new ApiOkResponse(data));
         }
 
-        /// <summary>
-        /// Gets the by user identifier.
-        /// </summary>
-        /// <param name="request">The request.</param>
-        /// <returns></returns>
         [HttpPost]
         [Route("user")]
         public async Task<IActionResult> GetByUserId(GetPostByUserRequest request)
@@ -104,11 +78,6 @@ namespace CoStudy.API.WebAPI.Controllers
             return Ok(new ApiOkResponse(data));
         }
 
-        /// <summary>
-        /// Gets the post timeline.
-        /// </summary>
-        /// <param name="request">The request.</param>
-        /// <returns></returns>
         [HttpPost]
         [Route("timeline")]
         public async Task<IActionResult> GetPostTimeline(BaseGetAllRequest request)
@@ -126,11 +95,6 @@ namespace CoStudy.API.WebAPI.Controllers
         }
 
 
-        /// <summary>
-        /// Upvotes the specified identifier.
-        /// </summary>
-        /// <param name="id">The identifier.</param>
-        /// <returns></returns>
         [HttpPost]
         [Route("upvote/{id}")]
         public async Task<IActionResult> Upvote(string id)
@@ -139,11 +103,6 @@ namespace CoStudy.API.WebAPI.Controllers
             return Ok(new ApiOkResponse(data));
         }
 
-        /// <summary>
-        /// Downvotes the specified identifier.
-        /// </summary>
-        /// <param name="id">The identifier.</param>
-        /// <returns></returns>
         [HttpPost]
         [Route("downvote/{id}")]
         public async Task<IActionResult> Downvote(string id)
@@ -152,11 +111,6 @@ namespace CoStudy.API.WebAPI.Controllers
             return Ok(new ApiOkResponse(data));
         }
 
-        /// <summary>
-        /// Updates the specified request.
-        /// </summary>
-        /// <param name="request">The request.</param>
-        /// <returns></returns>
         [HttpPut]
         [Route("update")]
         public async Task<IActionResult> Update(UpdatePostRequest request)
@@ -165,11 +119,6 @@ namespace CoStudy.API.WebAPI.Controllers
             return Ok(new ApiOkResponse(data));
         }
 
-        /// <summary>
-        /// Saves the post.
-        /// </summary>
-        /// <param name="id">The identifier.</param>
-        /// <returns></returns>
         [HttpPost]
         [Route("save/{id}")]
         public async Task<IActionResult> SavePost(string id)
@@ -178,11 +127,6 @@ namespace CoStudy.API.WebAPI.Controllers
             return Ok(new ApiOkResponse(data));
         }
 
-        /// <summary>
-        /// Gets the saved post.
-        /// </summary>
-        /// <param name="request">The request.</param>
-        /// <returns></returns>
         [HttpGet]
         [Route("save")]
         public async Task<IActionResult> GetSavedPost([FromQuery] BaseGetAllRequest request)
@@ -191,11 +135,6 @@ namespace CoStudy.API.WebAPI.Controllers
             return Ok(new ApiOkResponse(data));
         }
 
-        /// <summary>
-        /// Filters the post.
-        /// </summary>
-        /// <param name="request">The request.</param>
-        /// <returns></returns>
         [HttpPost]
         [Route("filter")]
         public async Task<IActionResult> FilterPost(FilterRequest request)
@@ -205,11 +144,6 @@ namespace CoStudy.API.WebAPI.Controllers
         }
 
 
-        /// <summary>
-        /// Updates the post field.
-        /// </summary>
-        /// <param name="request">The request.</param>
-        /// <returns></returns>
         [HttpPost]
         [Route("update-field")]
         public async Task<IActionResult> UpdatePostField(UpdatePostLevelRequest request)
@@ -218,16 +152,20 @@ namespace CoStudy.API.WebAPI.Controllers
             return Ok(new ApiOkResponse(data));
         }
 
-        /// <summary>
-        /// Shares the post.
-        /// </summary>
-        /// <param name="request">The request.</param>
-        /// <returns></returns>
         [HttpPost]
         [Route("share-post")]
         public async Task<IActionResult> SharePost(SharePostRequest request)
         {
             var data = await postService.SharePost(request);
+            return Ok(new ApiOkResponse(data));
+        }
+
+        [HttpPost]
+        [Route("modified-post-status")]
+        [Authorize(Role.Admin)]
+        public async Task<IActionResult> ModifiedPostStatus(ModifedPostStatusRequest request)
+        {
+            var data = await postService.ModifiedPostStatus(request);
             return Ok(new ApiOkResponse(data));
         }
     }

@@ -16,78 +16,34 @@ using System.Threading.Tasks;
 
 namespace CoStudy.API.Infrastructure.Shared.Services
 {
-    /// <summary>
-    /// Class ConversationService
-    /// </summary>
-    /// <seealso cref="CoStudy.API.Infrastructure.Shared.Services.IConversationService" />
-    public class ConversationService : IConversationService
+        public class ConversationService : IConversationService
     {
-        /// <summary>
-        /// The conversation item type repository
-        /// </summary>
-        IConversationItemTypeRepository conversationItemTypeRepository;
+           IConversationItemTypeRepository conversationItemTypeRepository;
 
-        /// <summary>
-        /// The mapper
-        /// </summary>
-        IMapper mapper;
+           IMapper mapper;
 
-        /// <summary>
-        /// The conversation repository
-        /// </summary>
-        private IConversationRepository conversationRepository;
+           private IConversationRepository conversationRepository;
 
-        /// <summary>
-        /// The HTTP context accessor
-        /// </summary>
-        private IHttpContextAccessor httpContextAccessor;
+           private IHttpContextAccessor httpContextAccessor;
 
-        /// <summary>
-        /// The user repository
-        /// </summary>
-        private IUserRepository userRepository;
+           private IUserRepository userRepository;
 
-        /// <summary>
-        /// The client group repository
-        /// </summary>
-        private IClientGroupRepository clientGroupRepository;
+           private IClientGroupRepository clientGroupRepository;
 
-        /// <summary>
-        /// The message repository
-        /// </summary>
-        private IMessageRepository messageRepository;
+           private IMessageRepository messageRepository;
 
-        /// <summary>
-        /// The messag text repository
-        /// </summary>
-        private IMessageTextRepository messagTextRepository;
+           private IMessageTextRepository messagTextRepository;
 
-        /// <summary>
-        /// The message image repository
-        /// </summary>
-        private IMessageImageRepository messageImageRepository;
+           private IMessageImageRepository messageImageRepository;
 
-        /// <summary>
-        /// The message multi media repository
-        /// </summary>
-        private IMessageMultiMediaRepository messageMultiMediaRepository;
+           private IMessageMultiMediaRepository messageMultiMediaRepository;
 
-        /// <summary>
-        /// The message post thumbnail repository
-        /// </summary>
-        private IMessagePostThumbnailRepository messagePostThumbnailRepository;
+           private IMessagePostThumbnailRepository messagePostThumbnailRepository;
 
-        /// <summary>
-        /// The message conversation activity repository
-        /// </summary>
-        private IMessageConversationActivityRepository messageConversationActivityRepository;
+           private IMessageConversationActivityRepository messageConversationActivityRepository;
 
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ConversationService"/> class.
-        /// </summary>
-        /// <param name="conversationItemTypeRepository">The conversation item type repository.</param>
-        public ConversationService(IConversationItemTypeRepository conversationItemTypeRepository,
+            public ConversationService(IConversationItemTypeRepository conversationItemTypeRepository,
             IMapper mapper, IConversationRepository conversationRepository,
             IHttpContextAccessor httpContextAccessor,
             IUserRepository userRepository,
@@ -113,12 +69,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services
             this.messageConversationActivityRepository = messageConversationActivityRepository;
         }
 
-        /// <summary>
-        /// Adds the type of the conversation item.
-        /// </summary>
-        /// <param name="entity">The entity.</param>
-        /// <returns></returns>
-        public async Task<ConversationItemTypeViewModel> AddConversationItemType(ConversationItemType entity)
+             public async Task<ConversationItemTypeViewModel> AddConversationItemType(ConversationItemType entity)
         {
 
             var data = new ConversationItemType()
@@ -132,24 +83,14 @@ namespace CoStudy.API.Infrastructure.Shared.Services
             return mapper.Map<ConversationItemTypeViewModel>(data);
         }
 
-        /// <summary>
-        /// Gets the item type by code.
-        /// </summary>
-        /// <param name="code">The code.</param>
-        /// <returns></returns>
-        public async Task<ConversationItemTypeViewModel> GetItemTypeByCode(string code)
+             public async Task<ConversationItemTypeViewModel> GetItemTypeByCode(string code)
         {
             var conversationItemTypeFilter = Builders<ConversationItemType>.Filter.Eq("code", code);
             var data = await conversationItemTypeRepository.FindAsync(conversationItemTypeFilter);
             return mapper.Map<ConversationItemTypeViewModel>(data);
         }
 
-        /// <summary>
-        /// Adds the conversation.
-        /// </summary>
-        /// <param name="request">The request.</param>
-        /// <returns></returns>
-        public async Task<ConversationViewModel> AddConversation(AddConversationRequest request)
+             public async Task<ConversationViewModel> AddConversation(AddConversationRequest request)
         {
 
             User currentUser = Feature.CurrentUser(httpContextAccessor, userRepository);
@@ -198,12 +139,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services
         }
 
 
-        /// <summary>
-        /// Gets the conversation by user identifier.
-        /// </summary>
-        /// <returns></returns>
-        /// <exception cref="Exception">User not found</exception>
-        public async Task<GetConversationByUserIdResponse> GetConversationByUserId()
+             public async Task<GetConversationByUserIdResponse> GetConversationByUserId()
         {
             User currentUser = Feature.CurrentUser(httpContextAccessor, userRepository);
             if (currentUser == null)
@@ -256,13 +192,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services
         }
 
 
-        /// <summary>
-        /// Deletes the conversation.
-        /// </summary>
-        /// <param name="id">The identifier.</param>
-        /// <returns></returns>
-        /// <exception cref="Exception">Đã có lỗi xảy ra</exception>
-        public async Task<string> DeleteConversation(string id)
+              public async Task<string> DeleteConversation(string id)
         {
             Conversation exist = await conversationRepository.GetByIdAsync(ObjectId.Parse(id));
             if (exist != null)
@@ -287,13 +217,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services
         }
 
 
-        /// <summary>
-        /// Adds the member.
-        /// </summary>
-        /// <param name="request">The request.</param>
-        /// <returns></returns>
-        /// <exception cref="Exception">Bạn không có quyền thêm người dùng mới vào cuộc trò chuyện.</exception>
-        public async Task<IEnumerable<MessageViewModel>> AddMember(AddMemberRequest request)
+              public async Task<IEnumerable<MessageViewModel>> AddMember(AddMemberRequest request)
         {
             var conversation = await conversationRepository.GetByIdAsync(ObjectId.Parse(request.ConversationId));
 

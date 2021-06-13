@@ -27,11 +27,7 @@ namespace CoStudy.API.Infrastructure.Shared.Models.Response.MessageResponse
         public string StringContent { get; set; }
 
 
-        /// <summary>
-        /// Delete or not ?
-        /// </summary>
-        /// 
-        [JsonPropertyName("status")]
+            [JsonPropertyName("status")]
         public ItemStatus Status { get; set; }
 
         [JsonPropertyName("created_date")]

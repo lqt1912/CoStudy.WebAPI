@@ -8,16 +8,9 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace CoStudy.API.Infrastructure.Shared.Services
 {
-    /// <summary>
-    /// Service extension
-    /// </summary>
-    public static class ServiceExtension
+       public static class ServiceExtension
     {
-        /// <summary>
-        /// Registers the custom service.
-        /// </summary>
-        /// <param name="services">The services.</param>
-        public static void RegisterCustomService(this IServiceCollection services)
+            public static void RegisterCustomService(this IServiceCollection services)
         {
             services.AddTransient<IUserService, UserService>();
             services.AddTransient<IPostService, PostService>();
@@ -35,6 +28,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services
             services.AddTransient<IFcmRepository, FcmRepository>();
             services.AddTransient<ICmsServices, CmsServices>();
             services.AddTransient<IFieldServices, FieldServices>();
+            services.AddTransient<IMasterDataServices, MasterDataServices>();
         }
     }
 }

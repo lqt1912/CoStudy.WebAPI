@@ -32,3 +32,4 @@ msbuild.wrn
 .vs/
 CoStudy.API.WebAPI/wwwroot/costudy-c5390-firebase-adminsdk-e63r1-ecea6cdc94.json
 *.json
+*.log

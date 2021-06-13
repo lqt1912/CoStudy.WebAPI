@@ -13,7 +13,7 @@ function closeNav() {
     document.getElementById("main").style.marginLeft = "0";
 }
 
-const API_URL = 'https://localhost:44323/';
+//const API_URL = 'https://localhost:44323/';
 
 function setCookie(name, value, days) {
     var expires = "";
@@ -40,7 +40,7 @@ function eraseCookie(name) {
 
 function getConfig() {
     console.log(window.location.href);
-    if (!getCookie("accessToken") && window.location.href != 'https://localhost:44333/Home/Login')
+    if (!getCookie("accessToken") && window.location.href !=='https://localhost:44333/Home/Login')
         window.location.href = 'https://localhost:44333/Home/Login';
     return getCookie("accessToken");
 }
@@ -56,3 +56,16 @@ $(document).ready(
         );
     }
 );
+
+function goToLoginPage() {
+    window.location.href = 'https://localhost:44333/Home/Login';
+}
+
+const StatusEnum = Object.freeze(
+    {
+        "Active": 0,
+        "Offline": 1,
+        "Blocked": 2,
+        "Await": 3,
+        "Deleted": 4
+    });

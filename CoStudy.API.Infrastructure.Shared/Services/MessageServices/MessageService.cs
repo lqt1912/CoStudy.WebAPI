@@ -15,69 +15,25 @@ using System.Threading.Tasks;
 
 namespace CoStudy.API.Infrastructure.Shared.Services.MessageServices
 {
-    /// <summary>
-    /// Class MessageService.
-    /// </summary>
-    /// <seealso cref="CoStudy.API.Infrastructure.Shared.Services.MessageServices.IMessageService" />
-    public class MessageService : IMessageService
+        public class MessageService : IMessageService
     {
-        /// <summary>
-        /// The message repository
-        /// </summary>
-        IMessageRepository messageRepository;
-        /// <summary>
-        /// The user repository
-        /// </summary>
-        IUserRepository userRepository;
-        /// <summary>
-        /// The HTTP context accessor
-        /// </summary>
-        IHttpContextAccessor httpContextAccessor;
-        /// <summary>
-        /// The FCM repository
-        /// </summary>
-        IFcmRepository fcmRepository;
-        /// <summary>
-        /// The mapper
-        /// </summary>
-        IMapper mapper;
+           IMessageRepository messageRepository;
+           IUserRepository userRepository;
+           IHttpContextAccessor httpContextAccessor;
+           IFcmRepository fcmRepository;
+           IMapper mapper;
 
-        /// <summary>
-        /// The message conversation activity repository
-        /// </summary>
-        IMessageConversationActivityRepository messageConversationActivityRepository;
+           IMessageConversationActivityRepository messageConversationActivityRepository;
 
-        /// <summary>
-        /// The message image repository
-        /// </summary>
-        IMessageImageRepository messageImageRepository;
+           IMessageImageRepository messageImageRepository;
 
-        /// <summary>
-        /// The message multi media repository
-        /// </summary>
-        IMessageMultiMediaRepository messageMultiMediaRepository;
+           IMessageMultiMediaRepository messageMultiMediaRepository;
 
-        /// <summary>
-        /// The message post thumbnail repository
-        /// </summary>
-        IMessagePostThumbnailRepository messagePostThumbnailRepository;
+           IMessagePostThumbnailRepository messagePostThumbnailRepository;
 
-        /// <summary>
-        /// The message text repository
-        /// </summary>
-        IMessageTextRepository messageTextRepository;
+           IMessageTextRepository messageTextRepository;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="MessageService"/> class.
-        /// </summary>
-        /// <param name="messageRepository">The message repository.</param>
-        /// <param name="conversationRepository">The conversation repository.</param>
-        /// <param name="userRepository">The user repository.</param>
-        /// <param name="httpContextAccessor">The HTTP context accessor.</param>
-        /// <param name="clientGroupRepository">The client group repository.</param>
-        /// <param name="fcmRepository">The FCM repository.</param>
-        /// <param name="mapper">The mapper.</param>
-        public MessageService(IMessageRepository messageRepository,
+                  public MessageService(IMessageRepository messageRepository,
             IUserRepository userRepository,
             IHttpContextAccessor httpContextAccessor,
             IFcmRepository fcmRepository, IMapper mapper,
@@ -99,12 +55,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.MessageServices
             this.messageTextRepository = messageTextRepository;
         }
 
-        /// <summary>
-        /// Adds the message.
-        /// </summary>
-        /// <param name="request">The request.</param>
-        /// <returns></returns>
-        public async Task<MessageViewModel> AddMessage(AddMessageRequest request)
+             public async Task<MessageViewModel> AddMessage(AddMessageRequest request)
         {
 
             var currentUser = Feature.CurrentUser(httpContextAccessor, userRepository);
@@ -194,13 +145,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.MessageServices
             return null;
         }
 
-        /// <summary>
-        /// Gets the message by conversation identifier.
-        /// </summary>
-        /// <param name="request">The request.</param>
-        /// <returns></returns>
-        /// <exception cref="Exception">Đã có lỗi xảy ra.</exception>
-        public async Task<IEnumerable<MessageViewModel>> GetMessageByConversationId(GetMessageByConversationIdRequest request)
+              public async Task<IEnumerable<MessageViewModel>> GetMessageByConversationId(GetMessageByConversationIdRequest request)
         {
             try
             {
@@ -246,23 +191,13 @@ namespace CoStudy.API.Infrastructure.Shared.Services.MessageServices
         }
 
 
-        /// <summary>
-        /// Gets all.
-        /// </summary>
-        /// <returns></returns>
-        public List<Message> GetAll()
+            public List<Message> GetAll()
         {
             return messageRepository.GetAll().ToList();
         }
 
 
-        /// <summary>
-        /// Deletes the message.
-        /// </summary>
-        /// <param name="id">The identifier.</param>
-        /// <returns></returns>
-        /// <exception cref="Exception">Đã có lỗi xảy ra</exception>
-        public async Task<string> DeleteMessage(string id)
+              public async Task<string> DeleteMessage(string id)
         {
             User currentUser = Feature.CurrentUser(httpContextAccessor, userRepository);
             var existMessageConversationActivity = await messageConversationActivityRepository.GetByIdAsync(ObjectId.Parse(id));
@@ -310,13 +245,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.MessageServices
             }
         }
 
-        /// <summary>
-        /// Edits the message.
-        /// </summary>
-        /// <param name="request">The request.</param>
-        /// <returns></returns>
-        /// <exception cref="Exception">Tin nhắn không tìm thấy</exception>
-        public async Task<MessageViewModel> EditMessage(UpdateMessageRequest request)
+              public async Task<MessageViewModel> EditMessage(UpdateMessageRequest request)
         {
             Message message = await messageRepository.GetByIdAsync(ObjectId.Parse(request.Id));
             if (message == null)

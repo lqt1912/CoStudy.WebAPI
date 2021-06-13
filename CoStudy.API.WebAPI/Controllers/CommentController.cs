@@ -97,8 +97,6 @@ namespace CoStudy.API.WebAPI.Controllers
             return Ok(new ApiOkResponse(data));
         }
 
-
-
         [HttpPut]
         [Route("comment/update")]
         public async Task<IActionResult> UpdateComment(UpdateCommentRequest request)
@@ -112,6 +110,36 @@ namespace CoStudy.API.WebAPI.Controllers
         public async Task<IActionResult> UpdateReply(UpdateReplyRequest request)
         {
             var data = await commentService.UpdateReply(request);
+            return Ok(new ApiOkResponse(data));
+        }
+
+        [HttpGet]
+        [Route("commment/{id}")]
+        public async Task<IActionResult> GetCommentById(string id)
+        {
+            var data = await commentService.GetCommentById(id);
+            return Ok(new ApiOkResponse(data));
+        }
+
+        [HttpGet]
+        [Route("reply-comment/{id}")]
+        public async Task<IActionResult> GetReplyCommentById(string id)
+        {
+            var data = await commentService.GetReplyCommentById(id);
+            return Ok(new ApiOkResponse(data));
+        }
+
+        [HttpPut("modified-comment-status")]
+        public async Task<IActionResult> ModifiedCommentStatus(ModifiedCommentStatusRequest request)
+        {
+            var data = await commentService.ModifiedCommentStatus(request);
+            return Ok(new ApiOkResponse(data));
+        }
+        
+        [HttpPut("modified-reply-status")]
+        public async Task<IActionResult> ModifiedReplyCommentStatus(ModifiedCommentStatusRequest request)
+        {
+            var data = await commentService.ModifiedReplyCommentStatus(request);
             return Ok(new ApiOkResponse(data));
         }
     }

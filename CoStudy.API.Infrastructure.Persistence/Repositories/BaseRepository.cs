@@ -12,7 +12,9 @@ namespace CoStudy.API.Infrastructure.Persistence.Repositories
     public class BaseRepository<T> : IBaseRepository<T> where T : class
     {
         protected CustomMongoClient _client;
+
         protected IMongoCollection<T> _collection { get; set; }
+
         IConfiguration configuration;
 
         public BaseRepository(string alias, IConfiguration configuration)
@@ -31,6 +33,7 @@ namespace CoStudy.API.Infrastructure.Persistence.Repositories
         {
             _collection.InsertOne(entity);
         }
+
         public long Count()
         {
             return _collection.CountDocuments(FilterDefinition<T>.Empty);
@@ -46,11 +49,11 @@ namespace CoStudy.API.Infrastructure.Persistence.Repositories
             FilterDefinition<T> deleteFilter = Builders<T>.Filter.Eq("_id", id);
             _collection.DeleteOne(deleteFilter);
         }
+
         public async Task DeleteAsync(ObjectId id)
         {
             FilterDefinition<T> deleteFilter = Builders<T>.Filter.Eq("_id", id);
             await _collection.DeleteOneAsync(deleteFilter);
-
         }
 
         public bool Exists(ObjectId id)
@@ -83,7 +86,6 @@ namespace CoStudy.API.Infrastructure.Persistence.Repositories
         public Task<T> GetByIdAsync(ObjectId id)
         {
             FilterDefinition<T> findFilter = Builders<T>.Filter.Eq("_id", id);
-
             return _collection.Find(findFilter).FirstOrDefaultAsync();
         }
 
@@ -98,7 +100,6 @@ namespace CoStudy.API.Infrastructure.Persistence.Repositories
         {
             FilterDefinition<T> filter = Builders<T>.Filter.Eq("_id", id);
             return _collection.ReplaceOne(filter, entity);
-
         }
 
         public Task<ReplaceOneResult> UpdateAsync(T entity, ObjectId id)

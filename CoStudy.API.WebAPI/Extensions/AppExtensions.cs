@@ -19,7 +19,10 @@ namespace CoStudy.API.WebAPI.Extensions
         }
         public static void UseErrorHandlingMiddleware(this IApplicationBuilder app)
         {
+           
             app.UseMiddleware(middleware: typeof(ErrorWrappingMiddleware));
+            app.UseMiddleware<SerilogMiddleware>();
+            app.UseMiddleware<RequestResponseLoggingMiddleware>();
             app.Use(async (context, next) =>
             {  // <----
                 context.Request.EnableBuffering(); // or .EnableRewind();

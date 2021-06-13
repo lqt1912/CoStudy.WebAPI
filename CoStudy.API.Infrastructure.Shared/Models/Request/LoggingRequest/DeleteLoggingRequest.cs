@@ -4,18 +4,9 @@ using System.Text.Json.Serialization;
 
 namespace CoStudy.API.Infrastructure.Shared.Models.Request
 {
-    /// <summary>
-    /// Class DeleteLoggingRequest
-    /// </summary>
-    public class DeleteLoggingRequest
+       public class DeleteLoggingRequest
     {
-        /// <summary>
-        /// Gets or sets the ids.
-        /// </summary>
-        /// <value>
-        /// The ids.
-        /// </value>
-        [JsonProperty("ids")]
+              [JsonProperty("ids")]
         [JsonPropertyName("ids")]
         public IEnumerable<string> Ids { get; set; }
 

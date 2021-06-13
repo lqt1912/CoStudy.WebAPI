@@ -9,36 +9,18 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using CoStudy.API.Domain.Entities.Identity.MongoAuthen;
+using CoStudy.API.Infrastructure.Shared.Models.Request.UserRequest;
 
 namespace CoStudy.API.WebAPI.Controllers
 {
-    /// <summary>
-    /// The User Controller
-    /// </summary>
-    /// <seealso cref="Microsoft.AspNetCore.Mvc.ControllerBase" />
     [Route("api/[controller]")]
     [ApiController]
-
     public class UserController : ControllerBase
     {
-        /// <summary>
-        /// The user service
-        /// </summary>
         private readonly IUserService userService;
-        /// <summary>
-        /// The account service
-        /// </summary>
         IAccountService _accountService;
-        /// <summary>
-        /// The HTTP context accessor
-        /// </summary>
         IHttpContextAccessor httpContextAccessor;
-        /// <summary>
-        /// Initializes a new instance of the <see cref="UserController"/> class.
-        /// </summary>
-        /// <param name="userService">The user service.</param>
-        /// <param name="accountService">The account service.</param>
-        /// <param name="httpContextAccessor">The HTTP context accessor.</param>
         public UserController(IUserService userService, IAccountService accountService, IHttpContextAccessor httpContextAccessor)
         {
             this.userService = userService;
@@ -46,11 +28,6 @@ namespace CoStudy.API.WebAPI.Controllers
             this.httpContextAccessor = httpContextAccessor;
         }
 
-        /// <summary>
-        /// Adds the user.
-        /// </summary>
-        /// <param name="user">The user.</param>
-        /// <returns></returns>
         [HttpPost]
         [Route("register")]
         public async Task<IActionResult> AddUser(AddUserRequest user)
@@ -60,12 +37,14 @@ namespace CoStudy.API.WebAPI.Controllers
                 Email = user.Email,
                 Password = user.Password,
                 ConfirmPassword = user.ConfirmPassword,
-                AcceptTerms = user.AcceptTerms
+                AcceptTerms = user.AcceptTerms,
+                IsExternalRegister = user.IsExternalRegister
             };
-
-            await _accountService.Register(registerRequest, Feature.GetHostUrl(httpContextAccessor));
             var data = await userService.AddUserAsync(user);
 
+            await _accountService.Register(registerRequest, Feature.GetHostUrl(httpContextAccessor));
+
+          
             var response = new
             {
                 Data = data,
@@ -75,11 +54,6 @@ namespace CoStudy.API.WebAPI.Controllers
             return Ok(new ApiOkResponse(response));
         }
 
-        /// <summary>
-        /// Updates the user.
-        /// </summary>
-        /// <param name="request">The request.</param>
-        /// <returns></returns>
         [HttpPut]
         [Route("update")]
         [Authorize]
@@ -89,11 +63,13 @@ namespace CoStudy.API.WebAPI.Controllers
             return Ok(new ApiOkResponse(data));
         }
 
-        /// <summary>
-        /// Uploads the avatar.
-        /// </summary>
-        /// <param name="request">The request.</param>
-        /// <returns></returns>
+        [HttpPost("update-address")]
+        public async Task<IActionResult> UpdateAddress(Address request)
+        {
+            var data = await userService.UpdateUserAddress(request);
+            return Ok(new ApiOkResponse(data));
+        }
+
         [Authorize]
         [HttpPost]
         [Route("avatar")]
@@ -104,11 +80,6 @@ namespace CoStudy.API.WebAPI.Controllers
             return Ok(new ApiOkResponse(data));
         }
 
-        /// <summary>
-        /// Updates the avatar.
-        /// </summary>
-        /// <param name="request">The request.</param>
-        /// <returns></returns>
         [Authorize]
         [HttpPost]
         [Route("avatar/update")]
@@ -118,11 +89,6 @@ namespace CoStudy.API.WebAPI.Controllers
             return Ok(new ApiOkResponse(data));
         }
 
-        /// <summary>
-        /// Adds the followings.
-        /// </summary>
-        /// <param name="request">The request.</param>
-        /// <returns></returns>
         [Authorize]
         [HttpPost]
         [Route("following")]
@@ -132,11 +98,6 @@ namespace CoStudy.API.WebAPI.Controllers
             return Ok(new ApiOkResponse(data));
         }
 
-        /// <summary>
-        /// Adds the additional infos.
-        /// </summary>
-        /// <param name="request">The request.</param>
-        /// <returns></returns>
         [Authorize]
         [HttpPost]
         [Route("additionalinfos")]
@@ -146,12 +107,6 @@ namespace CoStudy.API.WebAPI.Controllers
             return Ok(new ApiOkResponse(data));
         }
 
-
-        /// <summary>
-        /// Gets the by identifier.
-        /// </summary>
-        /// <param name="id">The identifier.</param>
-        /// <returns></returns>
         [Authorize]
         [HttpGet]
         [Route("get/{id}")]
@@ -162,10 +117,6 @@ namespace CoStudy.API.WebAPI.Controllers
         }
 
         //  [Authorize]
-        /// <summary>
-        /// Gets the current user.
-        /// </summary>
-        /// <returns></returns>
         [HttpGet]
         [Route("current")]
         public IActionResult GetCurrentUser()
@@ -174,11 +125,6 @@ namespace CoStudy.API.WebAPI.Controllers
             return Ok(new ApiOkResponse(data));
         }
 
-        /// <summary>
-        /// Unfollows the specified following identifier.
-        /// </summary>
-        /// <param name="followingId">The following identifier.</param>
-        /// <returns></returns>
         [Authorize]
         [HttpPost]
         [Route("following/remove")]
@@ -188,11 +134,6 @@ namespace CoStudy.API.WebAPI.Controllers
             return Ok(new ApiOkResponse(data));
         }
 
-        /// <summary>
-        /// Adds the fields.
-        /// </summary>
-        /// <param name="field">The field.</param>
-        /// <returns></returns>
         [HttpPost]
         [Route("field/add/database")]
         public async Task<IActionResult> AddFields(string field)
@@ -201,11 +142,6 @@ namespace CoStudy.API.WebAPI.Controllers
             return Ok(new ApiOkResponse(data));
         }
 
-        /// <summary>
-        /// Gets the follower.
-        /// </summary>
-        /// <param name="request">The request.</param>
-        /// <returns></returns>
         [HttpPost]
         [Route("get-follower")]
         public async Task<IActionResult> GetFollower(FollowFilterRequest request)
@@ -214,11 +150,6 @@ namespace CoStudy.API.WebAPI.Controllers
             return Ok(new ApiOkResponse(data));
         }
 
-        /// <summary>
-        /// Gets the following.
-        /// </summary>
-        /// <param name="request">The request.</param>
-        /// <returns></returns>
         [HttpPost]
         [Route("get-following")]
         public async Task<IActionResult> GetFollowing(FollowFilterRequest request)
@@ -227,10 +158,6 @@ namespace CoStudy.API.WebAPI.Controllers
             return Ok(new ApiOkResponse(data));
         }
 
-        /// <summary>
-        /// Gets all field.
-        /// </summary>
-        /// <returns></returns>
         [HttpGet]
         [Route("field/all")]
         public IActionResult getAllField()
@@ -239,11 +166,6 @@ namespace CoStudy.API.WebAPI.Controllers
             return Ok(new ApiOkResponse(data));
         }
 
-        /// <summary>
-        /// Users the filter.
-        /// </summary>
-        /// <param name="request">The request.</param>
-        /// <returns></returns>
         [HttpPost]
         [Route("user/filter")]
         public async Task<IActionResult> UserFilter(FilterUserRequest request)
@@ -252,11 +174,6 @@ namespace CoStudy.API.WebAPI.Controllers
             return Ok(new ApiOkResponse(data));
         }
 
-
-        /// <summary>
-        /// Gets the refresh token.
-        /// </summary>
-        /// <returns></returns>
         [HttpGet]
         [Route("user/revoke-token")]
         public async Task<IActionResult> GetRefreshToken()
@@ -265,11 +182,6 @@ namespace CoStudy.API.WebAPI.Controllers
             return Ok(new ApiOkResponse(data));
         }
 
-        /// <summary>
-        /// Gets the cache.
-        /// </summary>
-        /// <param name="email">The email.</param>
-        /// <returns></returns>
         [Route("cache/get")]
         [HttpGet]
         public IActionResult GetCache(string email)
@@ -278,12 +190,6 @@ namespace CoStudy.API.WebAPI.Controllers
             return Ok(new ApiOkResponse(data));
         }
 
-
-        /// <summary>
-        /// Gets the nearby user.
-        /// </summary>
-        /// <param name="request">The request.</param>
-        /// <returns></returns>
         [HttpGet("near-by")]
         public IActionResult GetNearbyUser([FromQuery] BaseGetAllRequest request)
         {
@@ -291,11 +197,6 @@ namespace CoStudy.API.WebAPI.Controllers
             return Ok(new ApiOkResponse(data));
         }
 
-        /// <summary>
-        /// Adds the or update call identifier.
-        /// </summary>
-        /// <param name="request">The request.</param>
-        /// <returns></returns>
         [HttpPost]
         [Route("call-id")]
         public async Task<IActionResult> AddOrUpdateCallId(AddOrUpdateCallIdRequest request)
@@ -303,5 +204,22 @@ namespace CoStudy.API.WebAPI.Controllers
             var data = await userService.AddOrUpdateCallId(request);
             return Ok(new ApiOkResponse(data));
         }
+
+        [HttpGet]
+        [Route("is-exist")]
+        public async Task<IActionResult> CheckUserExist([FromQuery]string email)
+        {
+            var data = await userService.IsEmailExist(email);
+            return Ok(new ApiOkResponse(data));
+        }
+
+        [HttpPut("modified-user")]
+        [Authorize(Role.Admin)]
+        public async Task<IActionResult> Modified([FromBody]ModifiedRequest request)
+        {
+            var data = await userService.ModifiedUser(request);
+            return Ok(new ApiOkResponse(data));
+        }
+
     }
 }

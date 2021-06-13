@@ -7,33 +7,17 @@ using System.Threading.Tasks;
 
 namespace CoStudy.API.WebAPI.Controllers
 {
-    /// <summary>
-    /// Class FieldController
-    /// </summary>
-    /// <seealso cref="Microsoft.AspNetCore.Mvc.ControllerBase" />
     [Route("api/[controller]")]
     [ApiController]
     public class FieldController : ControllerBase
     {
-        /// <summary>
-        /// The field service
-        /// </summary>
         IFieldServices fieldService;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="FieldController"/> class.
-        /// </summary>
-        /// <param name="fieldService">The field service.</param>
         public FieldController(IFieldServices fieldService)
         {
             this.fieldService = fieldService;
         }
 
-        /// <summary>
-        /// Adds the field.
-        /// </summary>
-        /// <param name="request">The request.</param>
-        /// <returns></returns>
         [HttpPost]
         public async Task<IActionResult> AddField(Field request)
         {
@@ -41,11 +25,6 @@ namespace CoStudy.API.WebAPI.Controllers
             return Ok(new ApiOkResponse(data));
         }
 
-        /// <summary>
-        /// Gets all field.
-        /// </summary>
-        /// <param name="request">The request.</param>
-        /// <returns></returns>
         [HttpGet]
         public IActionResult GetAllField([FromQuery] BaseGetAllRequest request)
         {
@@ -53,11 +32,6 @@ namespace CoStudy.API.WebAPI.Controllers
             return Ok(new ApiOkResponse(data));
         }
 
-        /// <summary>
-        /// Gets the field by group identifier.
-        /// </summary>
-        /// <param name="groupId">The group identifier.</param>
-        /// <returns></returns>
         [HttpGet("group-id/{groupId}")]
         public async Task<IActionResult> GetFieldByGroupId(string groupId)
         {
@@ -65,11 +39,6 @@ namespace CoStudy.API.WebAPI.Controllers
             return Ok(new ApiOkResponse(data));
         }
 
-        /// <summary>
-        /// Detetes the field.
-        /// </summary>
-        /// <param name="id">The identifier.</param>
-        /// <returns></returns>
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeteteField(string id)
         {
@@ -77,11 +46,6 @@ namespace CoStudy.API.WebAPI.Controllers
             return Ok(new ApiOkResponse(data));
         }
 
-        /// <summary>
-        /// Adds the field to group.
-        /// </summary>
-        /// <param name="request">The request.</param>
-        /// <returns></returns>
         [HttpPost("add-to-group")]
         public async Task<IActionResult> AddFieldToGroup(AddFieldToGroupRequest request)
         {

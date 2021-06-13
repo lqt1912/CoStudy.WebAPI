@@ -7,8 +7,11 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IdentityModel.Tokens.Jwt;
 using System.IO;
 using System.Linq;
+using System.Text;
+using Microsoft.IdentityModel.Tokens;
 using static Common.Constants.NotificationContentTypeConstant;
 
 namespace CoStudy.API.Application.Features
@@ -116,8 +119,7 @@ namespace CoStudy.API.Application.Features
                 var filter = Builders<User>.Filter.Eq("email", currentAccount.Email);
                 return userRepository.Find(filter);
             }
-            else return null;
-
+            else throw new UnauthorizedAccessException("Người dùng chưa đăng nhập. ");
 
         }
 
@@ -222,6 +224,31 @@ namespace CoStudy.API.Application.Features
             }
         }
 
+        public static JwtSecurityToken ValidateToken(string token, string secret)
+        {
+            try
+            {
+                JwtSecurityTokenHandler tokenHandler = new JwtSecurityTokenHandler();
+                byte[] key = Encoding.ASCII.GetBytes(secret);
+                tokenHandler.ValidateToken(token, new TokenValidationParameters
+                {
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(key),
+                    ValidateIssuer = false,
+                    ValidateAudience = false,
+                    // set clockskew to zero so tokens expire exactly at token expiration time (instead of 5 minutes later)
+                    ClockSkew = TimeSpan.Zero
+                }, out SecurityToken validatedToken);
+
+                JwtSecurityToken jwtToken = (JwtSecurityToken)validatedToken;
+                return jwtToken;
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+
     }
 
     public class Location
@@ -229,4 +256,6 @@ namespace CoStudy.API.Application.Features
         public double Latitude { get; set; }
         public double Longitude { get; set; }
     }
+
+
 }

@@ -9,35 +9,19 @@ using System.Threading.Tasks;
 
 namespace CoStudy.API.WebAPI.Controllers
 {
-    /// <summary>
-    /// Class ConversationController
-    /// </summary>
-    /// <seealso cref="Microsoft.AspNetCore.Mvc.ControllerBase" />
-    [Route("api/[controller]")]
+        [Route("api/[controller]")]
     [ApiController]
     public class ConversationController : ControllerBase
     {
 
-        /// <summary>
-        /// The conversation service
-        /// </summary>
-        IConversationService conversationService;
+           IConversationService conversationService;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ConversationController"/> class.
-        /// </summary>
-        /// <param name="conversationService">The conversation service.</param>
-        public ConversationController(IConversationService conversationService)
+            public ConversationController(IConversationService conversationService)
         {
             this.conversationService = conversationService;
         }
 
-        /// <summary>
-        /// Adds the conversation.
-        /// </summary>
-        /// <param name="request">The request.</param>
-        /// <returns></returns>
-        [HttpPost]
+             [HttpPost]
         public async Task<IActionResult> AddConversation(AddConversationRequest request)
         {
             ConversationViewModel data = await conversationService.AddConversation(request);
@@ -45,11 +29,7 @@ namespace CoStudy.API.WebAPI.Controllers
         }
 
 
-        /// <summary>
-        /// Gets the current conversation list.
-        /// </summary>
-        /// <returns></returns>
-        [HttpGet]
+            [HttpGet]
         [Route("current")]
         public async Task<IActionResult> GetCurrentConversationList()
         {
@@ -58,12 +38,7 @@ namespace CoStudy.API.WebAPI.Controllers
         }
 
 
-        /// <summary>
-        /// Deletes the conversation.
-        /// </summary>
-        /// <param name="id">The identifier.</param>
-        /// <returns></returns>
-        [HttpDelete]
+             [HttpDelete]
         [Route("{id}")]
         public async Task<IActionResult> DeleteConversation(string id)
         {
@@ -71,12 +46,7 @@ namespace CoStudy.API.WebAPI.Controllers
             return Ok(new ApiOkResponse(data));
         }
 
-        /// <summary>
-        /// Adds the member.
-        /// </summary>
-        /// <param name="request">The request.</param>
-        /// <returns></returns>
-        [HttpPut]
+             [HttpPut]
         [Route("member")]
         public async Task<IActionResult> AddMember(AddMemberRequest request)
         {

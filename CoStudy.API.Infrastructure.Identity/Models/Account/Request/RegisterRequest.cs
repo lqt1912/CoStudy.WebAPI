@@ -21,5 +21,7 @@ namespace CoStudy.API.Infrastructure.Identity.Models.Account.Request
 
         [Range(typeof(bool), "true", "true")]
         public bool AcceptTerms { get; set; }
+
+        public bool IsExternalRegister { get; set; } 
     }
 }

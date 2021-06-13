@@ -4,30 +4,24 @@ using System.Threading.Tasks;
 
 namespace CoStudy.API.Infrastructure.Shared.Services
 {
-    /// <summary>
-    /// Interface ICmsServices
-    /// </summary>
-    public interface ICmsServices
+       public interface ICmsServices
     {
-        /// <summary>
-        /// Gets the user paged.
-        /// </summary>
-        /// <param name="request">The request.</param>
-        /// <returns></returns>
-        TableResultJson<UserViewModel> GetUserPaged(TableRequest request);
+             TableResultJson<UserViewModel> GetUserPaged(TableRequest request);
 
-        /// <summary>
-        /// Gets the by email.
-        /// </summary>
-        /// <param name="email">The email.</param>
-        /// <returns></returns>
-        Task<UserProfileViewModel> GetByEmail(string email);
+             Task<UserProfileViewModel> GetByEmail(string email);
 
-        /// <summary>
-        /// Gets the post paged.
-        /// </summary>
-        /// <param name="request">The request.</param>
-        /// <returns></returns>
-        TableResultJson<PostViewModel> GetPostPaged(TableRequest request);
+             TableResultJson<PostViewModel> GetPostPaged(TableRequest request);
+
+             TableResultJson<CommentViewModel> GetCommentPaged(TableRequest request);
+
+             TableResultJson<ReplyCommentViewModel> GetReplyCommentPaged(TableRequest request);
+
+             TableResultJson<ReportViewModel> GetReportPaged(TableRequest request);
+
+             Task<CommentViewModel> GetCommentById(string id);
+
+             Task<ReplyCommentViewModel> GetReplyCommentById(string id);
+
+             Task<PostViewModel> GetPostById(string id);
     }
 }

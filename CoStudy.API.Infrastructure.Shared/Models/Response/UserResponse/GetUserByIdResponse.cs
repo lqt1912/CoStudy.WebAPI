@@ -45,11 +45,7 @@ namespace CoStudy.API.Infrastructure.Shared.Models.Response.UserResponse
         public DateTime ModifiedDate { get; set; }
 
 
-        /// <summary>
-        /// List id of post written by this id
-        /// </summary>
-        /// 
-        [JsonPropertyName("posts")]
+            [JsonPropertyName("posts")]
         public List<Post> Posts { get; set; }
 
         [JsonPropertyName("post_count")]
@@ -59,33 +55,17 @@ namespace CoStudy.API.Infrastructure.Shared.Models.Response.UserResponse
         public List<Noftication> Noftications { get; set; }
 
 
-        /// <summary>
-        /// List id of follower
-        /// </summary>
-        /// 
-        [JsonPropertyName("followers")]
+            [JsonPropertyName("followers")]
         public int Followers { get; set; }
 
 
-        /// <summary>
-        /// List id of followings
-        /// </summary>
-        /// 
-        [JsonPropertyName("following")]
+            [JsonPropertyName("following")]
         public List<string> Following { get; set; }
 
-        /// <summary>
-        /// Thông tin thêm
-        /// </summary>
-        /// 
-        [JsonPropertyName("additional_infos")]
+            [JsonPropertyName("additional_infos")]
         public List<IDictionary<string, string>> AdditionalInfos { get; set; }
 
-        /// <summary>
-        /// Sở trường
-        /// </summary>
-        /// 
-        [JsonPropertyName("fortes")]
+            [JsonPropertyName("fortes")]
         public List<Field> Fortes { get; set; }
         [JsonPropertyName("avatar_hash")]
         public string ImageHash { get; set; }

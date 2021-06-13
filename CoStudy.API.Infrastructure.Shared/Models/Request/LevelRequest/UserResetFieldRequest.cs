@@ -5,30 +5,15 @@ using System.Text.Json.Serialization;
 
 namespace CoStudy.API.Infrastructure.Shared.Models.Request
 {
-    /// <summary>
-    /// Class UserResetFieldRequest
-    /// </summary>
-    public class UserResetFieldRequest
+       public class UserResetFieldRequest
     {
-        /// <summary>
-        /// Gets or sets the user identifier.
-        /// </summary>
-        /// <value>
-        /// The user identifier.
-        /// </value>
-        [StringRequired]
+              [StringRequired]
         [JsonProperty("user_id")]
         [JsonPropertyName("user_id")]
         public string UserId { get; set; }
 
 
-        /// <summary>
-        /// Gets or sets the field identifier.
-        /// </summary>
-        /// <value>
-        /// The field identifier.
-        /// </value>
-        [JsonProperty("field_id")]
+              [JsonProperty("field_id")]
         [JsonPropertyName("field_id")]
         public IEnumerable<string> FieldId { get; set; }
     }

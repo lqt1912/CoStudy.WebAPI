@@ -3,27 +3,12 @@ using System.Collections.Generic;
 
 namespace CoStudy.API.Infrastructure.Shared.Models.Request
 {
-    /// <summary>
-    /// Class AddMemberRequest.
-    /// </summary>
-    public class AddMemberRequest
+       public class AddMemberRequest
     {
-        /// <summary>
-        /// Gets or sets the conversation identifier.
-        /// </summary>
-        /// <value>
-        /// The conversation identifier.
-        /// </value>
-        [StringRequired]
+              [StringRequired]
         public string ConversationId { get; set; }
 
-        /// <summary>
-        /// Gets or sets the user ids.
-        /// </summary>
-        /// <value>
-        /// The user ids.
-        /// </value>
-        [ListRequired]
+              [ListRequired]
         public IEnumerable<string> UserIds { get; set; }
     }
 }

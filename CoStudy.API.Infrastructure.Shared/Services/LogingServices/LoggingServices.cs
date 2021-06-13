@@ -12,48 +12,25 @@ using System.Threading.Tasks;
 
 namespace CoStudy.API.Infrastructure.Shared.Services
 {
-    /// <summary>
-    /// Class LoggingServices
-    /// </summary>
-    /// <seealso cref="CoStudy.API.Infrastructure.Shared.Services.ILoggingServices" />
     public class LoggingServices : ILoggingServices
     {
-        /// <summary>
-        /// The logging repository
-        /// </summary>
         ILoggingRepository loggingRepository;
 
-        /// <summary>
-        /// The mapper
-        /// </summary>
         IMapper mapper;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="LoggingServices"/> class.
-        /// </summary>
-        /// <param name="loggingRepository">The logging repository.</param>
-        /// <param name="mapper">The mapper.</param>
         public LoggingServices(ILoggingRepository loggingRepository, IMapper mapper)
         {
             this.loggingRepository = loggingRepository;
             this.mapper = mapper;
         }
 
-        /// <summary>
-        /// Counts the result code.
-        /// </summary>
-        /// <returns></returns>
         public async Task<IEnumerable<int>> CountResultCode()
         {
-            List<int> result = new List<int>();
-            result.Add(0);
-            result.Add(0);
-            result.Add(0);
-            result.Add(0);
+            var result = new List<int> {0, 0, 0, 0};
 
-            FilterDefinition<Logging> builder400 = Builders<Logging>.Filter.Eq("StatusCode", 400);
-            FilterDefinition<Logging> builder401 = Builders<Logging>.Filter.Eq("StatusCode", 401);
-            FilterDefinition<Logging> builder200 = Builders<Logging>.Filter.Eq("StatusCode", 200);
+            var builder400 = Builders<Logging>.Filter.Eq("StatusCode", 400);
+            var builder401 = Builders<Logging>.Filter.Eq("StatusCode", 401);
+            var builder200 = Builders<Logging>.Filter.Eq("StatusCode", 200);
 
             result[0] = (await loggingRepository.FindListAsync(builder200)).Count();
             result[1] = (await loggingRepository.FindListAsync(builder400)).Count();
@@ -64,14 +41,9 @@ namespace CoStudy.API.Infrastructure.Shared.Services
             return result;
         }
 
-        /// <summary>
-        /// Gets the paged.
-        /// </summary>
-        /// <param name="request">The request.</param>
-        /// <returns></returns>
         public TableResultJson<LoggingViewModel> GetPaged(TableRequest request)
         {
-            IEnumerable<Logging> dataSource = loggingRepository.GetAll().OrderByDescending(x => x.CreatedDate.Value).AsEnumerable();
+            var dataSource = loggingRepository.GetAll().OrderByDescending(x => x.CreatedDate.Value).AsEnumerable();
 
             if (request.columns[0].search != null)
             {
@@ -96,7 +68,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services
                     dataSource = dataSource.Where(x => x.StatusCode.ToString().Contains(request.columns[3].search.value));
                 }
             }
-            TableResultJson<LoggingViewModel> response = new TableResultJson<LoggingViewModel>();
+            var response = new TableResultJson<LoggingViewModel>();
             response.draw = request.draw;
             response.recordsFiltered = dataSource.Count();
 
@@ -109,11 +81,6 @@ namespace CoStudy.API.Infrastructure.Shared.Services
             return response;
         }
 
-        /// <summary>
-        /// Deletes the specified request.
-        /// </summary>
-        /// <param name="request">The request.</param>
-        /// <returns></returns>
         public async Task<string> Delete(DeleteLoggingRequest request)
         {
             if (request.Ids == null)
@@ -135,11 +102,6 @@ namespace CoStudy.API.Infrastructure.Shared.Services
 
         }
 
-        /// <summary>
-        /// Gets the by identifier.
-        /// </summary>
-        /// <param name="id">The identifier.</param>
-        /// <returns></returns>
         public async Task<LoggingViewModel> GetById(string id)
         {
             Logging a = await loggingRepository.GetByIdAsync(ObjectId.Parse(id));

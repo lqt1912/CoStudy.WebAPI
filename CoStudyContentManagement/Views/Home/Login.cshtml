@@ -1,4 +1,5 @@
-﻿
+﻿@using Microsoft.Extensions.Configuration
+
 @{
     ViewData["Title"] = "Logging";
     Layout = null;
@@ -103,7 +104,7 @@
 
     /* FORM TYPOGRAPHY*/
 
-    input[type=button], input[type=submit], input[type=reset], button {
+    input[type=button], input[type=submit], input[type=reset], input[type=password]  button {
         background-color: #56baed;
         border: none;
         color: white;
@@ -125,19 +126,19 @@
         transition: all 0.3s ease-in-out;
     }
 
-        input[type=button]:hover, input[type=submit]:hover, input[type=reset], button:hover {
+        input[type=button]:hover, input[type=submit]:hover, input[type=reset], input[type=password], button:hover {
             background-color: #39ace7;
         }
 
-        input[type=button]:active, input[type=submit]:active, input[type=reset]:active, button:active{
-            -moz-transform: scale(0.95);
-            -webkit-transform: scale(0.95);
-            -o-transform: scale(0.95);
-            -ms-transform: scale(0.95);
-            transform: scale(0.95);
-        }
+            input[type=button]:active, input[type=submit]:active, input[type=reset]:active, input[type=password]:active, button:active {
+                -moz-transform: scale(0.95);
+                -webkit-transform: scale(0.95);
+                -o-transform: scale(0.95);
+                -ms-transform: scale(0.95);
+                transform: scale(0.95);
+            }
 
-    input[type=text] {
+    input[type=text], input[type=password] {
         background-color: #f6f6f6;
         border: none;
         color: #0d0d0d;
@@ -158,7 +159,7 @@
         border-radius: 5px 5px 5px 5px;
     }
 
-        input[type=text]:focus {
+        input[type=text]:focus, input[type=password]:focus {
             background-color: #fff;
             border-bottom: 2px solid #5fbae9;
         }
@@ -321,21 +322,26 @@
         <!-- Login Form -->
         <div>
             <input type="text" id="username" class="fadeIn second" autocomplete="" placeholder="Tên tài khoản">
-            <input type="text" id="password" class="fadeIn third" autocomplete="" placeholder="Mật khẩu">
+            <input type="password" id="password" class="fadeIn third" autocomplete="" placeholder="Mật khẩu">
             <p style="color:red; font-size:12px;" id="errorLogin"></p>
 
-            <button class="btn btn-info fadeIn fourth" id="btn_login"> Đăng nhập</button>
+            <button class="btn btn-info fadeIn fourth mb-3" id="btn_login" > Đăng nhập</button>
         </div>
 
-        <!-- Remind Passowrd -->
-        <div id="formFooter">
-            <a class="underlineHover" href="#">Forgot Password?</a>
-        </div>
 
     </div>
 </div>
 
+@inject IConfiguration Configuration
+@{
+    string apiUrl = Configuration["api_url"];
+    string clientUrl = Configuration["client_url"];
+}
 <script>
+
+    const API_URL = "@apiUrl";
+    const CLIENT_URL = "@clientUrl";
+
     $(document).ready(
 
         function () {
@@ -343,7 +349,7 @@
                 function () {
                     $.ajax({
                         type: 'POST',
-                        url: API_URL + 'api/Accounts/login',
+                        url: API_URL + 'Accounts/login',
                         data: JSON.stringify({
                             email: $("#username").val(),
                             password: $("#password").val()
@@ -353,7 +359,7 @@
                         success: function (response) {
                             console.log(response.result.jwtToken);
                             setCookie("accessToken", response.result.jwtToken, 1);
-                            window.location.href = 'https://localhost:44333/User/all';
+                            window.location.href = CLIENT_URL + 'User/all';
                         },
                         error: function (response) {
                             console.log(response);
@@ -364,5 +370,5 @@
             );
         }
     );
-   
+
 </script>

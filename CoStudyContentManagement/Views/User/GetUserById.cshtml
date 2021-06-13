@@ -1,6 +1,6 @@
 ﻿
 @{
-    ViewData["Title"] = "GetUserById";
+    ViewData["Title"] = "Chi tiết người dùng";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
@@ -9,42 +9,40 @@
 <style>
     .infomation-label-header {
         font-weight: bold;
-        font-style: italic;
-        text-decoration: underline
     }
 </style>
 
-<div class="container row">
+<div class="container-fluid row">
     <form class="col-6">
         <div class="form-group row">
             <label for="full_name" class="col-sm-3 col-form-label infomation-label-header">Họ và tên</label>
             <div class="col-sm-9">
-                <input type="text" readonly class="form-control-plaintext" id="full_name" />
+                <input type="text" readonly class="form-control" id="full_name" />
             </div>
         </div>
         <div class="form-group row">
             <label for="date_of_birth" class="col-sm-3 col-form-label infomation-label-header">Ngày sinh</label>
             <div class="col-sm-9">
-                <input type="date" readonly class="form-control-plaintext" id="date_of_birth" />
+                <input type="date" readonly class="form-control" id="date_of_birth" />
             </div>
         </div>
         <div class="form-group row">
             <label for="email" class="col-sm-3 col-form-label infomation-label-header">Email</label>
             <div class="col-sm-9">
-                <input type="text" readonly class="form-control-plaintext" id="email" />
+                <input type="text" readonly class="form-control" id="email" />
             </div>
         </div>
         <div class="form-group row">
             <label for="phone_number" class="col-sm-3 col-form-label infomation-label-header">Số điện thoại</label>
             <div class="col-sm-9">
-                <input type="text" readonly class="form-control-plaintext" id="phone_number" />
+                <input type="text" readonly class="form-control" id="phone_number" />
             </div>
         </div>
 
         <div class="form-group row">
             <label for="full_address" class="col-sm-3 col-form-label infomation-label-header">Địa chỉ</label>
             <div class="col-sm-9">
-                <input type="text" readonly class="form-control-plaintext" id="full_address" />
+                <input type="text" readonly class="form-control" id="full_address" />
             </div>
         </div>
         <div class="form-group row">
@@ -59,34 +57,40 @@
         <div class="form-group row">
             <label for="created_date" class="col-sm-3 col-form-label infomation-label-header">Ngày đăng kí</label>
             <div class="col-sm-9">
-                <input type="date" readonly class="form-control-plaintext" id="created_date" />
+                <input type="date" readonly class="form-control" id="created_date" />
             </div>
         </div>
         <div class="form-group row">
             <label for="post_count" class="col-sm-3 col-form-label infomation-label-header">Số bài viết</label>
             <div class="col-sm-9">
-                <input type="text" readonly class="form-control-plaintext" id="post_count" />
+                <input type="text" readonly class="form-control" id="post_count" />
             </div>
         </div>
         <div class="form-group row">
             <label for="status" class="col-sm-3 col-form-label infomation-label-header ">Trạng thái</label>
             <div class="col-sm-9">
-                <input type="text" readonly class="form-control-plaintext" id="status" />
+                <input type="text" readonly class="form-control" id="status" />
+                <input type="hidden" readonly class="form-control" id="status_id" />
             </div>
         </div>
 
         <div class="form-group row">
-            <label for="status" class="col-sm-3 col-form-label" style="font-weight:bold; font-style: italic; text-decoration:underline">Thông tin</label>
-            <div class="col-sm-12 row" id="additional_infos">
+            <fieldset style="border: 1px solid gray; " class="ml-2 pl-1">
+                <legend style="width: auto; font-weight: bold; font-size: inherit">Thông tin </legend>
+                <div class="col-sm-12 row" id="additional_infos">
 
-            </div>
+                </div>
+            </fieldset>
         </div>
 
 
         <div class="form-group row">
-            <label for="fields" class="col-sm-3 col-form-label" style="font-weight:bold; font-style: italic; text-decoration:underline">Lĩnh vực</label>
-            <div class="col-sm-12 row" id="fields">
-            </div>
+            <fieldset style="border: 1px solid gray; " class="ml-2 pl-1">
+                <legend style="width: auto; font-weight: bold; font-size: inherit">Lĩnh vực </legend>
+                <div class="col-sm-12 row" id="fields">
+
+                </div>
+            </fieldset>
         </div>
 
 
@@ -97,129 +101,93 @@
 <div class="container row">
     <form class="col-6">
         <div class="form-group row">
-            <label for="email" class="col-sm-3 col-form-label infomation-label-header">Email</label>
-            <div class="col-sm-9">
-                <input type="text" readonly class="form-control-plaintext" id="acc_email" />
+            <label for="email" class="col-sm-5 col-form-label infomation-label-header">Email</label>
+            <div class="col-sm-7">
+                <input type="text" readonly class="form-control" id="acc_email" />
             </div>
         </div>
         <div class="form-group row">
-            <label for="passwordHash" class="col-sm-3 col-form-label infomation-label-header">Mật khẩu </label>
-            <div class="col-sm-9">
-                <input type="text" readonly class="form-control-plaintext" id="passwordHash" />
+            <label for="passwordHash" class="col-sm-5 col-form-label infomation-label-header">Mật khẩu </label>
+            <div class="col-sm-7">
+                <input type="text" readonly class="form-control" id="passwordHash" />
             </div>
         </div>
         <div class="form-group row">
-            <label for="role" class="col-sm-3 col-form-label infomation-label-header">Quyền truy cập </label>
-            <div class="col-sm-9">
-                <input type="text" readonly class="form-control-plaintext" id="role" />
+            <label for="role" class="col-sm-5 col-form-label infomation-label-header">Quyền truy cập </label>
+            <div class="col-sm-7">
+                <input type="text" readonly class="form-control" id="role" />
             </div>
         </div>
         <div class="form-group row">
-            <label for="verificationToken" class="col-sm-3 col-form-label infomation-label-header">OTP Xác thực</label>
-            <div class="col-sm-9">
-                <input type="text" readonly class="form-control-plaintext" id="verificationToken" />
+            <label for="verificationToken" class="col-sm-5 col-form-label infomation-label-header">OTP Xác thực</label>
+            <div class="col-sm-7">
+                <input type="text" readonly class="form-control" id="verificationToken" />
             </div>
         </div>
         <div class="form-group row">
-            <label for="isVerified" class="col-sm-3 col-form-label infomation-label-header">Trạng thái xác thực</label>
-            <div class="col-sm-9">
-                <input type="text" readonly class="form-control-plaintext" id="isVerified" />
+            <label for="isVerified" class="col-sm-5 col-form-label infomation-label-header">Trạng thái xác thực</label>
+            <div class="col-sm-7">
+                <input type="text" readonly class="form-control" id="isVerified" />
             </div>
         </div>
         <div class="form-group row">
-            <label for="verified" class="col-sm-3 col-form-label infomation-label-header">Ngày xác thực</label>
-            <div class="col-sm-9">
-                <input type="date" readonly class="form-control-plaintext" id="verified" />
+            <label for="verified" class="col-sm-5 col-form-label infomation-label-header">Ngày xác thực</label>
+            <div class="col-sm-7">
+                <input type="date" readonly class="form-control" id="verified" />
             </div>
         </div>
     </form>
     <form class="col-6">
+        <input type="hidden" id="user_id" />
+        <input type="hidden" id="user_email" value="@ViewBag.email" />
     </form>
 </div>
-<script>
 
-    $(document).ready(
-        function () {
-            getUserDetailByEmail();
-        }
-    );
+<div id="button_bottom"></div>
 
-    function getUserDetailByEmail() {
-        $.ajax({
-            type: 'GET',
-            url: API_URL + 'api/Cms/user?email=' + '@ViewBag.email',
-            success: function (response) {
-                $("#full_name").val(response.result.user.full_name);
+<div class="modal fade" style="z-index: 1000000" id="deleteConfirmModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-body">
+                Bạn có xác nhận xóa tài khoản này?
+                <input type="hidden" id="id_to_delete" />
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Không</button>
+                <button type="button" id="btnDelete" class="btn btn-primary" data-dismiss="modal">Xác nhận</button>
+            </div>
+        </div>
+    </div>
+</div>
 
-                var d = new Date(response.result.user.date_of_birth);
-                $("#date_of_birth").val(d.toISOString().substring(0, 10));
+<div class="modal fade" style="z-index: 1000000" id="blockConfirmModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-body">
+                Bạn có xác nhận chặn tài khoản này?
+                <input type="hidden" id="id_to_block" />
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Không</button>
+                <button type="button" id="btnBlock" class="btn btn-primary" data-dismiss="modal">Xác nhận</button>
+            </div>
+        </div>
+    </div>
+</div>
 
-                $("#email").val(response.result.user.email);
 
-                $("#phone_number").val(response.result.user.phone_number);
-
-                $("#full_address").val(response.result.user.full_address);
-
-                $("#avatar_hash").attr("src", response.result.user.avatar_hash);
-
-                var d1 = new Date(response.result.user.created_date);
-                $("#created_date").val(d1.toISOString().substring(0, 10));
-
-                $("#post_count").val(response.result.user.post_count);
-
-                var st = response.result.user.status;
-                if (st === 0)
-                    $("#status").val("Active");
-                else if (st === 1)
-                    $("#status").val("Offline");
-                else if (st === 2)
-                    $("#status").val("Blocked");
-                else if (st === 4)
-                    $("#status").val("Deleted");
-                else
-                    $("#status").val("Không xác định ");
-
-                var d_additional_infos = "";
-                for (var i = 0; i < response.result.user.additional_infos.length; i++) {
-                    d_additional_infos = d_additional_infos + ' <div class="col-12 form-group row"><label for="status" class="col-sm-6 col-form-label">' + response.result.user.additional_infos[i].information_name
-                        + '</label ><div class="col-sm-6 row"><input type="text" readonly class="form-control-plaintext" id="" value="' + response.result.user.additional_infos[i].information_value
-                        + '"/>  </div></div >';
-                }
-
-                $("#additional_infos").html(d_additional_infos);
-
-                var d_fields = "";
-                for (var i = 0; i < response.result.user.fields.length; i++) {
-                    d_fields = d_fields + ' <div class="col-12 form-group row"><label for="status" class="col-sm-4 col-form-label">' + response.result.user.fields[i].field_name
-                        + '</label ><div class="col-sm-4 row"><input type="text" readonly class="form-control-plaintext" id="" value="' + response.result.user.fields[i].level_description
-                        + '"/>  </div> <div class="col-sm-4 row "><input type="text" readonly class="form-control-plaintext" id="" value="' + response.result.user.fields[i].point + ' điểm "/> </div> </div ></div >';
-                }
-
-                $("#fields").html(d_fields);
-
-                var role_num = response.result.account.role;
-                if (role_num === 0)
-                    $("#role").val("Quản trị viên");
-                else $("#role").val("Người dùng");
-
-                $("#verificationToken").val(response.result.account.verificationToken);
-
-                var verified_date = new Date(response.result.account.verified);
-                $("#verified").val(verified_date.toISOString().substring(0, 10));
-
-                var is_verified = response.result.account.isVerified;
-                if (is_verified === true)
-
-                    $("#isVerified").val("Đã xác thực");
-                else $("#isVerified").val("Chưa xác thực");
-
-                $("#passwordHash").val("*******************")
-                $("#acc_email").val(response.result.account.email);
-            },
-            error: function (response) {
-                console.log(response);
-            }
-        });
-    }
-
-</script>
+<div class="modal fade" style="z-index: 1000000" id="activeConfirmModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-body">
+                Bạn có xác nhận kích hoạt tài khoản nảy?
+                <input type="hidden" id="id_to_active" />
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Không</button>
+                <button type="button" id="btnActive" class="btn btn-primary" data-dismiss="modal">Xác nhận</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="~/js/GetUserById.js"></script>

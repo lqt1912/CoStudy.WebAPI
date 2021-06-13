@@ -3,36 +3,22 @@ using CoStudy.API.Infrastructure.Shared.Services;
 using CoStudy.API.WebAPI.Middlewares;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
+using CoStudy.API.Infrastructure.Shared.Models.Request;
+using Org.BouncyCastle.Math.Field;
 
 namespace CoStudy.API.WebAPI.Controllers
 {
-    /// <summary>
-    /// Class FieldGroupController
-    /// </summary>
-    /// <seealso cref="Microsoft.AspNetCore.Mvc.ControllerBase" />
     [Route("api/[controller]")]
     [ApiController]
     public class FieldGroupController : ControllerBase
     {
-        /// <summary>
-        /// The field service
-        /// </summary>
         IFieldServices fieldService;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="FieldGroupController"/> class.
-        /// </summary>
-        /// <param name="fieldService">The field service.</param>
         public FieldGroupController(IFieldServices fieldService)
         {
             this.fieldService = fieldService;
         }
 
-        /// <summary>
-        /// Adds the field group.
-        /// </summary>
-        /// <param name="request">The request.</param>
-        /// <returns></returns>
         [HttpPost]
         public async Task<IActionResult> AddFieldGroup(FieldGroup request)
         {
@@ -40,6 +26,28 @@ namespace CoStudy.API.WebAPI.Controllers
             return Ok(new ApiOkResponse(data));
         }
 
+        [HttpPost]
+        [Route(("add-field"))]
+        public async Task<IActionResult> AddFieldToGroup(AddFieldToGroupRequest request)
+        {
+            var data = await fieldService.AddFieldToGroup(request);
+            return Ok((new ApiOkResponse(data)));
+        }
 
+        [HttpPost]
+        [Route("remove-field")]
+        public async Task<IActionResult> RemoveFieldFromGroup(AddFieldToGroupRequest request)
+        {
+            var data = await fieldService.RemoveFieldFromGroup(request);
+            return Ok(new ApiOkResponse(data));
+        }
+
+        [HttpGet]
+        [Route("field-group")]
+        public IActionResult GetAllFieldGroup(BaseGetAllRequest request)
+        {
+            var data = fieldService.GetAllFieldGroup(request);
+            return Ok(new ApiOkResponse(data));
+        }
     }
 }

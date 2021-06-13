@@ -97,6 +97,10 @@ namespace CoStudy.API.Domain.Entities.Application
         [JsonPropertyName("call_id")]
         public string  CallId { get; set; }
 
+        [BsonElement("refresh_token")]
+        [JsonPropertyName("refresh_token")]
+        public string LatestRefreshToken { get; set; }
+
         /// <summary>
         /// Gets or sets the status.
         /// </summary>
@@ -127,10 +131,6 @@ namespace CoStudy.API.Domain.Entities.Application
         [JsonPropertyName("modified_date")]
         public DateTime ModifiedDate { get; set; }
 
-
-
-
-        
         /// <summary>
         /// Thông tin thêm
         /// </summary>
@@ -141,28 +141,6 @@ namespace CoStudy.API.Domain.Entities.Application
         [JsonPropertyName("additional_infos")]
         public List<AdditionalInfomation> AdditionalInfos { get; set; }
 
-
-     
-        /// <summary>
-        /// Gets or sets the post upvote.
-        /// </summary>
-        /// <value>
-        /// The post upvote.
-        /// </value>
-        [BsonElement("post_upvote")]
-        [JsonPropertyName("post_upvote")]
-        public List<string> PostUpvote { get; set; }
-
-        /// <summary>
-        /// Gets or sets the post downvote.
-        /// </summary>
-        /// <value>
-        /// The post downvote.
-        /// </value>
-        [BsonElement("post_downvote")]
-        [JsonPropertyName("post_downvote")]
-        public List<string> PostDownvote { get; set; }
-
         /// <summary>
         /// Gets or sets the post saved.
         /// </summary>
@@ -172,17 +150,19 @@ namespace CoStudy.API.Domain.Entities.Application
         [BsonElement("post_saved")]
         [JsonPropertyName("post_saved")]
         public List<string> PostSaved { get; set; }
+
+        [BsonElement("jwt_tokens")]
+        [JsonPropertyName("jwt_tokens")]
+        public List<string> JwtTokens { get; set; }
         /// <summary>
         /// Initializes a new instance of the <see cref="User"/> class.
         /// </summary>
         public User() : base()
         {
             Avatar = new Image();
-
             AdditionalInfos = new List<AdditionalInfomation>();
-            PostDownvote = new List<string>();
-            PostUpvote = new List<string>();
             PostSaved = new List<string>();
+            JwtTokens = new List<string>();
         }
     }
 }

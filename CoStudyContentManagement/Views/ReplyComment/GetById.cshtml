@@ -1,8 +1,138 @@
 ﻿
 @{
-    ViewData["Title"] = "GetById";
+    ViewData["Title"] = "Reply Comment Detail";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>GetById</h1>
+<h1 class="pb-3">Chi tiết trả lời bình luận </h1>
 
+<style>
+    .infomation-label-header {
+        font-weight: bold;
+    }
+</style>
+
+<div class="container-fluid row">
+    <form class="col-6">
+        <div class="form-group row">
+            <label for="oid" class="col-sm-3 col-form-label infomation-label-header">Mã số</label>
+            <div class="col-sm-9">
+                <input type="text" readonly class="form-control" id="oid" />
+            </div>
+        </div>
+
+        <div class="form-group row">
+            <label for="parent_id" class="col-sm-3 col-form-label infomation-label-header">Mã bình luận</label>
+            <div class="col-sm-7">
+                <input type="text" readonly class="form-control" id="parent_id" />
+            </div>
+            <div class="col-sm-2 ">
+                <a onclick="goToParentDetail()" id="btn-parent-detail" class="btn btn-block btn-primary" style="color: white">Xem <i class="fas fa-info-circle"></i></a>
+            </div>
+        </div>
+
+        <div class="form-group row">
+            <label for="content" class="col-sm-3 col-form-label infomation-label-header">Nội dung</label>
+            <div class="col-sm-9">
+                <textarea type="text" rows="5" readonly class="form-control" id="content"></textarea>
+            </div>
+        </div>
+    </form>
+
+    <form class="col-6">
+        <div class="form-group row">
+            <label for="author_id" class="col-sm-5 col-form-label infomation-label-header">Mã tác giả</label>
+            <div class="col-sm-7">
+                <input type="text" readonly class="form-control" id="author_id" />
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="author_name" class="col-sm-5 col-form-label infomation-label-header">Họ và tên tác giả</label>
+            <div class="col-sm-7">
+                <input type="text" readonly class="form-control" id="author_name" />
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="status" class="col-sm-5 col-form-label infomation-label-header">Trạng thái</label>
+            <div class="col-sm-7">
+                <input type="text" readonly class="form-control" id="status" />
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="created_date" class="col-sm-5 col-form-label infomation-label-header">Thời gian đăng</label>
+            <div class="col-sm-7">
+                <input type="text" readonly class="form-control" id="created_date" />
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="modified_date" class="col-sm-5 col-form-label infomation-label-header">Chỉnh sửa lần cuối</label>
+            <div class="col-sm-7">
+                <input type="text" readonly class="form-control" id="modified_date" />
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="upvote_count" class="col-sm-5 col-form-label infomation-label-header">Số lượt Upvote</label>
+            <div class="col-sm-7">
+                <input type="text" readonly class="form-control" id="upvote_count" />
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="downvote_count" class="col-sm-5 col-form-label infomation-label-header">Số lượt Downvote</label>
+            <div class="col-sm-7">
+                <input type="text" readonly class="form-control" id="downvote_count" />
+            </div>
+        </div>
+    </form>
+</div>
+
+<div id="button_bottom"></div>
+
+<input type="hidden" id="replyCommentId" value="@ViewBag.replyCommentId" />
+
+<div class="modal fade" style="z-index: 1000000" id="deleteConfirmModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-body">
+                Bạn có xác nhận xóa bình luận này?
+                <input type="hidden" id="id_to_delete" />
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Không</button>
+                <button type="button" id="btnDelete" class="btn btn-primary" data-dismiss="modal">Xác nhận</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" style="z-index: 1000000" id="blockConfirmModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-body">
+                Bạn có xác nhận chặn bình luận này?
+                <input type="hidden" id="id_to_block" />
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Không</button>
+                <button type="button" id="btnBlock" class="btn btn-primary" data-dismiss="modal">Xác nhận</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" style="z-index: 1000000" id="activeConfirmModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-body">
+                Bạn có xác nhận mở bình luận này?
+                <input type="hidden" id="id_to_active" />
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Không</button>
+                <button type="button" id="btnActive" class="btn btn-primary" data-dismiss="modal">Xác nhận</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="~/js/GetReplyCommentById.js"></script>

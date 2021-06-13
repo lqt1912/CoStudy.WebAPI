@@ -1,4 +1,10 @@
-﻿using AutoMapper;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Runtime.CompilerServices;
+using System.Threading;
+using System.Threading.Tasks;
+using AutoMapper;
 using CoStudy.API.Application.FCM;
 using CoStudy.API.Application.Features;
 using CoStudy.API.Application.Repositories;
@@ -8,95 +14,26 @@ using CoStudy.API.Infrastructure.Shared.Models.Request;
 using CoStudy.API.Infrastructure.Shared.ViewModels;
 using Microsoft.AspNetCore.Http;
 using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Serializers;
 using MongoDB.Driver;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace CoStudy.API.Infrastructure.Shared.Services
 {
-    /// <summary>
-    /// The comment service. 
-    /// </summary>
-    /// <seealso cref="CoStudy.API.Infrastructure.Shared.Services.ICommentService" />
     public class CommentService : ICommentService
     {
-        /// <summary>
-        /// The HTTP context accessor
-        /// </summary>
-        private IHttpContextAccessor httpContextAccessor;
-        /// <summary>
-        /// The user repository
-        /// </summary>
-        private IUserRepository userRepository;
-        /// <summary>
-        /// The post repository
-        /// </summary>
-        private IPostRepository postRepository;
-        /// <summary>
-        /// The comment repository
-        /// </summary>
-        private ICommentRepository commentRepository;
-        /// <summary>
-        /// The reply comment repository
-        /// </summary>
-        private IReplyCommentRepository replyCommentRepository;
-        /// <summary>
-        /// Down vote repository
-        /// </summary>
-        private IDownVoteRepository downVoteRepository;
-        /// <summary>
-        /// Up vote repository
-        /// </summary>
-        private IUpVoteRepository upVoteRepository;
-        /// <summary>
-        /// The client group repository
-        /// </summary>
-        private IClientGroupRepository clientGroupRepository;
-        /// <summary>
-        /// The FCM repository
-        /// </summary>
-        private IFcmRepository fcmRepository;
-        /// <summary>
-        /// The noftication repository
-        /// </summary>
-        private INofticationRepository nofticationRepository;
+        private readonly IHttpContextAccessor httpContextAccessor;
+        private readonly IUserRepository userRepository;
+        private readonly IPostRepository postRepository;
+        private readonly ICommentRepository commentRepository;
+        private readonly IReplyCommentRepository replyCommentRepository;
+        private readonly IDownVoteRepository downVoteRepository;
+        private readonly IUpVoteRepository upVoteRepository;
+        private readonly IFcmRepository fcmRepository;
+        private readonly IMapper mapper;
+        private readonly INotificationObjectRepository notificationObjectRepository;
+        private readonly IObjectLevelRepository objectLevelRepository;
+        private readonly ILevelRepository levelRepository;
 
-        /// <summary>
-        /// The mapper
-        /// </summary>
-        private IMapper mapper;
-
-        /// <summary>
-        /// The notification object repository
-        /// </summary>
-        private INotificationObjectRepository notificationObjectRepository;
-
-        /// <summary>
-        /// The notification detail repository
-        /// </summary>
-        private INotificationDetailRepository notificationDetailRepository;
-
-        /// <summary>
-        /// The notification type repository
-        /// </summary>
-        private INotificationTypeRepository notificationTypeRepository;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="CommentService"/> class.
-        /// </summary>
-        /// <param name="httpContextAccessor">The HTTP context accessor.</param>
-        /// <param name="userRepository">The user repository.</param>
-        /// <param name="postRepository">The post repository.</param>
-        /// <param name="commentRepository">The comment repository.</param>
-        /// <param name="replyCommentRepository">The reply comment repository.</param>
-        /// <param name="downVoteRepository">Down vote repository.</param>
-        /// <param name="upVoteRepository">Up vote repository.</param>
-        /// <param name="clientGroupRepository">The client group repository.</param>
-        /// <param name="fcmRepository">The FCM repository.</param>
-        /// <param name="nofticationRepository">The noftication repository.</param>
         public CommentService(IHttpContextAccessor httpContextAccessor,
             IUserRepository userRepository,
             IPostRepository postRepository,
@@ -104,13 +41,11 @@ namespace CoStudy.API.Infrastructure.Shared.Services
             IReplyCommentRepository replyCommentRepository,
             IDownVoteRepository downVoteRepository,
             IUpVoteRepository upVoteRepository,
-            IClientGroupRepository clientGroupRepository,
             IFcmRepository fcmRepository,
-            INofticationRepository nofticationRepository,
             IMapper mapper,
             INotificationObjectRepository notificationObjectRepository,
-            INotificationDetailRepository notificationDetailRepository,
-            INotificationTypeRepository notificationTypeRepository)
+            IObjectLevelRepository objectLevelRepository,
+            ILevelRepository levelRepository)
         {
             this.httpContextAccessor = httpContextAccessor;
             this.userRepository = userRepository;
@@ -119,43 +54,45 @@ namespace CoStudy.API.Infrastructure.Shared.Services
             this.replyCommentRepository = replyCommentRepository;
             this.downVoteRepository = downVoteRepository;
             this.upVoteRepository = upVoteRepository;
-            this.clientGroupRepository = clientGroupRepository;
             this.fcmRepository = fcmRepository;
-            this.nofticationRepository = nofticationRepository;
             this.mapper = mapper;
             this.notificationObjectRepository = notificationObjectRepository;
-            this.notificationDetailRepository = notificationDetailRepository;
-            this.notificationTypeRepository = notificationTypeRepository;
+            this.objectLevelRepository = objectLevelRepository;
+            this.levelRepository = levelRepository;
         }
 
-        /// <summary>
-        /// Adds the comment.
-        /// </summary>
-        /// <param name="request">The request.</param>
-        /// <returns></returns>
-        /// <exception cref="Exception">Post đã bị xóa</exception>
         public async Task<CommentViewModel> AddComment(AddCommentRequest request)
         {
-            User currentUser = Feature.CurrentUser(httpContextAccessor, userRepository);
+            var currentUser = Feature.CurrentUser(httpContextAccessor, userRepository);
 
-            Post currentPost = await postRepository.GetByIdAsync(ObjectId.Parse(request.PostId));
-            if (currentPost != null)
+            var currentPost = await postRepository.GetByIdAsync(ObjectId.Parse(request.PostId));
+
+            if (currentPost is { Status: ItemStatus.Active })
             {
                 var author = await userRepository.GetByIdAsync(ObjectId.Parse(currentPost.AuthorId));
-                Comment comment = PostAdapter.FromRequest(request, currentUser.Id.ToString());
+                var comment = PostAdapter.FromRequest(request, currentUser.Id.ToString());
 
                 await postRepository.UpdateAsync(currentPost, currentPost.Id);
 
                 await commentRepository.AddAsync(comment);
 
                 await fcmRepository.AddToGroup(
-                new AddUserToGroupRequest()
-                {
-                    GroupName = currentPost.OId,
-                    Type = Feature.GetTypeName(currentPost),
-                    UserIds = new List<string> { currentUser.OId }
-                }
+                    new AddUserToGroupRequest
+                    {
+                        GroupName = currentPost.OId,
+                        Type = Feature.GetTypeName(currentPost),
+                        UserIds = new List<string> { currentUser.OId }
+                    }
                 );
+
+                await fcmRepository.AddToGroup(
+                    new AddUserToGroupRequest()
+                    {
+                        GroupName = comment.OId,
+                        Type = Feature.GetTypeName(comment),
+                        UserIds = new List<string>() { currentUser.OId }
+                    }
+                    );
 
                 //Wait for saving
                 Thread.Sleep(50);
@@ -163,15 +100,15 @@ namespace CoStudy.API.Infrastructure.Shared.Services
                 var notificationObjectBuilders = Builders<NotificationObject>.Filter;
 
                 var notificationObjectFilters = notificationObjectBuilders.Eq("object_id", currentPost.OId)
-                    & notificationObjectBuilders.Eq("notification_type", "COMMENT_NOTIFY");
+                                                & notificationObjectBuilders.Eq("notification_type", "COMMENT_NOTIFY");
 
                 var existNotificationObject = await notificationObjectRepository.FindAsync(notificationObjectFilters);
 
-                string notificationObject = existNotificationObject != null ? existNotificationObject.OId : string.Empty;
+                var notificationObject = existNotificationObject != null ? existNotificationObject.OId : string.Empty;
 
                 if (existNotificationObject == null)
                 {
-                    var newNotificationObject = new NotificationObject()
+                    var newNotificationObject = new NotificationObject
                     {
                         NotificationType = "COMMENT_NOTIFY",
                         ObjectId = currentPost.OId,
@@ -181,7 +118,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services
                     notificationObject = newNotificationObject.OId;
                 }
 
-                var notificationDetail = new NotificationDetail()
+                var notificationDetail = new NotificationDetail
                 {
                     CreatorId = currentUser.OId,
                     NotificationObjectId = notificationObject
@@ -190,117 +127,74 @@ namespace CoStudy.API.Infrastructure.Shared.Services
                 await fcmRepository.PushNotifyDetail(currentPost.OId, notificationDetail);
 
                 //Update again
-                return mapper.Map<CommentViewModel>(comment);
+                var result = mapper.Map<CommentViewModel>(comment);
+                result.AuthorField = await GetMostMatchFieldOfUser(currentUser, currentPost);
+                return result;
             }
-            else
-            {
-                throw new Exception("Post đã bị xóa");
-            }
+
+            throw new Exception("Post đã bị xóa");
         }
 
-        /// <summary>
-        /// Deletes the comment.
-        /// </summary>
-        /// <param name="commentId">The comment identifier.</param>
-        /// <returns></returns>
-        /// <exception cref="Exception">Comment không tồn tại hoặc đã bị xóa</exception>
         public async Task<string> DeleteComment(string commentId)
         {
-            Comment currentComment = await commentRepository.GetByIdAsync(ObjectId.Parse(commentId));
+            var currentComment = await commentRepository.GetByIdAsync(ObjectId.Parse(commentId));
             if (currentComment != null)
             {
                 currentComment.Status = ItemStatus.Deleted;
                 await commentRepository.UpdateAsync(currentComment, currentComment.Id);
 
-                Post currentPost = await postRepository.GetByIdAsync(ObjectId.Parse(currentComment.PostId));
+                var currentPost = await postRepository.GetByIdAsync(ObjectId.Parse(currentComment.PostId));
                 await postRepository.UpdateAsync(currentPost, currentPost.Id);
                 return "Xóa bình luận thành công";
             }
-            else
-            {
-                throw new Exception("Comment không tồn tại hoặc đã bị xóa");
-            }
+
+            throw new Exception("Comment không tồn tại hoặc đã bị xóa");
         }
 
-        /// <summary>
-        /// Deletes the reply.
-        /// </summary>
-        /// <param name="replyId">The reply identifier.</param>
-        /// <returns></returns>
-        /// <exception cref="Exception">Câu rả lời không tồn tại hoặc đã bị xóa</exception>
         public async Task<string> DeleteReply(string replyId)
         {
-            ReplyComment currentReply = await replyCommentRepository.GetByIdAsync(ObjectId.Parse(replyId));
+            var currentReply = await replyCommentRepository.GetByIdAsync(ObjectId.Parse(replyId));
             if (currentReply != null)
             {
                 currentReply.Status = ItemStatus.Deleted;
                 await replyCommentRepository.UpdateAsync(currentReply, currentReply.Id);
                 return "Xóa câu trả lời thành công";
             }
-            else
-            {
-                throw new Exception("Câu rả lời không tồn tại hoặc đã bị xóa");
-            }
+
+            throw new Exception("Câu rả lời không tồn tại hoặc đã bị xóa");
         }
 
-        /// <summary>
-        /// Gets the comment by post identifier.
-        /// </summary>
-        /// <param name="request">The request.</param>
-        /// <returns></returns>
-        /// <exception cref="Exception">
-        /// Không tồn tại bài post
-        /// or
-        /// Post không tồn tại hoặc đã bị xóa
-        /// </exception>
         public async Task<IEnumerable<CommentViewModel>> GetCommentByPostId(CommentFilterRequest request)
         {
-            if (String.IsNullOrEmpty(request.PostId))
-            {
-                throw new Exception("Không tồn tại bài post");
-            }
+            if (string.IsNullOrEmpty(request.PostId)) throw new Exception("Không tồn tại bài post");
 
-            FilterDefinitionBuilder<Comment> builder = Builders<Comment>.Filter;
-            FilterDefinition<Comment> filter = builder.Eq("post_id", request.PostId) & builder.Eq("status", ItemStatus.Active);
+            var builder = Builders<Comment>.Filter;
+            var filter = builder.Eq("post_id", request.PostId) & builder.Eq("status", ItemStatus.Active);
 
-            User currentUser = Feature.CurrentUser(httpContextAccessor, userRepository);
-            List<Comment> comments = await commentRepository.FindListAsync(filter);
+            var currentPost = await postRepository.GetByIdAsync(ObjectId.Parse(request.PostId));
+            if (currentPost == null) return new List<CommentViewModel>();
+
+            var currentUser = Feature.CurrentUser(httpContextAccessor, userRepository);
+            var comments = await commentRepository.FindListAsync(filter);
             if (comments != null)
             {
-                IEnumerable<CommentViewModel> cmts = mapper.Map<IEnumerable<CommentViewModel>>(comments.AsEnumerable());
+                var cmts = mapper.Map<IEnumerable<CommentViewModel>>(comments.AsEnumerable());
 
                 if (request.Skip.HasValue && request.Count.HasValue)
-                {
                     cmts = cmts.Skip(request.Skip.Value).Take(request.Count.Value);
-                }
 
                 if (request.Filter.HasValue && request.ArrangeType.HasValue)
-                {
                     switch (request.Filter.Value)
                     {
                         case CommentFilterType.CreatedDate:
                             {
-                                if (request.ArrangeType.Value == ArrangeType.Ascending)
-                                {
-                                    cmts = cmts.OrderBy(x => x.CreatedDate);
-                                }
-                                else
-                                {
-                                    cmts = cmts.OrderByDescending(x => x.CreatedDate);
-                                }
+                                cmts = request.ArrangeType.Value == ArrangeType.Ascending ? cmts.OrderBy(x => x.CreatedDate) : cmts.OrderByDescending(x => x.CreatedDate);
 
                                 break;
                             }
                         case CommentFilterType.Upvote:
                             {
-                                if (request.ArrangeType.Value == ArrangeType.Ascending)
-                                {
-                                    cmts = cmts.OrderBy(x => x.UpvoteCount);
-                                }
-                                else
-                                {
-                                    cmts = cmts.OrderByDescending(x => x.UpvoteCount);
-                                }
+                                cmts = request.ArrangeType.Value == ArrangeType.Ascending ? cmts.OrderBy(x => x.UpvoteCount) : cmts.OrderByDescending(x => x.UpvoteCount);
 
                                 break;
                             }
@@ -308,94 +202,115 @@ namespace CoStudy.API.Infrastructure.Shared.Services
                             cmts = cmts.OrderBy(x => x.CreatedDate);
                             break;
                     }
-                }
 
-                if (!String.IsNullOrEmpty(request.Keyword))
+                if (!string.IsNullOrEmpty(request.Keyword)) cmts = cmts.Where(x => x.Content.Contains(request.Keyword));
+
+                foreach (var item in cmts)
                 {
-                    cmts = cmts.Where(x => x.Content.Contains(request.Keyword));
+                    var builderUpvote = Builders<UpVote>.Filter;
+                    var finderUpvote = builderUpvote.Eq("object_vote_id", item.OId) &
+                                       builderUpvote.Eq("upvote_by", currentUser.OId);
+                    var upvote = await upVoteRepository.FindAsync(finderUpvote);
+                    if (upvote != null) item.IsVoteByCurrent = true;
+
+                    var builderDownvote = Builders<DownVote>.Filter;
+                    var finderDownvote = builderDownvote.Eq("object_vote_id", item.OId) &
+                                         builderDownvote.Eq("downvote_by", currentUser.OId);
+                    var downvote = await downVoteRepository.FindAsync(finderDownvote);
+                    if (downvote != null) item.IsDownVoteByCurrent = true;
                 }
-
-                foreach (CommentViewModel item in cmts)
+                foreach (var commentViewModel in cmts)
                 {
-                    FilterDefinitionBuilder<UpVote> builderUpvote = Builders<UpVote>.Filter;
-                    FilterDefinition<UpVote> finderUpvote = builderUpvote.Eq("object_vote_id", item.OId) & builderUpvote.Eq("upvote_by", currentUser.OId);
-                    UpVote upvote = await upVoteRepository.FindAsync(finderUpvote);
-                    if (upvote != null)
-                    {
-                        item.IsVoteByCurrent = true;
-                    }
-
-                    FilterDefinitionBuilder<DownVote> builderDownvote = Builders<DownVote>.Filter;
-                    FilterDefinition<DownVote> finderDownvote = builderDownvote.Eq("object_vote_id", item.OId) & builderDownvote.Eq("downvote_by", currentUser.OId);
-                    DownVote downvote = await downVoteRepository.FindAsync(finderDownvote);
-                    if (downvote != null)
-                    {
-                        item.IsDownVoteByCurrent = true;
-                    }
+                    var author = await userRepository.GetByIdAsync(ObjectId.Parse(commentViewModel.AuthorId));
+                    commentViewModel.AuthorField = await GetMostMatchFieldOfUser(author, currentPost);
                 }
                 return cmts;
             }
-            else
-            {
-                throw new Exception("Post không tồn tại hoặc đã bị xóa");
-            }
+
+            throw new Exception("Post không tồn tại hoặc đã bị xóa");
         }
-        /// <summary>
-        /// Gets the reply comment by comment identifier.
-        /// </summary>
-        /// <param name="commentId">The comment identifier.</param>
-        /// <param name="skip">The skip.</param>
-        /// <param name="count">The count.</param>
-        /// <returns></returns>
-        /// <exception cref="Exception">Bình luận không tồn tại hoặc đã bị xóa</exception>
-        public async Task<IEnumerable<ReplyCommentViewModel>> GetReplyCommentByCommentId(string commentId, int skip, int count)
+
+        public async Task<IEnumerable<ReplyCommentViewModel>> GetReplyCommentByCommentId(string commentId, int skip,
+            int count)
         {
-            FilterDefinitionBuilder<ReplyComment> builder = Builders<ReplyComment>.Filter;
-            FilterDefinition<ReplyComment> filter = builder.Eq("parent_id", commentId) & builder.Eq("status", ItemStatus.Active);
-            User currentUser = Feature.CurrentUser(httpContextAccessor, userRepository);
-            List<ReplyCommentViewModel> comments = mapper.Map<List<ReplyCommentViewModel>>(await replyCommentRepository.FindListAsync(filter));
-            if (comments != null)
-            {
-                IEnumerable<ReplyCommentViewModel> cmts = comments.Skip(skip).Take(count);
-                foreach (ReplyCommentViewModel item in cmts)
-                {
-                    FilterDefinitionBuilder<UpVote> builderUpvote = Builders<UpVote>.Filter;
-                    FilterDefinition<UpVote> finderUpvote = builderUpvote.Eq("object_vote_id", item.OId) & builderUpvote.Eq("upvote_by", currentUser.OId);
-                    UpVote upvote = await upVoteRepository.FindAsync(finderUpvote);
-                    if (upvote != null)
-                    {
-                        item.IsVoteByCurrent = true;
-                    }
+            var builder = Builders<ReplyComment>.Filter;
+            var filter = builder.Eq("parent_id", commentId) & builder.Eq("status", ItemStatus.Active);
+            var currentUser = Feature.CurrentUser(httpContextAccessor, userRepository);
 
-                    FilterDefinitionBuilder<DownVote> builderDownvote = Builders<DownVote>.Filter;
-                    FilterDefinition<DownVote> finderDownvote = builderDownvote.Eq("object_vote_id", item.OId) & builderDownvote.Eq("downvote_by", currentUser.OId);
-                    DownVote downvote = await downVoteRepository.FindAsync(finderDownvote);
-                    if (downvote != null)
-                    {
-                        item.IsDownVoteByCurrent = true;
-                    }
-                }
-                return cmts;
-            }
-            else
+            var comments = mapper.Map<List<ReplyCommentViewModel>>(await replyCommentRepository.FindListAsync(filter));
+            if (comments == null) throw new Exception("Bình luận không tồn tại hoặc đã bị xóa");
+
+            var cmts = comments.Skip(skip).Take(count);
+
+            foreach (var item in cmts)
             {
-                throw new Exception("Bình luận không tồn tại hoặc đã bị xóa");
+                var builderUpvote = Builders<UpVote>.Filter;
+                var finderUpvote = builderUpvote.Eq("object_vote_id", item.OId) &
+                                   builderUpvote.Eq("upvote_by", currentUser.OId);
+                var upvote = await upVoteRepository.FindAsync(finderUpvote);
+                if (upvote != null)
+                    item.IsVoteByCurrent = true;
+
+                var builderDownvote = Builders<DownVote>.Filter;
+                var finderDownvote = builderDownvote.Eq("object_vote_id", item.OId) &
+                                     builderDownvote.Eq("downvote_by", currentUser.OId);
+                var downvote = await downVoteRepository.FindAsync(finderDownvote);
+                if (downvote != null)
+                    item.IsDownVoteByCurrent = true;
             }
+
+            return cmts;
+
         }
 
-        /// <summary>
-        /// Replies the comment.
-        /// </summary>
-        /// <param name="request">The request.</param>
-        /// <returns></returns>
-        /// <exception cref="Exception">Bình luận đã bị xóa</exception>
+        public async Task<CommentViewModel> GetCommentById(string commentId)
+        {
+            var comment = await commentRepository.GetByIdAsync(ObjectId.Parse(commentId));
+
+            if (!(comment is {Status: ItemStatus.Active})) return null;
+
+            var result = mapper.Map<CommentViewModel>(comment);
+            try
+            {
+                var author = await userRepository.GetByIdAsync(ObjectId.Parse(result.AuthorId));
+                var post = await postRepository.GetByIdAsync(ObjectId.Parse(result.PostId));
+                result.AuthorField = await GetMostMatchFieldOfUser(author, post);
+            }
+            catch (Exception)
+            {
+                //Do nothing
+            }
+            return result;
+        }
+
+        public async Task<ReplyCommentViewModel> GetReplyCommentById(string replyId)
+        {
+            var reply = await replyCommentRepository.GetByIdAsync(ObjectId.Parse(replyId));
+
+            if (!(reply is {Status: ItemStatus.Active})) return null;
+
+            var result = mapper.Map<ReplyCommentViewModel>(reply);
+            try
+            {
+                var author = await userRepository.GetByIdAsync(ObjectId.Parse(result.AuthorId));
+                var comment = await commentRepository.GetByIdAsync(ObjectId.Parse(result.ParentId));
+                var post = await postRepository.GetByIdAsync(ObjectId.Parse(comment.PostId));
+                result.AuthorField = await GetMostMatchFieldOfUser(author, post);
+            }
+            catch (Exception)
+            {
+                //Do nothing
+            }
+            return result;
+
+        }
         public async Task<ReplyCommentViewModel> ReplyComment(ReplyCommentRequest request)
         {
-            User currentUser = Feature.CurrentUser(httpContextAccessor, userRepository);
+            var currentUser = Feature.CurrentUser(httpContextAccessor, userRepository);
 
-            ReplyComment replyComment = PostAdapter.FromRequest(request, currentUser.Id.ToString());
+            var replyComment = PostAdapter.FromRequest(request, currentUser.Id.ToString());
             //Check commenr exist 
-            Comment comment = await commentRepository.GetByIdAsync(ObjectId.Parse(request.ParentCommentId));
+            var comment = await commentRepository.GetByIdAsync(ObjectId.Parse(request.ParentCommentId));
             if (comment != null && comment.Status == ItemStatus.Active)
             {
                 await replyCommentRepository.AddAsync(replyComment);
@@ -403,13 +318,13 @@ namespace CoStudy.API.Infrastructure.Shared.Services
 
 
                 await fcmRepository.AddToGroup(
-                   new AddUserToGroupRequest()
-                   {
-                       GroupName = replyComment.OId,
-                       Type = Feature.GetTypeName(replyComment),
-                       UserIds = new List<string> { currentUser.OId }
-                   }
-                   );
+                    new AddUserToGroupRequest
+                    {
+                        GroupName = replyComment.OId,
+                        Type = Feature.GetTypeName(replyComment),
+                        UserIds = new List<string> { currentUser.OId }
+                    }
+                );
 
                 //Wait for saving
                 Thread.Sleep(50);
@@ -417,15 +332,16 @@ namespace CoStudy.API.Infrastructure.Shared.Services
                 var notificationObjectBuilders = Builders<NotificationObject>.Filter;
 
                 var notificationObjectFilters = notificationObjectBuilders.Eq("object_id", replyComment.OId)
-                    & notificationObjectBuilders.Eq("notification_type", "REPLY_COMMENT_NOTIFY");
+                                                & notificationObjectBuilders.Eq("notification_type",
+                                                    "REPLY_COMMENT_NOTIFY");
 
                 var existNotificationObject = await notificationObjectRepository.FindAsync(notificationObjectFilters);
 
-                string notificationObject = existNotificationObject != null ? existNotificationObject.OId : string.Empty;
+                var notificationObject = existNotificationObject != null ? existNotificationObject.OId : string.Empty;
 
                 if (existNotificationObject == null)
                 {
-                    var newNotificationObject = new NotificationObject()
+                    var newNotificationObject = new NotificationObject
                     {
                         NotificationType = "REPLY_COMMENT_NOTIFY",
                         ObjectId = replyComment.OId,
@@ -435,7 +351,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services
                     notificationObject = newNotificationObject.OId;
                 }
 
-                var notificationDetail = new NotificationDetail()
+                var notificationDetail = new NotificationDetail
                 {
                     CreatorId = currentUser.OId,
                     NotificationObjectId = notificationObject
@@ -445,42 +361,34 @@ namespace CoStudy.API.Infrastructure.Shared.Services
 
                 return mapper.Map<ReplyCommentViewModel>(replyComment);
             }
-            else
-            {
-                throw new Exception("Bình luận đã bị xóa");
-            }
+
+            throw new Exception("Bình luận đã bị xóa");
         }
-        /// <summary>
-        /// Upvotes the comment.
-        /// </summary>
-        /// <param name="commentId">The comment identifier.</param>
-        /// <returns></returns>
+
         public async Task<string> UpvoteComment(string commentId)
         {
-            User currentUser = Feature.CurrentUser(httpContextAccessor, userRepository);
+            var currentUser = Feature.CurrentUser(httpContextAccessor, userRepository);
 
             var comment = await commentRepository.GetByIdAsync(ObjectId.Parse(commentId));
 
-            FilterDefinitionBuilder<DownVote> builder = Builders<DownVote>.Filter;
+            var builder = Builders<DownVote>.Filter;
 
-            FilterDefinition<DownVote> downvoteFinder = builder.Eq("object_vote_id", commentId) & builder.Eq("downvote_by", currentUser.OId);
+            var downvoteFinder = builder.Eq("object_vote_id", commentId) & builder.Eq("downvote_by", currentUser.OId);
 
-            DownVote existDownvote = await downVoteRepository.FindAsync(downvoteFinder);
-            if (existDownvote != null)
-            {
-                await downVoteRepository.DeleteAsync(existDownvote.Id);
-            }
+            var existDownvote = await downVoteRepository.FindAsync(downvoteFinder);
+            if (existDownvote != null) await downVoteRepository.DeleteAsync(existDownvote.Id);
 
-            FilterDefinitionBuilder<UpVote> upvotebuilder = Builders<UpVote>.Filter;
-            FilterDefinition<UpVote> upvoteFinder = upvotebuilder.Eq("object_vote_id", commentId) & upvotebuilder.Eq("upvote_by", currentUser.OId);
-            UpVote existUpvote = await upVoteRepository.FindAsync(upvoteFinder);
+            var upvotebuilder = Builders<UpVote>.Filter;
+            var upvoteFinder = upvotebuilder.Eq("object_vote_id", commentId) &
+                               upvotebuilder.Eq("upvote_by", currentUser.OId);
+            var existUpvote = await upVoteRepository.FindAsync(upvoteFinder);
 
             if (existUpvote == null)
             {
-                UpVote upvote = new UpVote()
+                var upvote = new UpVote
                 {
                     UpVoteBy = currentUser.OId,
-                    ObjectVoteId = commentId,
+                    ObjectVoteId = commentId
                 };
 
                 await upVoteRepository.AddAsync(upvote);
@@ -488,15 +396,16 @@ namespace CoStudy.API.Infrastructure.Shared.Services
                 var notificationObjectBuilders = Builders<NotificationObject>.Filter;
 
                 var notificationObjectFilters = notificationObjectBuilders.Eq("object_id", comment.OId)
-                    & notificationObjectBuilders.Eq("notification_type", "UPVOTE_COMMENT_NOTIFY");
+                                                & notificationObjectBuilders.Eq("notification_type",
+                                                    "UPVOTE_COMMENT_NOTIFY");
 
                 var existNotificationObject = await notificationObjectRepository.FindAsync(notificationObjectFilters);
 
-                string notificationObject = existNotificationObject != null ? existNotificationObject.OId : string.Empty;
+                var notificationObject = existNotificationObject != null ? existNotificationObject.OId : string.Empty;
 
                 if (existNotificationObject == null)
                 {
-                    var newNotificationObject = new NotificationObject()
+                    var newNotificationObject = new NotificationObject
                     {
                         NotificationType = "UPVOTE_COMMENT_NOTIFY",
                         ObjectId = comment.OId,
@@ -506,7 +415,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services
                     notificationObject = newNotificationObject.OId;
                 }
 
-                var notificationDetail = new NotificationDetail()
+                var notificationDetail = new NotificationDetail
                 {
                     CreatorId = currentUser.OId,
                     NotificationObjectId = notificationObject
@@ -517,43 +426,32 @@ namespace CoStudy.API.Infrastructure.Shared.Services
                 return "Upvote thành công";
             }
 
-            else
-            {
-                return "Bạn đã upvote rồi";
-            }
+            return "Bạn đã upvote rồi";
         }
 
-        /// <summary>
-        /// Downvotes the comment.
-        /// </summary>
-        /// <param name="commentId">The comment identifier.</param>
-        /// <returns></returns>
         public async Task<string> DownvoteComment(string commentId)
         {
-
-            User currentUser = Feature.CurrentUser(httpContextAccessor, userRepository);
+            var currentUser = Feature.CurrentUser(httpContextAccessor, userRepository);
             var comment = await commentRepository.GetByIdAsync(ObjectId.Parse(commentId));
-            FilterDefinitionBuilder<UpVote> builder = Builders<UpVote>.Filter;
-            FilterDefinition<UpVote> finder = builder.Eq("object_vote_id", commentId) & builder.Eq("upvote_by", currentUser.OId);
-            UpVote existUpvote = await upVoteRepository.FindAsync(finder);
+            var builder = Builders<UpVote>.Filter;
+            var finder = builder.Eq("object_vote_id", commentId) & builder.Eq("upvote_by", currentUser.OId);
+            var existUpvote = await upVoteRepository.FindAsync(finder);
 
-            if (existUpvote != null)
-            {
-                await upVoteRepository.DeleteAsync(existUpvote.Id);
-            }
+            if (existUpvote != null) await upVoteRepository.DeleteAsync(existUpvote.Id);
 
-            FilterDefinitionBuilder<DownVote> builderDownVote = Builders<DownVote>.Filter;
+            var builderDownVote = Builders<DownVote>.Filter;
 
-            FilterDefinition<DownVote> downvoteFinder = builderDownVote.Eq("object_vote_id", commentId) & builderDownVote.Eq("downvote_by", currentUser.OId);
+            var downvoteFinder = builderDownVote.Eq("object_vote_id", commentId) &
+                                 builderDownVote.Eq("downvote_by", currentUser.OId);
 
-            DownVote existDownvote = await downVoteRepository.FindAsync(downvoteFinder);
+            var existDownvote = await downVoteRepository.FindAsync(downvoteFinder);
 
             if (existDownvote == null)
             {
-                DownVote downVote = new DownVote()
+                var downVote = new DownVote
                 {
                     DownVoteBy = currentUser.OId,
-                    ObjectVoteId = commentId,
+                    ObjectVoteId = commentId
                 };
 
                 await downVoteRepository.AddAsync(downVote);
@@ -561,15 +459,16 @@ namespace CoStudy.API.Infrastructure.Shared.Services
                 var notificationObjectBuilders = Builders<NotificationObject>.Filter;
 
                 var notificationObjectFilters = notificationObjectBuilders.Eq("object_id", comment.OId)
-                    & notificationObjectBuilders.Eq("notification_type", "DOWNVOTE_COMMENT_NOTIFY");
+                                                & notificationObjectBuilders.Eq("notification_type",
+                                                    "DOWNVOTE_COMMENT_NOTIFY");
 
                 var existNotificationObject = await notificationObjectRepository.FindAsync(notificationObjectFilters);
 
-                string notificationObject = existNotificationObject != null ? existNotificationObject.OId : string.Empty;
+                var notificationObject = existNotificationObject != null ? existNotificationObject.OId : string.Empty;
 
                 if (existNotificationObject == null)
                 {
-                    var newNotificationObject = new NotificationObject()
+                    var newNotificationObject = new NotificationObject
                     {
                         NotificationType = "DOWNVOTE_COMMENT_NOTIFY",
                         ObjectId = comment.OId,
@@ -579,7 +478,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services
                     notificationObject = newNotificationObject.OId;
                 }
 
-                var notificationDetail = new NotificationDetail()
+                var notificationDetail = new NotificationDetail
                 {
                     CreatorId = currentUser.OId,
                     NotificationObjectId = notificationObject
@@ -588,47 +487,36 @@ namespace CoStudy.API.Infrastructure.Shared.Services
                 await fcmRepository.PushNotifyDetail(comment.OId, notificationDetail);
 
 
-
                 return "Downvote thành công";
             }
-            else
-            {
-                return "Bạn đã downvote rồi";
-            }
+
+            return "Bạn đã downvote rồi";
         }
 
-
-        /// <summary>
-        /// Upvotes the reply comment.
-        /// </summary>
-        /// <param name="commentId">The comment identifier.</param>
-        /// <returns></returns>
         public async Task<string> UpvoteReplyComment(string commentId)
         {
-            User currentUser = Feature.CurrentUser(httpContextAccessor, userRepository);
+            var currentUser = Feature.CurrentUser(httpContextAccessor, userRepository);
 
             var comment = await replyCommentRepository.GetByIdAsync(ObjectId.Parse(commentId));
 
-            FilterDefinitionBuilder<DownVote> builder = Builders<DownVote>.Filter;
+            var builder = Builders<DownVote>.Filter;
 
-            FilterDefinition<DownVote> downvoteFinder = builder.Eq("object_vote_id", commentId) & builder.Eq("downvote_by", currentUser.OId);
+            var downvoteFinder = builder.Eq("object_vote_id", commentId) & builder.Eq("downvote_by", currentUser.OId);
 
-            DownVote existDownvote = await downVoteRepository.FindAsync(downvoteFinder);
-            if (existDownvote != null)
-            {
-                await downVoteRepository.DeleteAsync(existDownvote.Id);
-            }
+            var existDownvote = await downVoteRepository.FindAsync(downvoteFinder);
+            if (existDownvote != null) await downVoteRepository.DeleteAsync(existDownvote.Id);
 
-            FilterDefinitionBuilder<UpVote> upvotebuilder = Builders<UpVote>.Filter;
-            FilterDefinition<UpVote> upvoteFinder = upvotebuilder.Eq("object_vote_id", commentId) & upvotebuilder.Eq("upvote_by", currentUser.OId);
-            UpVote existUpvote = await upVoteRepository.FindAsync(upvoteFinder);
+            var upvotebuilder = Builders<UpVote>.Filter;
+            var upvoteFinder = upvotebuilder.Eq("object_vote_id", commentId) &
+                               upvotebuilder.Eq("upvote_by", currentUser.OId);
+            var existUpvote = await upVoteRepository.FindAsync(upvoteFinder);
 
             if (existUpvote == null)
             {
-                UpVote upvote = new UpVote()
+                var upvote = new UpVote
                 {
                     UpVoteBy = currentUser.OId,
-                    ObjectVoteId = commentId,
+                    ObjectVoteId = commentId
                 };
 
                 await upVoteRepository.AddAsync(upvote);
@@ -636,15 +524,16 @@ namespace CoStudy.API.Infrastructure.Shared.Services
                 var notificationObjectBuilders = Builders<NotificationObject>.Filter;
 
                 var notificationObjectFilters = notificationObjectBuilders.Eq("object_id", comment.OId)
-                    & notificationObjectBuilders.Eq("notification_type", "UPVOTE_REPLY_NOTIFY");
+                                                & notificationObjectBuilders.Eq("notification_type",
+                                                    "UPVOTE_REPLY_NOTIFY");
 
                 var existNotificationObject = await notificationObjectRepository.FindAsync(notificationObjectFilters);
 
-                string notificationObject = existNotificationObject != null ? existNotificationObject.OId : string.Empty;
+                var notificationObject = existNotificationObject != null ? existNotificationObject.OId : string.Empty;
 
                 if (existNotificationObject == null)
                 {
-                    var newNotificationObject = new NotificationObject()
+                    var newNotificationObject = new NotificationObject
                     {
                         NotificationType = "UPVOTE_REPLY_NOTIFY",
                         ObjectId = comment.OId,
@@ -654,7 +543,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services
                     notificationObject = newNotificationObject.OId;
                 }
 
-                var notificationDetail = new NotificationDetail()
+                var notificationDetail = new NotificationDetail
                 {
                     CreatorId = currentUser.OId,
                     NotificationObjectId = notificationObject
@@ -665,43 +554,32 @@ namespace CoStudy.API.Infrastructure.Shared.Services
                 return "Upvote thành công";
             }
 
-            else
-            {
-                return "Bạn đã upvote rồi";
-            }
+            return "Bạn đã upvote rồi";
         }
 
-        /// <summary>
-        /// Downvotes the reply comment.
-        /// </summary>
-        /// <param name="commentId">The comment identifier.</param>
-        /// <returns></returns>
         public async Task<string> DownvoteReplyComment(string commentId)
         {
-
-            User currentUser = Feature.CurrentUser(httpContextAccessor, userRepository);
+            var currentUser = Feature.CurrentUser(httpContextAccessor, userRepository);
             var comment = await replyCommentRepository.GetByIdAsync(ObjectId.Parse(commentId));
-            FilterDefinitionBuilder<UpVote> builder = Builders<UpVote>.Filter;
-            FilterDefinition<UpVote> finder = builder.Eq("object_vote_id", commentId) & builder.Eq("upvote_by", currentUser.OId);
-            UpVote existUpvote = await upVoteRepository.FindAsync(finder);
+            var builder = Builders<UpVote>.Filter;
+            var finder = builder.Eq("object_vote_id", commentId) & builder.Eq("upvote_by", currentUser.OId);
+            var existUpvote = await upVoteRepository.FindAsync(finder);
 
-            if (existUpvote != null)
-            {
-                await upVoteRepository.DeleteAsync(existUpvote.Id);
-            }
+            if (existUpvote != null) await upVoteRepository.DeleteAsync(existUpvote.Id);
 
-            FilterDefinitionBuilder<DownVote> builderDownVote = Builders<DownVote>.Filter;
+            var builderDownVote = Builders<DownVote>.Filter;
 
-            FilterDefinition<DownVote> downvoteFinder = builderDownVote.Eq("object_vote_id", commentId) & builderDownVote.Eq("downvote_by", currentUser.OId);
+            var downvoteFinder = builderDownVote.Eq("object_vote_id", commentId) &
+                                 builderDownVote.Eq("downvote_by", currentUser.OId);
 
-            DownVote existDownvote = await downVoteRepository.FindAsync(downvoteFinder);
+            var existDownvote = await downVoteRepository.FindAsync(downvoteFinder);
 
             if (existDownvote == null)
             {
-                DownVote downVote = new DownVote()
+                var downVote = new DownVote
                 {
                     DownVoteBy = currentUser.OId,
-                    ObjectVoteId = commentId,
+                    ObjectVoteId = commentId
                 };
 
                 await downVoteRepository.AddAsync(downVote);
@@ -709,15 +587,16 @@ namespace CoStudy.API.Infrastructure.Shared.Services
                 var notificationObjectBuilders = Builders<NotificationObject>.Filter;
 
                 var notificationObjectFilters = notificationObjectBuilders.Eq("object_id", comment.OId)
-                    & notificationObjectBuilders.Eq("notification_type", "DOWNVOTE_REPLY_NOTIFY");
+                                                & notificationObjectBuilders.Eq("notification_type",
+                                                    "DOWNVOTE_REPLY_NOTIFY");
 
                 var existNotificationObject = await notificationObjectRepository.FindAsync(notificationObjectFilters);
 
-                string notificationObject = existNotificationObject != null ? existNotificationObject.OId : string.Empty;
+                var notificationObject = existNotificationObject != null ? existNotificationObject.OId : string.Empty;
 
                 if (existNotificationObject == null)
                 {
-                    var newNotificationObject = new NotificationObject()
+                    var newNotificationObject = new NotificationObject
                     {
                         NotificationType = "DOWNVOTE_REPLY_NOTIFY",
                         ObjectId = comment.OId,
@@ -727,7 +606,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services
                     notificationObject = newNotificationObject.OId;
                 }
 
-                var notificationDetail = new NotificationDetail()
+                var notificationDetail = new NotificationDetail
                 {
                     CreatorId = currentUser.OId,
                     NotificationObjectId = notificationObject
@@ -736,29 +615,17 @@ namespace CoStudy.API.Infrastructure.Shared.Services
                 await fcmRepository.PushNotifyDetail(comment.OId, notificationDetail);
 
 
-
                 return "Downvote thành công";
             }
-            else
-            {
-                return "Bạn đã downvote rồi";
-            }
+
+            return "Bạn đã downvote rồi";
         }
 
 
-        /// <summary>
-        /// Updates the comment.
-        /// </summary>
-        /// <param name="request">The request.</param>
-        /// <returns></returns>
-        /// <exception cref="Exception">Không tìm thấy bình luận</exception>
         public async Task<CommentViewModel> UpdateComment(UpdateCommentRequest request)
         {
-            Comment comment = await commentRepository.GetByIdAsync(ObjectId.Parse(request.Id));
-            if (comment == null)
-            {
-                throw new Exception("Không tìm thấy bình luận");
-            }
+            var comment = await commentRepository.GetByIdAsync(ObjectId.Parse(request.Id));
+            if (comment == null || comment.Status != ItemStatus.Active) throw new Exception("Không tìm thấy bình luận");
 
             comment.Content = request.Content;
             comment.Image = request.Image;
@@ -768,25 +635,68 @@ namespace CoStudy.API.Infrastructure.Shared.Services
             return mapper.Map<CommentViewModel>(comment);
         }
 
-        /// <summary>
-        /// Updates the reply.
-        /// </summary>
-        /// <param name="request">The request.</param>
-        /// <returns></returns>
-        /// <exception cref="Exception">Không tìm thấy câu trả lời</exception>
         public async Task<ReplyCommentViewModel> UpdateReply(UpdateReplyRequest request)
         {
-            ReplyComment reply = await replyCommentRepository.GetByIdAsync(ObjectId.Parse(request.Id));
-            if (reply == null)
-            {
-                throw new Exception("Không tìm thấy câu trả lời");
-            }
+            var reply = await replyCommentRepository.GetByIdAsync(ObjectId.Parse(request.Id));
+            if (reply == null || reply.Status != ItemStatus.Active) throw new Exception("Không tìm thấy câu trả lời");
 
             reply.Content = request.Content;
             reply.IsEdited = true;
             reply.ModifiedDate = DateTime.Now;
             await replyCommentRepository.UpdateAsync(reply, reply.Id);
             return mapper.Map<ReplyCommentViewModel>(reply);
+        }
+
+        public async Task<ObjectLevelViewModel> GetMostMatchFieldOfUser(User user, Post post)
+        {
+            var _builder = Builders<ObjectLevel>.Filter;
+            var userObjectLevelsFilter = _builder.Eq("object_id", user.OId);
+            var userObjectLevels = await objectLevelRepository.FindListAsync(userObjectLevelsFilter);
+
+            userObjectLevelsFilter = _builder.Eq("object_id", post.OId);
+            var postObjectLevels = await objectLevelRepository.FindListAsync(userObjectLevelsFilter);
+            var result = new List<ObjectLevel>();
+
+            userObjectLevels.ForEach(x =>
+               {
+                   if (postObjectLevels.Any(y => y.FieldId == x.FieldId))
+                   {
+                       postObjectLevels.ForEach(z =>
+                      {
+                          if (x.FieldId == z.FieldId)
+                          {
+                              var userLevel = levelRepository.GetById(ObjectId.Parse(x.LevelId));
+                              var postLevel = levelRepository.GetById(ObjectId.Parse(z.LevelId));
+                              if (userLevel.Order >= postLevel.Order)
+                                  result.Add(x);
+                          }
+                      });
+                   }
+               });
+
+            if (result.Any())
+                return mapper.Map<ObjectLevelViewModel>(result.ElementAt(0));
+            return null;
+        }
+
+        public async Task<CommentViewModel> ModifiedCommentStatus(ModifiedCommentStatusRequest request)
+        {
+            var comment = await commentRepository.GetByIdAsync(ObjectId.Parse(request.CommentId));
+            if (comment == null)
+                throw new Exception("Không tìm thấy bình luận. ");
+            comment.Status = request.Status;
+            await commentRepository.UpdateAsync(comment, comment.Id);
+            return mapper.Map<CommentViewModel>(comment);
+        }
+
+        public async Task<ReplyCommentViewModel> ModifiedReplyCommentStatus(ModifiedCommentStatusRequest request)
+        {
+            var replyComment = await replyCommentRepository.GetByIdAsync(ObjectId.Parse(request.CommentId));
+            if (replyComment == null)
+                throw new Exception("Không tìm thấy câu trả lời. ");
+            replyComment.Status = request.Status;
+            await replyCommentRepository.UpdateAsync(replyComment, replyComment.Id);
+            return mapper.Map<ReplyCommentViewModel>(replyComment);
         }
     }
 }

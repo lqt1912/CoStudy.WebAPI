@@ -143,7 +143,116 @@ body {
 }
 
 .nav-active {
-    background-color: #343a40;
+    background-color: #2A8383;
     color: white;
 }
 
+/* Start by setting display:none to make this hidden.
+   Then we position it in relation to the viewport window
+   with position:fixed. Width, height, top and left speak
+   for themselves. Background we set to 80% white with
+   our animation centered, and no-repeating */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    background: rgba( 255, 255, 255, .8 ) url('http://i.stack.imgur.com/FhHRx.gif') 50% 50% no-repeat;
+}
+
+/* When the body has the loading class, we turn
+   the scrollbar off with overflow:hidden */
+body.loading .modal {
+    overflow: hidden;
+}
+
+/* Anytime the body has the loading class, our
+   modal element will be visible */
+body.loading .modal {
+    display: block;
+}
+
+.status-active {
+    color: white;
+    background-color: green;
+    border-radius: 99px;
+    padding-top: 3px;
+    padding-bottom: 3px;
+    padding-left: 7px;
+    padding-right: 7px; 
+}
+
+.status-blocked {
+    color: white;
+    background-color: brown;
+    border-radius: 99px;
+    padding-top: 3px;
+    padding-bottom: 3px;
+    padding-left: 7px;
+    padding-right: 7px;
+}
+.status-deleted {
+    color: white;
+    background-color: gray;
+    border-radius: 99px;
+    padding-top: 3px;
+    padding-bottom: 3px;
+    padding-left: 7px;
+    padding-right: 7px;
+}
+.dataTables_wrapper {
+    width: 100%
+}
+
+.custom-toast {
+    width: 400px;
+    color: black;
+    font-weight: bold;
+    background-color: #4BB543;
+}
+.btn-outline-dark {
+    border: 1px solid #2A8383;
+    text-transform: uppercase
+}
+
+.main-border {
+    border: 1px solid #2A8383;
+    border-radius: 5px;
+}
+.dataTable {
+    border: 1px solid #ABABAB !important;
+    border-radius: 5px;
+}
+.paginate_button {
+    border-radius: 500px !important;
+}
+.dataTables_wrapper .dataTables_paginate .paginate_button.current, .dataTables_wrapper .dataTables_paginate .paginate_button.current:hover {
+    color: white !important;
+    border: 1px solid #2A8383;
+    background-color: #2A8383 !important;
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #2A8383), color-stop(100%, #2A8383));
+    background: -webkit-linear-gradient(top, #2A8383 0%, #2A8383 100%);
+    background: -moz-linear-gradient(top, #2A8383 0%, #2A8383 100%);
+    background: -ms-linear-gradient(top, #2A8383 0%, #2A8383 100%);
+    background: -o-linear-gradient(top, #2A8383 0%, #2A8383 100%);
+    background: linear-gradient(to bottom, #2A8383 0%, #2A8383 100%);
+
+}
+.dataTables_paginate {
+    padding-top: 1rem !important;
+}
+.dataTables_info {
+    padding-bottom: 1rem !important;
+}
+
+#btn_detail {
+    background-color: #2A8383;
+    cursor: pointer;
+    border: none;
+}
+.infomation-label-header {
+    font-weight: bold;
+}

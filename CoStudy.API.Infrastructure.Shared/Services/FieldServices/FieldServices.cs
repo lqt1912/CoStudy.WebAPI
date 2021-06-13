@@ -12,28 +12,14 @@ using System.Threading.Tasks;
 
 namespace CoStudy.API.Infrastructure.Shared.Services
 {
-    /// <summary>
-    /// The Field Service. 
-    /// </summary>
-    /// <seealso cref="CoStudy.API.Infrastructure.Shared.Services.IFieldServices" />
     public class FieldServices : IFieldServices
     {
-        /// <summary>
-        /// The field repository
-        /// </summary>
         IFieldRepository fieldRepository;
 
-        /// <summary>
-        /// The field group repository
-        /// </summary>
         IFieldGroupRepository fieldGroupRepository;
 
         IMapper mapper;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="FieldServices"/> class.
-        /// </summary>
-        /// <param name="fieldRepository">The field repository.</param>
         public FieldServices(IFieldRepository fieldRepository, IFieldGroupRepository fieldGroupRepository, IMapper mapper)
         {
             this.fieldRepository = fieldRepository;
@@ -41,11 +27,6 @@ namespace CoStudy.API.Infrastructure.Shared.Services
             this.mapper = mapper;
         }
 
-        /// <summary>
-        /// Adds the field.
-        /// </summary>
-        /// <param name="entity">The entity.</param>
-        /// <returns></returns>
         public async Task<Field> AddField(Field entity)
         {
             var data = new Field()
@@ -57,14 +38,9 @@ namespace CoStudy.API.Infrastructure.Shared.Services
             return data;
         }
 
-        /// <summary>
-        /// Gets all.
-        /// </summary>
-        /// <param name="request">The request.</param>
-        /// <returns></returns>
         public IEnumerable<Field> GetAll(BaseGetAllRequest request)
         {
-            var data = fieldRepository.GetAll();
+            var data = fieldRepository.GetAll().Where(x=>x.Status ==ItemStatus.Active);
 
             if (request.Count.HasValue && request.Skip.HasValue)
             {
@@ -73,12 +49,6 @@ namespace CoStudy.API.Infrastructure.Shared.Services
             return data;
         }
 
-        /// <summary>
-        /// Deletes the specified identifier.
-        /// </summary>
-        /// <param name="id">The identifier.</param>
-        /// <returns></returns>
-        /// <exception cref="Exception">Xóa thất bại.</exception>
         public async Task<string> Delete(String id)
         {
             try
@@ -92,12 +62,6 @@ namespace CoStudy.API.Infrastructure.Shared.Services
             }
         }
 
-        /// <summary>
-        /// Adds the field to group.
-        /// </summary>
-        /// <param name="request">The request.</param>
-        /// <returns></returns>
-        /// <exception cref="Exception">Không tìm thấy nhóm lĩnh vực.</exception>
         public async Task<FieldGroupViewModel> AddFieldToGroup(AddFieldToGroupRequest request)
         {
 
@@ -107,6 +71,8 @@ namespace CoStudy.API.Infrastructure.Shared.Services
                 throw new Exception("Không tìm thấy nhóm lĩnh vực. ");
             }
 
+            group.GroupName = request.GroupName;
+            group.FieldId.Clear();
             foreach (var fieldId in request.FieldIds)
             {
                 var field = await fieldRepository.GetByIdAsync(ObjectId.Parse(fieldId));
@@ -116,18 +82,27 @@ namespace CoStudy.API.Infrastructure.Shared.Services
                 }
             }
             await fieldGroupRepository.UpdateAsync(group, group.Id);
-
             return mapper.Map<FieldGroupViewModel>(group);
         }
 
-        /// <summary>
-        /// Add field group
-        /// </summary>
-        /// <param name="fieldGroup"></param>
-        /// <returns></returns>
+        public async Task<FieldGroupViewModel> RemoveFieldFromGroup(AddFieldToGroupRequest request)
+        {
+            var group = await fieldGroupRepository.GetByIdAsync(ObjectId.Parse(request.GroupId));
+            if (group == null)
+                throw new Exception("Không tìm thấy nhóm lĩnh vực. ");
+
+            foreach (var item in request.FieldIds)
+            {
+                if (group.FieldId.Any(x => x == item))
+                    group.FieldId.Remove(item);
+            }
+            group.FieldId.Distinct();
+            await fieldGroupRepository.UpdateAsync(group, group.Id);
+            return mapper.Map<FieldGroupViewModel>(group);
+        }
+
         public async Task<FieldGroupViewModel> AddFieldGroup(FieldGroup fieldGroup)
         {
-
             var data = new FieldGroup()
             {
                 GroupName = fieldGroup.GroupName,
@@ -136,6 +111,14 @@ namespace CoStudy.API.Infrastructure.Shared.Services
 
             await fieldGroupRepository.AddAsync(data);
             return mapper.Map<FieldGroupViewModel>(data);
+        }
+
+        public List<FieldGroupViewModel> GetAllFieldGroup(BaseGetAllRequest request)
+        {
+            var data = fieldGroupRepository.GetAll();
+            if (request.Skip.HasValue && request.Count.HasValue)
+                data = data.Skip(request.Skip.Value).Take(request.Count.Value);
+            return mapper.Map<List<FieldGroupViewModel>>(data);
         }
 
         public async Task<IEnumerable<Field>> GetFieldByGroupId(string groupId)

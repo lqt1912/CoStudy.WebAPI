@@ -50,6 +50,10 @@ namespace CoStudy.API.Domain.Entities.Application
         [JsonPropertyName("image_hash")]
         public string ImageHash { get; set; }
 
+        [BsonElement("media_type")]
+        [JsonPropertyName("media_type")]
+        public MediaType? MediaType  { get; set; }
+
         /// <summary>
         /// Gets or sets the created date.
         /// </summary>
@@ -70,5 +74,12 @@ namespace CoStudy.API.Domain.Entities.Application
         [JsonPropertyName("modified_date")]
         public DateTime ModifiedDate { get; set; }
 
+    }
+
+    public enum MediaType
+    {
+        Image, 
+        Video, 
+        File
     }
 }

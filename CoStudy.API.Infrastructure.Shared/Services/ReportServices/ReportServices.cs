@@ -16,68 +16,32 @@ using System.Threading.Tasks;
 
 namespace CoStudy.API.Infrastructure.Shared.Services
 {
-    /// <summary>
-    /// The Report Service. 
-    /// </summary>
-    /// <seealso cref="CoStudy.API.Infrastructure.Shared.Services.IReportServices" />
     public class ReportServices : IReportServices
     {
-        /// <summary>
-        /// The report repository
-        /// </summary>
         IReportRepository reportRepository;
 
-        /// <summary>
-        /// The mapper
-        /// </summary>
         IMapper mapper;
 
-        /// <summary>
-        /// The user repository
-        /// </summary>
         IUserRepository userRepository;
 
-        /// <summary>
-        /// The HTTP context accessor
-        /// </summary>
         IHttpContextAccessor httpContextAccessor;
 
-        /// <summary>
-        /// The post repository
-        /// </summary>
         IPostRepository postRepository;
 
-        /// <summary>
-        /// The comment repository
-        /// </summary>
         ICommentRepository commentRepository;
 
-        /// <summary>
-        /// The reply comment repository
-        /// </summary>
         IReplyCommentRepository replyCommentRepository;
 
-        /// <summary>
-        /// The notification object repository
-        /// </summary>
         INotificationObjectRepository notificationObjectRepository;
 
-        /// <summary>
-        /// The FCM repository
-        /// </summary>
         IFcmRepository fcmRepository;
 
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ReportServices"/> class.
-        /// </summary>
-        /// <param name="reportRepository">The report repository.</param>
         public ReportServices(IReportRepository reportRepository,
-            IMapper mapper, IUserRepository userRepository,
-            IHttpContextAccessor httpContextAccessor,
-            IPostRepository postRepository,
-            ICommentRepository commentRepository,
-            IReplyCommentRepository replyCommentRepository, INotificationObjectRepository notificationObjectRepository, IFcmRepository fcmRepository)
+        IMapper mapper, IUserRepository userRepository,
+        IHttpContextAccessor httpContextAccessor,
+        IPostRepository postRepository,
+        ICommentRepository commentRepository,
+        IReplyCommentRepository replyCommentRepository, INotificationObjectRepository notificationObjectRepository, IFcmRepository fcmRepository)
         {
             this.reportRepository = reportRepository;
             this.mapper = mapper;
@@ -91,11 +55,6 @@ namespace CoStudy.API.Infrastructure.Shared.Services
         }
 
 
-        /// <summary>
-        /// Adds the specified entity.
-        /// </summary>
-        /// <param name="entity">The entity.</param>
-        /// <returns></returns>
         public async Task<ReportViewModel> Add(Report entity)
         {
             Report data = new Report()
@@ -111,11 +70,6 @@ namespace CoStudy.API.Infrastructure.Shared.Services
             return mapper.Map<ReportViewModel>(data);
         }
 
-        /// <summary>
-        /// Posts the report.
-        /// </summary>
-        /// <param name="request">The request.</param>
-        /// <returns></returns>
         public async Task<ReportViewModel> PostReport(CreatePostReportRequest request)
         {
             User currentUser = Feature.CurrentUser(httpContextAccessor, userRepository);
@@ -129,6 +83,15 @@ namespace CoStudy.API.Infrastructure.Shared.Services
                 ObjectId = request.PostId,
                 ObjectType = Feature.GetTypeName(post)
             };
+
+            await fcmRepository.AddToGroup(
+                new AddUserToGroupRequest
+                {
+                    GroupName = post.AuthorId,
+                    Type = Feature.GetTypeName(currentUser),
+                    UserIds = new List<string> { post.AuthorId }
+                }
+            );
 
             await reportRepository.AddAsync(data);
 
@@ -166,11 +129,6 @@ namespace CoStudy.API.Infrastructure.Shared.Services
 
         }
 
-        /// <summary>
-        /// Gets all.
-        /// </summary>
-        /// <param name="request">The request.</param>
-        /// <returns></returns>
         public IEnumerable<ReportViewModel> GetAll(BaseGetAllRequest request)
         {
             IQueryable<Report> data = reportRepository.GetAll();
@@ -181,11 +139,6 @@ namespace CoStudy.API.Infrastructure.Shared.Services
             return mapper.Map<IEnumerable<ReportViewModel>>(data);
         }
 
-        /// <summary>
-        /// Approves the specified ids.
-        /// </summary>
-        /// <param name="ids">The ids.</param>
-        /// <returns></returns>
         public async Task<IEnumerable<ReportViewModel>> Approve(IEnumerable<string> ids)
         {
             List<Report> dataToApprove = new List<Report>();
@@ -202,11 +155,21 @@ namespace CoStudy.API.Infrastructure.Shared.Services
 
             foreach (Report item in dataToApprove)
             {
-                item.IsApproved = true;
-                item.ModifiedDate = DateTime.Now;
-                item.ApprovedBy = currentUser.OId;
-                item.ApproveDate = DateTime.Now;
-                await reportRepository.UpdateAsync(item, item.Id);
+                #region Find the same object
+
+                var reportBuilders = Builders<Report>.Filter;
+                var reportFilter = reportBuilders.Eq("object_id", item.ObjectId);
+                var sameObjects = (await reportRepository.FindListAsync(reportFilter)).ToList();
+                sameObjects.ForEach(async x =>
+                {
+                    x.IsApproved = true;
+                    x.ModifiedDate = DateTime.Now;
+                    x.ApprovedBy = currentUser.OId;
+                    x.ApproveDate = DateTime.Now;
+                    await reportRepository.UpdateAsync(x, x.Id);
+                });
+
+                #endregion
 
                 if (item.ObjectType.Contains("Post"))
                 {
@@ -216,7 +179,6 @@ namespace CoStudy.API.Infrastructure.Shared.Services
                     await postRepository.UpdateAsync(post, post.Id);
 
                     //Notify
-
                     FilterDefinitionBuilder<NotificationObject> notificationObjectBuilders = Builders<NotificationObject>.Filter;
 
                     FilterDefinition<NotificationObject> notificationObjectFilters = notificationObjectBuilders.Eq("object_id", post.OId)
@@ -244,9 +206,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services
                         NotificationObjectId = notificationObject
                     };
 
-
                     await fcmRepository.PushNotifyApproveReport(post.AuthorId, notificationDetail);
-
                 }
                 else
                 if (item.ObjectType.Contains("ReplyComment"))
@@ -257,7 +217,6 @@ namespace CoStudy.API.Infrastructure.Shared.Services
                     await replyCommentRepository.UpdateAsync(replyComment, replyComment.Id);
 
                     //Notify
-
                     FilterDefinitionBuilder<NotificationObject> notificationObjectBuilders = Builders<NotificationObject>.Filter;
 
                     FilterDefinition<NotificationObject> notificationObjectFilters = notificationObjectBuilders.Eq("object_id", replyComment.OId)
@@ -332,19 +291,13 @@ namespace CoStudy.API.Infrastructure.Shared.Services
             return mapper.Map<IEnumerable<ReportViewModel>>(dataToApprove);
         }
 
-        /// <summary>
-        /// Comments the report.
-        /// </summary>
-        /// <param name="request">The request.</param>
-        /// <returns></returns>
-        /// <exception cref="NotImplementedException"></exception>
         public async Task<ReportViewModel> CommentReport(CreateCommentReportRequest request)
         {
-            User currentUser = Feature.CurrentUser(httpContextAccessor, userRepository);
+            var currentUser = Feature.CurrentUser(httpContextAccessor, userRepository);
 
-            Comment comment = await commentRepository.GetByIdAsync(ObjectId.Parse(request.CommentId));
+            var comment = await commentRepository.GetByIdAsync(ObjectId.Parse(request.CommentId));
 
-            Report data = new Report()
+            var data = new Report()
             {
                 AuthorId = currentUser.OId,
                 Reason = request.Reason.ToList(),
@@ -352,20 +305,29 @@ namespace CoStudy.API.Infrastructure.Shared.Services
                 ObjectType = Feature.GetTypeName(comment)
             };
 
+            await fcmRepository.AddToGroup(
+                new AddUserToGroupRequest
+                {
+                    GroupName = comment.AuthorId,
+                    Type = Feature.GetTypeName(currentUser),
+                    UserIds = new List<string> { comment.AuthorId }
+                }
+            );
+
             await reportRepository.AddAsync(data);
 
-            FilterDefinitionBuilder<NotificationObject> notificationObjectBuilders = Builders<NotificationObject>.Filter;
+            var notificationObjectBuilders = Builders<NotificationObject>.Filter;
 
-            FilterDefinition<NotificationObject> notificationObjectFilters = notificationObjectBuilders.Eq("object_id", request.CommentId)
-                & notificationObjectBuilders.Eq(NotificationConstant.NotificationType, "REPORT_COMMENT_NOTIFY");
+            var notificationObjectFilters = notificationObjectBuilders.Eq("object_id", request.CommentId)
+                                            & notificationObjectBuilders.Eq(NotificationConstant.NotificationType, "REPORT_COMMENT_NOTIFY");
 
-            NotificationObject existNotificationObject = await notificationObjectRepository.FindAsync(notificationObjectFilters);
+            var existNotificationObject = await notificationObjectRepository.FindAsync(notificationObjectFilters);
 
             string notificationObject = existNotificationObject != null ? existNotificationObject.OId : string.Empty;
 
             if (existNotificationObject == null)
             {
-                NotificationObject newNotificationObject = new NotificationObject()
+                var newNotificationObject = new NotificationObject()
                 {
                     NotificationType = "REPORT_COMMENT_NOTIFY",
                     ObjectId = request.CommentId,
@@ -375,7 +337,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services
                 notificationObject = newNotificationObject.OId;
             }
 
-            NotificationDetail notificationDetail = new NotificationDetail()
+            var notificationDetail = new NotificationDetail()
             {
                 CreatorId = currentUser.OId,
                 NotificationObjectId = notificationObject
@@ -386,11 +348,6 @@ namespace CoStudy.API.Infrastructure.Shared.Services
             return mapper.Map<ReportViewModel>(data);
         }
 
-        /// <summary>
-        /// Replies the report.
-        /// </summary>
-        /// <param name="request">The request.</param>
-        /// <returns></returns>
         public async Task<ReportViewModel> ReplyReport(CreateReplyReportRequest request)
         {
             User currentUser = Feature.CurrentUser(httpContextAccessor, userRepository);
@@ -404,6 +361,15 @@ namespace CoStudy.API.Infrastructure.Shared.Services
                 ObjectId = request.ReplyId,
                 ObjectType = Feature.GetTypeName(comment)
             };
+
+            await fcmRepository.AddToGroup(
+                new AddUserToGroupRequest
+                {
+                    GroupName = comment.AuthorId,
+                    Type = Feature.GetTypeName(currentUser),
+                    UserIds = new List<string> { comment.AuthorId }
+                }
+            );
 
             await reportRepository.AddAsync(data);
 
@@ -438,5 +404,13 @@ namespace CoStudy.API.Infrastructure.Shared.Services
 
             return mapper.Map<ReportViewModel>(data);
         }
+
+        public async Task<ReportViewModel> GetReportById(string id)
+        {
+            var data = await reportRepository.GetByIdAsync(ObjectId.Parse(id));
+            var result = mapper.Map<ReportViewModel>(data);
+            return result;
+        }
+
     }
 }
