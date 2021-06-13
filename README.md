@@ -7,3 +7,4 @@
  - Github SVN with Azure DevOps CI/CD
  - Elastic/File logging with Serilog
  
+gui
