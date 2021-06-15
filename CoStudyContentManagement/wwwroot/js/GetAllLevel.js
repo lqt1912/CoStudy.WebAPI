@@ -93,6 +93,7 @@
     });
 
 $(document).ready(function () {
+    $('select[name$="_length"]').addClass('form-control custom-form-control');
     $('#btnAdd').click(function () {
         $('#detail_id').val('<<auto generate>>');
         $('#detail_name').val('');

@@ -194,6 +194,7 @@ body.loading .modal {
     padding-left: 7px;
     padding-right: 7px;
 }
+
 .status-deleted {
     color: white;
     background-color: gray;
@@ -213,6 +214,20 @@ body.loading .modal {
     font-weight: bold;
     background-color: #4BB543;
 }
+
+.toast-delete {
+    background-color: brown !important;
+}
+
+.toast-update {
+    background-color: goldenrod !important;
+}
+
+.toast-active {
+    background-color: #4BB543 !important;
+}
+
+
 .btn-outline-dark {
     border: 1px solid #2A8383;
     text-transform: uppercase
@@ -258,4 +273,9 @@ body.loading .modal {
 
 
 
+}
+
+.custom-form-control {
+    display: inherit;
+    width: inherit;
 }

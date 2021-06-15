@@ -162,7 +162,7 @@ namespace CoStudy.API.WebAPI.Controllers
 
         [HttpPost]
         [Route("modified-post-status")]
-        [Authorize(Role.Admin)]
+        [Authorize]
         public async Task<IActionResult> ModifiedPostStatus(ModifedPostStatusRequest request)
         {
             var data = await postService.ModifiedPostStatus(request);

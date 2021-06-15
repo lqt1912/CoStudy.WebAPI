@@ -88,6 +88,20 @@ namespace CoStudy.API.Infrastructure.Shared.Services
                     dataSourceViewModels = dataSourceViewModels.Where(x => (x.FullAddress.Contains(request.columns[4].search.value)));
                 }
             }
+
+            if (request.columns[9].search != null)
+            {
+                var _value = request.columns[9].search.value;
+                if (!string.IsNullOrEmpty(_value))
+                {
+                    if (_value != "5")
+                    {
+                        var _status = ItemStatus.TryParse(_value, out ItemStatus __status);
+                        dataSourceViewModels = dataSourceViewModels.Where(x => x.Status == __status);
+                    }
+                }
+            }
+
             dataSourceViewModels = dataSourceViewModels.Skip(request.start).Take(request.length);
             response.data = dataSourceViewModels.ToList();
 
@@ -103,6 +117,43 @@ namespace CoStudy.API.Infrastructure.Shared.Services
             var dataSource = reportRepository.GetAll();
             var dataSourceViewModel = mapper.Map<List<ReportViewModel>>(dataSource).AsEnumerable();
             var response = new TableResultJson<ReportViewModel>();
+
+            if(request.columns[1].search!=null)
+            {
+                var _value1 = request.columns[1].search.value;
+                if (!string.IsNullOrEmpty(_value1))
+                    dataSourceViewModel = dataSourceViewModel.Where(x => x.OId.Contains(_value1));
+            }
+
+            if (request.columns[2].search != null)
+            {
+                var _value2 = request.columns[2].search.value;
+                if (!string.IsNullOrEmpty(_value2))
+                    dataSourceViewModel = dataSourceViewModel.Where(x => x.AuthorName.Contains(_value2));
+            }
+
+            if (request.columns[5].search != null)
+            {
+                if (!string.IsNullOrEmpty(request.columns[4].search.value))
+                {
+                    var dt = DateTime.TryParseExact(request.columns[4].search.value, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out var datetime);
+                    if (dt)
+                        dataSourceViewModel = dataSourceViewModel.Where(x => x.CreatedDate.Value.Date == datetime);
+                }
+            }
+
+            if(request.columns[6].search!=null)
+            {
+                var _value3 = request.columns[6].search.value;
+                if (!string.IsNullOrEmpty(_value3))
+                {
+                    if (_value3 == "true")
+                        dataSourceViewModel = dataSourceViewModel.Where(x => x.IsApproved == true);
+                    else if (_value3 == "false")
+                        dataSourceViewModel = dataSourceViewModel.Where(x => x.IsApproved == false);
+                }
+            }
+
             response.draw = request.draw;
             response.recordsFiltered = dataSourceViewModel.Count();
             dataSourceViewModel = dataSourceViewModel.Skip(request.start).Take(request.length);
@@ -144,6 +195,14 @@ namespace CoStudy.API.Infrastructure.Shared.Services
                         dataSourceViewModel = dataSourceViewModel.Where(x => x.CreatedDate.Date == datetime);
                 }
             }
+
+            if (request.columns[9].search != null)
+            {
+                var _value = request.columns[9].search.value;
+                if (!String.IsNullOrEmpty(_value) && _value!="All")
+                    dataSourceViewModel = dataSourceViewModel.Where(x => x.StatusName.Contains(_value));
+            }
+
             TableResultJson<PostViewModel> response = new TableResultJson<PostViewModel>();
             response.draw = request.draw;
             response.recordsFiltered = dataSourceViewModel.Count();
@@ -241,7 +300,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services
             dataSourceViewModel = dataSourceViewModel.Skip(request.start).Take(request.length);
             response.data = dataSourceViewModel.ToList();
 
-            response.data.ForEach(x=> { x.Index = response.data.IndexOf(x) + request.start + 1; });
+            response.data.ForEach(x => { x.Index = response.data.IndexOf(x) + request.start + 1; });
             return response;
 
         }

@@ -2,9 +2,28 @@
     ViewData["Title"] = "Danh sách bình luận";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-<div class="row pl-3 ">
-    <h3>Quản lý bình luận</h3>
+
+<div class="row pl-3">
+    <h3>Quản lý bình luận | </h3>
+    <div class="col-3 mb-2 form-row ">
+        <div class="col-3">
+            <label class="col-form-label">
+                Trạng thái
+            </label>
+        </div>
+        <div class="col-9">
+            <select id="slcStatus" class="form-control">
+                <option value="0" id="slActive">Active</option>
+                <option value="1" id="slOffline">Offline</option>
+                <option value="2" id="slBlocked">Blocked</option>
+                <option value="3" id="slAwait">Await</option>
+                <option value="4" id="slDeleted">Deleted</option>
+                <option value="5" id="slAll">Tất cả</option>
+            </select>
+        </div>
+    </div>
 </div>
+<br />
 <div class="w-100 form-row pb-3">
     <div class="col-2 mb-2"> <input id="txt_title" class=" form-control" placeholder="Mã bình luận" /> </div>
     <div class="col-2 mb-2"> <input id="txt_author_name" class="form-control" placeholder="Tác giả" /> </div>
@@ -32,7 +51,27 @@
                 <th class="d-none">Nội dung</th>
             </tr>
         </thead>
+        <tbody>
+        </tbody>
+        <tfoot>
+            <tr>
+                <th></th>
+                <th id="foot_id">Mã bình luận</th>
+                <th id="foot_author">Tác giả</th>
+                <th> </th>
+                <th> </th>
+                <th></th>
+                <th></th>
+                <th> </th>
+                <th> </th>
+                <th> </th>
+                <th class="d-none"> </th>
+            </tr>
+        </tfoot>
     </table>
 </div>
+
+@await Html.PartialAsync("ConfirmModal")
+<div id="toastDiv"></div>
 
 <script src="~/js/GetAllComment.js"></script>

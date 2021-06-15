@@ -4,12 +4,19 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 <div class="w-100 form-row pb-3">
-    <div class="col-4 mb-2"> <input id="txt_title" class=" form-control" placeholder="Tiêu đề" /> </div>
-    <div class="col-4 mb-2"> <input id="txt_author_name" class="form-control" placeholder="Tác giả" /> </div>
-    <div class="col-4 mb-2"> <input type="date" id="dt_createddate" class="form-control" placeholder="Ngày đăng" /> </div>
+    <div class="col-2 mb-2"> <input id="txt_id" class=" form-control" placeholder="Mã báo cáo" /> </div>
+    <div class="col-2 mb-2"> <input id="txt_author_name" class="form-control" placeholder="Tác giả" /> </div>
+    <div class="col-2 mb-2"> <input type="date" id="dt_createddate" class="form-control" placeholder="Ngày đăng" /> </div>
+    <div class="col-2 mb-2">
+        <select id="slcStatus" class="form-control">
+            <option value="true">Đã duyệt</option>
+            <option value="false">Chưa duyệt</option>
+            <option value="all">Tất cả</option>
+        </select>
+    </div>
 
-    <div class="col-3 mb-2"> <button id="btnSearch" class="form-control btn btn-info"> Tìm kiếm </button></div>
-    <div class="col-3 mb-2"> <button id="btnClear" class="form-control btn btn-primary"> Refresh  </button></div>
+    <div class="col-2 mb-2"> <button id="btnSearch" class="form-control btn btn-info"> Tìm kiếm </button></div>
+    <div class="col-2 mb-2"> <button id="btnClear" class="form-control btn btn-primary"> Refresh  </button></div>
 
 </div>
 

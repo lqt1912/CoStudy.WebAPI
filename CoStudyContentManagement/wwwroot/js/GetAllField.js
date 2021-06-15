@@ -64,6 +64,12 @@
                     { data: 'oid', name: 'activity', width: '15%', className: 'text-center' },
                 ],
                 columnDefs: [
+                    {
+                        "targets": [3],
+                        render: function(data, type, row) {
+                            return getStatusButton(data);
+                        }
+                    },
                      {
                         "targets": [4],
                         "render": function (data, type, row) {
@@ -172,6 +178,7 @@
                 }
             });
         });
+        $('select[name$="_length"]').addClass('form-control custom-form-control');
     });
 
 function getFieldById(id) {

@@ -22,12 +22,19 @@
         string clientUrl = Configuration["client_url"];
     }
     <script>
-         const API_URL = "@apiUrl";
-         const CLIENT_URL = "@clientUrl";
+        const API_URL = "@apiUrl";
+        const CLIENT_URL = "@clientUrl";
     </script>
+    <script src="~/js/components/toast.js"></script>
     <script src="~/js/components/Button.js"></script>
     <script src="~/js/components/StatusButton.js"></script>
     <script src="~/js/site.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('input').attr('maxlength', 15);
+           
+        });
+    </script>
     <style>
         .btn {
             cursor: pointer;
@@ -54,7 +61,7 @@
         </nav>
     </header>
 
-    <div class="container-fluid row" >
+    <div class="container-fluid row">
         <div class="col-2 row d-flex justify-content-center" id="left-nav">
             <div class="col-10">
                 <a asp-controller="Logging" asp-action="GetAll" class="btn btn-block btn-outline-dark text-left  @ViewBag.GetAll">API</a>
@@ -62,14 +69,14 @@
                 <a asp-controller="Post" asp-action="GetAllPost" class="btn btn-block btn-outline-dark text-left @ViewBag.GetAllPost">Quản lý bài viết</a>
                 <a asp-controller="Comment" asp-action="GetAll" class="btn btn-block btn-outline-dark text-left @ViewBag.GetAllComment ">Quản lý bình luận</a>
                 <a asp-controller="ReplyComment" asp-action="GetAll" class="btn btn-block btn-outline-dark text-left @ViewBag.GetAllReply">Quản lý trả lời</a>
-                <a asp-controller="Field" asp-action="GetAllField" class="btn btn-block btn-outline-dark text-left @ViewBag.GetAllField" >Danh mục lĩnh vực</a>
+                <a asp-controller="Field" asp-action="GetAllField" class="btn btn-block btn-outline-dark text-left @ViewBag.GetAllField">Danh mục lĩnh vực</a>
                 <a asp-controller="Level" asp-action="GetAllLevel" class="btn btn-block btn-outline-dark text-left @ViewBag.GetAllLevel">Danh mục cấp độ</a>
                 <a asp-controller="Report" asp-action="GetAllReport" class="btn btn-block btn-outline-dark text-left @ViewBag.GetAllReport">Quản lý báo cáo</a>
                 <a asp-controller="FieldGroup" asp-action="GetAll" class="btn btn-block btn-outline-dark text-left @ViewBag.GetAllFieldGroup">Nhóm lĩnh vực</a>
 
             </div>
         </div>
-        <main role="main" class="col-10  main-border p-3" >
+        <main role="main" class="col-10  main-border p-3">
             @RenderBody()
         </main>
     </div>

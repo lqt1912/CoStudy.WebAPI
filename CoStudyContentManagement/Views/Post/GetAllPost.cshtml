@@ -3,9 +3,28 @@
     ViewData["Title"] = "Danh sách bài viết";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-<div class="row pl-3 ">
-    <h3>Quản lý bài viết</h3>
+
+<div class="row pl-3">
+    <h3>Danh sách bài viết | </h3>
+    <div class="col-3 mb-2 form-row ">
+        <div class="col-3">
+            <label class="col-form-label">
+                Trạng thái
+            </label>
+        </div>
+        <div class="col-9">
+            <select id="slcStatus" class="form-control">
+                <option value="Active" id="slActive">Active</option>
+                <option value="Offline" id="slOffline">Offline</option>
+                <option value="Blocked" id="slBlocked">Blocked</option>
+                <option value="Await" id="slAwait">Await</option>
+                <option value="Deleted" id="slDeleted">Deleted</option>
+                <option value="All" id="slAll">Tất cả</option>
+            </select>
+        </div>
+    </div>
 </div>
+<br />
 <div class="w-100 form-row pb-3 ">
     <div class="col-2 mb-2"> <input id="txt_id" class=" form-control" placeholder="Mã bài viết" /> </div>
     <div class="col-2 mb-2"> <input id="txt_title" class=" form-control" placeholder="Tiêu đề" /> </div>
@@ -20,37 +39,82 @@
 
     <table id="postTable" class="table table-responsive table-striped border" style="font-size: 15px; width: 100% !important">
         <thead>
-        <tr>
-            <th>STT</th>
-            <th>Mã bài viết</th>
-            <th>Tác giả</th>
-            <th>Tiêu đề</th>
-            <th>Ngày đăng bài</th>
-            <th>Downvote</th>
-            <th>Upvote</th>
-            <th>Bình luận</th>
-            <th>Trạng thái</th>
-            <th>Hoạt động</th>
-        </tr>
+            <tr>
+                <th>STT</th>
+                <th>Mã bài viết</th>
+                <th>Tác giả</th>
+                <th>Tiêu đề</th>
+                <th>Ngày đăng bài</th>
+                <th>Downvote</th>
+                <th>Upvote</th>
+                <th>Bình luận</th>
+                <th>Trạng thái</th>
+                <th>Hoạt động</th>
+            </tr>
         </thead>
         <tbody>
         </tbody>
         <tfoot>
-        <tr>
-            <th>&nbsp;</th>
-            <th id="tfoot_id">Mã bài viết</th>
-            <th id="tfoot_author">Tác giả</th>
-            <th id="tfoot_header">Tiêu đề</th>
-            <th>&nbsp;</th>
-            <th>&nbsp;</th>
-            <th>&nbsp;</th>
-            <th>&nbsp;</th>
-            <th>&nbsp;</th>
-            <th>&nbsp;</th>
-            
-        </tr>
+            <tr>
+                <th></th>
+                <th></th>
+                <th id="foot_author">Tác giả</th>
+                <th id="foot_header">Tiêu đề</th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th> </th>
+                <th> </th>
+                <th> </th>
+            </tr>
         </tfoot>
     </table>
 </div>
+<div class="modal fade" style="z-index: 1000000" id="deleteConfirmModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-body">
+                Bạn có xác nhận xóa bài viết này?
+                <input type="hidden" id="id_to_delete" />
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Không</button>
+                <button type="button" id="btnDelete" class="btn btn-primary" data-dismiss="modal">Xác nhận</button>
+            </div>
+        </div>
+    </div>
+</div>
 
+<div class="modal fade" style="z-index: 1000000" id="blockConfirmModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-body">
+                Bạn có xác nhận chặn bài viết này?
+                <input type="hidden" id="id_to_block" />
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Không</button>
+                <button type="button" id="btnBlock" class="btn btn-primary" data-dismiss="modal">Xác nhận</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" style="z-index: 1000000" id="activeConfirmModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-body">
+                Bạn có xác nhận mở bài viết này?
+                <input type="hidden" id="id_to_active" />
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Không</button>
+                <button type="button" id="btnActive" class="btn btn-primary" data-dismiss="modal">Xác nhận</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="toastDiv"></div>
 <script src="~/js/GetAllPost.js"></script>

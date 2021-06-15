@@ -3,7 +3,26 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h3>Danh sách người dùng </h3>
+<div class="row pl-3">
+    <h3>Danh sách người dùng | </h3>
+    <div class="col-3 mb-2 form-row ">
+        <div class="col-3">
+            <label class="col-form-label">
+                Trạng thái
+            </label>
+        </div>
+        <div class="col-9">
+            <select id="slcStatus" class="form-control">
+                <option value="0" id="slActive">Active</option>
+                <option value="1" id="slOffline">Offline</option>
+                <option value="2" id="slBlocked">Blocked</option>
+                <option value="3" id="slAwait">Await</option>
+                <option value="4" id="slDeleted">Deleted</option>
+                <option value="5" id="slAll">Tất cả</option>
+            </select>
+        </div>
+    </div>
+</div>
 <br />
 <div class="w-100 form-row pb-3 ">
     <div class="col-2 mb-2"> <input id="txtName" class=" form-control" placeholder="Họ và tên" /> </div>
@@ -12,38 +31,41 @@
     <div class="col-2 mb-2">  <input id="txtPhoneNumber" class="form-control" placeholder="Số điện thoại" /></div>
     <div class="col-2 mb-2"> <button id="btnSearch" class="form-control btn btn-info"> Tìm kiếm </button></div>
     <div class="col-2 mb-2"> <button id="btnClear" class="form-control btn btn-primary"> Refresh  </button></div>
+
+    
 </div>
 
 <div class="row container-fluid">
     <table id="userTable" class="table table-responsive table-striped border" style="font-size: 15px; width: 100% !important">
         <thead>
-        <tr>
-            <th>STT</th>
-            <th>Họ và tên</th>
-            <th>Email</th>
-            <th>Số điện thoại</th>
-            <th>Địa chỉ</th>
-            <th>Ngày sinh</th>
-            <th>Ngày đăng kí </th>
-            <th>Status</th>
-            <th>Hoạt động</th>
-        </tr>
+            <tr>
+                <th>STT</th>
+                <th>Họ và tên</th>
+                <th>Email</th>
+                <th>SĐT</th>
+                <th>Địa chỉ</th>
+                <th>Ngày sinh</th>
+                <th>Ngày đăng kí </th>
+                <th>Status</th>
+                <th>Hoạt động</th>
+                <th class="d-none"></th>
+            </tr>
         </thead>
         <tbody>
-
         </tbody>
         <tfoot>
-        <tr>
-            <th>&nbsp;</th>
-            <th id="tfoot_name">Họ và tên</th>
-            <th id="tfoot_email">Email</th>
-            <th id="tfoot_phone">Số điện thoại</th>
-            <th id="tfoot_address">Địa chỉ</th>
-            <th>&nbsp;</th>
-            <th>&nbsp; </th>
-            <th>&nbsp;</th>
-            <th>&nbsp;</th>
-        </tr>
+            <tr>
+                <th>&nbsp;</th>
+                <th id="tfoot_name">Họ và tên</th>
+                <th id="tfoot_email">Email</th>
+                <th id="tfoot_phone">SĐT</th>
+                <th id="tfoot_address">Địa chỉ</th>
+                <th>&nbsp;</th>
+                <th>&nbsp; </th>
+                <th>&nbsp;</th>
+                <th>&nbsp;</th>
+                <th class="d-none">&nbsp;</th>
+            </tr>
         </tfoot>
     </table>
 
@@ -61,19 +83,9 @@
     }
 </style>
 
-<div class="modal fade" style="z-index: 1000000" id="deleteConfirmModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered" role="document">
-        <div class="modal-content">
-            <div class="modal-body">
-                Bạn có xác nhận xóa đối tượng?
-                <input id="id_to_delete"/>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Không</button>
-                <button type="button" id="btnDelete" class="btn btn-primary" data-dismiss="modal">Xác nhận xóa</button>
-            </div>
-        </div>
-    </div>
-</div>
+<div id="toastDiv"></div>
+
+@await Html.PartialAsync("ModalConfirmPartial")
+
 
 <script src="~/js/GetAllUser.js"></script>

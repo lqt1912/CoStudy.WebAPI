@@ -1,6 +1,7 @@
 ﻿$(document).ready(
     function () {
         getConfig();
+
         var dt = $("#userTable").DataTable(
             {
                 paging: true,
@@ -74,7 +75,7 @@
                     {
                         data: "full_name",
                         name: "full_name",
-                        width: "15%"
+                        width: "10%"
                     },
                     {
                         data: "email",
@@ -89,17 +90,17 @@
                     {
                         data: "full_address",
                         name: "full_address",
-                        width: "25%"
+                        width: "15%"
                     },
                     {
                         data: "date_of_birth",
                         name: "date_of_birth",
-                        width: "10%"
+                        width: "5%"
                     },
                     {
                         data: "created_date",
                         name: "created_date",
-                        width: "10%"
+                        width: "5%"
                     },
                     {
                         name: "status_name",
@@ -108,8 +109,15 @@
                     },
                     {
                         name: "activity",
-                        data: "email"
-                    }
+                        data: "status_name",
+                        width:'15%'
+                    },
+                    {
+                        name: "status",
+                        data: "status",
+                        className: 'd-none',
+                        width: "2%"
+                    },
                 ],
                 columnDefs: [
                     {
@@ -134,10 +142,11 @@
                     },
                     {
                         "targets": [8],
-                        "className": 'text-center',
+                        "className": '',
                         "render": function (data, type, row) {
-                            var htmlString = '<button  id="btn_detail" style="border-radius:100px" class="btn btn-info"><i class="fa fa-info-circle" aria-hidden="true"></i></button> ';
-                            return htmlString;
+                            //var htmlString = '<button  id="btn_detail" style="border-radius:100px" class="btn btn-info"><i class="fas fa-pencil-alt"></i></button> ';
+                            //return htmlString;
+                            return getButtonStatusOnTable(data);
                         }
                     }
                 ],
@@ -169,11 +178,36 @@
                 }
             }
         });
+
+        $('#btn-pre-active').click(function () {
+            $('#id_to_active').val($('#user_id').val());
+            $('#activeConfirmModal').modal('show');
+        });
+
+        $('#btn-pre-delete').click(function () {
+            $('#id_to_delete').val($('#user_id').val());
+            $('#deleteConfirmModal').modal('show');
+        });
+
+
+        $('#btn-pre-block').click(function () {
+            $('#id_to_block').val($('#user_id').val());
+            $('#blockConfirmModal').modal('show');
+        });
+
+        $('select[name$="_length"]').addClass('form-control custom-form-control');
     }
 );
 
 $(document).ready(
     function () {
+
+        $('#slcStatus').on('change', function () {
+            var oTable = $("#userTable").DataTable();
+            oTable.columns(9).search(this.value);
+            oTable.draw();
+        });
+
 
         $("#btnSearch").click(
             function () {
@@ -210,14 +244,22 @@ $(document).ready(
 
         $('#userTable tbody').on('click', '#btn_delete', function () {
             var data = table.row($(this).parents('tr')).data();
-            $('#id_to_delete').val(data.email);
+            $('#id_to_delete').val(data.oid);
             $('#deleteConfirmModal').modal('show');
         });
 
-        $('#btnDelete').click(
-            function () {
-                alert("Delete " + $('#id_to_delete').val());
-            });
+        $('#userTable tbody').on('click', '#btn_block', function () {
+            var data = table.row($(this).parents('tr')).data();
+            $('#id_to_block').val(data.oid);
+            $('#blockConfirmModal').modal('show');
+        });
+
+        $('#userTable tbody').on('click', '#btn_active', function () {
+            var data = table.row($(this).parents('tr')).data();
+            $('#id_to_active').val(data.oid);
+            $('#activeConfirmModal').modal('show');
+        });
+
     }
 );
 
@@ -237,4 +279,56 @@ function goToUserDetail(email) {
     setTimeout(function () {
         window.open(CLIENT_URL + 'User/detail?email=' + email);
     }, 500);
+}
+
+$(document).ready(
+    function () {
+      
+
+        $('#btnDelete').click(function () {
+            modifyUser($('#id_to_delete').val(), 4);
+            $('#toastDiv').html(getToast('toast-delete', 'Xóa tài khoản thành công. '));
+            $('.toast').toast('show');
+
+        });
+
+        $('#btnBlock').click(function () {
+            modifyUser($('#id_to_block').val(), 2);
+            $('#toastDiv').html(getToast('toast-update', 'Cập nhật tài khoản thành công. '));
+            $('.toast').toast('show');
+
+        });
+
+        $('#btnActive').click(function () {
+            modifyUser($('#id_to_active').val(), 0);
+            $('#toastDiv').html(getToast('toast-active', 'Kích hoạt tài khoản thành công. '));
+            $('.toast').toast('show');
+
+        });
+    }
+);
+
+
+function modifyUser(oid, _status) {
+    $.ajax({
+        type: 'PUT',
+        url: API_URL + 'User/modified-user',
+        dataType: 'json',
+        contentType: 'application/json',
+        beforeSend: function (xhr) {
+            xhr.setRequestHeader('Authorization', getConfig());
+        },
+        data: JSON.stringify({
+            user_id: oid.toString(),
+            status: _status
+        }),
+        success: function (response) {
+            if (response.code === 401)
+                alert("Unauthorized. ");
+            var oTable = $('#userTable').DataTable().ajax.reload();
+        },
+        error: function (response) {
+            console.log(response);
+        }
+    });
 }
