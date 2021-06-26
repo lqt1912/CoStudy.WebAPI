@@ -5,7 +5,10 @@
         var dt = $('#postTable').DataTable({
             paging: true,
             processing: true,
-            dom: 'lirtp',
+            dom: 'Blirtp',
+            buttons: [
+                'excel', 'pdf', 'print'
+            ],
             serverSide: true, // for process on server side
             orderMulti: true,
             searching: true,

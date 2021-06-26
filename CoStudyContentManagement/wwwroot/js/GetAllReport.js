@@ -4,7 +4,10 @@
             {
                 paging: true,
                 processing: true,
-                dom: 'lirtp',
+                dom: 'Blirtp',
+                buttons: [
+                    'excel', 'pdf', 'print'
+                ],
                 serverSide: true,
                 searching: true,
                 orderMulti: true,
@@ -231,7 +234,8 @@ $(document).ready(function () {
             var oTable = $("#reportTable").DataTable();
             $("#txt_id").val('');
             $("#txt_author_name").val('');
-            $("#dt_createddate").val('all');
+            $("#dt_createddate").val('');
+            $("#slcStatus").val('all');
 
             oTable.columns(1).search($('#txt_id').val());
             oTable.columns(2).search($('#txt_author_name').val());
@@ -259,7 +263,7 @@ $(document).ready(function () {
             },
             data: JSON.stringify([$('#id_to_delete').val()]),
             success: function (response) {
-                $('#reportTable').DataTable().ajax.reload;
+                $('#reportTable').DataTable().ajax.reload();
                 $('.toast').toast('show');
             },
             error: function (response) {

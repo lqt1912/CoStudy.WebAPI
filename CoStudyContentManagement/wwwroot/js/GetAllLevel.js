@@ -4,7 +4,10 @@
             {
                 paging: true,
                 processing: true,
-                dom: 'lirtp',
+                dom: 'Blirtp',
+                buttons: [
+                    'excel', 'pdf', 'print'
+                ],
                 serverSide: true,
                 searching: true,
                 orderMulti: true,

@@ -3,6 +3,9 @@
     ViewData["Title"] = "Danh sách báo cáo";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
+<div class="row pl-3">
+    <h3>Quản lý báo cáo</h3>
+</div>
 <div class="w-100 form-row pb-3">
     <div class="col-2 mb-2"> <input id="txt_id" class=" form-control" placeholder="Mã báo cáo" /> </div>
     <div class="col-2 mb-2"> <input id="txt_author_name" class="form-control" placeholder="Tác giả" /> </div>
@@ -60,17 +63,4 @@
     </div>
 </div>
 
-<div aria-live="polite" aria-atomic="true">
-    <!-- Position it -->
-    <div style="position: absolute; top: 0rem; right: 1rem;">
-        <div class="toast custom-toast" role="alert" aria-live="assertive" aria-atomic="true" data-delay="4000">
-            <div class="toast-body">
-                <span id="numberDeleted"></span>
-                <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
-                    <span aria-hidden="true">×</span>
-                </button>
-            </div>
-        </div>
-    </div>
-</div>
 <script src="~/js/GetAllReport.js"></script>
