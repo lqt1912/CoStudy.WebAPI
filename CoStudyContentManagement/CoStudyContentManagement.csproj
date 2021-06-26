@@ -1,43 +1,16 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <CopyRefAssembliesToPublishDirectory>false</CopyRefAssembliesToPublishDirectory>
   </PropertyGroup>
 
-  <ItemGroup>
-    <Content Remove="Views\Level\LevelPartial\UpdateModal.cshtml" />
-    <Content Remove="Views\Report\ReportPartial\ApproveConfirmModal.cshtml" />
-    <Content Remove="Views\Shared\Partial\EditToastPartial.cshtml" />
-  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="3.1.12" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="3.1.5" />
   </ItemGroup>
 
-  <ItemGroup>
-    <UpToDateCheckInput Remove="Views\Shared\Partial\EditToastPartial.cshtml" />
-  </ItemGroup>
 
-  <ItemGroup>
-    <_ContentIncludedByDefault Remove="Views\Level\LevelPartial\UpdateModal.cshtml" />
-    <_ContentIncludedByDefault Remove="Views\Report\ReportPartial\ApproveConfirmModal.cshtml" />
-    <_ContentIncludedByDefault Remove="Views\Shared\Partial\EditToastPartial.cshtml" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="Views\Level\LevelPartial\UpdateModal.cshtml" />
-    <None Include="Views\Report\ReportPartial\ApproveConfirmModal.cshtml" />
-    <None Include="Views\Shared\Partial\EditToastPartial.cshtml" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <UpToDateCheckInput Remove="Views\Level\LevelPartial\UpdateModal.cshtml" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <UpToDateCheckInput Remove="Views\Report\ReportPartial\ApproveConfirmModal.cshtml" />
-  </ItemGroup>
 
 </Project>

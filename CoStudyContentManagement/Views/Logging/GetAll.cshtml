@@ -172,7 +172,7 @@
                 },
             },
             ajax: {
-                url: "https://localhost:44323/api/Logging/paged",
+                url: API_URL+"Logging/paged",
                 type: "POST",
                 method: "POST",
 
@@ -333,7 +333,7 @@
     function countLoggingValue() {
         $.ajax({
             type: "GET",
-            url: "https://localhost:44323/api/Logging/count",
+            url: API_URL +"Logging/count",
 
             success: function (response) {
                 //  console.log(response);
@@ -352,7 +352,7 @@
         $.ajax(
             {
                 type: "POST",
-                url: "https://localhost:44323/api/Logging/delete",
+                url: API_URL+ "Logging/delete",
                 data: dataToDelete,
                 contentType: "application/json",
                 dataType: "json",

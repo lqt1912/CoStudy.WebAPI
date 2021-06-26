@@ -40,8 +40,8 @@ function eraseCookie(name) {
 
 function getConfig() {
     console.log(window.location.href);
-    if (!getCookie("accessToken") && window.location.href !=='https://localhost:44333/Home/Login')
-        window.location.href = 'https://localhost:44333/Home/Login';
+    if (!getCookie("accessToken") && window.location.href !== CLIENT_URL + 'Home/Login')
+        window.location.href = CLIENT_URL +'Home/Login';
     return getCookie("accessToken");
 }
 
@@ -51,14 +51,14 @@ $(document).ready(
         $("#logout").click(
             function () {
                 eraseCookie("accessToken");
-                window.location.href = 'https://localhost:44333/Home/Login';
+                window.location.href = CLIENT_URL +'Home/Login';
             }
         );
     }
 );
 
 function goToLoginPage() {
-    window.location.href = 'https://localhost:44333/Home/Login';
+    window.location.href = CLIENT_URL+'Home/Login';
 }
 
 const StatusEnum = Object.freeze(

@@ -30,7 +30,7 @@
                     },
                 },
                 ajax: {
-                    url: "https://localhost:44323/api/Cms/user/paged",
+                    url: API_URL + "Cms/user/paged",
                     type: "POST",
                     method: "POST",
                     beforeSend: function (xhr) {

@@ -28,7 +28,7 @@
                     },
                 },
                 ajax: {
-                    url: 'https://localhost:44323/api/Cms/comment/paged',
+                    url: API_URL+'Cms/comment/paged',
                     type: 'POST',
                     method: 'POST',
                     contentType: 'application/json',

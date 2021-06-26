@@ -88,8 +88,8 @@ $(document).ready(
 );
 
 function goToParentDetail() {
-    setTimeout(function() {
-            window.open('https://localhost:44333/Comment/detail?commentId=' + $('#parent_id').val());
+    setTimeout(function () {
+        window.open(CLIENT_URL+ 'Comment/detail?commentId=' + $('#parent_id').val());
         },
         500);
 };
