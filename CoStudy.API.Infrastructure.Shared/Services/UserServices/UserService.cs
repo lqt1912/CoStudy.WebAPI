@@ -254,7 +254,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
             }
             catch (Exception)
             {
-                throw new Exception(UserNotFound);
+                return null;
             }
         }
 

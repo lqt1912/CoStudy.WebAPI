@@ -16,18 +16,8 @@ using static Common.Constants.NotificationContentTypeConstant;
 
 namespace CoStudy.API.Application.Features
 {
-    /// <summary>
-    /// Some External feature
-    /// </summary>
     public static class Feature
     {
-
-        /// <summary>
-        /// Saves the image to URL.
-        /// </summary>
-        /// <param name="image">The image.</param>
-        /// <param name="accessor">The accessor.</param>
-        /// <returns></returns>
         public static string SaveImageToUrl(IFormFile image, IHttpContextAccessor accessor)
         {
             if (image == null)
@@ -54,13 +44,6 @@ namespace CoStudy.API.Application.Features
             return location + fileName;
         }
 
-        /// <summary>
-        /// Saves the image.
-        /// </summary>
-        /// <param name="image">The image.</param>
-        /// <param name="accessor">The accessor.</param>
-        /// <param name="folder">The folder.</param>
-        /// <returns></returns>
         public static string SaveImage(IFormFile image, IHttpContextAccessor accessor, string folder)
         {
             if (image == null)
@@ -88,13 +71,6 @@ namespace CoStudy.API.Application.Features
             return location + fileName;
         }
 
-
-
-        /// <summary>
-        /// Gets the host URL.
-        /// </summary>
-        /// <param name="httpContextAccessor">The HTTP context accessor.</param>
-        /// <returns></returns>
         public static string GetHostUrl(IHttpContextAccessor httpContextAccessor)
         {
             string scheme = httpContextAccessor.HttpContext.Request.Scheme;
@@ -104,12 +80,6 @@ namespace CoStudy.API.Application.Features
             return location;
         }
 
-        /// <summary>
-        /// Currents the user.
-        /// </summary>
-        /// <param name="_httpContextAccessor">The HTTP context accessor.</param>
-        /// <param name="userRepository">The user repository.</param>
-        /// <returns></returns>
         public static User CurrentUser(IHttpContextAccessor _httpContextAccessor, IUserRepository userRepository)
         {
             Account currentAccount = (Account)_httpContextAccessor.HttpContext.Items["Account"];
@@ -123,15 +93,6 @@ namespace CoStudy.API.Application.Features
 
         }
 
-
-        /// <summary>
-        /// Determines whether the specified list a is equal.
-        /// </summary>
-        /// <param name="listA">The list a.</param>
-        /// <param name="listB">The list b.</param>
-        /// <returns>
-        ///   <c>true</c> if the specified list a is equal; otherwise, <c>false</c>.
-        /// </returns>
         public static bool IsEqual(List<ConversationMember> listA, List<ConversationMember> listB)
         {
             if (listA.Count == listB.Count)
@@ -147,24 +108,12 @@ namespace CoStudy.API.Application.Features
 
         }
 
-        /// <summary>
-        /// Gets the name of the type.
-        /// </summary>
-        /// <param name="obj">The object.</param>
-        /// <returns></returns>
         public static string GetTypeName(object obj)
         {
             Type type = obj.GetType();
             return type.FullName;
         }
 
-        /// <summary>
-        /// Builds the content of the notify.
-        /// </summary>
-        /// <param name="actionName">Name of the action.</param>
-        /// <param name="creatorName">Name of the creator.</param>
-        /// <param name="authorName">Name of the author.</param>
-        /// <returns></returns>
         public static string BuildNotifyContent(ContentType actionName, string creatorName, string authorName)
         {
 

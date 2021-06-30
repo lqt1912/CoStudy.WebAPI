@@ -4,22 +4,20 @@ using System.ComponentModel.DataAnnotations;
 
 namespace CoStudy.API.Infrastructure.Shared.Validator
 {
-
-
-        [AttributeUsage(AttributeTargets.Class | AttributeTargets.Property | AttributeTargets.Field)]
+    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Property | AttributeTargets.Field)]
     public class ListRequiredAttribute : ValidationAttribute
     {
-              public int MaxCount { get; set; }
-              public int MinCount { get; set; }
-              public string LowerLimitMessage { get; set; }
-              public string UpperLimitMessage { get; set; }
+        public int MaxCount { get; set; }
+        public int MinCount { get; set; }
+        public string LowerLimitMessage { get; set; }
+        public string UpperLimitMessage { get; set; }
 
-           public ListRequiredAttribute()
+        public ListRequiredAttribute()
         {
 
         }
 
-                 public override bool IsValid(object value)
+        public override bool IsValid(object value)
         {
             if (value == null)
             {

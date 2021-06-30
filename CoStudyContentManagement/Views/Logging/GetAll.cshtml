@@ -336,7 +336,6 @@
             url: API_URL +"Logging/count",
 
             success: function (response) {
-                //  console.log(response);
                 $('#success').text(response.result[0]);
                 $('#unauth').text(response.result[2]);
                 $('#bad').text(response.result[1]);

@@ -116,7 +116,7 @@ namespace CoStudy.API.WebAPI.Controllers
             return Ok(new ApiOkResponse(data));
         }
 
-        //  [Authorize]
+        [Authorize]
         [HttpGet]
         [Route("current")]
         public IActionResult GetCurrentUser()

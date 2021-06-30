@@ -59,7 +59,7 @@ namespace CoStudy.API.Infrastructure.Shared.AutoMapper
             {
                 Console.WriteLine(e);
             }
-          
+
 
         }
     }
