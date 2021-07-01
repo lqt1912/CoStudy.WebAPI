@@ -114,42 +114,6 @@ namespace CoStudy.API.Application.Features
             return type.FullName;
         }
 
-        public static string BuildNotifyContent(ContentType actionName, string creatorName, string authorName)
-        {
-
-            switch (actionName)
-            {
-                case ContentType.ADD_POST_NOTIFY:
-                    return $"{creatorName}{ADD_POST_NOTIFY}{authorName}";
-
-                case ContentType.DOWNVOTE_COMMENT_NOTIFY:
-                    return $"{creatorName}{DOWNVOTE_COMMENT_NOTIFY}{authorName}";
-
-                case ContentType.DOWNVOTE_POST_NOTIFY:
-                    return $"{creatorName}{DOWNVOTE_POST_NOTIFY}{authorName}";
-
-                case ContentType.DOWNVOTE_REPLY_NOTIFY:
-                    return $"{creatorName}{DOWNVOTE_REPLY_NOTIFY}{authorName}";
-
-                case ContentType.UPVOTE_COMMENT_NOTIFY:
-                    return $"{creatorName}{UPVOTE_COMMENT_NOTIFY}{authorName}";
-
-                case ContentType.UPVOTE_POST_NOTIFY:
-                    return $"{creatorName}{UPVOTE_POST_NOTIFY}{authorName}";
-
-                case ContentType.UPVOTE_REPLY_NOTIFY:
-                    return $"{creatorName}{UPVOTE_REPLY_NOTIFY}{authorName}";
-
-                case ContentType.COMMENT_NOTIFY:
-                    return $"{creatorName}{COMMENT_NOTIFY}{authorName}";
-
-                case ContentType.REPLY_COMMENT_NOTIFY:
-                    return $"{creatorName}{REPLY_COMMENT_NOTIFY}{authorName}";
-                default:
-                    return "Có thông báo mới. ";
-            }
-        }
-
         public static double CalculateDistance(Location point1, Location point2)
         {
             var d1 = point1.Latitude * (Math.PI / 180.0);

@@ -63,6 +63,16 @@ namespace CoStudy.API.Application.FCM
             FcmInfo existFcmInfo = await fcmInfoRepository.FindAsync(finder);
             if (existFcmInfo != null)
             {
+                //Remove other 
+                FilterDefinitionBuilder<FcmInfo> _builder = Builders<FcmInfo>.Filter;
+                FilterDefinition<FcmInfo> _finder = _builder.Eq("device_token", deviceToken);
+                var exist = await fcmInfoRepository.FindListAsync(_finder);
+                exist.ForEach(async x =>
+                {
+                    x.DeviceToken = string.Empty;
+                    await fcmInfoRepository.UpdateAsync(x, x.Id);
+                });
+
                 existFcmInfo.DeviceToken = deviceToken;
                 existFcmInfo.ModifiedDate = DateTime.Now;
                 await fcmInfoRepository.UpdateAsync(existFcmInfo, existFcmInfo.Id);
@@ -162,7 +172,7 @@ namespace CoStudy.API.Application.FCM
             }
         }
 
-        public async Task PushNotify(string clientGroupName, Noftication noftication)
+        public async Task PushNotify(string clientGroupName, Noftication noftication, Triple<string, string, ObjectNotificationType> notificationSetting)
         {
             try
             {
@@ -172,15 +182,12 @@ namespace CoStudy.API.Application.FCM
                 {
                     Noftication finalNotification = new Noftication()
                     {
-                        CreatedDate = DateTime.Now,
                         AuthorId = noftication.AuthorId,
-                        ContentType = noftication.ContentType,
-                        IsRead = false,
-                        ModifiedDate = DateTime.Now,
                         OwnerId = noftication.OwnerId,
-                        Status = ItemStatus.Active,
                         ReceiverId = receiver,
-                        ObjectId = noftication.ObjectId
+                        ObjectId = noftication.ObjectId,
+                        ObjectType = notificationSetting.Item3,
+                        ObjectThumbnail = noftication.ObjectThumbnail,
                     };
 
                     //Người tạo ra thông báo. 
@@ -196,51 +203,58 @@ namespace CoStudy.API.Application.FCM
                     {
                         if (receiver == owner)
                         {
-                            finalNotification.Content =
-                                Feature.BuildNotifyContent(noftication.ContentType, "Bạn", "chính mình");
+                            finalNotification.Content = $"Bạn {notificationSetting.Item2} chính mình";
                         }
                         else if (receiver != owner)
                         {
-                            finalNotification.Content =
-                                Feature.BuildNotifyContent(noftication.ContentType, userCreator.LastName, "họ");
+                            finalNotification.Content = $"{userCreator.FirstName} {userCreator.LastName} {notificationSetting.Item2} họ. ";
                         }
                     }
                     else if (owner != creator)
                     {
+                        //owner: Trung 
+                        //receiver: trung 
+                        //Creator: Thắng
                         if (receiver != owner)
                         {
-                            finalNotification.Content = Feature.BuildNotifyContent(noftication.ContentType,
-                                userCreator.LastName, userOwner.LastName);
+                            finalNotification.Content = $"{userCreator.FirstName} {userCreator.LastName} {notificationSetting.Item2} {userOwner.FirstName} {userOwner.LastName}. ";
                         }
                         else if (receiver != creator)
                         {
-                            finalNotification.Content =
-                                Feature.BuildNotifyContent(noftication.ContentType, userCreator.LastName, "bạn");
+                            finalNotification.Content = $"{userCreator.FirstName} {userCreator.LastName} {notificationSetting.Item2} bạn. ";
                         }
                     }
 
                     await nofticationRepository.AddAsync(finalNotification);
-                    if (!(owner == creator && receiver == owner))
+                    var notiViewModel = mapper.Map<NotificationViewModel>(finalNotification);
+                    if (!(owner == creator && receiver == owner && creator == receiver))
                     {
-                        FilterDefinition<FcmInfo> user = Builders<FcmInfo>.Filter.Eq("user_id", receiver);
-                        string token = (await fcmInfoRepository.FindAsync(user)).DeviceToken;
-                        User sender = await userRepository.GetByIdAsync(ObjectId.Parse(noftication.AuthorId));
-                        FirebaseAdmin.Messaging.Message mes = new FirebaseAdmin.Messaging.Message()
+                        try
                         {
-                            Token = token,
+                            FilterDefinition<FcmInfo> user = Builders<FcmInfo>.Filter.Eq("user_id", receiver);
+                            string token = (await fcmInfoRepository.FindAsync(user)).DeviceToken;
+                            User sender = await userRepository.GetByIdAsync(ObjectId.Parse(finalNotification.AuthorId));
+                            FirebaseAdmin.Messaging.Message mes = new FirebaseAdmin.Messaging.Message()
+                            {
+                                Token = token,
 
-                            Data = new Dictionary<string, string>()
+                                Data = new Dictionary<string, string>()
                             {
-                                {"notification", JsonConvert.SerializeObject(noftication)}
+                                {"notification", JsonConvert.SerializeObject(notiViewModel)}
                             },
-                            Notification = new Notification()
-                            {
-                                Title = sender.LastName,
-                                Body = noftication.Content,
-                                ImageUrl = sender.AvatarHash
-                            }
-                        };
-                        string response = await FirebaseMessaging.DefaultInstance.SendAsync(mes).ConfigureAwait(true);
+                                Notification = new Notification()
+                                {
+                                    Title = $"{sender.FirstName} {sender.LastName}",
+                                    Body = notiViewModel.Content,
+                                    ImageUrl = sender.AvatarHash
+                                }
+                            };
+                            string response = await FirebaseMessaging.DefaultInstance.SendAsync(mes).ConfigureAwait(true);
+                        }
+                        catch (Exception)
+                        {
+                            continue;
+                        }
                     }
                 }
             }
@@ -452,7 +466,7 @@ namespace CoStudy.API.Application.FCM
                     case "FOLLOW_NOTIFY":
                         notificationToPush.NotificationType = PushedNotificationType.User;
                         break;
-                   
+
                     default:
                         notificationToPush.NotificationType = PushedNotificationType.Other;
                         break;

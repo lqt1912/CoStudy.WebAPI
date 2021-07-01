@@ -35,6 +35,11 @@ namespace CoStudy.API.Infrastructure.Shared.ViewModels
         [JsonPropertyName("object_id")]
         [JsonProperty("object_id")]
         public string ObjectId { get; set; }
+
+        [JsonProperty("object_thumbnail")]
+        [JsonPropertyName("object_thumbnail")]
+        public string ObjectThumbnail { get; set; }
+
         [JsonPropertyName("created_date")]
         [JsonProperty("created_date")]
         public DateTime CreatedDate { get; set; }

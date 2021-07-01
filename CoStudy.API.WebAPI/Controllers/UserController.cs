@@ -63,6 +63,7 @@ namespace CoStudy.API.WebAPI.Controllers
             return Ok(new ApiOkResponse(data));
         }
 
+        [Authorize]
         [HttpPost("update-address")]
         public async Task<IActionResult> UpdateAddress(Address request)
         {

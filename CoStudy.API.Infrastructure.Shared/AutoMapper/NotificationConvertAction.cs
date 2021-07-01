@@ -23,6 +23,7 @@ namespace CoStudy.API.Infrastructure.Shared.AutoMapper
                 var author = userRepository.GetById(ObjectId.Parse(source.AuthorId));
                 destination.AuthorAvatar = author?.AvatarHash;
                 destination.AuthorName = $"{author?.FirstName} {author?.LastName}";
+                destination.NotificationType = (Application.FCM.PushedNotificationType)source.ObjectType;
             }
             catch (Exception e)
             {

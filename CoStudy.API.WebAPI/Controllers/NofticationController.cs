@@ -38,9 +38,9 @@ namespace CoStudy.API.WebAPI.Controllers
 
         [HttpGet]
         [Route("current")]
-        public async Task<IActionResult> GetCurrentUserNoftication()
+        public async Task<IActionResult> GetCurrentUserNoftication([FromQuery]BaseGetAllRequest request)
         {
-            IEnumerable<NotificationViewModel> data = await nofticationService.GetCurrentUserNotificationList();
+            var data =await  nofticationService.GetCurrentUserNotificationList(request);
             return Ok(new ApiOkResponse(data));
         }
 

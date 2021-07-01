@@ -162,36 +162,15 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
 
                     await followRepository.AddAsync(follow);
 
-
-                    var notificationObjectBuilders = Builders<NotificationObject>.Filter;
-
-                    var notificationObjectFilters = notificationObjectBuilders.Eq("object_id", item)
-                        & notificationObjectBuilders.Eq("notification_type", "FOLLOW_NOTIFY");
-
-                    var existNotificationObject = await notificationObjectRepository.FindAsync(notificationObjectFilters);
-
-                    string notificationObject = existNotificationObject != null ? existNotificationObject.OId : string.Empty;
-
-                    if (existNotificationObject == null)
+                    var notificationDetail = new Noftication()
                     {
-                        var newNotificationObject = new NotificationObject()
-                        {
-                            NotificationType = "FOLLOW_NOTIFY",
-                            ObjectId = currentUser.OId,
-                            OwnerId = item
-                        };
-                        await notificationObjectRepository.AddAsync(newNotificationObject);
-                        notificationObject = newNotificationObject.OId;
-                    }
-
-                    var notificationDetail = new NotificationDetail()
-                    {
-                        CreatorId = currentUser.OId,
-                        NotificationObjectId = notificationObject
+                        AuthorId = currentUser.OId,
+                        OwnerId = item,
+                        ObjectId = currentUser.OId,
+                        ObjectThumbnail = string.Empty
                     };
 
-                    await fcmRepository.PushNotifyDetail(item, notificationDetail);
-
+                    await fcmRepository.PushNotify(item, notificationDetail, NotificationContent.FollowNotification);
                 }
             }
             return FollowSuccess;

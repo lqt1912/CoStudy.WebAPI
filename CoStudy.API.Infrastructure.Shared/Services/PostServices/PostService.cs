@@ -115,36 +115,18 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
 
             var userMatchs = await GetUsersMatchPostField(post);
 
-            var notificationObjectBuilders = Builders<NotificationObject>.Filter;
-
-            var notificationObjectFilters = notificationObjectBuilders.Eq(ObjectIdCs, post.OId)
-                & notificationObjectBuilders.Eq(NotificationConstant.NotificationType, AddPostNotify);
-
-            var existNotificationObject = await notificationObjectRepository.FindAsync(notificationObjectFilters);
-
-            var notificationObject = existNotificationObject != null ? existNotificationObject.OId : string.Empty;
-
-            if (existNotificationObject == null)
-            {
-                var newNotificationObject = new NotificationObject()
-                {
-                    NotificationType = AddPostNotify,
-                    ObjectId = post.OId,
-                    OwnerId = post.AuthorId
-                };
-                await notificationObjectRepository.AddAsync(newNotificationObject);
-                notificationObject = newNotificationObject.OId;
-            }
-
-            var notificationDetail = new NotificationDetail()
-            {
-                CreatorId = currentUser.OId,
-                NotificationObjectId = notificationObject
-            };
-
             foreach (var user in userMatchs)
-                await fcmRepository.PushNotifyPostMatch(user.OId, notificationDetail);
+            {
+                var notificationDetail = new Noftication()
+                {
+                    AuthorId = currentUser.OId,
+                    OwnerId = currentUser.OId,
+                    ObjectId = post.OId,
+                    ObjectThumbnail = post.Title
+                };
 
+                await fcmRepository.PushNotify(user.OId, notificationDetail, NotificationContent.AddPostNotification);
+            }
             var response = mapper.Map<PostViewModel>(post);
             return response;
         }
@@ -247,35 +229,15 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
                     await upVoteRepository.AddAsync(upvote);
                 }
 
-                var notificationObjectBuilders = Builders<NotificationObject>.Filter;
-
-                var notificationObjectFilters = notificationObjectBuilders.Eq(ObjectIdCs, postId)
-                    & notificationObjectBuilders.Eq(NotificationConstant.NotificationType, UpvotePostNotify);
-
-                var existNotificationObject = await notificationObjectRepository.FindAsync(notificationObjectFilters);
-
-                var notificationObject = existNotificationObject != null ? existNotificationObject.OId : string.Empty;
-
-                if (existNotificationObject == null)
+                var notificationDetail = new Noftication()
                 {
-                    var newNotificationObject = new NotificationObject()
-                    {
-                        NotificationType = UpvotePostNotify,
-                        ObjectId = postId,
-                        OwnerId = currentPost.AuthorId
-                    };
-                    await notificationObjectRepository.AddAsync(newNotificationObject);
-                    notificationObject = newNotificationObject.OId;
-                }
-
-                var notificationDetail = new NotificationDetail()
-                {
-                    CreatorId = currentuser.OId,
-                    NotificationObjectId = notificationObject
+                    AuthorId = currentuser.OId,
+                    OwnerId = currentPost.AuthorId,
+                    ObjectId = currentPost.OId,
+                    ObjectThumbnail = currentPost.Title
                 };
 
-
-                await fcmRepository.PushNotifyDetail(currentPost.OId, notificationDetail);
+                await fcmRepository.PushNotify(currentPost.AuthorId, notificationDetail, NotificationContent.UpvotePostNotification);
 
                 return UpvoteSuccess;
             }
@@ -327,35 +289,16 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
 
                 await downVoteRepository.AddAsync(downvote);
 
-
-                var notificationObjectBuilders = Builders<NotificationObject>.Filter;
-
-                var notificationObjectFilters = notificationObjectBuilders.Eq(ObjectIdCs, postId)
-                    & notificationObjectBuilders.Eq(NotificationConstant.NotificationType, DownvotePostNotify);
-
-                var existNotificationObject = await notificationObjectRepository.FindAsync(notificationObjectFilters);
-
-                var notificationObject = existNotificationObject != null ? existNotificationObject.OId : string.Empty;
-
-                if (existNotificationObject == null)
+                var notificationDetail = new Noftication()
                 {
-                    var newNotificationObject = new NotificationObject()
-                    {
-                        NotificationType = DownvotePostNotify,
-                        ObjectId = postId,
-                        OwnerId = currentPost.AuthorId
-                    };
-                    await notificationObjectRepository.AddAsync(newNotificationObject);
-                    notificationObject = newNotificationObject.OId;
-                }
-
-                var notificationDetail = new NotificationDetail()
-                {
-                    CreatorId = currentuser.OId,
-                    NotificationObjectId = notificationObject
+                    AuthorId = currentuser.OId,
+                    OwnerId = currentPost.AuthorId,
+                    ObjectId = currentPost.OId,
+                    ObjectThumbnail = currentPost.Title
                 };
 
-                await fcmRepository.PushNotifyDetail(currentPost.OId, notificationDetail);
+                await fcmRepository.PushNotify(currentPost.AuthorId, notificationDetail, NotificationContent.DownvotePostNotification);
+
 
                 return DownvoteSuccess;
             }
