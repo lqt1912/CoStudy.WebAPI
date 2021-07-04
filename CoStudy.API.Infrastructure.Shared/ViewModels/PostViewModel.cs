@@ -77,6 +77,10 @@ namespace CoStudy.API.Infrastructure.Shared.ViewModels
         [JsonProperty("is_downvote_by_current")]
         [JsonPropertyName("is_downvote_by_current")]
         public bool? IsDownVoteByCurrent { get; set; }
+        
+        [JsonProperty("is_save_by_current")]
+        [JsonPropertyName("is_save_by_current")]
+        public bool? IsSaveByCurrent { get; set; }
 
     }
 }

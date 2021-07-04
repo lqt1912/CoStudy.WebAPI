@@ -73,6 +73,8 @@ namespace CoStudy.API.Infrastructure.Shared.AutoMapper
                 var objectLevels = objectLevelRepository.GetAll().Where(x => x.ObjectId == source.OId);
                 var postObjecLevel = mapper.Map<IEnumerable<ObjectLevelViewModel>>(objectLevels);
 
+                destination.IsSaveByCurrent =  currentUser.PostSaved.Any(x => x == source.OId);
+
                 destination.Field = postObjecLevel;
 
                 for (int i = 0; i < source.StringContents.Count(); i++)
