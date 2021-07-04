@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Google.Apis.Auth;
+using Microsoft.Extensions.Configuration;
 
 namespace CoStudy.API.Application.FCM
 {
@@ -35,7 +36,7 @@ namespace CoStudy.API.Application.FCM
         INotificationObjectRepository notificationObjectRepository;
 
         INotificationTypeRepository notificationTypeRepository;
-
+        IConfiguration configuration;
         public FcmRepository(IFcmInfoRepository fcmInfoRepository,
             IClientGroupRepository clientGroupRepository,
             IUserRepository userRepository,
@@ -44,7 +45,7 @@ namespace CoStudy.API.Application.FCM
             IMapper mapper,
             INotificationDetailRepository notificationDetailRepository,
             INotificationObjectRepository notificationObjectRepository,
-            INotificationTypeRepository notificationTypeRepository)
+            INotificationTypeRepository notificationTypeRepository, IConfiguration configuration)
         {
             this.fcmInfoRepository = fcmInfoRepository;
             this.clientGroupRepository = clientGroupRepository;
@@ -55,6 +56,7 @@ namespace CoStudy.API.Application.FCM
             this.notificationDetailRepository = notificationDetailRepository;
             this.notificationObjectRepository = notificationObjectRepository;
             this.notificationTypeRepository = notificationTypeRepository;
+            this.configuration = configuration;
         }
 
         public async Task<FcmInfo> AddFcmInfo(string userId, string deviceToken)
@@ -263,6 +265,62 @@ namespace CoStudy.API.Application.FCM
                 //Do nothing
             }
         }
+        public async Task PushNotify(string clientGroupName, Noftication noftication, Triple<string, string, ObjectNotificationType> notificationSetting, string customContent)
+        {
+            try
+            {
+                FilterDefinition<ClientGroup> finder = Builders<ClientGroup>.Filter.Eq("name", clientGroupName);
+                ClientGroup clientGroup = await clientGroupRepository.FindAsync(finder);
+                foreach (string receiver in clientGroup.UserIds)
+                {
+                    Noftication finalNotification = new Noftication()
+                    {
+                        AuthorId = noftication.AuthorId,
+                        OwnerId = noftication.OwnerId,
+                        ReceiverId = receiver,
+                        ObjectId = noftication.ObjectId,
+                        ObjectType = notificationSetting.Item3,
+                        ObjectThumbnail = noftication.ObjectThumbnail,
+                        Content = customContent
+                    };
+
+                    await nofticationRepository.AddAsync(finalNotification);
+                    var notiViewModel = mapper.Map<NotificationViewModel>(finalNotification);
+
+                    try
+                    {
+                        FilterDefinition<FcmInfo> user = Builders<FcmInfo>.Filter.Eq("user_id", receiver);
+                        string token = (await fcmInfoRepository.FindAsync(user)).DeviceToken;
+                        User sender = await userRepository.GetByIdAsync(ObjectId.Parse(finalNotification.AuthorId));
+                        FirebaseAdmin.Messaging.Message mes = new FirebaseAdmin.Messaging.Message()
+                        {
+                            Token = token,
+
+                            Data = new Dictionary<string, string>()
+                            {
+                                {"notification", JsonConvert.SerializeObject(notiViewModel)}
+                            },
+                            Notification = new Notification()
+                            {
+                                Title = "Quản trị viên CoStudy",
+                                Body = notiViewModel.Content,
+                                ImageUrl = configuration["AdminAvatar"]
+                            }
+                        };
+                        string response = await FirebaseMessaging.DefaultInstance.SendAsync(mes).ConfigureAwait(true);
+                    }
+                    catch (Exception)
+                    {
+                        continue;
+                    }
+                }
+            }
+            catch (Exception)
+            {
+                //Do nothing
+            }
+        }
+
 
         public async Task<string> SendNotification()
         {

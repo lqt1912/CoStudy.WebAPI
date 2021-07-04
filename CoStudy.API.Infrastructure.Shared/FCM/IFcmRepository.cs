@@ -11,6 +11,7 @@ namespace CoStudy.API.Application.FCM
 
         Task SendMessage(string clientGroupName, MessageViewModel message);
         Task PushNotify(string clientGroupName, Noftication noftication, Triple<string, string, ObjectNotificationType> notificationSetting);
+        Task PushNotify(string clientGroupName, Noftication noftication, Triple<string, string, ObjectNotificationType> notificationSetting, string customContent);
 
         Task PushNotifyDetail(string clientGroupName, NotificationDetail notificationDetail);
 

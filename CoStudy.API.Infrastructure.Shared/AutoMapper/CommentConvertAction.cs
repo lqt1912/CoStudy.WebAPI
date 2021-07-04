@@ -20,7 +20,6 @@ namespace CoStudy.API.Infrastructure.Shared.AutoMapper
         IHttpContextAccessor httpContextAccessor;
         private IPostRepository postRepository;
 
-
         public CommentConvertAction(IUserRepository userRepository,
             IReplyCommentRepository replyCommentRepository,
             ICommentRepository commentRepository,
@@ -45,14 +44,9 @@ namespace CoStudy.API.Infrastructure.Shared.AutoMapper
 
                 User author = userRepository.GetById(ObjectId.Parse(source.AuthorId));
 
-                if (author == null)
-                {
-                    throw new Exception("Không tìm thấy author. ");
-                }
-
-                destination.AuthorName = $"{author.FirstName} {author.LastName}";
-                destination.AuthorAvatar = author.AvatarHash;
-                destination.AuthorEmail = author.Email;
+                destination.AuthorName = $"{author?.FirstName} {author?.LastName}";
+                destination.AuthorAvatar = author?.AvatarHash;
+                destination.AuthorEmail = author?.Email;
                 destination.RepliesCount = replyCommentRepository.GetAll().Where(x => x.Status == ItemStatus.Active && x.ParentId == source.OId).Count();
 
                 IQueryable<UpVote> listUpVote = upVoteRepository.GetAll().Where(x => x.ObjectVoteId == source.OId && x.IsDeleted == false);

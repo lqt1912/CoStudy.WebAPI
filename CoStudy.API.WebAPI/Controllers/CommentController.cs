@@ -118,7 +118,9 @@ namespace CoStudy.API.WebAPI.Controllers
         public async Task<IActionResult> GetCommentById(string id)
         {
             var data = await commentService.GetCommentById(id);
-            return Ok(new ApiOkResponse(data));
+            if (data != null)
+                return Ok(new ApiOkResponse(data));
+            return Ok(new ApiNotFoundResponse("Bình luận không tồn tại hoặc đã bị xóa. "));
         }
 
         [HttpGet]
@@ -126,7 +128,9 @@ namespace CoStudy.API.WebAPI.Controllers
         public async Task<IActionResult> GetReplyCommentById(string id)
         {
             var data = await commentService.GetReplyCommentById(id);
-            return Ok(new ApiOkResponse(data));
+            if(data !=null)
+                 return Ok(new ApiOkResponse(data));
+            return Ok(new ApiNotFoundResponse("Phản hồi không tồn tại hoặc đã bị xóa. "));
         }
 
         [HttpPut("modified-comment-status")]
@@ -135,7 +139,7 @@ namespace CoStudy.API.WebAPI.Controllers
             var data = await commentService.ModifiedCommentStatus(request);
             return Ok(new ApiOkResponse(data));
         }
-        
+
         [HttpPut("modified-reply-status")]
         public async Task<IActionResult> ModifiedReplyCommentStatus(ModifiedCommentStatusRequest request)
         {

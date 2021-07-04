@@ -32,7 +32,7 @@ namespace CoStudy.API.Infrastructure.Shared.AutoMapper
         {
             try
             {
-                destination.PostCount = postRepository.GetAll().Count(x => x.AuthorId == source.OId);
+                destination.PostCount = postRepository.GetAll().Count(x => x.AuthorId == source.OId && x.Status == ItemStatus.Active);
                 destination.Followers = followRepository.GetAll().Count(x => x.ToId == source.OId);
                 destination.Following = followRepository.GetAll().Count(x => x.FromId == source.OId);
                 destination.FullName = $"{source.FirstName} {source.LastName}";

@@ -259,7 +259,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services
             }
             catch (Exception)
             {
-                //Do nothing
+                return null;
             }
             return result;
         }
@@ -280,7 +280,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services
             }
             catch (Exception)
             {
-                //Do nothing
+                return null;
             }
             return result;
 
@@ -550,9 +550,9 @@ namespace CoStudy.API.Infrastructure.Shared.Services
                       {
                           if (x.FieldId == z.FieldId)
                           {
-                              var userLevel = levelRepository.GetById(ObjectId.Parse(x.LevelId));
-                              var postLevel = levelRepository.GetById(ObjectId.Parse(z.LevelId));
-                              if (userLevel.Order >= postLevel.Order)
+                              //var userLevel = levelRepository.GetById(ObjectId.Parse(x.LevelId));
+                              //var postLevel = levelRepository.GetById(ObjectId.Parse(z.LevelId));
+                              //if (userLevel.Order >= postLevel.Order)
                                   result.Add(x);
                           }
                       });

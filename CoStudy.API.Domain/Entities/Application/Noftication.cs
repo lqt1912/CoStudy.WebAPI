@@ -90,6 +90,17 @@ namespace CoStudy.API.Domain.Entities.Application
        
         public static Triple<string, string, ObjectNotificationType> ApproveReplyReportNotification
           = new Triple<string, string, ObjectNotificationType>("APPROVE_REPLY_REPORT", "Phản hồi của bạn đã bị xóa vì vi phạm tiêu chuẩn của chúng tôi. ", ObjectNotificationType.Other);
+
+        public static Triple<string, string, ObjectNotificationType> PostReportNotification
+            = new Triple<string, string, ObjectNotificationType>("POST_REPORT", "Bài viết của bạn đã bị báo cáo. ", ObjectNotificationType.Post);
+
+
+        public static Triple<string, string, ObjectNotificationType> CommentReportNotification
+            = new Triple<string, string, ObjectNotificationType>("COMMENT_REPORT", "Bình luận của bạn đã bị báo cáo. ", ObjectNotificationType.Comment);
+
+
+        public static Triple<string, string, ObjectNotificationType> ReplyReportNotification
+            = new Triple<string, string, ObjectNotificationType>("REPLY_REPORT", "Bài viết của bạn đã bị báo cáo. ", ObjectNotificationType.Reply);
     }
 
     public enum ObjectNotificationType

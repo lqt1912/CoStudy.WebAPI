@@ -8,6 +8,8 @@ using CoStudy.API.Application.Utitlities;
 using CoStudy.API.Domain.Entities.Application;
 using CoStudy.API.Infrastructure.Shared.Adapters;
 using CoStudy.API.Infrastructure.Shared.Models.Request;
+using CoStudy.API.Infrastructure.Shared.Models.Request.PostRequest;
+using CoStudy.API.Infrastructure.Shared.Models.Response.PostResponse;
 using CoStudy.API.Infrastructure.Shared.Services.MessageServices;
 using CoStudy.API.Infrastructure.Shared.ViewModels;
 using Microsoft.AspNetCore.Http;
@@ -18,11 +20,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using CoStudy.API.Infrastructure.Shared.Models.Request.PostRequest;
-using CoStudy.API.Infrastructure.Shared.Models.Request.UserRequest;
-using CoStudy.API.Infrastructure.Shared.Models.Response.PostResponse;
 using static Common.Constant.FollowConstant;
-using static Common.Constant.NotificationConstant;
 using static Common.Constant.PostConstant;
 using static Common.Constant.VoteConstant;
 using static Common.Constants;
@@ -95,7 +93,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
                 if (StringUtils.ValidateAllowString(configuration, post.Title) == false)
                     throw new Exception(UnAllowTitle);
             }
-            catch(Exception)
+            catch (Exception)
             {
                 //do nothing
             }
@@ -298,8 +296,6 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
                 };
 
                 await fcmRepository.PushNotify(currentPost.AuthorId, notificationDetail, NotificationContent.DownvotePostNotification);
-
-
                 return DownvoteSuccess;
             }
             catch (Exception)
@@ -312,7 +308,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
         {
             var currentPost = await postRepository.GetByIdAsync(ObjectId.Parse(request.PostId));
 
-            if (currentPost != null && currentPost.Status== ItemStatus.Active)
+            if (currentPost != null && currentPost.Status == ItemStatus.Active)
             {
                 currentPost.StringContents = request.StringContents;
                 currentPost.MediaContents = request.MediaContents;
@@ -369,7 +365,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
             foreach (var postId in currentUser.PostSaved)
             {
                 var post = await postRepository.GetByIdAsync(ObjectId.Parse(postId));
-                if (post != null)
+                if (post != null && post.Status == ItemStatus.Active)
                 {
                     result.Add(post);
                 }
@@ -475,7 +471,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
             {
                 return mapper.Map<PostViewModel>(post);
             }
-            throw new Exception("Không tìm thấy post");
+            return null;
         }
 
         public async Task<IEnumerable<PostViewModel>> GetNewsFeed(NewsFeedRequest request)
@@ -571,13 +567,13 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
             //dataSource = dataSource.Where(x => _postIds.Contains(x.OId)).Distinct().ToList();
             dataSource.AddRange(_posts);
             dataSource = dataSource.GroupBy(x => x.OId).Select(grp => grp.FirstOrDefault()).ToList();
-
+            dataSource = dataSource.Where(x => x.Status == ItemStatus.Active).ToList();
             if (request.Skip.HasValue && request.Count.HasValue)
             {
                 dataSource = dataSource.Skip(request.Skip.Value).Take(request.Count.Value).ToList();
             }
 
-            return mapper.Map<List<PostViewModel>>(dataSource.Where(x=>x.Status ==ItemStatus.Active));
+            return mapper.Map<List<PostViewModel>>(dataSource);
         }
 
         public async Task<IEnumerable<MessageViewModel>> SharePost(SharePostRequest request)

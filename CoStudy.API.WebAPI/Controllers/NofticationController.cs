@@ -59,5 +59,13 @@ namespace CoStudy.API.WebAPI.Controllers
             string data = await nofticationService.MarkNotificaionsAsRead(id);
             return Ok(new ApiOkResponse(data));
         }
+
+        [HttpDelete]
+        [Route("delete-all")]
+        public async Task<IActionResult> DeleteAll()
+        {
+            var data = await nofticationService.DeleteNotification();
+            return Ok(new ApiOkResponse(data));
+        }
     }
 }

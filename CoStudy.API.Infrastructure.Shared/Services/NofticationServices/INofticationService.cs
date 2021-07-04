@@ -13,5 +13,6 @@ namespace CoStudy.API.Infrastructure.Shared.Services.NofticationServices
         Task<IEnumerable<NotificationViewModel>> GetCurrentUserNotificationList(BaseGetAllRequest request);
         Task<string> DeleteCurrentNotification(string notificationObjectId);
         Task<string> MarkNotificaionsAsRead(string notificationObjectId);
+        Task<string> DeleteNotification();
     }
 }

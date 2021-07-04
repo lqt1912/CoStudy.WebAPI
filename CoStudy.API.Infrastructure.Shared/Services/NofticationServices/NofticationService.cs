@@ -122,5 +122,19 @@ namespace CoStudy.API.Infrastructure.Shared.Services.NofticationServices
             }
             return NotificationSeen;
         }
+
+        public async Task<string> DeleteNotification()
+        {
+            var currentUser = Feature.CurrentUser(contextAccessor, userRepository);
+            var builder = Builders<Noftication>.Filter;
+            var filter = builder.Eq("receiver_id", currentUser.OId);
+            var notifications = await nofticationRepository.FindListAsync(filter);
+            notifications.ForEach(async x =>
+            {
+                x.Status = ItemStatus.Deleted;
+                await nofticationRepository.UpdateAsync(x, x.Id);
+            });
+            return "Xóa tất cả thông báo thành công. ";
+        }
     }
 }
