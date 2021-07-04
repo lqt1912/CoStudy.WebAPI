@@ -66,8 +66,8 @@ namespace CoStudy.API.Infrastructure.Shared.Models.Request
         [JsonPropertyName("field_id")]
         public string FieldId { get; set; }
 
-        [JsonProperty("level_id")]
-        [JsonPropertyName("level_id")]
-        public string LevelId { get; set; }
+        //[JsonProperty("level_id")]
+        //[JsonPropertyName("level_id")]
+        //public string LevelId { get; set; }
     }
 }

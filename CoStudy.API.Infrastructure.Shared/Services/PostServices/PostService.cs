@@ -460,7 +460,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
                 }
                 return result;
             }
-            return mapper.Map<List<PostViewModel>>(posts.ToList());
+            return mapper.Map<List<PostViewModel>>(posts.ToList().Skip(filterRequest.Skip.Value).Take(filterRequest.Count.Value));
 
         }
 
@@ -641,7 +641,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
         {
             try
             {
-                if (string.IsNullOrEmpty(levelFilterItem.FieldId) || string.IsNullOrEmpty(levelFilterItem.LevelId))
+                if (string.IsNullOrEmpty(levelFilterItem.FieldId))
                 {
                     return true;
                 }
@@ -650,7 +650,6 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
 
                 foreach (var item in objlvls)
                 {
-                    var lvlFilter = levelRepository.GetAll().FirstOrDefault(x => x.OId == levelFilterItem.LevelId);
                     var lvlPost = levelRepository.GetAll().FirstOrDefault(x => x.OId == item.LevelId);
 
                     if (item.FieldId == levelFilterItem.FieldId /*&& lvlFilter.Order <= lvlPost.Order*/)
