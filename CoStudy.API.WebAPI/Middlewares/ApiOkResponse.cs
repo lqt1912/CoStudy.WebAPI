@@ -8,5 +8,10 @@
         {
             Result = result;
         }
+
+        public ApiOkResponse(object result,string message) :base(true, 200,message)
+        {
+            Result = result;
+        }
     }
 }

@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using CoStudy.API.Domain.Entities.Identity.MongoAuthen;
 using CoStudy.API.Infrastructure.Shared.Models.Request.PostRequest;
+using System.Linq;
 
 namespace CoStudy.API.WebAPI.Controllers
 {
@@ -112,7 +113,7 @@ namespace CoStudy.API.WebAPI.Controllers
         public async Task<IActionResult> FilterPost(FilterRequest request)
         {
             var data = await postService.Filter(request);
-            return Ok(new ApiOkResponse(data));
+            return Ok(new ApiOkResponse(data, $"Record Count: {data.ToList().Count().ToString()}"));
         }
 
 

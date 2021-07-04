@@ -653,7 +653,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
                     var lvlFilter = levelRepository.GetAll().FirstOrDefault(x => x.OId == levelFilterItem.LevelId);
                     var lvlPost = levelRepository.GetAll().FirstOrDefault(x => x.OId == item.LevelId);
 
-                    if (item.FieldId == levelFilterItem.FieldId && lvlFilter.Order <= lvlPost.Order)
+                    if (item.FieldId == levelFilterItem.FieldId /*&& lvlFilter.Order <= lvlPost.Order*/)
                     {
                         return true;
                     }
