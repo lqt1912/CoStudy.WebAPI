@@ -46,8 +46,8 @@ namespace CoStudy.API.WebAPI
             services.Configure<AppSettings>(Configuration.GetSection("AppSettings"));
             services.Configure<MailSettings>(Configuration.GetSection("MailSettings"));
 
-            //services.AddDbContext<ApplicationDbContext>(opt =>
-            //opt.UseNpgsql(Configuration.GetValue<string>("Settings:PostgresConnection")));
+            services.AddDbContext<ApplicationDbContext>(opt =>
+            opt.UseNpgsql(Configuration.GetValue<string>("Settings:PostgresConnection")));
             //Config identity
             services.ConfigureIdentity();
 
@@ -69,17 +69,17 @@ namespace CoStudy.API.WebAPI
 
             services.AddSingleton<IWorker, Worker>();
 
-            //services.AddControllersWithViews(options =>
-            //{
-            //    options.AddAuditFilter(config => config
-            //        .LogAllActions()
-            //        .WithEventType("{verb}.{controller}.{action}")
-            //        .IncludeHeaders(ctx => !ctx.ModelState.IsValid)
-            //        .IncludeRequestBody(d => (!d.ActionArguments.ContainsKey("Files") && !d.ActionArguments.ContainsKey("File")))
-            //        .IncludeModelState()
-            //        .IncludeResponseBody(ctx => ctx.HttpContext.Response.StatusCode == 200));
-            //    options.Filters.Add(new AuditIgnoreActionFilter());
-            //});
+            services.AddControllersWithViews(options =>
+            {
+                options.AddAuditFilter(config => config
+                    .LogAllActions()
+                    .WithEventType("{verb}.{controller}.{action}")
+                    .IncludeHeaders(ctx => !ctx.ModelState.IsValid)
+                    .IncludeRequestBody(d => (!d.ActionArguments.ContainsKey("Files") && !d.ActionArguments.ContainsKey("File")))
+                    .IncludeModelState()
+                    .IncludeResponseBody(ctx => ctx.HttpContext.Response.StatusCode == 200));
+                options.Filters.Add(new AuditIgnoreActionFilter());
+            });
             services.AddAutoMapper(typeof(MappingProfile).Assembly);
 
             services.AddCors();
@@ -90,15 +90,15 @@ namespace CoStudy.API.WebAPI
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
 
-            //var sqlConnectionString = Configuration.GetValue<string>("Settings:PostgresConnection");
-            //Audit.Core.Configuration.Setup()
-            //    .UsePostgreSql(config => config
-            //    .ConnectionString(sqlConnectionString)
-            //    .TableName("audit_log")
-            //    .IdColumnName("id")
-            //    .DataColumn("data", DataType.JSONB)
-            //    .LastUpdatedColumnName("inserted_date"))
-            //    .WithCreationPolicy(EventCreationPolicy.InsertOnStartReplaceOnEnd);
+            var sqlConnectionString = Configuration.GetValue<string>("Settings:PostgresConnection");
+            Audit.Core.Configuration.Setup()
+                .UsePostgreSql(config => config
+                .ConnectionString(sqlConnectionString)
+                .TableName("audit_log")
+                .IdColumnName("id")
+                .DataColumn("data", DataType.JSONB)
+                .LastUpdatedColumnName("inserted_date"))
+                .WithCreationPolicy(EventCreationPolicy.InsertOnStartReplaceOnEnd);
 
             app.UseCors(x => x
                 .AllowAnyMethod()

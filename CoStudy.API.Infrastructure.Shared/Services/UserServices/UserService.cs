@@ -19,80 +19,34 @@ using System.Linq;
 using System.Threading.Tasks;
 using static Common.Constant.FollowConstant;
 using static Common.Constant.UserConstant;
+using static Common.Constants;
 
 namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
 {
-    /// <summary>
-    /// The User Service.
-    /// </summary>
-    /// <seealso cref="CoStudy.API.Infrastructure.Shared.Services.UserServices.IUserService" />
-    /// <seealso cref="IUserService" />
     public class UserService : IUserService
     {
-        /// <summary>
-        /// The user repository
-        /// </summary>
         IUserRepository userRepository;
-        /// <summary>
-        /// The account repository
-        /// </summary>
         IAccountRepository accountRepository;
-        /// <summary>
-        /// The HTTP context accessor
-        /// </summary>
         IHttpContextAccessor _httpContextAccessor;
-        /// <summary>
-        /// The configuration
-        /// </summary>
         IConfiguration _configuration;
-        /// <summary>
-        /// The post repository
-        /// </summary>
         IPostRepository postRepository;
-        /// <summary>
-        /// The client group repository
-        /// </summary>
         IClientGroupRepository clientGroupRepository;
-        /// <summary>
-        /// The field repository
-        /// </summary>
         IFieldRepository fieldRepository;
-        /// <summary>
-        /// The follow repository
-        /// </summary>
         IFollowRepository followRepository;
 
-        /// <summary>
-        /// The object level repository
-        /// </summary>
         IObjectLevelRepository objectLevelRepository;
 
-        /// <summary>
-        /// The mapper
-        /// </summary>
         IMapper mapper;
         private INotificationObjectRepository notificationObjectRepository;
         private IFcmRepository fcmRepository;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="UserService" /> class.
-        /// </summary>
-        /// <param name="userRepository">The user repository.</param>
-        /// <param name="httpContextAccessor">The HTTP context accessor.</param>
-        /// <param name="configuration">The configuration.</param>
-        /// <param name="accountRepository">The account repository.</param>
-        /// <param name="postRepository">The post repository.</param>
-        /// <param name="clientGroupRepository">The client group repository.</param>
-        /// <param name="fieldRepository">The field repository.</param>
-        /// <param name="followRepository">The follow repository.</param>
-        /// <param name="mapper">The mapper.</param>
+        ILevelRepository levelRepository;
         public UserService(IUserRepository userRepository,
             IHttpContextAccessor httpContextAccessor,
             IConfiguration configuration,
             IAccountRepository accountRepository,
             IPostRepository postRepository,
             IClientGroupRepository clientGroupRepository,
-            IFieldRepository fieldRepository, IFollowRepository followRepository, IMapper mapper, IObjectLevelRepository objectLevelRepository, INotificationObjectRepository notificationObjectRepository, IFcmRepository fcmRepository)
+            IFieldRepository fieldRepository, IFollowRepository followRepository, IMapper mapper, IObjectLevelRepository objectLevelRepository, INotificationObjectRepository notificationObjectRepository, IFcmRepository fcmRepository, ILevelRepository levelRepository)
         {
             this.userRepository = userRepository;
             _httpContextAccessor = httpContextAccessor;
@@ -106,14 +60,10 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
             this.objectLevelRepository = objectLevelRepository;
             this.notificationObjectRepository = notificationObjectRepository;
             this.fcmRepository = fcmRepository;
+            this.levelRepository = levelRepository;
         }
 
 
-        /// <summary>
-        /// Adds the avatar asynchronous.
-        /// </summary>
-        /// <param name="request">The request.</param>
-        /// <returns></returns>
         public async Task<UserViewModel> AddAvatarAsync(AddAvatarRequest request)
         {
             var avatar = UserAdapter.FromRequest(request, _httpContextAccessor);
@@ -131,11 +81,6 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
         }
 
 
-        /// <summary>
-        /// Adds the followings asynchronous.
-        /// </summary>
-        /// <param name="request">The request.</param>
-        /// <returns></returns>
         public async Task<string> AddFollowingsAsync(AddFollowerRequest request)
         {
             var currentUser = Feature.CurrentUser(_httpContextAccessor, userRepository);
@@ -176,11 +121,6 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
             return FollowSuccess;
         }
 
-        /// <summary>
-        /// Adds the user asynchronous.
-        /// </summary>
-        /// <param name="entity">The entity.</param>
-        /// <returns></returns>
         public async Task<UserViewModel> AddUserAsync(AddUserRequest entity)
         {
             var phoneFilter = Builders<User>.Filter.Eq("phone_number", entity.PhoneNumber);
@@ -193,12 +133,6 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
         }
 
 
-        /// <summary>
-        /// Gets the user by identifier.
-        /// </summary>
-        /// <param name="id">The identifier.</param>
-        /// <returns></returns>
-        /// <exception cref="Exception">Không tìm thấy user</exception>
         public async Task<UserViewModel> GetUserById(string id)
 
         {
@@ -211,13 +145,6 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
             return mapper.Map<UserViewModel>(user);
         }
 
-        /// <summary>
-        /// Gets the current user.
-        /// </summary>
-        /// <returns></returns>
-        /// <exception cref="Exception">Không tìm thấy user
-        /// or
-        /// Không tìm thấy user</exception>
         public UserViewModel GetCurrentUser()
         {
             try
@@ -237,12 +164,6 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
             }
         }
 
-        /// <summary>
-        /// Removes the following.
-        /// </summary>
-        /// <param name="toFollowerId">To follower identifier.</param>
-        /// <returns></returns>
-        /// <exception cref="Exception">Người dùng không tồn tại. Đã có lổi xảy ra</exception>
         public async Task<string> RemoveFollowing(string toFollowerId)
         {
             try
@@ -259,11 +180,6 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
             }
         }
 
-        /// <summary>
-        /// Updates the user asynchronous.
-        /// </summary>
-        /// <param name="request">The request.</param>
-        /// <returns></returns>
         public async Task<UserViewModel> UpdateUserAsync(UpdateUserRequest request)
         {
             var currentUser = Feature.CurrentUser(_httpContextAccessor, userRepository);
@@ -277,11 +193,6 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
             return mapper.Map<UserViewModel>(currentUser);
         }
 
-        /// <summary>
-        /// Updates the avatar asynchronous.
-        /// </summary>
-        /// <param name="request">The request.</param>
-        /// <returns></returns>
         public async Task<UserViewModel> UpdateAvatarAsync(AddAvatarRequest request)
         {
             var avatar = UserAdapter.FromRequest(request, _httpContextAccessor);
@@ -308,11 +219,6 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
             return mapper.Map<UserViewModel>(currentUser);
         }
 
-        /// <summary>
-        /// Adds the field.
-        /// </summary>
-        /// <param name="fieldValue">The field value.</param>
-        /// <returns></returns>
         public async Task<Field> AddField(string fieldValue)
         {
             var field = new Field()
@@ -324,20 +230,11 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
             return field;
         }
 
-        /// <summary>
-        /// Gets all.
-        /// </summary>
-        /// <returns></returns>
         public List<Field> GetAll()
         {
             return fieldRepository.GetAll().ToList();
         }
 
-        /// <summary>
-        /// Gets the follower.
-        /// </summary>
-        /// <param name="request">The request.</param>
-        /// <returns></returns>
         public async Task<IEnumerable<FollowViewModel>> GetFollower(FollowFilterRequest request)
         {
             var findFilter = Builders<Follow>.Filter.Eq(ToId, request.UserId);
@@ -372,11 +269,6 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
             return queryable.ToList();
         }
 
-        /// <summary>
-        /// Gets the following.
-        /// </summary>
-        /// <param name="request">The request.</param>
-        /// <returns></returns>
         public async Task<IEnumerable<FollowViewModel>> GetFollowing(FollowFilterRequest request)
         {
             var findFilter = Builders<Follow>.Filter.Eq(FromId, request.UserId);
@@ -410,11 +302,6 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
             return queryable.ToList();
         }
 
-        /// <summary>
-        /// Filters the user.
-        /// </summary>
-        /// <param name="request">The request.</param>
-        /// <returns></returns>
         public async Task<IEnumerable<UserViewModel>> FilterUser(FilterUserRequest request)
         {
             var builder = Builders<User>.Filter;
@@ -477,11 +364,6 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
         }
 
 
-        /// <summary>
-        /// Adds the or update information.
-        /// </summary>
-        /// <param name="request">The request.</param>
-        /// <returns></returns>
         public async Task<UserViewModel> AddOrUpdateInfo(List<AdditionalInfomation> request)
         {
             var currentuser = Feature.CurrentUser(_httpContextAccessor, userRepository);
@@ -598,6 +480,105 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
             await userRepository.UpdateAsync(user, user.Id);
             return mapper.Map<UserViewModel>(user);
         }
+
+        public async Task UpdateUserPoint(string userId, string fieldId, int point)
+        {
+            var builder = Builders<ObjectLevel>.Filter;
+            var filter = builder.Eq("object_id", userId)
+                & builder.Eq("field_id", fieldId)
+                & builder.Eq("is_active", true);
+            var objectLevel = await objectLevelRepository.FindAsync(filter);
+
+            if (objectLevel != null)
+            {
+                objectLevel.Point += point;
+                if (objectLevel.Point < LevelPoint.Level1)
+                {
+                    objectLevel.LevelId = levelRepository.GetAll().FirstOrDefault(x => x.Order == 0)?.OId;
+                }
+                else if (objectLevel.Point < LevelPoint.Level2)
+                {
+                    objectLevel.LevelId = levelRepository.GetAll().FirstOrDefault(x => x.Order == 1)?.OId;
+                }
+                else if (objectLevel.Point < LevelPoint.Level3)
+                {
+                    objectLevel.LevelId = levelRepository.GetAll().FirstOrDefault(x => x.Order == 2)?.OId;
+                }
+                else if (objectLevel.Point < LevelPoint.Level4)
+                {
+                    objectLevel.LevelId = levelRepository.GetAll().FirstOrDefault(x => x.Order == 3)?.OId;
+                }
+                else
+                {
+                    objectLevel.LevelId = levelRepository.GetAll().FirstOrDefault(x => x.Order == 4)?.OId;
+                }
+
+                await objectLevelRepository.UpdateAsync(objectLevel, objectLevel.Id);
+            }
+        }
+
+        public async Task AddPoint(string userId, string postId)
+        {
+            var user = await userRepository.GetByIdAsync(ObjectId.Parse(userId));
+
+            var post = await postRepository.GetByIdAsync(ObjectId.Parse(postId));
+            if (post == null || post.Status != ItemStatus.Active)
+                return;
+
+            var builderUser = Builders<ObjectLevel>.Filter;
+            var filterUser = builderUser.Eq("object_id", userId)
+                                & builderUser.Eq("is_active", true);
+            var userObjectLevels = await objectLevelRepository.FindListAsync(filterUser);
+
+            var builderPost = Builders<ObjectLevel>.Filter;
+            var filterPost = builderPost.Eq("object_id", postId)
+                            & builderPost.Eq("is_active", true);
+            var postObjectLevels = await objectLevelRepository.FindListAsync(filterPost);
+            if (postObjectLevels.Count <= 0)
+            {
+                userObjectLevels.ForEach(async x =>
+                {
+                    await UpdateUserPoint(userId, x.FieldId, 1);
+                });
+            }
+
+            userObjectLevels.ForEach(x =>
+            {
+                postObjectLevels.ForEach(async y =>
+                {
+                    if (y.FieldId == x.FieldId)
+                    {
+                        var level = await levelRepository.GetByIdAsync(ObjectId.Parse(y.LevelId));
+                        if (level != null)
+                        {
+                            switch (level.Order)
+                            {
+                                case 0:
+                                    await UpdateUserPoint(userId, x.FieldId, PointAdded.Level1);
+                                    break;
+                                case 1:
+                                    await UpdateUserPoint(userId, x.FieldId, PointAdded.Level2);
+                                    break;
+                                case 2:
+                                    await UpdateUserPoint(userId, x.FieldId, PointAdded.Level3);
+                                    break;
+                                case 3:
+                                    await UpdateUserPoint(userId, x.FieldId, PointAdded.Level4);
+                                    break;
+                                case 4:
+                                case 5:
+                                    await UpdateUserPoint(userId, x.FieldId, PointAdded.Level5);
+                                    break;
+                                default:
+                                    await UpdateUserPoint(userId, x.FieldId, PointAdded.Default);
+                                    break;
+                            }
+                        }
+                    }
+                });
+            });
+        }
+
     }
 }
 

@@ -9,5 +9,6 @@ namespace CoStudy.API.Infrastructure.Shared.Models.Request
 
         [JsonPropertyName("count")]
         public int? Count { get; set; }
+
     }
 }

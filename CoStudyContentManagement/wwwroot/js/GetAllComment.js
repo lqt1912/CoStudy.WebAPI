@@ -142,7 +142,7 @@ $(document).ready(
 
         $('#commentTable tbody').on('click', '#btn_detail', function () {
             var data = table.row($(this).parents('tr')).data();
-            goToPostDetail(data.oid);
+            goToCommentDetail(data.oid);
         });
 
         $('#commentTable tbody').on('click', '#btn_delete', function () {

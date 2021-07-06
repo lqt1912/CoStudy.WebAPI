@@ -24,8 +24,9 @@ namespace CoStudy.API.Infrastructure.Shared.AutoMapper
             try
             {
                 var author = userRepository.GetById(ObjectId.Parse(source.AuthorId));
-                if (source.Content.Contains("báo cáo"))
+                if (source.Content.Contains("báo cáo") || source.Content.Contains("quản trị viên"))
                     destination.AuthorAvatar = configuration["AdminAvatar"];
+
                 else destination.AuthorAvatar = author?.AvatarHash;
 
                 destination.AuthorName = $"{author?.FirstName} {author?.LastName}";

@@ -113,7 +113,7 @@ namespace CoStudy.API.WebAPI.Controllers
         public async Task<IActionResult> FilterPost(FilterRequest request)
         {
             var data = await postService.Filter(request);
-            return Ok(new ApiOkResponse(data, $"Record Count: {data.ToList().Count().ToString()}"));
+            return Ok(new ApiOkResponse(data));
         }
 
 

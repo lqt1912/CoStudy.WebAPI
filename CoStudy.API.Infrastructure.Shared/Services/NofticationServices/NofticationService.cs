@@ -66,11 +66,11 @@ namespace CoStudy.API.Infrastructure.Shared.Services.NofticationServices
             var currentUser = Feature.CurrentUser(contextAccessor, userRepository);
             var builder = Builders<Noftication>.Filter;
             var filter = builder.Eq("receiver_id", currentUser.OId)
-                & builder.Ne("author_id", currentUser.OId)
+                & (builder.Ne("author_id", currentUser.OId) | builder.Regex("content", "quản trị viên"))
                 & builder.Eq("status", ItemStatus.Active);
 
             var notifications = (await nofticationRepository.FindListAsync(filter)).AsEnumerable();
-            notifications = notifications.Where(x => x.ReceiverId == currentUser.OId && x.AuthorId != currentUser.OId);
+           // notifications = notifications.Where(x => x.ReceiverId == currentUser.OId && x.AuthorId != currentUser.OId);
             if (request.Skip.HasValue && request.Count.HasValue)
                 notifications = notifications.Skip(request.Skip.Value).Take(request.Count.Value);
 

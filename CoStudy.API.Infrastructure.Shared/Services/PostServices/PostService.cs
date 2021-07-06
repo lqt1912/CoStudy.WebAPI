@@ -5,6 +5,7 @@ using CoStudy.API.Application.FCM;
 using CoStudy.API.Application.Features;
 using CoStudy.API.Application.Repositories;
 using CoStudy.API.Application.Utitlities;
+using CoStudy.API.Domain.Base;
 using CoStudy.API.Domain.Entities.Application;
 using CoStudy.API.Infrastructure.Shared.Adapters;
 using CoStudy.API.Infrastructure.Shared.Models.Request;
@@ -45,7 +46,8 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
         private readonly ILevelRepository levelRepository;
         private readonly IMessageService messageService;
         private readonly IConversationService conversationService;
-
+        private readonly ICommentRepository commentRepository;
+        private readonly IReplyCommentRepository replyCommentRepository;
         public PostService(IHttpContextAccessor httpContextAccessor,
                             IConfiguration configuration,
                             IUserRepository userRepository,
@@ -59,7 +61,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
                             ILevelService levelService,
                             IFieldGroupRepository fieldGroupRepository,
                             ILevelRepository levelRepository,
-                            IMessageService messageService, IConversationService conversationService)
+                            IMessageService messageService, IConversationService conversationService, ICommentRepository commentRepository, IReplyCommentRepository replyCommentRepository)
         {
             this.httpContextAccessor = httpContextAccessor;
             this.configuration = configuration;
@@ -77,6 +79,8 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
             this.levelRepository = levelRepository;
             this.messageService = messageService;
             this.conversationService = conversationService;
+            this.commentRepository = commentRepository;
+            this.replyCommentRepository = replyCommentRepository;
         }
 
         public async Task<PostViewModel> AddPost(AddPostRequest request)
@@ -139,7 +143,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
 
                 var author = await userRepository.GetByIdAsync(ObjectId.Parse(request.UserId));
 
-                var data = await postRepository.FindListAsync(match);
+                var data = (await postRepository.FindListAsync(match)).OrderByDescending(x=>x.CreatedDate).ToList();
                 if (request.Skip.HasValue && request.Count.HasValue)
                 {
                     data = data.Skip(request.Skip.Value).Take(request.Count.Value).ToList();
@@ -379,7 +383,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
             return mapper.Map<List<PostViewModel>>(result);
         }
 
-        public async Task<IEnumerable<PostViewModel>> Filter(FilterRequest filterRequest)
+        public async Task<PostFilterResponse> Filter(FilterRequest filterRequest)
         {
             var posts = postRepository.GetAll();
 
@@ -448,6 +452,9 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
                 }
             }
 
+            var response = new PostFilterResponse();
+
+
             if (filterRequest.LevelFilter != null && filterRequest.LevelFilter.FilterItems.Any())
             {
                 var result = new List<PostViewModel>();
@@ -458,10 +465,24 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
                         result.Add(post);
                     }
                 }
-                return result;
-            }
-            return mapper.Map<List<PostViewModel>>(posts.ToList().Skip(filterRequest.Skip.Value).Take(filterRequest.Count.Value));
 
+                return new PostFilterResponse
+                {
+                    Data = result.Skip(filterRequest.Skip.Value).Take(filterRequest.Count.Value),
+                    RecordFiltered = result.Count,
+                    RecordRemain = (result.Count - filterRequest.Skip.Value - filterRequest.Count.Value) >= 0
+                                ? (result.Count - filterRequest.Skip.Value - filterRequest.Count.Value) : 0
+                };
+            }
+            var rp = mapper.Map<List<PostViewModel>>(posts.ToList());
+
+            return new PostFilterResponse
+            {
+                Data = rp.Skip(filterRequest.Skip.Value).Take(filterRequest.Count.Value),
+                RecordFiltered = rp.Count,
+                RecordRemain = (rp.Count - filterRequest.Skip.Value - filterRequest.Count.Value) >= 0
+                                ? (rp.Count - filterRequest.Skip.Value - filterRequest.Count.Value) : 0
+            };
         }
 
         public async Task<PostViewModel> GetPostById1(string id)
@@ -634,7 +655,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
             var userObjectLevelFilter = userObjectLevelBuilder.Eq(ObjectIdCs, user.OId)
                 & userObjectLevelBuilder.Eq(IsActive, true);
             var userObjectLevels = await objectLevelRepository.FindListAsync(userObjectLevelFilter);
-            return userObjectLevels.Select(userObjectLevel => objectLevels.FirstOrDefault(x => x.FieldId == userObjectLevel.FieldId && x.LevelId == userObjectLevel.LevelId)).Any(_ => _ != null);
+            return userObjectLevels.Select(userObjectLevel => objectLevels.FirstOrDefault(x => x.FieldId == userObjectLevel.FieldId)).Any(_ => _ != null);
         }
 
         private bool IsMatch(PostViewModel post, LevelFilterItem levelFilterItem)
@@ -691,6 +712,25 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
                 throw new Exception("Không tìm thấy bài viết. ");
             post.Status = request.Status;
             await postRepository.UpdateAsync(post, post.Id);
+
+            //Modified comment 
+            var commentBuilder = Builders<Comment>.Filter;
+            var commentFilter = commentBuilder.Eq("post_id", post.OId);
+            var comments = await commentRepository.FindListAsync(commentFilter);
+            comments.ForEach(async x =>
+            {
+                x.Status = request.Status;
+                await commentRepository.UpdateAsync(x, x.Id);
+                var replyFilter = Builders<ReplyComment>.Filter.Eq("parent_id", x.OId);
+
+                var replies = await replyCommentRepository.FindListAsync(replyFilter);
+                replies.ForEach(async y =>
+                {
+                    y.Status = request.Status;
+                    await replyCommentRepository.UpdateAsync(y, y.Id);
+                });
+            });
+
             return mapper.Map<PostViewModel>(post);
         }
     }

@@ -140,5 +140,16 @@ namespace Common
            
 
         }
+
+
+        public static class PointAdded
+        {
+            public static int Default = 2;
+            public static int Level1 = 1;
+            public static int Level2 = 3;
+            public static int Level3 = 5;
+            public static int Level4 = 8;
+            public static int Level5 = 15;
+        }
     }
 }
