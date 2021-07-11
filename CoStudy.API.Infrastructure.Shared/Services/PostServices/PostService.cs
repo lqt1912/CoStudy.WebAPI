@@ -426,7 +426,9 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
                     & builders.Lt(CreatedDate, filterRequest.ToDate);
             }
 
-            filterParam = filterParam & builders.Eq("post_type", filterRequest.PostType);
+            if(filterRequest.PostType !=PostType.All)
+                filterParam = filterParam & builders.Eq("post_type", filterRequest.PostType);
+
             posts = (await postRepository.FindListAsync(filterParam)).AsQueryable();
 
             var vm = mapper.Map<IEnumerable<PostViewModel>>(posts);

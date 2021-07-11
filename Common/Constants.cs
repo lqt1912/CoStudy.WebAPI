@@ -160,7 +160,8 @@ namespace Common
         public enum PostType
         {
            Question, 
-           Sharing
+           Sharing,
+           All
         }
     }
 }
