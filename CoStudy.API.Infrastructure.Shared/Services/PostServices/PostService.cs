@@ -8,6 +8,8 @@ using CoStudy.API.Application.Utitlities;
 using CoStudy.API.Domain.Entities.Application;
 using CoStudy.API.Infrastructure.Shared.Adapters;
 using CoStudy.API.Infrastructure.Shared.Models.Request;
+using CoStudy.API.Infrastructure.Shared.Models.Request.PostRequest;
+using CoStudy.API.Infrastructure.Shared.Models.Response.PostResponse;
 using CoStudy.API.Infrastructure.Shared.Services.MessageServices;
 using CoStudy.API.Infrastructure.Shared.ViewModels;
 using Microsoft.AspNetCore.Http;
@@ -18,9 +20,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using CoStudy.API.Infrastructure.Shared.Models.Request.PostRequest;
-using CoStudy.API.Infrastructure.Shared.Models.Request.UserRequest;
-using CoStudy.API.Infrastructure.Shared.Models.Response.PostResponse;
 using static Common.Constant.FollowConstant;
 using static Common.Constant.NotificationConstant;
 using static Common.Constant.PostConstant;
@@ -95,7 +94,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
                 if (StringUtils.ValidateAllowString(configuration, post.Title) == false)
                     throw new Exception(UnAllowTitle);
             }
-            catch(Exception)
+            catch (Exception)
             {
                 //do nothing
             }
@@ -369,7 +368,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
         {
             var currentPost = await postRepository.GetByIdAsync(ObjectId.Parse(request.PostId));
 
-            if (currentPost != null && currentPost.Status== ItemStatus.Active)
+            if (currentPost != null && currentPost.Status == ItemStatus.Active)
             {
                 currentPost.StringContents = request.StringContents;
                 currentPost.MediaContents = request.MediaContents;
@@ -634,7 +633,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
                 dataSource = dataSource.Skip(request.Skip.Value).Take(request.Count.Value).ToList();
             }
 
-            return mapper.Map<List<PostViewModel>>(dataSource.Where(x=>x.Status ==ItemStatus.Active));
+            return mapper.Map<List<PostViewModel>>(dataSource.Where(x => x.Status == ItemStatus.Active));
         }
 
         public async Task<IEnumerable<MessageViewModel>> SharePost(SharePostRequest request)
