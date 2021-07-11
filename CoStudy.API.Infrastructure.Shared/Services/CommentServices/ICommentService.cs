@@ -23,5 +23,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services
         Task<ReplyCommentViewModel> GetReplyCommentById(string replyId);
         Task<CommentViewModel> ModifiedCommentStatus(ModifiedCommentStatusRequest request);
         Task<ReplyCommentViewModel> ModifiedReplyCommentStatus(ModifiedCommentStatusRequest request);
+        bool IsViolenceComment(string commentId);
+        bool IsViolenceReply(string replyId);
     }
 }

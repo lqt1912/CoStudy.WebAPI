@@ -17,7 +17,8 @@ namespace CoStudy.API.Infrastructure.Shared.Adapters
                 Title = request.Title,
                 CreatedDate = DateTime.Now,
                 ModifiedDate = DateTime.Now,
-                Status = ItemStatus.Active
+                Status = ItemStatus.Active,
+                PostType = request.PostType
             };
             if (request.StringContents != null)
             {
@@ -125,7 +126,6 @@ namespace CoStudy.API.Infrastructure.Shared.Adapters
                 ParentCommentId = comment.ParentId
             };
         }
-
 
     }
 }

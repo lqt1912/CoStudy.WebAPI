@@ -48,18 +48,16 @@ namespace CoStudy.API.Domain.Entities.Application
 
     }
 
-
-
     public  class NotificationContent
     {
         public static Triple<string, string, ObjectNotificationType> AddPostNotification 
-            = new Triple<string, string, ObjectNotificationType>("ADD_POST_NOTIFY", "đã thêm bài viết liên quan đến lĩnh vực bạn quan tâm", ObjectNotificationType.Post);
+            = new Triple<string, string, ObjectNotificationType>("ADD_POST_NOTIFY", ", người bạn theo dõi đã thêm một bài viết về lĩnh vực bạn quan tâm. ", ObjectNotificationType.Post);
 
         public static Triple<string, string, ObjectNotificationType> UpvotePostNotification
-            = new Triple<string, string, ObjectNotificationType>("UPVOTE_POST_NOTIFY", "đã UP bài viết của", ObjectNotificationType.Post);
+            = new Triple<string, string, ObjectNotificationType>("UPVOTE_POST_NOTIFY", "đã UP bài viết của ", ObjectNotificationType.Post);
 
         public static Triple<string, string, ObjectNotificationType> DownvotePostNotification
-            = new Triple<string, string, ObjectNotificationType>("DOWNVOTE_POST_NOTIFY", "đã DOWN bài viết của", ObjectNotificationType.Post);
+            = new Triple<string, string, ObjectNotificationType>("DOWNVOTE_POST_NOTIFY", "đã DOWN bài viết của ", ObjectNotificationType.Post);
 
         public static Triple<string, string, ObjectNotificationType> UpvoteCommentNotification
             = new Triple<string, string, ObjectNotificationType>("UPVOTE_COMMENT_NOTIFY", "đã UP bình luận của", ObjectNotificationType.Comment);
@@ -93,8 +91,10 @@ namespace CoStudy.API.Domain.Entities.Application
 
         public static Triple<string, string, ObjectNotificationType> PostReportNotification
             = new Triple<string, string, ObjectNotificationType>("POST_REPORT", "Bài viết của bạn đã bị báo cáo. ", ObjectNotificationType.Post);
+        
         public static Triple<string, string, ObjectNotificationType> CommentReportNotification
             = new Triple<string, string, ObjectNotificationType>("COMMENT_REPORT", "Bình luận của bạn đã bị báo cáo. ", ObjectNotificationType.Comment);
+       
         public static Triple<string, string, ObjectNotificationType> ReplyReportNotification
             = new Triple<string, string, ObjectNotificationType>("REPLY_REPORT", "Bài viết của bạn đã bị báo cáo. ", ObjectNotificationType.Reply);
     }

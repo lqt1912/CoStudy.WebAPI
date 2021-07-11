@@ -46,7 +46,13 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
         Task<bool> IsEmailExist(string email);
     
         Task<UserViewModel> ModifiedUser(ModifiedRequest request);
-    
-        Task AddPoint(string userId, string postId);
+
+        Task AddPoint(string userId, string postId, int? customPoint);
+
+        Task TurnOffNotification(string objectId);
+
+        Task TurnOnNotification(string objectId);
+
+        IEnumerable<SearchHistoryViewModel> GetHistory(BaseGetAllRequest request);
     }
 }

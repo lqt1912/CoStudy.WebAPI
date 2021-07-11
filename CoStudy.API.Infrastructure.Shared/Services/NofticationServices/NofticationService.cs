@@ -66,7 +66,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.NofticationServices
             var currentUser = Feature.CurrentUser(contextAccessor, userRepository);
             var builder = Builders<Noftication>.Filter;
             var filter = builder.Eq("receiver_id", currentUser.OId)
-                & (builder.Ne("author_id", currentUser.OId) | builder.Regex("content", "quản trị viên"))
+                & (builder.Ne("author_id", currentUser.OId) | builder.Regex("content", "quản trị viên") | builder.Regex("content", "vi phạm quy định"))
                 & builder.Eq("status", ItemStatus.Active);
 
             var notifications = (await nofticationRepository.FindListAsync(filter)).AsEnumerable();

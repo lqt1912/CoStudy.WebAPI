@@ -33,20 +33,26 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
         IClientGroupRepository clientGroupRepository;
         IFieldRepository fieldRepository;
         IFollowRepository followRepository;
-
         IObjectLevelRepository objectLevelRepository;
-
         IMapper mapper;
         private INotificationObjectRepository notificationObjectRepository;
         private IFcmRepository fcmRepository;
         ILevelRepository levelRepository;
+        private ISearchHistoryRepository searchHistoryRepository;
+
         public UserService(IUserRepository userRepository,
-            IHttpContextAccessor httpContextAccessor,
-            IConfiguration configuration,
-            IAccountRepository accountRepository,
-            IPostRepository postRepository,
-            IClientGroupRepository clientGroupRepository,
-            IFieldRepository fieldRepository, IFollowRepository followRepository, IMapper mapper, IObjectLevelRepository objectLevelRepository, INotificationObjectRepository notificationObjectRepository, IFcmRepository fcmRepository, ILevelRepository levelRepository)
+        IHttpContextAccessor httpContextAccessor,
+        IConfiguration configuration,
+        IAccountRepository accountRepository,
+        IPostRepository postRepository,
+        IClientGroupRepository clientGroupRepository,
+        IFieldRepository fieldRepository,
+        IFollowRepository followRepository,
+        IMapper mapper,
+        IObjectLevelRepository objectLevelRepository,
+        INotificationObjectRepository notificationObjectRepository,
+        IFcmRepository fcmRepository,
+        ILevelRepository levelRepository, ISearchHistoryRepository searchHistoryRepository)
         {
             this.userRepository = userRepository;
             _httpContextAccessor = httpContextAccessor;
@@ -61,8 +67,8 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
             this.notificationObjectRepository = notificationObjectRepository;
             this.fcmRepository = fcmRepository;
             this.levelRepository = levelRepository;
+            this.searchHistoryRepository = searchHistoryRepository;
         }
-
 
         public async Task<UserViewModel> AddAvatarAsync(AddAvatarRequest request)
         {
@@ -79,7 +85,6 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
             return mapper.Map<UserViewModel>(currentUser);
 
         }
-
 
         public async Task<string> AddFollowingsAsync(AddFollowerRequest request)
         {
@@ -131,7 +136,6 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
             await userRepository.AddAsync(user);
             return mapper.Map<UserViewModel>(user);
         }
-
 
         public async Task<UserViewModel> GetUserById(string id)
 
@@ -302,7 +306,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
             return queryable.ToList();
         }
 
-        public async Task<IEnumerable<UserViewModel>> FilterUser(FilterUserRequest request)
+        public async Task<IEnumerable<UserViewModel>> FilterUser(Models.Request.FilterUserRequest request)
         {
             var builder = Builders<User>.Filter;
             var filter = builder.Regex(FirstName, request.KeyWord)
@@ -328,7 +332,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
                 {
                     case UserFilterType.PostCount:
                         {
-                            if (request.OrderType.Value == OrderTypeUser.Descending)
+                            if (request.OrderType.Value == Models.Request.OrderTypeUser.Descending)
                             {
                                 userViewModel = userViewModel.OrderByDescending(x => x.PostCount).ToList();
                             }
@@ -341,7 +345,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
                         }
                     case UserFilterType.Follower:
                         {
-                            if (request.OrderType.Value == OrderTypeUser.Descending)
+                            if (request.OrderType.Value == Models.Request.OrderTypeUser.Descending)
                             {
                                 userViewModel = userViewModel.OrderByDescending(x => x.Followers).ToList();
                             }
@@ -355,6 +359,16 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
                 }
             }
 
+            var currentUser = Feature.CurrentUser(_httpContextAccessor, userRepository);
+
+            var historyModel = new SearchHistory()
+            {
+                HistoryType = HistoryType.User,
+                UserId = currentUser.OId,
+                UserValue = request
+            };
+
+            await searchHistoryRepository.AddAsync(historyModel);
             if (request.Skip.HasValue && request.Count.HasValue)
             {
                 userViewModel = userViewModel.Skip(request.Skip.Value).Take(request.Count.Value).ToList();
@@ -362,7 +376,6 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
             return userViewModel;
 
         }
-
 
         public async Task<UserViewModel> AddOrUpdateInfo(List<AdditionalInfomation> request)
         {
@@ -436,7 +449,6 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
             return userNearbys;
         }
 
-
         public async Task<UserViewModel> AddOrUpdateCallId(AddOrUpdateCallIdRequest request)
         {
             var user = await userRepository.GetByIdAsync(ObjectId.Parse(request.UserId));
@@ -464,7 +476,9 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
         public async Task<UserViewModel> UpdateUserAddress(Address request)
         {
             var currentUser = Feature.CurrentUser(_httpContextAccessor, userRepository);
-            currentUser.Address = request;
+
+            currentUser.Address.Latitude = request.Latitude;
+            currentUser.Address.Longtitude = request.Longtitude;
             await userRepository.UpdateAsync(currentUser, currentUser.Id);
             return mapper.Map<UserViewModel>(currentUser);
         }
@@ -492,6 +506,10 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
             if (objectLevel != null)
             {
                 objectLevel.Point += point;
+
+                if (objectLevel.Point <= 0)
+                    objectLevel.Point = 0;
+
                 if (objectLevel.Point < LevelPoint.Level1)
                 {
                     objectLevel.LevelId = levelRepository.GetAll().FirstOrDefault(x => x.Order == 0)?.OId;
@@ -517,7 +535,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
             }
         }
 
-        public async Task AddPoint(string userId, string postId)
+        public async Task AddPoint(string userId, string postId, int? customPoint)
         {
             var user = await userRepository.GetByIdAsync(ObjectId.Parse(userId));
 
@@ -534,11 +552,12 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
             var filterPost = builderPost.Eq("object_id", postId)
                             & builderPost.Eq("is_active", true);
             var postObjectLevels = await objectLevelRepository.FindListAsync(filterPost);
+
             if (postObjectLevels.Count <= 0)
             {
                 userObjectLevels.ForEach(async x =>
                 {
-                    await UpdateUserPoint(userId, x.FieldId, 1);
+                    await UpdateUserPoint(userId, x.FieldId, customPoint.HasValue ? customPoint.Value : 1);
                 });
             }
 
@@ -554,23 +573,23 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
                             switch (level.Order)
                             {
                                 case 0:
-                                    await UpdateUserPoint(userId, x.FieldId, PointAdded.Level1);
+                                    await UpdateUserPoint(userId, x.FieldId, customPoint.HasValue ? customPoint.Value : PointLevel1);
                                     break;
                                 case 1:
-                                    await UpdateUserPoint(userId, x.FieldId, PointAdded.Level2);
+                                    await UpdateUserPoint(userId, x.FieldId, customPoint.HasValue ? customPoint.Value : PointLevel2);
                                     break;
                                 case 2:
-                                    await UpdateUserPoint(userId, x.FieldId, PointAdded.Level3);
+                                    await UpdateUserPoint(userId, x.FieldId, customPoint.HasValue ? customPoint.Value : PointLevel3);
                                     break;
                                 case 3:
-                                    await UpdateUserPoint(userId, x.FieldId, PointAdded.Level4);
+                                    await UpdateUserPoint(userId, x.FieldId, customPoint.HasValue ? customPoint.Value : PointLevel4);
                                     break;
                                 case 4:
                                 case 5:
-                                    await UpdateUserPoint(userId, x.FieldId, PointAdded.Level5);
+                                    await UpdateUserPoint(userId, x.FieldId, customPoint.HasValue ? customPoint.Value : PointLevel5);
                                     break;
                                 default:
-                                    await UpdateUserPoint(userId, x.FieldId, PointAdded.Default);
+                                    await UpdateUserPoint(userId, x.FieldId, customPoint.HasValue ? customPoint.Value : PointDefault);
                                     break;
                             }
                         }
@@ -579,6 +598,47 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
             });
         }
 
+        public int PointLevel1 { get => levelRepository.GetAll().FirstOrDefault(x => x.Order == 0).Point; }
+        public int PointLevel2 { get => levelRepository.GetAll().FirstOrDefault(x => x.Order == 1).Point; }
+        public int PointLevel3 { get => levelRepository.GetAll().FirstOrDefault(x => x.Order == 2).Point; }
+        public int PointLevel4 { get => levelRepository.GetAll().FirstOrDefault(x => x.Order == 3).Point; }
+        public int PointLevel5 { get => levelRepository.GetAll().FirstOrDefault(x => x.Order == 4).Point; }
+        public int PointDefault { get => levelRepository.GetAll().FirstOrDefault(x => x.Order == -1).Point; }
+
+        public async Task TurnOffNotification(string objectId)
+        {
+            var currentUser = Feature.CurrentUser(_httpContextAccessor, userRepository);
+            currentUser.TurnOfNotification.Add(objectId);
+            await userRepository.UpdateAsync(currentUser, currentUser.Id);
+        }
+
+        public async Task TurnOnNotification(string objectId)
+        {
+            var currentUser = Feature.CurrentUser(_httpContextAccessor, userRepository);
+            currentUser.TurnOfNotification.Remove(objectId);
+            await userRepository.UpdateAsync(currentUser, currentUser.Id);
+
+            var clientGroup = await clientGroupRepository.GetByIdAsync(ObjectId.Parse(objectId));
+            if(clientGroup!=null)
+            {
+                clientGroup.UserIds.Add(currentUser.OId);
+                clientGroup.UserIds = clientGroup.UserIds.Distinct().ToList();
+                await clientGroupRepository.UpdateAsync(clientGroup, clientGroup.Id);
+            }
+        }
+
+        public IEnumerable<SearchHistoryViewModel> GetHistory(BaseGetAllRequest request)
+        {
+            var a = searchHistoryRepository.GetAll().Where(x => x.HistoryType == HistoryType.User);
+            var vm = mapper.Map<IEnumerable<SearchHistoryViewModel>>(a);
+            vm = vm.GroupBy(x => x.UserValue.KeyWord)
+                .Select(x => x.OrderByDescending(y => y.CreatedDate).FirstOrDefault())
+                .OrderByDescending(x => x.CreatedDate);
+
+            if (request.Skip.HasValue && request.Count.HasValue)
+                vm = vm.Skip(request.Skip.Value).Take(request.Count.Value);
+            return vm;
+        }
     }
 }
 

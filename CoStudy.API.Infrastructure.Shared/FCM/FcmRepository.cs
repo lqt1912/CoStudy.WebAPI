@@ -14,6 +14,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Google.Apis.Auth;
 using Microsoft.Extensions.Configuration;
+using System.Threading;
 
 namespace CoStudy.API.Application.FCM
 {
@@ -151,21 +152,28 @@ namespace CoStudy.API.Application.FCM
                             break;
                     }
 
-                    FirebaseAdmin.Messaging.Message mes = new FirebaseAdmin.Messaging.Message()
+                    try
                     {
-                        Token = token,
-                        Data = new Dictionary<string, string>()
+                        FirebaseAdmin.Messaging.Message mes = new FirebaseAdmin.Messaging.Message()
+                        {
+                            Token = token,
+                            Data = new Dictionary<string, string>()
                         {
                             {"message", JsonConvert.SerializeObject(message)}
                         },
-                        Notification = new Notification()
-                        {
-                            Title = sender.LastName,
-                            Body = notifyBody,
-                            ImageUrl = sender.AvatarHash
-                        }
-                    };
-                    string response = await FirebaseMessaging.DefaultInstance.SendAsync(mes).ConfigureAwait(true);
+                            Notification = new Notification()
+                            {
+                                Title = sender.LastName,
+                                Body = notifyBody,
+                                ImageUrl = sender.AvatarHash
+                            }
+                        };
+                        string response = await FirebaseMessaging.DefaultInstance.SendAsync(mes).ConfigureAwait(true);
+                    }
+                    catch (Exception)
+                    {
+                        //Do nothing
+                    }
                 }
                 catch (Exception)
                 {
@@ -180,8 +188,14 @@ namespace CoStudy.API.Application.FCM
             {
                 FilterDefinition<ClientGroup> finder = Builders<ClientGroup>.Filter.Eq("name", clientGroupName);
                 ClientGroup clientGroup = await clientGroupRepository.FindAsync(finder);
+
                 foreach (string receiver in clientGroup.UserIds)
                 {
+                    var receiverUser = await userRepository.GetByIdAsync(ObjectId.Parse(receiver));
+                    if (receiverUser.TurnOfNotification != null)
+                        if (receiverUser.TurnOfNotification.Any(x => x == noftication.ObjectId))
+                            return;
+
                     Noftication finalNotification = new Noftication()
                     {
                         AuthorId = noftication.AuthorId,

@@ -24,7 +24,7 @@ namespace CoStudy.API.Infrastructure.Shared.AutoMapper
             try
             {
                 var author = userRepository.GetById(ObjectId.Parse(source.AuthorId));
-                if (source.Content.Contains("báo cáo") || source.Content.Contains("quản trị viên"))
+                if (source.Content.Contains("báo cáo") || source.Content.Contains("quản trị viên") || source.Content.Contains("vi phạm quy định"))
                     destination.AuthorAvatar = configuration["AdminAvatar"];
 
                 else destination.AuthorAvatar = author?.AvatarHash;

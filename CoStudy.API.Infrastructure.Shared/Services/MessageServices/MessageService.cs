@@ -15,33 +15,28 @@ using System.Threading.Tasks;
 
 namespace CoStudy.API.Infrastructure.Shared.Services.MessageServices
 {
-        public class MessageService : IMessageService
+    public class MessageService : IMessageService
     {
-           IMessageRepository messageRepository;
-           IUserRepository userRepository;
-           IHttpContextAccessor httpContextAccessor;
-           IFcmRepository fcmRepository;
-           IMapper mapper;
+        IMessageRepository messageRepository;
+        IUserRepository userRepository;
+        IHttpContextAccessor httpContextAccessor;
+        IFcmRepository fcmRepository;
+        IMapper mapper;
+        IMessageConversationActivityRepository messageConversationActivityRepository;
+        IMessageImageRepository messageImageRepository;
+        IMessageMultiMediaRepository messageMultiMediaRepository;
+        IMessagePostThumbnailRepository messagePostThumbnailRepository;
+        IMessageTextRepository messageTextRepository;
 
-           IMessageConversationActivityRepository messageConversationActivityRepository;
-
-           IMessageImageRepository messageImageRepository;
-
-           IMessageMultiMediaRepository messageMultiMediaRepository;
-
-           IMessagePostThumbnailRepository messagePostThumbnailRepository;
-
-           IMessageTextRepository messageTextRepository;
-
-                  public MessageService(IMessageRepository messageRepository,
-            IUserRepository userRepository,
-            IHttpContextAccessor httpContextAccessor,
-            IFcmRepository fcmRepository, IMapper mapper,
-            IMessageConversationActivityRepository messageConversationActivityRepository,
-            IMessageImageRepository messageImageRepository,
-            IMessageMultiMediaRepository messageMultiMediaRepository,
-            IMessagePostThumbnailRepository messagePostThumbnailRepository,
-            IMessageTextRepository messageTextRepository)
+        public MessageService(IMessageRepository messageRepository,
+          IUserRepository userRepository,
+          IHttpContextAccessor httpContextAccessor,
+          IFcmRepository fcmRepository, IMapper mapper,
+          IMessageConversationActivityRepository messageConversationActivityRepository,
+          IMessageImageRepository messageImageRepository,
+          IMessageMultiMediaRepository messageMultiMediaRepository,
+          IMessagePostThumbnailRepository messagePostThumbnailRepository,
+          IMessageTextRepository messageTextRepository)
         {
             this.messageRepository = messageRepository;
             this.userRepository = userRepository;
@@ -55,7 +50,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.MessageServices
             this.messageTextRepository = messageTextRepository;
         }
 
-             public async Task<MessageViewModel> AddMessage(AddMessageRequest request)
+        public async Task<MessageViewModel> AddMessage(AddMessageRequest request)
         {
 
             var currentUser = Feature.CurrentUser(httpContextAccessor, userRepository);
@@ -145,7 +140,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.MessageServices
             return null;
         }
 
-              public async Task<IEnumerable<MessageViewModel>> GetMessageByConversationId(GetMessageByConversationIdRequest request)
+        public async Task<IEnumerable<MessageViewModel>> GetMessageByConversationId(GetMessageByConversationIdRequest request)
         {
             try
             {
@@ -186,18 +181,18 @@ namespace CoStudy.API.Infrastructure.Shared.Services.MessageServices
             }
             catch (Exception)
             {
-                throw new Exception("Đã có lỗi xảy ra.");
+                return null;
             }
         }
 
 
-            public List<Message> GetAll()
+        public List<Message> GetAll()
         {
             return messageRepository.GetAll().ToList();
         }
 
 
-              public async Task<string> DeleteMessage(string id)
+        public async Task<string> DeleteMessage(string id)
         {
             User currentUser = Feature.CurrentUser(httpContextAccessor, userRepository);
             var existMessageConversationActivity = await messageConversationActivityRepository.GetByIdAsync(ObjectId.Parse(id));
@@ -245,7 +240,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.MessageServices
             }
         }
 
-              public async Task<MessageViewModel> EditMessage(UpdateMessageRequest request)
+        public async Task<MessageViewModel> EditMessage(UpdateMessageRequest request)
         {
             Message message = await messageRepository.GetByIdAsync(ObjectId.Parse(request.Id));
             if (message == null)
