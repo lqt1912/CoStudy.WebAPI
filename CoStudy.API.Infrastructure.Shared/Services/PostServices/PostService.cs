@@ -367,7 +367,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
             }
         }
 
-        public async Task<List<PostViewModel>> GetSavedPost(BaseGetAllRequest request)
+        public async Task<List<PostViewModel>> GetSavedPost(GetSavedPostRequest request)
         {
             var currentUser = Feature.CurrentUser(httpContextAccessor, userRepository);
             var result = new List<Post>();
@@ -378,6 +378,24 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
                 {
                     result.Add(post);
                 }
+            }
+
+            if (request.FromDate != null && request.ToDate != null)
+            {
+                result = result.Where(x => x.CreatedDate > request.FromDate && x.CreatedDate < request.ToDate).ToList();
+            }
+
+            switch (request.OrderType)
+            {
+                case OrderType.Ascending:
+                    result = result.OrderBy(x => x.CreatedDate).ToList();
+                    break;
+                case OrderType.Descending:
+                    result = result.OrderByDescending(x => x.ModifiedDate).ToList();
+                    break;
+                default:
+                    result = result.OrderBy(x => x.CreatedDate).ToList();
+                    break;
             }
 
             if (request.Skip.HasValue && request.Count.HasValue)
@@ -647,7 +665,6 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
             return result;
         }
 
-
         public async Task<List<User>> GetUsersMatchPostField(Post post)
         {
             var postObjectLevelBuilder = Builders<ObjectLevel>.Filter;
@@ -667,6 +684,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
             return result;
 
         }
+       
         public async Task<List<UserViewModel>> GetUserByPostField(string postId)
         {
             var postObjectLevelBuilder = Builders<ObjectLevel>.Filter;
@@ -685,7 +703,6 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
             }
             return mapper.Map<List<UserViewModel>>(result);
         }
-
 
         private async Task<bool> IsUserMatchListObjectLevel(User user, List<ObjectLevel> objectLevels)
         {

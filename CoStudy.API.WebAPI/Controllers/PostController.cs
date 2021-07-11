@@ -100,7 +100,7 @@ namespace CoStudy.API.WebAPI.Controllers
 
         [HttpGet]
         [Route("save")]
-        public async Task<IActionResult> GetSavedPost([FromQuery] BaseGetAllRequest request)
+        public async Task<IActionResult> GetSavedPost([FromQuery] GetSavedPostRequest request)
         {
             var data = await postService.GetSavedPost(request);
             return Ok(new ApiOkResponse(data));

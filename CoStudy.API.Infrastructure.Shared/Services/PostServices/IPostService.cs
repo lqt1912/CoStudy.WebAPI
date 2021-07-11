@@ -18,7 +18,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
         Task<string> Downvote(string postId);
         Task<PostViewModel> UpdatePost(UpdatePostRequest request);
         Task<SavePostResponse> SavePost(string id);
-        Task<List<PostViewModel>> GetSavedPost(BaseGetAllRequest request);
+        Task<List<PostViewModel>> GetSavedPost(GetSavedPostRequest request);
         Task<PostFilterResponse> Filter(FilterRequest filterRequest);
         Task<IEnumerable<PostViewModel>> GetNewsFeed(NewsFeedRequest request);
         Task<IEnumerable<MessageViewModel>> SharePost(SharePostRequest request);
