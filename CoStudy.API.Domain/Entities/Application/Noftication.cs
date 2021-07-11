@@ -7,169 +7,118 @@ using System.Text.Json.Serialization;
 
 namespace CoStudy.API.Domain.Entities.Application
 {
-    /// <summary>
-    /// Class Notification.
-    /// </summary>
-    /// <seealso cref="CoStudy.API.Domain.Entities.BaseEntity.Entity" />
     public class Noftication : Entity
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Noftication" /> class.
-        /// </summary>
         public Noftication() : base()
         {
         }
 
-        /// <summary>
-        /// Người tạo ra.  (Người vote, upvote, ...)
-        /// </summary>
-        /// <value>
-        /// The author identifier.
-        /// </value>
         [BsonElement("author_id")]
-        [JsonPropertyName("author_id")]
         public string AuthorId { get; set; }
 
-        /// <summary>
-        /// Chủ sở hữu đối tượng.
-        /// </summary>
-        /// <value>
-        /// The owner identifier.
-        /// </value>
         [BsonElement("owner_id")]
-        [JsonPropertyName("owner_id")]
         public string OwnerId { get; set; }
 
-
-        /// <summary>
-        /// Người nhận thông báo
-        /// </summary>
-        /// <value>
-        /// The receiver identifier.
-        /// </value>
         [BsonElement("receiver_id")]
-        [JsonPropertyName("receiver_id")]
         public string ReceiverId { get; set; }
 
-        /// <summary>
-        /// Gets or sets the content.
-        /// </summary>
-        /// <value>
-        /// The content.
-        /// </value>
         [BsonElement("content")]
-        [JsonPropertyName("content")]
         public string Content { get; set; }
 
-
-        /// <summary>
-        /// Gets or sets the type of the content.
-        /// </summary>
-        /// <value>
-        /// The type of the content.
-        /// </value>
-        [BsonElement("content_type")]
-        [JsonPropertyName("content_type")]
-        public ContentType ContentType { get; set; }
-
-        /// <summary>
-        /// Gets or sets the object identifier.
-        /// </summary>
-        /// <value>
-        /// The object identifier.
-        /// </value>
         [BsonElement("object_id")]
-        [JsonPropertyName("object_id")]
         public string  ObjectId { get; set; }
 
-        /// <summary>
-        /// Gets or sets the created date.
-        /// </summary>
-        /// <value>
-        /// The created date.
-        /// </value>
+        [BsonElement("object_type")]
+        public ObjectNotificationType ObjectType { get; set; }
+
+        [BsonElement("object_thumbnail")]
+        public string  ObjectThumbnail { get; set; }
+
         [BsonElement("created_date")]
-        [JsonPropertyName("created_date")]
-        public DateTime CreatedDate { get; set; }
+        public DateTime CreatedDate { get; set; } = DateTime.Now;
 
-        /// <summary>
-        /// Gets or sets the modified date.
-        /// </summary>
-        /// <value>
-        /// The modified date.
-        /// </value>
         [BsonElement("modified_date")]
-        [JsonPropertyName("modified_date")]
-        public DateTime ModifiedDate { get; set; }
+        public DateTime ModifiedDate { get; set; } = DateTime.Now;
 
-        /// <summary>
-        /// Gets or sets the status.
-        /// </summary>
-        /// <value>
-        /// The status.
-        /// </value>
         [BsonElement("status")]
-        [JsonPropertyName("status")]
-        public ItemStatus Status { get; set; }
+        public ItemStatus Status { get; set; } = ItemStatus.Active;
 
-        /// <summary>
-        /// Gets or sets the is read.
-        /// </summary>
-        /// <value>
-        /// The is read.
-        /// </value>
         [BsonElement("is_read")]
-        [JsonPropertyName("is_read")]
-        public bool? IsRead { get; set; }
+        public bool? IsRead { get; set; } = false;
 
     }
-    /// <summary>
-    /// Enum ContentType
-    /// </summary>
-    public enum ContentType
+
+    public  class NotificationContent
     {
-        /// <summary>
-        /// The add post notify
-        /// </summary>
-        ADD_POST_NOTIFY,
-        /// <summary>
-        /// The upvote post notify
-        /// </summary>
-        UPVOTE_POST_NOTIFY,
-        /// <summary>
-        /// The downvote post notify
-        /// </summary>
-        DOWNVOTE_POST_NOTIFY,
-        /// <summary>
-        /// The upvote comment notify
-        /// </summary>
-        UPVOTE_COMMENT_NOTIFY,
-        /// <summary>
-        /// The downvote comment notify
-        /// </summary>
-        DOWNVOTE_COMMENT_NOTIFY,
-        /// <summary>
-        /// The upvote reply notify
-        /// </summary>
-        UPVOTE_REPLY_NOTIFY,
-        /// <summary>
-        /// The downvote reply notify
-        /// </summary>
-        DOWNVOTE_REPLY_NOTIFY,
-        /// <summary>
-        /// The follow notify
-        /// </summary>
-        FOLLOW_NOTIFY,
+        public static Triple<string, string, ObjectNotificationType> AddPostNotification 
+            = new Triple<string, string, ObjectNotificationType>("ADD_POST_NOTIFY", ", người bạn theo dõi đã thêm một bài viết về lĩnh vực bạn quan tâm. ", ObjectNotificationType.Post);
 
-        /// <summary>
-        /// The comment notify
-        /// </summary>
-        COMMENT_NOTIFY,
+        public static Triple<string, string, ObjectNotificationType> UpvotePostNotification
+            = new Triple<string, string, ObjectNotificationType>("UPVOTE_POST_NOTIFY", "đã UP bài viết của ", ObjectNotificationType.Post);
 
-        /// <summary>
-        /// The reply comment notify
-        /// </summary>
-        REPLY_COMMENT_NOTIFY
+        public static Triple<string, string, ObjectNotificationType> DownvotePostNotification
+            = new Triple<string, string, ObjectNotificationType>("DOWNVOTE_POST_NOTIFY", "đã DOWN bài viết của ", ObjectNotificationType.Post);
 
+        public static Triple<string, string, ObjectNotificationType> UpvoteCommentNotification
+            = new Triple<string, string, ObjectNotificationType>("UPVOTE_COMMENT_NOTIFY", "đã UP bình luận của", ObjectNotificationType.Comment);
+
+        public static Triple<string, string, ObjectNotificationType> DownvoteCommentNotification
+            = new Triple<string, string, ObjectNotificationType>("DOWNVOTE_COMMENT_NOTIFY", "đã DOWN bình luận của", ObjectNotificationType.Comment);
+
+        public static Triple<string, string, ObjectNotificationType> UpvoteReplyNotification
+         = new Triple<string, string, ObjectNotificationType>("UPVOTE_REPLY_NOTIFY", "đã UP phản hồi của", ObjectNotificationType.Reply);
+
+        public static Triple<string, string, ObjectNotificationType> DownvoteReplyNotification
+            = new Triple<string, string, ObjectNotificationType>("DOWNVOTE_REPLY_NOTIFY", "đã DOWN phản hồi của", ObjectNotificationType.Reply);
+
+        public static Triple<string, string, ObjectNotificationType> FollowNotification
+            = new Triple<string, string, ObjectNotificationType>("FOLLOW_NOTIFY", "đã theo dõi", ObjectNotificationType.User);
+
+        public static Triple<string, string, ObjectNotificationType> CommentNotification
+            = new Triple<string, string, ObjectNotificationType>("COMMENT_NOTIFY", "đã bình luận về bài viết của ", ObjectNotificationType.Post);
+
+        public static Triple<string, string, ObjectNotificationType> ReplyCommentNotification
+           = new Triple<string, string, ObjectNotificationType>("REPLY_COMMENT_NOTIFY", "đã trả lời bình luận của ", ObjectNotificationType.Comment);
+
+        public static Triple<string, string, ObjectNotificationType> ApprovePostReportNotification
+            = new Triple<string, string, ObjectNotificationType>("APPROVE_POST_REPORT", "Bài viết của bạn đã bị xóa vì vi phạm tiêu chuẩn của chúng tôi. ", ObjectNotificationType.Other);
+
+        public static Triple<string, string, ObjectNotificationType> ApproveCommentReportNotification
+          = new Triple<string, string, ObjectNotificationType>("APPROVE_COMMENT_REPORT", "Bình luận của bạn đã bị xóa vì vi phạm tiêu chuẩn của chúng tôi. ", ObjectNotificationType.Other);
+       
+        public static Triple<string, string, ObjectNotificationType> ApproveReplyReportNotification
+          = new Triple<string, string, ObjectNotificationType>("APPROVE_REPLY_REPORT", "Phản hồi của bạn đã bị xóa vì vi phạm tiêu chuẩn của chúng tôi. ", ObjectNotificationType.Other);
+
+        public static Triple<string, string, ObjectNotificationType> PostReportNotification
+            = new Triple<string, string, ObjectNotificationType>("POST_REPORT", "Bài viết của bạn đã bị báo cáo. ", ObjectNotificationType.Post);
+        
+        public static Triple<string, string, ObjectNotificationType> CommentReportNotification
+            = new Triple<string, string, ObjectNotificationType>("COMMENT_REPORT", "Bình luận của bạn đã bị báo cáo. ", ObjectNotificationType.Comment);
+       
+        public static Triple<string, string, ObjectNotificationType> ReplyReportNotification
+            = new Triple<string, string, ObjectNotificationType>("REPLY_REPORT", "Bài viết của bạn đã bị báo cáo. ", ObjectNotificationType.Reply);
+    }
+
+    public enum ObjectNotificationType
+    {
+        Post,
+        Comment,
+        Reply,
+        User,
+        Other
+    }
+
+    public struct Triple<a, b, c>
+    {
+        public a Item1;
+        public b Item2;
+        public c Item3;
+
+        public Triple(a _item1, b _item2, c _item3)
+        {
+            Item1 = _item1;
+            Item2 = _item2;
+            Item3 = _item3;
+        }
     }
 }

@@ -8,14 +8,17 @@ using AutoMapper;
 using CoStudy.API.Application.FCM;
 using CoStudy.API.Application.Features;
 using CoStudy.API.Application.Repositories;
+using CoStudy.API.Application.Utitlities;
 using CoStudy.API.Domain.Entities.Application;
 using CoStudy.API.Infrastructure.Shared.Adapters;
 using CoStudy.API.Infrastructure.Shared.Models.Request;
+using CoStudy.API.Infrastructure.Shared.Services.UserServices;
 using CoStudy.API.Infrastructure.Shared.ViewModels;
 using Microsoft.AspNetCore.Http;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Serializers;
 using MongoDB.Driver;
+using static Common.Constants;
 
 namespace CoStudy.API.Infrastructure.Shared.Services
 {
@@ -33,7 +36,8 @@ namespace CoStudy.API.Infrastructure.Shared.Services
         private readonly INotificationObjectRepository notificationObjectRepository;
         private readonly IObjectLevelRepository objectLevelRepository;
         private readonly ILevelRepository levelRepository;
-
+        private readonly IUserService userService;
+        private readonly IViolenceWordRepository violenceWordRepository;
         public CommentService(IHttpContextAccessor httpContextAccessor,
             IUserRepository userRepository,
             IPostRepository postRepository,
@@ -45,7 +49,9 @@ namespace CoStudy.API.Infrastructure.Shared.Services
             IMapper mapper,
             INotificationObjectRepository notificationObjectRepository,
             IObjectLevelRepository objectLevelRepository,
-            ILevelRepository levelRepository)
+            ILevelRepository levelRepository, 
+            IUserService userService, 
+            IViolenceWordRepository violenceWordRepository)
         {
             this.httpContextAccessor = httpContextAccessor;
             this.userRepository = userRepository;
@@ -59,6 +65,8 @@ namespace CoStudy.API.Infrastructure.Shared.Services
             this.notificationObjectRepository = notificationObjectRepository;
             this.objectLevelRepository = objectLevelRepository;
             this.levelRepository = levelRepository;
+            this.userService = userService;
+            this.violenceWordRepository = violenceWordRepository;
         }
 
         public async Task<CommentViewModel> AddComment(AddCommentRequest request)
@@ -97,34 +105,17 @@ namespace CoStudy.API.Infrastructure.Shared.Services
                 //Wait for saving
                 Thread.Sleep(50);
 
-                var notificationObjectBuilders = Builders<NotificationObject>.Filter;
-
-                var notificationObjectFilters = notificationObjectBuilders.Eq("object_id", currentPost.OId)
-                                                & notificationObjectBuilders.Eq("notification_type", "COMMENT_NOTIFY");
-
-                var existNotificationObject = await notificationObjectRepository.FindAsync(notificationObjectFilters);
-
-                var notificationObject = existNotificationObject != null ? existNotificationObject.OId : string.Empty;
-
-                if (existNotificationObject == null)
+                var notificationDetail = new Noftication()
                 {
-                    var newNotificationObject = new NotificationObject
-                    {
-                        NotificationType = "COMMENT_NOTIFY",
-                        ObjectId = currentPost.OId,
-                        OwnerId = currentPost.AuthorId
-                    };
-                    await notificationObjectRepository.AddAsync(newNotificationObject);
-                    notificationObject = newNotificationObject.OId;
-                }
-
-                var notificationDetail = new NotificationDetail
-                {
-                    CreatorId = currentUser.OId,
-                    NotificationObjectId = notificationObject
+                    AuthorId = currentUser.OId,
+                    OwnerId = author.OId,
+                    ObjectId = currentPost.OId,
+                    ObjectThumbnail = currentPost.Title
                 };
 
-                await fcmRepository.PushNotifyDetail(currentPost.OId, notificationDetail);
+                await fcmRepository.PushNotify(currentPost.OId, notificationDetail, NotificationContent.CommentNotification);
+
+                await userService.AddPoint(currentUser.OId, currentPost.OId, null);
 
                 //Update again
                 var result = mapper.Map<CommentViewModel>(comment);
@@ -267,7 +258,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services
         {
             var comment = await commentRepository.GetByIdAsync(ObjectId.Parse(commentId));
 
-            if (!(comment is {Status: ItemStatus.Active})) return null;
+            if (!(comment is { Status: ItemStatus.Active })) return null;
 
             var result = mapper.Map<CommentViewModel>(comment);
             try
@@ -278,7 +269,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services
             }
             catch (Exception)
             {
-                //Do nothing
+                return null;
             }
             return result;
         }
@@ -287,7 +278,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services
         {
             var reply = await replyCommentRepository.GetByIdAsync(ObjectId.Parse(replyId));
 
-            if (!(reply is {Status: ItemStatus.Active})) return null;
+            if (!(reply is { Status: ItemStatus.Active })) return null;
 
             var result = mapper.Map<ReplyCommentViewModel>(reply);
             try
@@ -299,7 +290,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services
             }
             catch (Exception)
             {
-                //Do nothing
+                return null;
             }
             return result;
 
@@ -329,35 +320,17 @@ namespace CoStudy.API.Infrastructure.Shared.Services
                 //Wait for saving
                 Thread.Sleep(50);
 
-                var notificationObjectBuilders = Builders<NotificationObject>.Filter;
-
-                var notificationObjectFilters = notificationObjectBuilders.Eq("object_id", replyComment.OId)
-                                                & notificationObjectBuilders.Eq("notification_type",
-                                                    "REPLY_COMMENT_NOTIFY");
-
-                var existNotificationObject = await notificationObjectRepository.FindAsync(notificationObjectFilters);
-
-                var notificationObject = existNotificationObject != null ? existNotificationObject.OId : string.Empty;
-
-                if (existNotificationObject == null)
+                var notificationDetail = new Noftication()
                 {
-                    var newNotificationObject = new NotificationObject
-                    {
-                        NotificationType = "REPLY_COMMENT_NOTIFY",
-                        ObjectId = replyComment.OId,
-                        OwnerId = replyComment.AuthorId
-                    };
-                    await notificationObjectRepository.AddAsync(newNotificationObject);
-                    notificationObject = newNotificationObject.OId;
-                }
-
-                var notificationDetail = new NotificationDetail
-                {
-                    CreatorId = currentUser.OId,
-                    NotificationObjectId = notificationObject
+                    AuthorId = currentUser.OId,
+                    OwnerId = comment.AuthorId,
+                    ObjectId = comment.OId,
+                    ObjectThumbnail = comment.Content
                 };
 
-                await fcmRepository.PushNotifyDetail(replyComment.OId, notificationDetail);
+                await fcmRepository.PushNotify(comment.OId, notificationDetail, NotificationContent.ReplyCommentNotification);
+
+                await userService.AddPoint(currentUser.OId, comment.PostId, null);
 
                 return mapper.Map<ReplyCommentViewModel>(replyComment);
             }
@@ -393,35 +366,17 @@ namespace CoStudy.API.Infrastructure.Shared.Services
 
                 await upVoteRepository.AddAsync(upvote);
 
-                var notificationObjectBuilders = Builders<NotificationObject>.Filter;
-
-                var notificationObjectFilters = notificationObjectBuilders.Eq("object_id", comment.OId)
-                                                & notificationObjectBuilders.Eq("notification_type",
-                                                    "UPVOTE_COMMENT_NOTIFY");
-
-                var existNotificationObject = await notificationObjectRepository.FindAsync(notificationObjectFilters);
-
-                var notificationObject = existNotificationObject != null ? existNotificationObject.OId : string.Empty;
-
-                if (existNotificationObject == null)
+                var notificationDetail = new Noftication()
                 {
-                    var newNotificationObject = new NotificationObject
-                    {
-                        NotificationType = "UPVOTE_COMMENT_NOTIFY",
-                        ObjectId = comment.OId,
-                        OwnerId = comment.AuthorId
-                    };
-                    await notificationObjectRepository.AddAsync(newNotificationObject);
-                    notificationObject = newNotificationObject.OId;
-                }
-
-                var notificationDetail = new NotificationDetail
-                {
-                    CreatorId = currentUser.OId,
-                    NotificationObjectId = notificationObject
+                    AuthorId = currentUser.OId,
+                    OwnerId = comment.AuthorId,
+                    ObjectId = comment.OId,
+                    ObjectThumbnail = comment.Content
                 };
 
-                await fcmRepository.PushNotifyDetail(comment.OId, notificationDetail);
+                await fcmRepository.PushNotify(comment.OId, notificationDetail, NotificationContent.UpvoteCommentNotification);
+
+                await userService.AddPoint(currentUser.OId, comment.PostId, PointAdded.Upvote);
 
                 return "Upvote thành công";
             }
@@ -456,37 +411,18 @@ namespace CoStudy.API.Infrastructure.Shared.Services
 
                 await downVoteRepository.AddAsync(downVote);
 
-                var notificationObjectBuilders = Builders<NotificationObject>.Filter;
-
-                var notificationObjectFilters = notificationObjectBuilders.Eq("object_id", comment.OId)
-                                                & notificationObjectBuilders.Eq("notification_type",
-                                                    "DOWNVOTE_COMMENT_NOTIFY");
-
-                var existNotificationObject = await notificationObjectRepository.FindAsync(notificationObjectFilters);
-
-                var notificationObject = existNotificationObject != null ? existNotificationObject.OId : string.Empty;
-
-                if (existNotificationObject == null)
+                var notificationDetail = new Noftication()
                 {
-                    var newNotificationObject = new NotificationObject
-                    {
-                        NotificationType = "DOWNVOTE_COMMENT_NOTIFY",
-                        ObjectId = comment.OId,
-                        OwnerId = comment.AuthorId
-                    };
-                    await notificationObjectRepository.AddAsync(newNotificationObject);
-                    notificationObject = newNotificationObject.OId;
-                }
-
-                var notificationDetail = new NotificationDetail
-                {
-                    CreatorId = currentUser.OId,
-                    NotificationObjectId = notificationObject
+                    AuthorId = currentUser.OId,
+                    OwnerId = comment.AuthorId,
+                    ObjectId = comment.OId,
+                    ObjectThumbnail = comment.Content
                 };
 
-                await fcmRepository.PushNotifyDetail(comment.OId, notificationDetail);
+                await fcmRepository.PushNotify(comment.OId, notificationDetail, NotificationContent.DownvoteCommentNotification);
 
 
+                await userService.AddPoint(currentUser.OId, comment.PostId, PointAdded.Downvote);
                 return "Downvote thành công";
             }
 
@@ -521,35 +457,15 @@ namespace CoStudy.API.Infrastructure.Shared.Services
 
                 await upVoteRepository.AddAsync(upvote);
 
-                var notificationObjectBuilders = Builders<NotificationObject>.Filter;
-
-                var notificationObjectFilters = notificationObjectBuilders.Eq("object_id", comment.OId)
-                                                & notificationObjectBuilders.Eq("notification_type",
-                                                    "UPVOTE_REPLY_NOTIFY");
-
-                var existNotificationObject = await notificationObjectRepository.FindAsync(notificationObjectFilters);
-
-                var notificationObject = existNotificationObject != null ? existNotificationObject.OId : string.Empty;
-
-                if (existNotificationObject == null)
+                var notificationDetail = new Noftication()
                 {
-                    var newNotificationObject = new NotificationObject
-                    {
-                        NotificationType = "UPVOTE_REPLY_NOTIFY",
-                        ObjectId = comment.OId,
-                        OwnerId = comment.AuthorId
-                    };
-                    await notificationObjectRepository.AddAsync(newNotificationObject);
-                    notificationObject = newNotificationObject.OId;
-                }
-
-                var notificationDetail = new NotificationDetail
-                {
-                    CreatorId = currentUser.OId,
-                    NotificationObjectId = notificationObject
+                    AuthorId = currentUser.OId,
+                    OwnerId = comment.AuthorId,
+                    ObjectId = comment.OId,
+                    ObjectThumbnail = comment.Content
                 };
 
-                await fcmRepository.PushNotifyDetail(comment.OId, notificationDetail);
+                await fcmRepository.PushNotify(comment.OId, notificationDetail, NotificationContent.UpvoteReplyNotification);
 
                 return "Upvote thành công";
             }
@@ -584,36 +500,15 @@ namespace CoStudy.API.Infrastructure.Shared.Services
 
                 await downVoteRepository.AddAsync(downVote);
 
-                var notificationObjectBuilders = Builders<NotificationObject>.Filter;
-
-                var notificationObjectFilters = notificationObjectBuilders.Eq("object_id", comment.OId)
-                                                & notificationObjectBuilders.Eq("notification_type",
-                                                    "DOWNVOTE_REPLY_NOTIFY");
-
-                var existNotificationObject = await notificationObjectRepository.FindAsync(notificationObjectFilters);
-
-                var notificationObject = existNotificationObject != null ? existNotificationObject.OId : string.Empty;
-
-                if (existNotificationObject == null)
+                var notificationDetail = new Noftication()
                 {
-                    var newNotificationObject = new NotificationObject
-                    {
-                        NotificationType = "DOWNVOTE_REPLY_NOTIFY",
-                        ObjectId = comment.OId,
-                        OwnerId = comment.AuthorId
-                    };
-                    await notificationObjectRepository.AddAsync(newNotificationObject);
-                    notificationObject = newNotificationObject.OId;
-                }
-
-                var notificationDetail = new NotificationDetail
-                {
-                    CreatorId = currentUser.OId,
-                    NotificationObjectId = notificationObject
+                    AuthorId = currentUser.OId,
+                    OwnerId = comment.AuthorId,
+                    ObjectId = comment.OId,
+                    ObjectThumbnail = comment.Content
                 };
 
-                await fcmRepository.PushNotifyDetail(comment.OId, notificationDetail);
-
+                await fcmRepository.PushNotify(comment.OId, notificationDetail, NotificationContent.DownvoteReplyNotification);
 
                 return "Downvote thành công";
             }
@@ -665,10 +560,10 @@ namespace CoStudy.API.Infrastructure.Shared.Services
                       {
                           if (x.FieldId == z.FieldId)
                           {
-                              var userLevel = levelRepository.GetById(ObjectId.Parse(x.LevelId));
-                              var postLevel = levelRepository.GetById(ObjectId.Parse(z.LevelId));
-                              if (userLevel.Order >= postLevel.Order)
-                                  result.Add(x);
+                              //var userLevel = levelRepository.GetById(ObjectId.Parse(x.LevelId));
+                              //var postLevel = levelRepository.GetById(ObjectId.Parse(z.LevelId));
+                              //if (userLevel.Order >= postLevel.Order)
+                              result.Add(x);
                           }
                       });
                    }
@@ -686,6 +581,17 @@ namespace CoStudy.API.Infrastructure.Shared.Services
                 throw new Exception("Không tìm thấy bình luận. ");
             comment.Status = request.Status;
             await commentRepository.UpdateAsync(comment, comment.Id);
+
+            var replyBuidlder = Builders<ReplyComment>.Filter;
+            var reply = replyBuidlder.Eq("parent_id", comment.OId);
+            var replies = await replyCommentRepository.FindListAsync(reply);
+            replies.ForEach(
+                async x =>
+                {
+                    x.Status = request.Status;
+                    await replyCommentRepository.UpdateAsync(x, x.Id);
+                }
+            );
             return mapper.Map<CommentViewModel>(comment);
         }
 
@@ -697,6 +603,30 @@ namespace CoStudy.API.Infrastructure.Shared.Services
             replyComment.Status = request.Status;
             await replyCommentRepository.UpdateAsync(replyComment, replyComment.Id);
             return mapper.Map<ReplyCommentViewModel>(replyComment);
+        }
+
+        public bool IsViolenceComment(string commentId)
+        {
+            var comment = commentRepository.GetById(ObjectId.Parse(commentId));
+            if(comment!=null && comment.Status == ItemStatus.Active)
+            {
+                var a = StringUtils.ValidateAllowString(violenceWordRepository,comment.Content);
+                if (!a)
+                    return true;
+            }
+            return false;
+        }
+
+        public bool IsViolenceReply(string replyId)
+        {
+            var comment = replyCommentRepository.GetById(ObjectId.Parse(replyId));
+            if (comment != null && comment.Status == ItemStatus.Active)
+            {
+                var a = StringUtils.ValidateAllowString(violenceWordRepository, comment.Content);
+                if (!a)
+                    return true;
+            }
+            return false;
         }
     }
 }

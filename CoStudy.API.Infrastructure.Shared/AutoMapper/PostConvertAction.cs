@@ -18,15 +18,17 @@ namespace CoStudy.API.Infrastructure.Shared.AutoMapper
         IDownVoteRepository downVoteRepository;
         ICommentRepository commentRepository;
         IHttpContextAccessor httpContextAccessor;
-
         IObjectLevelRepository objectLevelRepository;
-
         IMapper mapper;
+        IClientGroupRepository clientGroupRepository;
         public PostConvertAction(IUserRepository userRepository,
-  IUpVoteRepository upVoteRepository,
-  IDownVoteRepository downVoteRepository,
-  ICommentRepository commentRepository,
-  IHttpContextAccessor httpContextAccessor, IObjectLevelRepository objectLevelRepository, IMapper mapper)
+                              IUpVoteRepository upVoteRepository,
+                              IDownVoteRepository downVoteRepository,
+                              ICommentRepository commentRepository,
+                              IHttpContextAccessor httpContextAccessor,
+                              IObjectLevelRepository objectLevelRepository,
+                              IMapper mapper, 
+                              IClientGroupRepository clientGroupRepository)
         {
             this.userRepository = userRepository;
             this.upVoteRepository = upVoteRepository;
@@ -35,6 +37,7 @@ namespace CoStudy.API.Infrastructure.Shared.AutoMapper
             this.httpContextAccessor = httpContextAccessor;
             this.objectLevelRepository = objectLevelRepository;
             this.mapper = mapper;
+            this.clientGroupRepository = clientGroupRepository;
         }
 
         public void Process(Post source, PostViewModel destination, ResolutionContext context)
@@ -56,7 +59,6 @@ namespace CoStudy.API.Infrastructure.Shared.AutoMapper
                 destination.CommentCount = commentRepository.GetAll()
                     .Where(x => x.Status == ItemStatus.Active && x.PostId == source.OId).Count();
 
-
                 var listUpVote = upVoteRepository.GetAll()
                     .Where(x => x.ObjectVoteId == source.OId && x.IsDeleted == false);
                 destination.Upvote = listUpVote.Count();
@@ -73,12 +75,38 @@ namespace CoStudy.API.Infrastructure.Shared.AutoMapper
                 var objectLevels = objectLevelRepository.GetAll().Where(x => x.ObjectId == source.OId);
                 var postObjecLevel = mapper.Map<IEnumerable<ObjectLevelViewModel>>(objectLevels);
 
+                destination.IsSaveByCurrent = currentUser.PostSaved.Any(x => x == source.OId);
+
                 destination.Field = postObjecLevel;
+
+                switch (source.PostType)
+                {
+                    case Common.Constants.PostType.Question:
+                        destination.PostTypeName = "Câu hỏi";
+                        break;
+                    case Common.Constants.PostType.Sharing:
+                        destination.PostTypeName = "Chia sẻ";
+                        break;
+                    default:
+                        destination.PostTypeName = "Câu hỏi";
+                        break;
+                }
 
                 for (int i = 0; i < source.StringContents.Count(); i++)
                 {
-                    if(source.StringContents[i].Content ==null)
+                    if (source.StringContents[i].Content == null)
                         destination.StringContents[i].Content = String.Empty;
+                }
+
+                var clientgroups = clientGroupRepository.GetAll().FirstOrDefault(x => x.Name == source.OId);
+                if(clientgroups!=null)
+                {
+                    if (clientgroups.UserIds.Any(x => x == currentUser.OId))
+                    {
+                        if (!currentUser.TurnOfNotification.Any(a => a == source.OId))
+                            destination.IsNotifyByCurrent = true;
+                        else destination.IsNotifyByCurrent = false;
+                    }
                 }
             }
             catch (Exception)

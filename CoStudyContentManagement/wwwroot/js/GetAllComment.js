@@ -4,7 +4,10 @@
             {
                 paging: true,
                 processing: true,
-                dom: 'lirtp',
+                dom: 'Blirtp',
+                buttons: [
+                    'excel', 'pdf', 'print'
+                ],
                 serverSide: true,
                 searching: true,
                 orderMulti: true,
@@ -25,7 +28,7 @@
                     },
                 },
                 ajax: {
-                    url: 'https://localhost:44323/api/Cms/comment/paged',
+                    url: API_URL+'Cms/comment/paged',
                     type: 'POST',
                     method: 'POST',
                     contentType: 'application/json',
@@ -55,16 +58,16 @@
                     }
                 },
                 columns: [
-                    { data: 'index', name: 'index', width: '5%', className: 'text-center' },
-                    { data: 'oid', name: 'oid', width: '5%', className: '' },
-                    { data: 'author_name', name: 'author_name', width: '10%', className: '' },
+                    { data: 'index', name: 'index', width: '2%', className: 'text-center' },
+                    { data: 'oid', name: 'oid', width: '2%', className: '' },
+                    { data: 'author_name', name: 'author_name', width: '7%', className: '' },
                     { data: 'created_date', name: 'created_date', width: '5%', className: 'text-center' },
-                    { data: 'contain_image', name: 'contain_image', width: '5%', className: 'text-center' },
-                    { data: 'downvote_count', name: 'downvote_count', width: '5%', className: 'text-center' },
-                    { data: 'upvote_count', name: 'upvote_count', width: '5%', className: 'text-center' },
-                    { data: 'replies_count', name: 'replies_count', width: '5%', className: 'text-center' },
+                    { data: 'contain_image', name: 'contain_image', width: '2%', className: 'text-center' },
+                    { data: 'downvote_count', name: 'downvote_count', width: '2%', className: 'text-center' },
+                    { data: 'upvote_count', name: 'upvote_count', width: '3%', className: 'text-center' },
+                    { data: 'replies_count', name: 'replies_count', width: '2%', className: 'text-center' },
                     { data: 'status_name', name: 'status_name', width: '5%', className: 'text-center' },
-                    { data: 'oid', name: 'oid', width: '5%', className: '' },
+                    { data: 'status_name', name: 'activity', width: '5%', className: '' },
                     { data: 'content', name: 'content', width: '5%', className: 'd-none' }
                 ],
                 columnDefs: [
@@ -84,22 +87,88 @@
                     },
                     {
                         "targets": [9],
-                        "className": "text-center",
-                        "render":function(data, type, row) {
-                            var htmlString =
-                                '<button  id="btn_detail" style="border-radius:100px" class="btn btn-info"><i class="fas fa-info-circle"></i></button> ';
-                            return htmlString;
+                        "className": "",
+                        "render": function (data, type, row) {
+                            return getButtonStatusOnTable(data);
                         }
                     }
-                ]
+                ],
+                initComplete: function () {
+                    // Apply the search
+                    this.api().columns().every(function () {
+                        var that = this;
+                        $('input', this.footer()).on('keyup change clear', function () {
+                            if (that.search() !== this.value) {
+                                //alert(this.value);
+                                that
+                                    .search(this.value)
+                                    .draw();
+                            }
+                        });
+                    });
+                }
             }
         );
-    });
 
-$(document).ready(function() {
+        $('#commentTable tfoot th').each(function () {
+            if ($(this).attr('id') === 'foot_id' || $(this).attr('id') ==='foot_author') {
+                var title = $(this).text();
+                $(this).html('<input type="text" style="line-height: 0,5" class="form-control" placeholder="' + title + '" />');
+            }
+        });
+    }
+);
 
+$(document).ready(
+    function () {
+        var table = $("#commentTable").DataTable();
+        $('#btnDelete').click(function () {
+            modifyComment($('#id_to_delete').val(), 4);
+            $('#toastDiv').html(getToast('toast-delete', 'Xóa bình luận thành công. '));
+            $('.toast').toast('show');
+        });
+
+        $('#btnBlock').click(function () {
+            modifyComment($('#id_to_block').val(), 2);
+            $('#toastDiv').html(getToast('toast-update', 'Cập nhật bình luận thành công. '));
+            $('.toast').toast('show');
+        });
+
+        $('#btnActive').click(function () {
+            modifyComment($('#id_to_active').val(), 0);
+            $('#toastDiv').html(getToast('toast-active', 'Kích hoạt bình luận thành công. '));
+            $('.toast').toast('show');
+        });
+
+        $('#commentTable tbody').on('click', '#btn_detail', function () {
+            var data = table.row($(this).parents('tr')).data();
+            goToCommentDetail(data.oid);
+        });
+
+        $('#commentTable tbody').on('click', '#btn_delete', function () {
+            var data = table.row($(this).parents('tr')).data();
+            $('#id_to_delete').val(data.oid);
+            $('#deleteConfirmModal').modal('show');
+        });
+
+        $('#commentTable tbody').on('click', '#btn_block', function () {
+            var data = table.row($(this).parents('tr')).data();
+            $('#id_to_block').val(data.oid);
+            $('#blockConfirmModal').modal('show');
+        });
+
+        $('#commentTable tbody').on('click', '#btn_active', function () {
+            var data = table.row($(this).parents('tr')).data();
+            $('#id_to_active').val(data.oid);
+            $('#activeConfirmModal').modal('show');
+        });
+
+    }
+);
+$(document).ready(function () {
+    $('select[name$="_length"]').addClass('form-control custom-form-control');
     $("#btnSearch").click(
-        function() {
+        function () {
             var oTable = $("#commentTable").DataTable();
             oTable.columns(1).search($('#txt_title').val());
             oTable.columns(2).search($('#txt_author_name').val());
@@ -127,7 +196,7 @@ $(document).ready(function() {
     var table = $('#commentTable').DataTable();
     $('#commentTable tbody').on('click',
         'tr',
-        function() {
+        function () {
             if ($(this).hasClass('selected')) {
                 $(this).removeClass('selected');
             } else {
@@ -147,4 +216,28 @@ function goToCommentDetail(id) {
     if (id != '')
         window.location.replace('detail?commentId=' + id);
     else alert("Vui lòng chọn đối tượng. ");
+}
+
+function modifyComment(oid, _status) {
+    $.ajax({
+        type: 'PUT',
+        url: API_URL + 'Comment/modified-comment-status',
+        dataType: 'json',
+        contentType: 'application/json',
+        beforeSend: function (xhr) {
+            xhr.setRequestHeader('Authorization', getConfig());
+        },
+        data: JSON.stringify({
+            comment_id: oid.toLowerCase(),
+            status: _status
+        }),
+        success: function (response) {
+            if (response.code === 401)
+                alert("Unauthorized. ");
+            var oTable = $('#commentTable').DataTable().ajax.reload();
+        },
+        error: function (response) {
+            console.log(response);
+        }
+    });
 }

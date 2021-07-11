@@ -4,7 +4,10 @@
             {
                 paging: true,
                 processing: true,
-                dom: 'lirtp',
+                dom: 'Blirtp',
+                buttons: [
+                    'excel', 'pdf', 'print'
+                ],
                 serverSide: true,
                 searching: true,
                 orderMulti: true,
@@ -111,6 +114,7 @@ function getAllField(existFields, skip, count) {
 }
 
 $(document).ready(function () {
+    $('select[name$="_length"]').addClass('form-control custom-form-control');
     $('#fieldGroupTable tbody').on('click', '#btn_detail', function () {
         var table = $('#fieldGroupTable').DataTable();
         $('#fieldGroupId').val(table.row($(this).parents('tr')).data().oid);

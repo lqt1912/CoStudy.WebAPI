@@ -41,6 +41,9 @@ namespace CoStudy.API.Domain.Entities.Application
         [JsonPropertyName("order")]
         public int? Order { get; set; }
 
+        [BsonElement("point")]
+        [JsonPropertyName("point")]
+        public int Point { get; set; }
 
         /// <summary>
         /// Gets or sets the icon.

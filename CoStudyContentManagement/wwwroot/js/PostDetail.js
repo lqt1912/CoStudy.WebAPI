@@ -1,7 +1,6 @@
 ﻿$(document).ready(
     function () {
         getPostDetailById();
-
     }
 );
 
@@ -113,7 +112,7 @@ function goToAuthorDetail() {
     setTimeout(function () {
         window.open(CLIENT_URL + 'User/detail?email=' + $('#author_email').val());
     },
-        500);
+    500);
 };
 
 function getContentTypeName(parameter) {
@@ -124,7 +123,6 @@ function getContentTypeName(parameter) {
 
 $(document).ready(
     function () {
-
         $('#btnDelete').click(function () {
             modifyPost($('#id_to_delete').val(), 4);
         });

@@ -56,7 +56,6 @@ namespace CoStudy.API.Infrastructure.Shared.AutoMapper
 
             CreateMap<Follow, FollowViewModel>().AfterMap<FollowConvertAction>();
 
-
             CreateMap<ConversationMember, ConversationMemberViewModel>().AfterMap<ConversationMemberConvertAction>();
 
             CreateMap<Conversation, ConversationViewModel>();
@@ -76,17 +75,19 @@ namespace CoStudy.API.Infrastructure.Shared.AutoMapper
             CreateMap<MessageText, MessageViewModel>().ForMember(dest => dest.Content, opt => opt.MapFrom(x => x.Content)).AfterMap<MessageConvertAction>();
 
 
-            CreateMap<MessagePostThumbnail, MessageViewModel>().ForMember(dest => dest.Content, opt => opt.Ignore())
-                .AfterMap<MessageConvertAction>()
-                .AfterMap<MessagePostThumbnailConvertAction>();
+            CreateMap<MessagePostThumbnail, MessageViewModel>().ForMember(dest => dest.Content, opt => opt.Ignore()).AfterMap<MessageConvertAction>().AfterMap<MessagePostThumbnailConvertAction>();
 
             CreateMap<MessageImage, MessageViewModel>().ForMember(dest => dest.Content, opt => opt.MapFrom(src => src.Image)).AfterMap<MessageConvertAction>();
-
 
             CreateMap<MessageMultiMedia, MessageViewModel>().ForMember(dest => dest.Content, opt => opt.MapFrom(src => src.MediaUrl)).AfterMap<MessageConvertAction>();
 
             CreateMap<FieldGroup, FieldGroupViewModel>().ForMember(dest => dest.Fields, opt => opt.Ignore()).AfterMap<FieldGroupConvertAction>();
+           
             CreateMap<Field, FieldViewModel>().AfterMap<FieldConvertAction>();
+            
+            CreateMap<ViolenceWord, ViolenceWordViewModel>();
+
+            CreateMap<SearchHistory, SearchHistoryViewModel>().AfterMap<SearchHistoryConvertAction>();
         }
     }
 }

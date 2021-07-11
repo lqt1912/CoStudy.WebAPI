@@ -110,10 +110,10 @@ namespace CoStudy.API.Infrastructure.Shared.Services
             existLevel.Order = entity.Order;
             existLevel.ModifiedDate = DateTime.Now;
             existLevel.IsActive = entity.IsActive;
+            existLevel.Point = entity.Point;
             await levelRepository.UpdateAsync(existLevel, existLevel.Id);
             return mapper.Map<LevelViewModel>(existLevel);
         }
-
         public async Task<LevelViewModel> AddLevel(Level entity)
         {
             var allLevel = levelRepository.GetAll().Select(x => x.Order);

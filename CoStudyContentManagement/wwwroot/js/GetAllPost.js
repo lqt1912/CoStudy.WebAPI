@@ -5,7 +5,10 @@
         var dt = $('#postTable').DataTable({
             paging: true,
             processing: true,
-            dom: 'lirtp',
+            dom: 'Blirtp',
+            buttons: [
+                'excel', 'pdf', 'print'
+            ],
             serverSide: true, // for process on server side
             orderMulti: true,
             searching: true,
@@ -18,7 +21,8 @@
                 infoFiltered: "",
                 lengthMenu: "Hiển thị _MENU_ mục",
                 search: "Search",
-                processing: '<div class="border" style="background-color: #717571; font-size: 20px;line-height: 4; font-weight: bold">Đang tải dữ liệu...</div>',
+                processing:
+                    '<div class="border" style="background-color: #717571; font-size: 20px;line-height: 4; font-weight: bold">Đang tải dữ liệu...</div>',
                 paginate: {
                     previous: "Đầu",
                     next: "Tiếp theo",
@@ -29,7 +33,6 @@
                 url: API_URL + "Cms/post/paged",
                 type: "POST",
                 method: "POST",
-
                 contentType: "application/json",
                 dataType: "json",
                 beforeSend: function (xhr) {
@@ -53,8 +56,7 @@
 
                         console.log(response);
                         return response.data;
-                    }
-                    else {
+                    } else {
                         return [];
                     };
 
@@ -113,12 +115,12 @@
                 {
                     name: "status_name",
                     data: "status_name",
-                    width: "15%", className: "text-center"
+                    width: "10%", className: "text-center"
                 },
                 {
                     name: "activity",
-                    data: "oid",
-                    width: "10%"
+                    data: "status_name",
+                    width: "15%"
                 }
             ],
             columnDefs: [
@@ -139,24 +141,29 @@
                 },
                 {
                     "targets": [9],
-                    "className": 'text-center',
+                    "className": '',
                     "render": function (data, type, row) {
-                        var htmlString = '<button  id="btn_detail" style="border-radius:100px" class="btn btn-info"><i class="fa fa-info-circle" aria-hidden="true"></i></button> ';
-                        return htmlString;
+                        return getButtonStatusOnTable(data);
                     }
                 }
-            ]
+            ],
+            initComplete: function () {
+                // Apply the search
+                this.api().columns().every(function (index) {
+                    var that = this;
+                    $('input', this.footer()).on('keyup change clear', function () {
+                        if (that.search() !== this.value) {
+                            that.column(index - 1).search(this.value).draw();
+                        }
+                    });
+                });
+            }
         });
 
         $('#postTable tfoot th').each(function () {
-            switch ($(this).attr('id')) {
-                case 'tfoot_id':
-                case 'tfoot_author':
-                case 'tfoot_header':
-                    {
-                        var title = $(this).text();
-                        $(this).html('<input type="text" style="line-height: 0,5" class="form-control" placeholder="' + title + '" />');
-                    }
+            if ($(this).attr('id') === 'foot_author' || $(this).attr('id') === 'foot_header') {
+                var title = $(this).text();
+                $(this).html('<input type="text" style="line-height: 0,5" class="form-control" placeholder="' + title + '" />');
             }
         });
     }
@@ -164,6 +171,14 @@
 
 $(document).ready(
     function () {
+        $('select[name$="_length"]').addClass('form-control custom-form-control');
+        $('#slcStatus').on('change', function () {
+            var oTable = $("#postTable").DataTable();
+            oTable.columns(9).search(this.value);
+            oTable.draw();
+        });
+
+
         var table = $('#postTable').DataTable();
         $('#postTable tbody').on('click', 'tr', function () {
             if ($(this).hasClass('selected')) {
@@ -201,6 +216,46 @@ $(document).ready(
             var data = table.row($(this).parents('tr')).data();
             goToPostDetail(data.oid);
         });
+
+        $('#postTable tbody').on('click', '#btn_delete', function () {
+            var data = table.row($(this).parents('tr')).data();
+            $('#id_to_delete').val(data.oid);
+            $('#deleteConfirmModal').modal('show');
+        });
+
+        $('#postTable tbody').on('click', '#btn_block', function () {
+            var data = table.row($(this).parents('tr')).data();
+            $('#id_to_block').val(data.oid);
+            $('#blockConfirmModal').modal('show');
+        });
+
+        $('#postTable tbody').on('click', '#btn_active', function () {
+            var data = table.row($(this).parents('tr')).data();
+            $('#id_to_active').val(data.oid);
+            $('#activeConfirmModal').modal('show');
+        });
+
+
+        $('#btnDelete').click(function () {
+            modifyPost($('#id_to_delete').val(), 4);
+            $('#toastDiv').html(getToast('toast-delete', 'Xóa bài viết thành công. '));
+            $('.toast').toast('show');
+
+        });
+
+        $('#btnBlock').click(function () {
+            modifyPost($('#id_to_block').val(), 2);
+            $('#toastDiv').html(getToast('toast-update', 'Cập nhật bài viết thành công. '));
+            $('.toast').toast('show');
+
+        });
+
+        $('#btnActive').click(function () {
+            modifyPost($('#id_to_active').val(), 0);
+            $('#toastDiv').html(getToast('toast-active', 'Kích hoạt bài viết thành công. '));
+            $('.toast').toast('show');
+
+        });
     }
 );
 
@@ -208,4 +263,28 @@ function goToPostDetail(id) {
     if (id != '')
         window.location.replace('detail?postId=' + id);
     else alert('Vui lòng chọn đối tượng. ');
+}
+
+function modifyPost(oid, _status) {
+    $.ajax({
+        type: 'POST',
+        url: API_URL + 'Post/modified-post-status',
+        dataType: 'json',
+        contentType: 'application/json',
+        beforeSend: function (xhr) {
+            xhr.setRequestHeader('Authorization', getConfig());
+        },
+        data: JSON.stringify({
+            post_id: oid.toLowerCase(),
+            status: _status
+        }),
+        success: function (response) {
+            if (response.code === 401)
+                alert("Unauthorized. ");
+            var oTable = $('#postTable').DataTable().ajax.reload();
+        },
+        error: function (response) {
+            console.log(response);
+        }
+    });
 }

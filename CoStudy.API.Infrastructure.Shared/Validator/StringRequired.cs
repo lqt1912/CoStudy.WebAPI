@@ -3,22 +3,21 @@ using System.ComponentModel.DataAnnotations;
 
 namespace CoStudy.API.Infrastructure.Shared.Validator
 {
-        [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field)]
+    [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field)]
     public class StringRequiredAttribute : ValidationAttribute
     {
-              public int MaxLength { get; set; } = 255;
-              public int MinLength { get; set; } = 0;
+        public int MaxLength { get; set; } = 255;
+        public int MinLength { get; set; } = 0;
 
-              public string LowerLimitMessage { get; set; }
-              public string UpperLimitMessage { get; set; }
+        public string LowerLimitMessage { get; set; }
+        public string UpperLimitMessage { get; set; }
 
-
-           public StringRequiredAttribute()
+        public StringRequiredAttribute()
         {
 
         }
 
-                 public override bool IsValid(object value)
+        public override bool IsValid(object value)
         {
             if (value == null)
             {

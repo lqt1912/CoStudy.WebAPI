@@ -38,9 +38,9 @@ namespace CoStudy.API.WebAPI.Controllers
 
         [HttpGet]
         [Route("current")]
-        public async Task<IActionResult> GetCurrentUserNoftication()
+        public async Task<IActionResult> GetCurrentUserNoftication([FromQuery]BaseGetAllRequest request)
         {
-            IEnumerable<NotificationViewModel> data = await nofticationService.GetCurrentUserNotificationList();
+            var data =await  nofticationService.GetCurrentUserNotificationList(request);
             return Ok(new ApiOkResponse(data));
         }
 
@@ -57,6 +57,14 @@ namespace CoStudy.API.WebAPI.Controllers
         public async Task<IActionResult> MarkAsRead(string id)
         {
             string data = await nofticationService.MarkNotificaionsAsRead(id);
+            return Ok(new ApiOkResponse(data));
+        }
+
+        [HttpDelete]
+        [Route("delete-all")]
+        public async Task<IActionResult> DeleteAll()
+        {
+            var data = await nofticationService.DeleteNotification();
             return Ok(new ApiOkResponse(data));
         }
     }

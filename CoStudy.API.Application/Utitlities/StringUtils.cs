@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using CoStudy.API.Application.Repositories;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -41,6 +42,8 @@ namespace CoStudy.API.Application.Utitlities
         /// <returns></returns>
         public static string RemoveVnChars(this string str)
         {
+            if (str == null)
+                return string.Empty;
             //Thay thế và lọc dấu từng char      
             for (int i = 1; i < vnChars.Length; i++)
             {
@@ -67,7 +70,7 @@ namespace CoStudy.API.Application.Utitlities
         /// <returns></returns>
         public static string NormalizeSearch(this string s)
         {
-            return TrimExToLower(RemoveVnChars(s));
+            return TrimExToLower((s));
         }
 
         /// <summary>
@@ -76,14 +79,14 @@ namespace CoStudy.API.Application.Utitlities
         /// <param name="configuration">The configuration.</param>
         /// <param name="inputString">The input string.</param>
         /// <returns></returns>
-        public static bool ValidateAllowString(IConfiguration configuration, string inputString)
+        public static bool ValidateAllowString(IViolenceWordRepository violenceWordRepository, string inputString)
         {
-            string[] unAllowStrings = configuration.GetSection("UnAllowWord").Get<string[]>();
+            var unAllowStrings = violenceWordRepository.GetAll().Select(x => x.Value);
             if (unAllowStrings == null)
                 return true;
-            foreach (var unallowString in unAllowStrings.ToList() )
+            foreach (var unallowString in unAllowStrings.ToList())
             {
-                if (NormalizeSearch(inputString).Contains(NormalizeSearch( unallowString)))
+                if (NormalizeSearch(inputString).Contains(NormalizeSearch(unallowString)))
                     return false;
             }
             return true;

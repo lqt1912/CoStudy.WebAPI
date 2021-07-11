@@ -3,6 +3,7 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
+using static Common.Constants;
 
 namespace CoStudy.API.Infrastructure.Shared.ViewModels
 {
@@ -65,6 +66,13 @@ namespace CoStudy.API.Infrastructure.Shared.ViewModels
         [JsonPropertyName("comments_count")]
         public int CommentCount { get; set; }
 
+        [JsonProperty("post_type")]
+        [JsonPropertyName("post_type")]
+        public PostType PostType { get; set; }
+
+        [JsonProperty("post_type_name")]
+        [JsonPropertyName("post_type_name")]
+        public string  PostTypeName { get; set; }
 
         [JsonProperty("field")]
         [JsonPropertyName("field")]
@@ -77,7 +85,14 @@ namespace CoStudy.API.Infrastructure.Shared.ViewModels
         [JsonProperty("is_downvote_by_current")]
         [JsonPropertyName("is_downvote_by_current")]
         public bool? IsDownVoteByCurrent { get; set; }
+        
+        [JsonProperty("is_save_by_current")]
+        [JsonPropertyName("is_save_by_current")]
+        public bool? IsSaveByCurrent { get; set; }
 
+        [JsonProperty("is_notify_by_current")]
+        [JsonPropertyName("is_notify_by_current")]
+        public bool? IsNotifyByCurrent { get; set; }
     }
 }
 

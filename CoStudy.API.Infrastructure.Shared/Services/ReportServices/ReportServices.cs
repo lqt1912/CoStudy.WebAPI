@@ -7,6 +7,7 @@ using CoStudy.API.Domain.Entities.Application;
 using CoStudy.API.Infrastructure.Shared.Models.Request;
 using CoStudy.API.Infrastructure.Shared.ViewModels;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using System;
@@ -35,13 +36,13 @@ namespace CoStudy.API.Infrastructure.Shared.Services
         INotificationObjectRepository notificationObjectRepository;
 
         IFcmRepository fcmRepository;
-
+        IConfiguration configuration;
         public ReportServices(IReportRepository reportRepository,
         IMapper mapper, IUserRepository userRepository,
         IHttpContextAccessor httpContextAccessor,
         IPostRepository postRepository,
         ICommentRepository commentRepository,
-        IReplyCommentRepository replyCommentRepository, INotificationObjectRepository notificationObjectRepository, IFcmRepository fcmRepository)
+        IReplyCommentRepository replyCommentRepository, INotificationObjectRepository notificationObjectRepository, IFcmRepository fcmRepository, IConfiguration configuration)
         {
             this.reportRepository = reportRepository;
             this.mapper = mapper;
@@ -52,6 +53,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services
             this.replyCommentRepository = replyCommentRepository;
             this.notificationObjectRepository = notificationObjectRepository;
             this.fcmRepository = fcmRepository;
+            this.configuration = configuration;
         }
 
 
@@ -95,36 +97,16 @@ namespace CoStudy.API.Infrastructure.Shared.Services
 
             await reportRepository.AddAsync(data);
 
-            FilterDefinitionBuilder<NotificationObject> notificationObjectBuilders = Builders<NotificationObject>.Filter;
-
-            FilterDefinition<NotificationObject> notificationObjectFilters = notificationObjectBuilders.Eq("object_id", request.PostId)
-                & notificationObjectBuilders.Eq(NotificationConstant.NotificationType, "REPORT_POST_NOTIFY");
-
-            NotificationObject existNotificationObject = await notificationObjectRepository.FindAsync(notificationObjectFilters);
-
-            string notificationObject = existNotificationObject != null ? existNotificationObject.OId : string.Empty;
-
-            if (existNotificationObject == null)
+            var notificationDetail = new Noftication()
             {
-                NotificationObject newNotificationObject = new NotificationObject()
-                {
-                    NotificationType = "REPORT_POST_NOTIFY",
-                    ObjectId = request.PostId,
-                    OwnerId = post.AuthorId
-                };
-                await notificationObjectRepository.AddAsync(newNotificationObject);
-                notificationObject = newNotificationObject.OId;
-            }
-
-            NotificationDetail notificationDetail = new NotificationDetail()
-            {
-                CreatorId = currentUser.OId,
-                NotificationObjectId = notificationObject
+                AuthorId = currentUser.OId,
+                OwnerId = currentUser.OId,
+                ObjectId = post.OId,
+                ObjectThumbnail = post.Title
             };
 
-
-            await fcmRepository.PushNotifyReport(post.AuthorId, notificationDetail);
-
+            //Bài viết của bạn đã bị báo cáo. 
+            await fcmRepository.PushNotify(post.AuthorId, notificationDetail, NotificationContent.PostReportNotification, "Bài viết của bạn đã bị báo cáo. ");
             return mapper.Map<ReportViewModel>(data);
 
         }
@@ -174,118 +156,95 @@ namespace CoStudy.API.Infrastructure.Shared.Services
                 if (item.ObjectType.Contains("Post"))
                 {
                     Post post = await postRepository.GetByIdAsync(ObjectId.Parse(item.ObjectId));
-                    post.Status = ItemStatus.Blocked;
+                    post.Status = ItemStatus.Deleted;
                     post.ModifiedDate = DateTime.Now;
                     await postRepository.UpdateAsync(post, post.Id);
+                    var user = await userRepository.GetByIdAsync(ObjectId.Parse(post.AuthorId));
+                    if (user == null)
+                        throw new Exception("Không tìm thấy người dùng. ");
 
-                    //Notify
-                    FilterDefinitionBuilder<NotificationObject> notificationObjectBuilders = Builders<NotificationObject>.Filter;
-
-                    FilterDefinition<NotificationObject> notificationObjectFilters = notificationObjectBuilders.Eq("object_id", post.OId)
-                        & notificationObjectBuilders.Eq(NotificationConstant.NotificationType, "APPROVE_POST_REPORT");
-
-                    NotificationObject existNotificationObject = await notificationObjectRepository.FindAsync(notificationObjectFilters);
-
-                    string notificationObject = existNotificationObject != null ? existNotificationObject.OId : string.Empty;
-
-                    if (existNotificationObject == null)
+                    var notificationDetail = new Noftication()
                     {
-                        NotificationObject newNotificationObject = new NotificationObject()
-                        {
-                            NotificationType = "APPROVE_POST_REPORT",
-                            ObjectId = post.OId,
-                            OwnerId = post.AuthorId
-                        };
-                        await notificationObjectRepository.AddAsync(newNotificationObject);
-                        notificationObject = newNotificationObject.OId;
-                    }
-
-                    NotificationDetail notificationDetail = new NotificationDetail()
-                    {
-                        CreatorId = currentUser.OId,
-                        NotificationObjectId = notificationObject
+                        AuthorId = currentUser.OId,
+                        OwnerId = currentUser.OId,
+                        ObjectId = post.OId,
+                        ObjectThumbnail = post.Title
                     };
 
-                    await fcmRepository.PushNotifyApproveReport(post.AuthorId, notificationDetail);
+                    await fcmRepository.PushNotify(post.AuthorId,
+                       notificationDetail,
+                       NotificationContent.ApprovePostReportNotification,
+                       $"Bài viết của bạn đã bị xóa bởi quản trị viên. ");
+
+                    //Báo cáo của bạn đã được duyệt. 
+                    await fcmRepository.PushNotify(item.AuthorId, 
+                        notificationDetail, 
+                        NotificationContent.ApprovePostReportNotification, 
+                        $"Báo cáo của bạn về bài viết của{user.FirstName} {user.LastName} đã được xem xét. ");
+
+                   
                 }
                 else
                 if (item.ObjectType.Contains("ReplyComment"))
                 {
                     ReplyComment replyComment = await replyCommentRepository.GetByIdAsync(ObjectId.Parse(item.ObjectId));
-                    replyComment.Status = ItemStatus.Blocked;
+                    replyComment.Status = ItemStatus.Deleted;
                     replyComment.ModifiedDate = DateTime.Now;
                     await replyCommentRepository.UpdateAsync(replyComment, replyComment.Id);
 
-                    //Notify
-                    FilterDefinitionBuilder<NotificationObject> notificationObjectBuilders = Builders<NotificationObject>.Filter;
+                    var user = await userRepository.GetByIdAsync(ObjectId.Parse(replyComment.AuthorId));
+                    if (user == null)
+                        throw new Exception("Không tìm thấy người dùng. ");
 
-                    FilterDefinition<NotificationObject> notificationObjectFilters = notificationObjectBuilders.Eq("object_id", replyComment.OId)
-                        & notificationObjectBuilders.Eq(NotificationConstant.NotificationType, "APPROVE_REPLY_REPORT");
-
-                    NotificationObject existNotificationObject = await notificationObjectRepository.FindAsync(notificationObjectFilters);
-
-                    string notificationObject = existNotificationObject != null ? existNotificationObject.OId : string.Empty;
-
-                    if (existNotificationObject == null)
+                    var notificationDetail = new Noftication()
                     {
-                        NotificationObject newNotificationObject = new NotificationObject()
-                        {
-                            NotificationType = "APPROVE_REPLY_REPORT",
-                            ObjectId = replyComment.OId,
-                            OwnerId = replyComment.AuthorId
-                        };
-                        await notificationObjectRepository.AddAsync(newNotificationObject);
-                        notificationObject = newNotificationObject.OId;
-                    }
-
-                    NotificationDetail notificationDetail = new NotificationDetail()
-                    {
-                        CreatorId = currentUser.OId,
-                        NotificationObjectId = notificationObject
+                        AuthorId = currentUser.OId,
+                        OwnerId = currentUser.OId,
+                        ObjectId = replyComment.OId,
+                        ObjectThumbnail = replyComment.Content
                     };
 
+                    //Báo cáo của bạn đã được duyệt. 
+                    await fcmRepository.PushNotify(item.AuthorId,
+                        notificationDetail,
+                        NotificationContent.ApproveReplyReportNotification,
+                        $"Báo cáo của bạn về phản hồi của {user.FirstName} {user.LastName} đã được xem xét. ");
 
-                    await fcmRepository.PushNotifyApproveReport(replyComment.AuthorId, notificationDetail);
+                    await fcmRepository.PushNotify(replyComment.AuthorId,
+                        notificationDetail,
+                        NotificationContent.ApproveReplyReportNotification,
+                        $"Phản hồi của bạn đã bị xóa bởi quản trị viên. ");
                 }
                 else
                 if (item.ObjectType.Contains("Comment"))
                 {
                     Comment comment = await commentRepository.GetByIdAsync(ObjectId.Parse(item.ObjectId));
-                    comment.Status = ItemStatus.Blocked;
+                    comment.Status = ItemStatus.Deleted;
                     comment.ModifiedDate = DateTime.Now;
                     await commentRepository.UpdateAsync(comment, comment.Id);
 
-                    //Notify
+                    var user = await userRepository.GetByIdAsync(ObjectId.Parse(comment.AuthorId));
+                    if (user == null)
+                        throw new Exception("Không tìm thấy người dùng. ");
 
-                    FilterDefinitionBuilder<NotificationObject> notificationObjectBuilders = Builders<NotificationObject>.Filter;
-
-                    FilterDefinition<NotificationObject> notificationObjectFilters = notificationObjectBuilders.Eq("object_id", comment.OId)
-                        & notificationObjectBuilders.Eq(NotificationConstant.NotificationType, "APPROVE_REPLY_REPORT");
-
-                    NotificationObject existNotificationObject = await notificationObjectRepository.FindAsync(notificationObjectFilters);
-
-                    string notificationObject = existNotificationObject != null ? existNotificationObject.OId : string.Empty;
-
-                    if (existNotificationObject == null)
+                    var notificationDetail = new Noftication()
                     {
-                        NotificationObject newNotificationObject = new NotificationObject()
-                        {
-                            NotificationType = "APPROVE_REPLY_REPORT",
-                            ObjectId = comment.OId,
-                            OwnerId = comment.AuthorId
-                        };
-                        await notificationObjectRepository.AddAsync(newNotificationObject);
-                        notificationObject = newNotificationObject.OId;
-                    }
-
-                    NotificationDetail notificationDetail = new NotificationDetail()
-                    {
-                        CreatorId = currentUser.OId,
-                        NotificationObjectId = notificationObject
+                        AuthorId = currentUser.OId,
+                        OwnerId = currentUser.OId,
+                        ObjectId = comment.OId,
+                        ObjectThumbnail = comment.Content
                     };
 
+                    //Báo cáo của bạn đã được duyệt. 
+                    await fcmRepository.PushNotify(item.AuthorId,
+                        notificationDetail,
+                        NotificationContent.ApproveCommentReportNotification,
+                        $"Báo cáo của bạn về bình luận của {user.FirstName} {user.LastName} đã được xem xét.");
 
-                    await fcmRepository.PushNotifyApproveReport(comment.AuthorId, notificationDetail);
+                    await fcmRepository.PushNotify(comment.AuthorId,
+                       notificationDetail,
+                       NotificationContent.ApproveCommentReportNotification,
+                       $"Bình luận của bạn đã bị xóa bởi quản trị viên. ");
                 }
             }
             return mapper.Map<IEnumerable<ReportViewModel>>(dataToApprove);
@@ -316,34 +275,16 @@ namespace CoStudy.API.Infrastructure.Shared.Services
 
             await reportRepository.AddAsync(data);
 
-            var notificationObjectBuilders = Builders<NotificationObject>.Filter;
-
-            var notificationObjectFilters = notificationObjectBuilders.Eq("object_id", request.CommentId)
-                                            & notificationObjectBuilders.Eq(NotificationConstant.NotificationType, "REPORT_COMMENT_NOTIFY");
-
-            var existNotificationObject = await notificationObjectRepository.FindAsync(notificationObjectFilters);
-
-            string notificationObject = existNotificationObject != null ? existNotificationObject.OId : string.Empty;
-
-            if (existNotificationObject == null)
+            var notificationDetail = new Noftication()
             {
-                var newNotificationObject = new NotificationObject()
-                {
-                    NotificationType = "REPORT_COMMENT_NOTIFY",
-                    ObjectId = request.CommentId,
-                    OwnerId = comment.AuthorId
-                };
-                await notificationObjectRepository.AddAsync(newNotificationObject);
-                notificationObject = newNotificationObject.OId;
-            }
-
-            var notificationDetail = new NotificationDetail()
-            {
-                CreatorId = currentUser.OId,
-                NotificationObjectId = notificationObject
+                AuthorId = currentUser.OId,
+                OwnerId = currentUser.OId,
+                ObjectId = comment.OId,
+                ObjectThumbnail = comment.Content
             };
 
-            await fcmRepository.PushNotifyReport(comment.AuthorId, notificationDetail);
+            //Bài viết của bạn đã bị báo cáo. 
+            await fcmRepository.PushNotify(comment.AuthorId, notificationDetail, NotificationContent.CommentReportNotification, "Bình luận của bạn đã bị báo cáo. ");
 
             return mapper.Map<ReportViewModel>(data);
         }
@@ -373,34 +314,17 @@ namespace CoStudy.API.Infrastructure.Shared.Services
 
             await reportRepository.AddAsync(data);
 
-            FilterDefinitionBuilder<NotificationObject> notificationObjectBuilders = Builders<NotificationObject>.Filter;
-
-            FilterDefinition<NotificationObject> notificationObjectFilters = notificationObjectBuilders.Eq("object_id", request.ReplyId)
-                & notificationObjectBuilders.Eq(NotificationConstant.NotificationType, "REPORT_REPLY_NOTIFY");
-
-            NotificationObject existNotificationObject = await notificationObjectRepository.FindAsync(notificationObjectFilters);
-
-            string notificationObject = existNotificationObject != null ? existNotificationObject.OId : string.Empty;
-
-            if (existNotificationObject == null)
+            var notificationDetail = new Noftication()
             {
-                NotificationObject newNotificationObject = new NotificationObject()
-                {
-                    NotificationType = "REPORT_REPLY_NOTIFY",
-                    ObjectId = request.ReplyId,
-                    OwnerId = comment.AuthorId
-                };
-                await notificationObjectRepository.AddAsync(newNotificationObject);
-                notificationObject = newNotificationObject.OId;
-            }
-
-            NotificationDetail notificationDetail = new NotificationDetail()
-            {
-                CreatorId = currentUser.OId,
-                NotificationObjectId = notificationObject
+                AuthorId = currentUser.OId,
+                OwnerId = currentUser.OId,
+                ObjectId = comment.OId,
+                ObjectThumbnail = comment.Content
             };
 
-            await fcmRepository.PushNotifyReport(comment.AuthorId, notificationDetail);
+            //Bài viết của bạn đã bị báo cáo. 
+            await fcmRepository.PushNotify(comment.AuthorId, notificationDetail, NotificationContent.CommentReportNotification, "Phản hồi của bạn đã bị báo cáo. ");
+
 
             return mapper.Map<ReportViewModel>(data);
         }

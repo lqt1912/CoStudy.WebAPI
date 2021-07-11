@@ -3,13 +3,23 @@
     ViewData["Title"] = "Danh sách báo cáo";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
+<div class="row pl-3">
+    <h3>Quản lý báo cáo</h3>
+</div>
 <div class="w-100 form-row pb-3">
-    <div class="col-4 mb-2"> <input id="txt_title" class=" form-control" placeholder="Tiêu đề" /> </div>
-    <div class="col-4 mb-2"> <input id="txt_author_name" class="form-control" placeholder="Tác giả" /> </div>
-    <div class="col-4 mb-2"> <input type="date" id="dt_createddate" class="form-control" placeholder="Ngày đăng" /> </div>
+    <div class="col-2 mb-2"> <input id="txt_id" class=" form-control" placeholder="Mã báo cáo" /> </div>
+    <div class="col-2 mb-2"> <input id="txt_author_name" class="form-control" placeholder="Tác giả" /> </div>
+    <div class="col-2 mb-2"> <input type="date" id="dt_createddate" class="form-control" placeholder="Ngày đăng" /> </div>
+    <div class="col-2 mb-2">
+        <select id="slcStatus" class="form-control">
+            <option value="true">Đã duyệt</option>
+            <option value="false">Chưa duyệt</option>
+            <option value="all">Tất cả</option>
+        </select>
+    </div>
 
-    <div class="col-3 mb-2"> <button id="btnSearch" class="form-control btn btn-info"> Tìm kiếm </button></div>
-    <div class="col-3 mb-2"> <button id="btnClear" class="form-control btn btn-primary"> Refresh  </button></div>
+    <div class="col-2 mb-2"> <button id="btnSearch" class="form-control btn btn-info"> Tìm kiếm </button></div>
+    <div class="col-2 mb-2"> <button id="btnClear" class="form-control btn btn-primary"> Refresh  </button></div>
 
 </div>
 
@@ -53,17 +63,4 @@
     </div>
 </div>
 
-<div aria-live="polite" aria-atomic="true">
-    <!-- Position it -->
-    <div style="position: absolute; top: 0rem; right: 1rem;">
-        <div class="toast custom-toast" role="alert" aria-live="assertive" aria-atomic="true" data-delay="4000">
-            <div class="toast-body">
-                <span id="numberDeleted"></span>
-                <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
-                    <span aria-hidden="true">×</span>
-                </button>
-            </div>
-        </div>
-    </div>
-</div>
 <script src="~/js/GetAllReport.js"></script>

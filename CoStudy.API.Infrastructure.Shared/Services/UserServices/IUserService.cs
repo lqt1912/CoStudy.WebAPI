@@ -7,42 +7,52 @@ using CoStudy.API.Infrastructure.Shared.Models.Request.UserRequest;
 
 namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
 {
-       public interface IUserService
+    public interface IUserService
     {
-             Task<Field> AddField(string fieldValue);
-             Task<UserViewModel> AddUserAsync(AddUserRequest entity);
+        Task<Field> AddField(string fieldValue);
+       
+        Task<UserViewModel> AddUserAsync(AddUserRequest entity);
+       
+        Task<UserViewModel> UpdateUserAsync(UpdateUserRequest request);
+       
+        Task<UserViewModel> UpdateUserAddress(Address request);
+      
+        Task<UserViewModel> AddAvatarAsync(AddAvatarRequest request);
+      
+        Task<UserViewModel> UpdateAvatarAsync(AddAvatarRequest request);
+      
+        Task<string> AddFollowingsAsync(AddFollowerRequest request);
+      
+        Task<UserViewModel> GetUserById(string id);
+       
+        Task<string> RemoveFollowing(string followerId);
+      
+        List<Field> GetAll();
+     
+        Task<IEnumerable<FollowViewModel>> GetFollower(FollowFilterRequest request);
+      
+        Task<IEnumerable<FollowViewModel>> GetFollowing(FollowFilterRequest request);
+     
+        Task<IEnumerable<UserViewModel>> FilterUser(FilterUserRequest request);
+     
+        Task<UserViewModel> AddOrUpdateInfo(List<AdditionalInfomation> request);
+     
+        UserViewModel GetCurrentUser();
+     
+        IEnumerable<UserNearbyViewModel> GetNearbyUser(BaseGetAllRequest baseGetAllRequest);
+    
+        Task<UserViewModel> AddOrUpdateCallId(AddOrUpdateCallIdRequest request);
+    
+        Task<bool> IsEmailExist(string email);
+    
+        Task<UserViewModel> ModifiedUser(ModifiedRequest request);
 
-             Task<UserViewModel> UpdateUserAsync(UpdateUserRequest request);
+        Task AddPoint(string userId, string postId, int? customPoint);
 
-             Task<UserViewModel> UpdateUserAddress(Address request);
-             Task<UserViewModel> AddAvatarAsync(AddAvatarRequest request);
-             Task<UserViewModel> UpdateAvatarAsync(AddAvatarRequest request);
+        Task TurnOffNotification(string objectId);
 
+        Task TurnOnNotification(string objectId);
 
-             Task<string> AddFollowingsAsync(AddFollowerRequest request);
-
-
-             Task<UserViewModel> GetUserById(string id);
-
-
-             Task<string> RemoveFollowing(string followerId);
-
-            List<Field> GetAll();
-
-             Task<IEnumerable<FollowViewModel>> GetFollower(FollowFilterRequest request);
-
-             Task<IEnumerable<FollowViewModel>> GetFollowing(FollowFilterRequest request);
-
-             Task<IEnumerable<UserViewModel>> FilterUser(FilterUserRequest request);
-
-             Task<UserViewModel> AddOrUpdateInfo(List<AdditionalInfomation> request);
-
-            UserViewModel GetCurrentUser();
-
-            IEnumerable<UserNearbyViewModel> GetNearbyUser(BaseGetAllRequest baseGetAllRequest);
-
-             Task<UserViewModel> AddOrUpdateCallId(AddOrUpdateCallIdRequest request);
-             Task<bool> IsEmailExist(string email);
-             Task<UserViewModel> ModifiedUser(ModifiedRequest request);
+        IEnumerable<SearchHistoryViewModel> GetHistory(BaseGetAllRequest request);
     }
 }

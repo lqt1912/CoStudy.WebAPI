@@ -6,12 +6,14 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Serilog.Events;
 using Serilog;
+using System.IO;
+
 namespace CoStudy.API.WebAPI
 {
     public class SerilogMiddleware
     {
         const string MessageTemplate =
-          "HTTP {RequestMethod} {RequestPath} responded {StatusCode} in {Elapsed:0.0000} ms";
+          "HTTP {RequestMethod} {RequestPath} responded {StatusCode}  in {Elapsed:0.0000} ms";
 
         static readonly ILogger Log = Serilog.Log.ForContext<SerilogMiddleware>();
 
@@ -37,7 +39,7 @@ namespace CoStudy.API.WebAPI
                 var level = statusCode > 499 ? LogEventLevel.Error : LogEventLevel.Information;
 
                 var log = level == LogEventLevel.Error ? LogForErrorContext(httpContext) : Log;
-                log.Write(level, MessageTemplate, httpContext.Request.Method, httpContext.Request.Path, statusCode, sw.Elapsed.TotalMilliseconds);
+                log.Write(level, MessageTemplate, httpContext.Request.Method, httpContext.Request.Path, statusCode,sw.Elapsed.TotalMilliseconds);
             }
             // Never caught, because `LogException()` returns false.
             catch (Exception ex) when (LogException(httpContext, sw, ex)) { }
@@ -52,7 +54,7 @@ namespace CoStudy.API.WebAPI
 
             return false;
         }
-
+            
         static ILogger LogForErrorContext(HttpContext httpContext)
         {
             var request = httpContext.Request;
@@ -67,5 +69,6 @@ namespace CoStudy.API.WebAPI
 
             return result;
         }
+
     }
 }

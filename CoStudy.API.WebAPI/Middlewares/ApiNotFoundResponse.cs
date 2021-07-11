@@ -5,19 +5,13 @@ using System.Linq;
 
 namespace CoStudy.API.WebAPI.Middlewares
 {
-        public class ApiNotFoundResponse : ApiResponse
+    public class ApiNotFoundResponse : ApiResponse
     {
-              public IEnumerable<string> Errors { get; }
+        public string  NotFoundMessage { get; set; }
 
-             public ApiNotFoundResponse(ModelStateDictionary modelState) : base(false, 404)
+        public ApiNotFoundResponse(string _message) : base(false, 404)
         {
-            if (modelState.IsValid)
-            {
-                throw new ArgumentException("ModelState must be invalid", nameof(modelState));
-            }
-
-            Errors = modelState.SelectMany(x => x.Value.Errors)
-                .Select(x => x.ErrorMessage).ToArray();
+            NotFoundMessage = _message;
         }
     }
 }

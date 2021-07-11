@@ -4,7 +4,10 @@
             {
                 paging: true,
                 processing: true,
-                dom: 'lirtp',
+                dom: 'Blirtp',
+                buttons: [
+                    'excel', 'pdf', 'print'
+                ],
                 serverSide: true,
                 searching: true,
                 orderMulti: true,
@@ -212,6 +215,35 @@ function goToObjectDetail() {
 }
 
 $(document).ready(function () {
+    $('select[name$="_length"]').addClass('form-control custom-form-control');
+
+    $("#btnSearch").click(
+        function () {
+            var oTable = $("#reportTable").DataTable();
+
+            oTable.columns(1).search($('#txt_id').val());
+            oTable.columns(2).search($('#txt_author_name').val());
+            oTable.columns(5).search($('#dt_createddate').val());
+            oTable.columns(6).search($('#slcStatus').val());
+            oTable.draw();
+        }
+    );
+
+    $("#btnClear").click(
+        function () {
+            var oTable = $("#reportTable").DataTable();
+            $("#txt_id").val('');
+            $("#txt_author_name").val('');
+            $("#dt_createddate").val('');
+            $("#slcStatus").val('all');
+
+            oTable.columns(1).search($('#txt_id').val());
+            oTable.columns(2).search($('#txt_author_name').val());
+            oTable.columns(5).search($('#dt_createddate').val());
+            oTable.columns(6).search($('#slcStatus').val());
+            oTable.draw();
+        }
+    );
 
     $('#btn-pre-approve').click(function () {
         $('#detailModal').modal('hide');
@@ -231,7 +263,7 @@ $(document).ready(function () {
             },
             data: JSON.stringify([$('#id_to_delete').val()]),
             success: function (response) {
-                $('#reportTable').DataTable().ajax.reload;
+                $('#reportTable').DataTable().ajax.reload();
                 $('.toast').toast('show');
             },
             error: function (response) {
