@@ -1,13 +1,11 @@
 ﻿using CoStudy.API.Infrastructure.Shared.Models.Request;
+using CoStudy.API.Infrastructure.Shared.Models.Request.PostRequest;
 using CoStudy.API.Infrastructure.Shared.Services;
 using CoStudy.API.Infrastructure.Shared.Services.PostServices;
 using CoStudy.API.Infrastructure.Shared.ViewModels;
 using CoStudy.API.WebAPI.Middlewares;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
-using CoStudy.API.Domain.Entities.Identity.MongoAuthen;
-using CoStudy.API.Infrastructure.Shared.Models.Request.PostRequest;
-using System.Linq;
 
 namespace CoStudy.API.WebAPI.Controllers
 {
@@ -29,7 +27,7 @@ namespace CoStudy.API.WebAPI.Controllers
         [HttpPost]
         public async Task<IActionResult> AddPost(AddPostRequest request)
         {
-            var  data = await postService.AddPost(request);
+            var data = await postService.AddPost(request);
             return Ok(new ApiOkResponse(data));
         }
 
@@ -38,7 +36,7 @@ namespace CoStudy.API.WebAPI.Controllers
         public async Task<IActionResult> GetById(string id)
         {
             PostViewModel data = await postService.GetPostById1(id);
-            if (data !=null)
+            if (data != null)
                 return Ok(new ApiOkResponse(data));
             return Ok(new ApiNotFoundResponse("Bài viết không tồn tại hoặc đã bị xóa. "));
         }
