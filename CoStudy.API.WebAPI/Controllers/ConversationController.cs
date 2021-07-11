@@ -9,19 +9,19 @@ using System.Threading.Tasks;
 
 namespace CoStudy.API.WebAPI.Controllers
 {
-        [Route("api/[controller]")]
+    [Route("api/[controller]")]
     [ApiController]
     public class ConversationController : ControllerBase
     {
 
-           IConversationService conversationService;
+        IConversationService conversationService;
 
-            public ConversationController(IConversationService conversationService)
+        public ConversationController(IConversationService conversationService)
         {
             this.conversationService = conversationService;
         }
 
-             [HttpPost]
+        [HttpPost]
         public async Task<IActionResult> AddConversation(AddConversationRequest request)
         {
             ConversationViewModel data = await conversationService.AddConversation(request);
@@ -29,7 +29,7 @@ namespace CoStudy.API.WebAPI.Controllers
         }
 
 
-            [HttpGet]
+        [HttpGet]
         [Route("current")]
         public async Task<IActionResult> GetCurrentConversationList()
         {
@@ -38,7 +38,7 @@ namespace CoStudy.API.WebAPI.Controllers
         }
 
 
-             [HttpDelete]
+        [HttpDelete]
         [Route("{id}")]
         public async Task<IActionResult> DeleteConversation(string id)
         {
@@ -46,7 +46,7 @@ namespace CoStudy.API.WebAPI.Controllers
             return Ok(new ApiOkResponse(data));
         }
 
-             [HttpPut]
+        [HttpPut]
         [Route("member")]
         public async Task<IActionResult> AddMember(AddMemberRequest request)
         {

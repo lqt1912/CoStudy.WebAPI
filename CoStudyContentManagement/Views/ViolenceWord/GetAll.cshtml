@@ -1,0 +1,27 @@
+﻿
+@{
+    ViewData["Title"] = "Danh mục từ ngữ vi phạm";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="row pl-3">
+    <h3>Danh mục từ ngữ vi phạm</h3>
+    <button class="btn btn-primary ml-3" style="cursor: pointer; background-color: #2A8383; border: none" id="btnAdd"><i class="fas fa-plus"></i> Thêm mới</button>
+</div>
+
+<div class="row container-fluid">
+    <table id="violenceWordTable"
+           class="table table-responsive table-striped border"
+           style="font-size: 15px; width: 100% !important">
+        <thead>
+            <tr>
+                <th>STT</th>
+                <th>Mã tham chiếu</th>
+                <th>Giá trị</th>
+                <th class="text-center">Hoạt động</th>
+            </tr>
+        </thead>
+    </table>
+</div>
+@await Html.PartialAsync("ViolenceWordPartial/AddModal")
+
+<script src="~/js/GetAllViolenceWord.js"></script>

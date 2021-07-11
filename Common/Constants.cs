@@ -136,12 +136,7 @@ namespace Common
             /// The reply comment notify
             /// </summary>
             public static string REPLY_COMMENT_NOTIFY = " đã trả lời bình luận của ";
-
-           
-
         }
-
-
         public static class PointAdded
         {
             public static int Default = 2;
@@ -150,6 +145,22 @@ namespace Common
             public static int Level3 = 5;
             public static int Level4 = 8;
             public static int Level5 = 15;
+            public static int Upvote = 2;
+            public static int Downvote = -2;
+        }
+        public enum CronTime
+        {
+            Secondly, 
+            Minutely, 
+            Hourly,
+            Daily, 
+            Monthly
+        }
+
+        public enum PostType
+        {
+           Question, 
+           Sharing
         }
     }
 }

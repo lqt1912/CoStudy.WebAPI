@@ -44,7 +44,7 @@ namespace CoStudy.API.WebAPI.Controllers
 
             await _accountService.Register(registerRequest, Feature.GetHostUrl(httpContextAccessor));
 
-          
+
             var response = new
             {
                 Data = data,
@@ -208,7 +208,7 @@ namespace CoStudy.API.WebAPI.Controllers
 
         [HttpGet]
         [Route("is-exist")]
-        public async Task<IActionResult> CheckUserExist([FromQuery]string email)
+        public async Task<IActionResult> CheckUserExist([FromQuery] string email)
         {
             var data = await userService.IsEmailExist(email);
             return Ok(new ApiOkResponse(data));
@@ -216,11 +216,33 @@ namespace CoStudy.API.WebAPI.Controllers
 
         [HttpPut("modified-user")]
         [Authorize(Role.Admin)]
-        public async Task<IActionResult> Modified([FromBody]ModifiedRequest request)
+        public async Task<IActionResult> Modified([FromBody] ModifiedRequest request)
         {
             var data = await userService.ModifiedUser(request);
             return Ok(new ApiOkResponse(data));
         }
 
+        [HttpPost("remove-notification/{objectId}")]
+        public async Task<IActionResult> TurnOffNotification(string objectId)
+        {
+            await userService.TurnOffNotification(objectId);
+            return Ok(new ApiOkResponse("Thành công. "));
+        }
+
+        [HttpPost("add-notification/{objectId}")]
+        [Authorize]
+        public async Task<IActionResult> TurnOnNotification(string objectId)
+        {
+            await userService.TurnOnNotification(objectId);
+            return Ok(new ApiOkResponse("Thành công. "));
+        }
+
+        [HttpGet]
+        [Route("history")]
+        public IActionResult GetHistory([FromQuery] BaseGetAllRequest request)
+        {
+            var data = userService.GetHistory(request);
+            return Ok(new ApiOkResponse(data));
+        }
     }
 }

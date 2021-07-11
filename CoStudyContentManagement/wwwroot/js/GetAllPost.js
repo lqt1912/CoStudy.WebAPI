@@ -115,12 +115,12 @@
                 {
                     name: "status_name",
                     data: "status_name",
-                    width: "15%", className: "text-center"
+                    width: "10%", className: "text-center"
                 },
                 {
                     name: "activity",
                     data: "status_name",
-                    width: "10%"
+                    width: "15%"
                 }
             ],
             columnDefs: [

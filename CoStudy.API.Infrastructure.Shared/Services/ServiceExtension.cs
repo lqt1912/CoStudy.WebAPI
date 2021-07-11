@@ -8,9 +8,9 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace CoStudy.API.Infrastructure.Shared.Services
 {
-       public static class ServiceExtension
+    public static class ServiceExtension
     {
-            public static void RegisterCustomService(this IServiceCollection services)
+        public static void RegisterCustomService(this IServiceCollection services)
         {
             services.AddTransient<IUserService, UserService>();
             services.AddTransient<IPostService, PostService>();
@@ -29,6 +29,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services
             services.AddTransient<ICmsServices, CmsServices>();
             services.AddTransient<IFieldServices, FieldServices>();
             services.AddTransient<IMasterDataServices, MasterDataServices>();
+            services.AddTransient<IViolenceWordService, ViolenceWordService>();
         }
     }
 }

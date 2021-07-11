@@ -8,19 +8,19 @@ using System.Threading.Tasks;
 
 namespace CoStudy.API.WebAPI.Controllers
 {
-        [Route("api/[controller]")]
+    [Route("api/[controller]")]
     [ApiController]
 
     public class MessageController : ControllerBase
     {
-           IMessageService messageService;
-            public MessageController(IMessageService messageService)
+        IMessageService messageService;
+        public MessageController(IMessageService messageService)
         {
             this.messageService = messageService;
         }
 
 
-             [Authorize]
+        [Authorize]
         [HttpPost]
         [Route("message/add")]
         public async Task<IActionResult> AddMessage(AddMessageRequest request)
@@ -30,7 +30,7 @@ namespace CoStudy.API.WebAPI.Controllers
             return Ok(new ApiOkResponse(data));
         }
 
-             [HttpGet]
+        [HttpGet]
         [Route("message/get/conversation")]
         public async Task<IActionResult> GetMessageByConversationId([FromQuery] GetMessageByConversationIdRequest request)
         {
@@ -40,7 +40,7 @@ namespace CoStudy.API.WebAPI.Controllers
 
 
 
-             [HttpDelete]
+        [HttpDelete]
         [Route("message/{id}")]
         public async Task<IActionResult> DeleteMessage(string id)
         {
@@ -48,7 +48,7 @@ namespace CoStudy.API.WebAPI.Controllers
             return Ok(new ApiOkResponse(data));
         }
 
-             [HttpPut]
+        [HttpPut]
         [Route("update")]
         public async Task<IActionResult> EditMessage(UpdateMessageRequest request)
         {
@@ -56,7 +56,7 @@ namespace CoStudy.API.WebAPI.Controllers
             return Ok(new ApiOkResponse(data));
         }
 
-            [HttpGet]
+        [HttpGet]
         [Route("all")]
         public IActionResult GetAll()
         {

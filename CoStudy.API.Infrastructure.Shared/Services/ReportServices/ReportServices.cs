@@ -171,16 +171,18 @@ namespace CoStudy.API.Infrastructure.Shared.Services
                         ObjectThumbnail = post.Title
                     };
 
+                    await fcmRepository.PushNotify(post.AuthorId,
+                       notificationDetail,
+                       NotificationContent.ApprovePostReportNotification,
+                       $"Bài viết của bạn đã bị xóa bởi quản trị viên. ");
+
                     //Báo cáo của bạn đã được duyệt. 
                     await fcmRepository.PushNotify(item.AuthorId, 
                         notificationDetail, 
                         NotificationContent.ApprovePostReportNotification, 
                         $"Báo cáo của bạn về bài viết của{user.FirstName} {user.LastName} đã được xem xét. ");
 
-                    await fcmRepository.PushNotify(post.AuthorId,
-                        notificationDetail,
-                        NotificationContent.ApprovePostReportNotification,
-                        $"Bài viết của bạn đã bị xóa bởi quản trị viên. ");
+                   
                 }
                 else
                 if (item.ObjectType.Contains("ReplyComment"))

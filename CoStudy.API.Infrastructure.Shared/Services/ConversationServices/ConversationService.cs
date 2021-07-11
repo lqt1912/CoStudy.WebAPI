@@ -12,48 +12,49 @@ using MongoDB.Driver;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace CoStudy.API.Infrastructure.Shared.Services
 {
-        public class ConversationService : IConversationService
+    public class ConversationService : IConversationService
     {
-           IConversationItemTypeRepository conversationItemTypeRepository;
+        IConversationItemTypeRepository conversationItemTypeRepository;
 
-           IMapper mapper;
+        IMapper mapper;
 
-           private IConversationRepository conversationRepository;
+        private IConversationRepository conversationRepository;
 
-           private IHttpContextAccessor httpContextAccessor;
+        private IHttpContextAccessor httpContextAccessor;
 
-           private IUserRepository userRepository;
+        private IUserRepository userRepository;
 
-           private IClientGroupRepository clientGroupRepository;
+        private IClientGroupRepository clientGroupRepository;
 
-           private IMessageRepository messageRepository;
+        private IMessageRepository messageRepository;
 
-           private IMessageTextRepository messagTextRepository;
+        private IMessageTextRepository messagTextRepository;
 
-           private IMessageImageRepository messageImageRepository;
+        private IMessageImageRepository messageImageRepository;
 
-           private IMessageMultiMediaRepository messageMultiMediaRepository;
+        private IMessageMultiMediaRepository messageMultiMediaRepository;
 
-           private IMessagePostThumbnailRepository messagePostThumbnailRepository;
+        private IMessagePostThumbnailRepository messagePostThumbnailRepository;
 
-           private IMessageConversationActivityRepository messageConversationActivityRepository;
+        private IMessageConversationActivityRepository messageConversationActivityRepository;
 
 
-            public ConversationService(IConversationItemTypeRepository conversationItemTypeRepository,
-            IMapper mapper, IConversationRepository conversationRepository,
-            IHttpContextAccessor httpContextAccessor,
-            IUserRepository userRepository,
-            IClientGroupRepository clientGroupRepository,
-            IMessageRepository messageRepository,
-            IMessageTextRepository messagTextRepository,
-            IMessageImageRepository messageImageRepository,
-            IMessageMultiMediaRepository messageMultiMediaRepository,
-            IMessagePostThumbnailRepository messagePostThumbnailRepository,
-            IMessageConversationActivityRepository messageConversationActivityRepository)
+        public ConversationService(IConversationItemTypeRepository conversationItemTypeRepository,
+        IMapper mapper, IConversationRepository conversationRepository,
+        IHttpContextAccessor httpContextAccessor,
+        IUserRepository userRepository,
+        IClientGroupRepository clientGroupRepository,
+        IMessageRepository messageRepository,
+        IMessageTextRepository messagTextRepository,
+        IMessageImageRepository messageImageRepository,
+        IMessageMultiMediaRepository messageMultiMediaRepository,
+        IMessagePostThumbnailRepository messagePostThumbnailRepository,
+        IMessageConversationActivityRepository messageConversationActivityRepository)
         {
             this.conversationItemTypeRepository = conversationItemTypeRepository;
             this.mapper = mapper;
@@ -69,7 +70,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services
             this.messageConversationActivityRepository = messageConversationActivityRepository;
         }
 
-             public async Task<ConversationItemTypeViewModel> AddConversationItemType(ConversationItemType entity)
+        public async Task<ConversationItemTypeViewModel> AddConversationItemType(ConversationItemType entity)
         {
 
             var data = new ConversationItemType()
@@ -83,14 +84,14 @@ namespace CoStudy.API.Infrastructure.Shared.Services
             return mapper.Map<ConversationItemTypeViewModel>(data);
         }
 
-             public async Task<ConversationItemTypeViewModel> GetItemTypeByCode(string code)
+        public async Task<ConversationItemTypeViewModel> GetItemTypeByCode(string code)
         {
             var conversationItemTypeFilter = Builders<ConversationItemType>.Filter.Eq("code", code);
             var data = await conversationItemTypeRepository.FindAsync(conversationItemTypeFilter);
             return mapper.Map<ConversationItemTypeViewModel>(data);
         }
 
-             public async Task<ConversationViewModel> AddConversation(AddConversationRequest request)
+        public async Task<ConversationViewModel> AddConversation(AddConversationRequest request)
         {
 
             User currentUser = Feature.CurrentUser(httpContextAccessor, userRepository);
@@ -135,11 +136,12 @@ namespace CoStudy.API.Infrastructure.Shared.Services
             };
 
             await clientGroupRepository.AddAsync(clientGroup);
+            Thread.Sleep(1000);
             return mapper.Map<ConversationViewModel>(conversation);
         }
 
 
-             public async Task<GetConversationByUserIdResponse> GetConversationByUserId()
+        public async Task<GetConversationByUserIdResponse> GetConversationByUserId()
         {
             User currentUser = Feature.CurrentUser(httpContextAccessor, userRepository);
             if (currentUser == null)
@@ -192,7 +194,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services
         }
 
 
-              public async Task<string> DeleteConversation(string id)
+        public async Task<string> DeleteConversation(string id)
         {
             Conversation exist = await conversationRepository.GetByIdAsync(ObjectId.Parse(id));
             if (exist != null)
@@ -217,7 +219,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services
         }
 
 
-              public async Task<IEnumerable<MessageViewModel>> AddMember(AddMemberRequest request)
+        public async Task<IEnumerable<MessageViewModel>> AddMember(AddMemberRequest request)
         {
             var conversation = await conversationRepository.GetByIdAsync(ObjectId.Parse(request.ConversationId));
 

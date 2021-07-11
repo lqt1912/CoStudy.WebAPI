@@ -5,13 +5,13 @@ using CoStudy.API.Application.FCM;
 using CoStudy.API.Application.Features;
 using CoStudy.API.Application.Repositories;
 using CoStudy.API.Application.Utitlities;
-using CoStudy.API.Domain.Base;
 using CoStudy.API.Domain.Entities.Application;
 using CoStudy.API.Infrastructure.Shared.Adapters;
 using CoStudy.API.Infrastructure.Shared.Models.Request;
 using CoStudy.API.Infrastructure.Shared.Models.Request.PostRequest;
 using CoStudy.API.Infrastructure.Shared.Models.Response.PostResponse;
 using CoStudy.API.Infrastructure.Shared.Services.MessageServices;
+using CoStudy.API.Infrastructure.Shared.Services.UserServices;
 using CoStudy.API.Infrastructure.Shared.ViewModels;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
@@ -40,7 +40,6 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
         private readonly IFcmRepository fcmRepository;
         private readonly IMapper mapper;
         private readonly IObjectLevelRepository objectLevelRepository;
-        private readonly INotificationObjectRepository notificationObjectRepository;
         private readonly ILevelService levelService;
         private readonly IFieldGroupRepository fieldGroupRepository;
         private readonly ILevelRepository levelRepository;
@@ -48,6 +47,9 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
         private readonly IConversationService conversationService;
         private readonly ICommentRepository commentRepository;
         private readonly IReplyCommentRepository replyCommentRepository;
+        private readonly IViolenceWordRepository violenceWordRepository;
+        private readonly IUserService userService;
+        private readonly ISearchHistoryRepository searchHistoryRepository;
         public PostService(IHttpContextAccessor httpContextAccessor,
                             IConfiguration configuration,
                             IUserRepository userRepository,
@@ -56,12 +58,18 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
                             IUpVoteRepository upVoteRepository,
                             IDownVoteRepository downVoteRepository,
                             IFcmRepository fcmRepository,
-                            IMapper mapper, IObjectLevelRepository objectLevelRepository,
-                            INotificationObjectRepository notificationObjectRepository,
+                            IMapper mapper,
+                            IObjectLevelRepository objectLevelRepository,
                             ILevelService levelService,
                             IFieldGroupRepository fieldGroupRepository,
                             ILevelRepository levelRepository,
-                            IMessageService messageService, IConversationService conversationService, ICommentRepository commentRepository, IReplyCommentRepository replyCommentRepository)
+                            IMessageService messageService,
+                            IConversationService conversationService,
+                            ICommentRepository commentRepository,
+                            IReplyCommentRepository replyCommentRepository,
+                            IViolenceWordRepository violenceWordRepository,
+                            IUserService userService,
+                            ISearchHistoryRepository searchHistoryRepository)
         {
             this.httpContextAccessor = httpContextAccessor;
             this.configuration = configuration;
@@ -73,7 +81,6 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
             this.fcmRepository = fcmRepository;
             this.mapper = mapper;
             this.objectLevelRepository = objectLevelRepository;
-            this.notificationObjectRepository = notificationObjectRepository;
             this.levelService = levelService;
             this.fieldGroupRepository = fieldGroupRepository;
             this.levelRepository = levelRepository;
@@ -81,6 +88,9 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
             this.conversationService = conversationService;
             this.commentRepository = commentRepository;
             this.replyCommentRepository = replyCommentRepository;
+            this.violenceWordRepository = violenceWordRepository;
+            this.userService = userService;
+            this.searchHistoryRepository = searchHistoryRepository;
         }
 
         public async Task<PostViewModel> AddPost(AddPostRequest request)
@@ -88,19 +98,6 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
             var currentUser = Feature.CurrentUser(httpContextAccessor, userRepository);
             var post = PostAdapter.FromRequest(request);
             post.AuthorId = currentUser.Id.ToString();
-
-            try
-            {
-                foreach (var stringContent in post.StringContents)
-                    if (StringUtils.ValidateAllowString(configuration, stringContent.Content) == false)
-                        throw new Exception(UnAllowContent);
-                if (StringUtils.ValidateAllowString(configuration, post.Title) == false)
-                    throw new Exception(UnAllowTitle);
-            }
-            catch (Exception)
-            {
-                //do nothing
-            }
             await postRepository.AddAsync(post);
 
             await fcmRepository.AddToGroup(new AddUserToGroupRequest()
@@ -119,15 +116,22 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
 
             foreach (var user in userMatchs)
             {
-                var notificationDetail = new Noftication()
-                {
-                    AuthorId = currentUser.OId,
-                    OwnerId = currentUser.OId,
-                    ObjectId = post.OId,
-                    ObjectThumbnail = post.Title
-                };
+                var followBuilder = Builders<Follow>.Filter;
+                var followFilter = followBuilder.Eq("from_id", user.OId) & followBuilder.Eq("to_id", currentUser.OId);
+                var follows = await followRepository.FindListAsync(followFilter);
 
-                await fcmRepository.PushNotify(user.OId, notificationDetail, NotificationContent.AddPostNotification);
+                follows.ForEach(async x =>
+                {
+                    var notificationDetail = new Noftication()
+                    {
+                        AuthorId = currentUser.OId,
+                        OwnerId = currentUser.OId,
+                        ObjectId = post.OId,
+                        ObjectThumbnail = post.Title
+                    };
+                    await fcmRepository.PushNotify(x.FromId, notificationDetail, NotificationContent.AddPostNotification);
+                });
+
             }
             var response = mapper.Map<PostViewModel>(post);
             return response;
@@ -143,7 +147,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
 
                 var author = await userRepository.GetByIdAsync(ObjectId.Parse(request.UserId));
 
-                var data = (await postRepository.FindListAsync(match)).OrderByDescending(x=>x.CreatedDate).ToList();
+                var data = (await postRepository.FindListAsync(match)).OrderByDescending(x => x.CreatedDate).ToList();
                 if (request.Skip.HasValue && request.Count.HasValue)
                 {
                     data = data.Skip(request.Skip.Value).Take(request.Count.Value).ToList();
@@ -240,7 +244,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
                 };
 
                 await fcmRepository.PushNotify(currentPost.AuthorId, notificationDetail, NotificationContent.UpvotePostNotification);
-
+                await userService.AddPoint(currentPost.AuthorId, currentPost.OId, PointAdded.Upvote);
                 return UpvoteSuccess;
             }
             catch (Exception)
@@ -300,6 +304,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
                 };
 
                 await fcmRepository.PushNotify(currentPost.AuthorId, notificationDetail, NotificationContent.DownvotePostNotification);
+                await userService.AddPoint(currentPost.AuthorId, currentPost.OId, PointAdded.Downvote);
                 return DownvoteSuccess;
             }
             catch (Exception)
@@ -362,7 +367,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
             }
         }
 
-        public async Task<List<PostViewModel>> GetSavedPost(BaseGetAllRequest request)
+        public async Task<List<PostViewModel>> GetSavedPost(GetSavedPostRequest request)
         {
             var currentUser = Feature.CurrentUser(httpContextAccessor, userRepository);
             var result = new List<Post>();
@@ -375,6 +380,24 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
                 }
             }
 
+            if (request.FromDate != null && request.ToDate != null)
+            {
+                result = result.Where(x => x.CreatedDate > request.FromDate && x.CreatedDate < request.ToDate).ToList();
+            }
+
+            switch (request.OrderType)
+            {
+                case OrderType.Ascending:
+                    result = result.OrderBy(x => x.CreatedDate).ToList();
+                    break;
+                case OrderType.Descending:
+                    result = result.OrderByDescending(x => x.ModifiedDate).ToList();
+                    break;
+                default:
+                    result = result.OrderBy(x => x.CreatedDate).ToList();
+                    break;
+            }
+
             if (request.Skip.HasValue && request.Count.HasValue)
             {
                 result = result.Skip(request.Skip.Value).Take(request.Count.Value).ToList();
@@ -383,9 +406,9 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
             return mapper.Map<List<PostViewModel>>(result);
         }
 
-        public async Task<PostFilterResponse> Filter(FilterRequest filterRequest)
+        public async Task<PostFilterResponse> Filter(Models.Request.FilterRequest filterRequest)
         {
-            var posts = postRepository.GetAll();
+            var posts = postRepository.GetAll().Where(x => x.PostType == filterRequest.PostType);
 
             var builders = Builders<Post>.Filter;
             var filterParam = builders.Eq(Status, ItemStatus.Active);
@@ -403,6 +426,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
                     & builders.Lt(CreatedDate, filterRequest.ToDate);
             }
 
+            filterParam = filterParam & builders.Eq("post_type", filterRequest.PostType);
             posts = (await postRepository.FindListAsync(filterParam)).AsQueryable();
 
             var vm = mapper.Map<IEnumerable<PostViewModel>>(posts);
@@ -411,24 +435,24 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
             {
                 switch (filterRequest.SortObject.Value)
                 {
-                    case SortObject.Upvote:
+                    case Models.Request.SortObject.Upvote:
                         {
                             var sortType = filterRequest.SortType.Value;
                             vm = sortType switch
                             {
-                                SortType.Ascending => vm.OrderBy(x => x.Upvote),
-                                SortType.Descending => vm.OrderByDescending(x => x.Upvote),
+                                Models.Request.SortType.Ascending => vm.OrderBy(x => x.Upvote),
+                                Models.Request.SortType.Descending => vm.OrderByDescending(x => x.Upvote),
                                 _ => vm
                             };
                             break;
                         }
-                    case SortObject.Comment:
+                    case Models.Request.SortObject.Comment:
                         {
                             var sortType = filterRequest.SortType.Value;
                             vm = sortType switch
                             {
-                                SortType.Ascending => vm.OrderBy(x => x.CommentCount),
-                                SortType.Descending => vm.OrderByDescending(x => x.CommentCount),
+                                Models.Request.SortType.Ascending => vm.OrderBy(x => x.CommentCount),
+                                Models.Request.SortType.Descending => vm.OrderByDescending(x => x.CommentCount),
                                 _ => vm
                             };
 
@@ -452,8 +476,21 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
                 }
             }
 
-            var response = new PostFilterResponse();
+            var currentUser = Feature.CurrentUser(httpContextAccessor, userRepository);
+            var historyBuilder = Builders<SearchHistory>.Filter;
+            var historyFilter = historyBuilder.Eq("user_id", currentUser.OId) & historyBuilder.Eq("history_type", HistoryType.Post);
+            var existHistoryModels = await searchHistoryRepository.FindListAsync(historyFilter);
 
+
+            var historyModel = new SearchHistory()
+            {
+                HistoryType = HistoryType.Post,
+                UserId = currentUser.OId,
+                PostValue = filterRequest
+            };
+            await searchHistoryRepository.AddAsync(historyModel);
+
+            var response = new PostFilterResponse();
 
             if (filterRequest.LevelFilter != null && filterRequest.LevelFilter.FilterItems.Any())
             {
@@ -628,8 +665,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
             return result;
         }
 
-
-        private async Task<List<User>> GetUsersMatchPostField(Post post)
+        public async Task<List<User>> GetUsersMatchPostField(Post post)
         {
             var postObjectLevelBuilder = Builders<ObjectLevel>.Filter;
             var postObjectLevelFilter = postObjectLevelBuilder.Eq(ObjectIdCs, post.OId)
@@ -648,6 +684,25 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
             return result;
 
         }
+       
+        public async Task<List<UserViewModel>> GetUserByPostField(string postId)
+        {
+            var postObjectLevelBuilder = Builders<ObjectLevel>.Filter;
+            var postObjectLevelFilter = postObjectLevelBuilder.Eq(ObjectIdCs, postId)
+                & postObjectLevelBuilder.Eq(IsActive, true);
+            var postObjectLevels = await objectLevelRepository.FindListAsync(postObjectLevelFilter);
+            var allUsers = userRepository.GetAll();
+
+            var result = new List<User>();
+            foreach (var user in allUsers)
+            {
+                if ((await IsUserMatchListObjectLevel(user, postObjectLevels)))
+                {
+                    result.Add(user);
+                }
+            }
+            return mapper.Map<List<UserViewModel>>(result);
+        }
 
         private async Task<bool> IsUserMatchListObjectLevel(User user, List<ObjectLevel> objectLevels)
         {
@@ -658,7 +713,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
             return userObjectLevels.Select(userObjectLevel => objectLevels.FirstOrDefault(x => x.FieldId == userObjectLevel.FieldId)).Any(_ => _ != null);
         }
 
-        private bool IsMatch(PostViewModel post, LevelFilterItem levelFilterItem)
+        private bool IsMatch(PostViewModel post, Models.Request.LevelFilterItem levelFilterItem)
         {
             try
             {
@@ -686,7 +741,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
             }
         }
 
-        private bool IsMatch(PostViewModel post, LevelFilter levelFilter)
+        private bool IsMatch(PostViewModel post, Models.Request.LevelFilter levelFilter)
         {
             try
             {
@@ -732,6 +787,50 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
             });
 
             return mapper.Map<PostViewModel>(post);
+        }
+
+        public bool IsViolencePost(string postId)
+        {
+            var post = postRepository.GetById(ObjectId.Parse(postId));
+            if (post != null && post.Status == ItemStatus.Active)
+            {
+                var a = StringUtils.ValidateAllowString(violenceWordRepository, post.Title);
+                if (!a)
+                    return true;
+                if (post.StringContents.Count > 0)
+                {
+                    foreach (var item in post.StringContents)
+                    {
+                        var b = StringUtils.ValidateAllowString(violenceWordRepository, item.Content);
+                        if (!b)
+                            return true;
+                    }
+                }
+                if (post.MediaContents.Count > 0)
+                {
+                    foreach (var item1 in post.MediaContents)
+                    {
+                        var x = StringUtils.ValidateAllowString(violenceWordRepository, item1.Discription);
+                        if (!x)
+                            return true;
+                    }
+                }
+                return false;
+            }
+            return false;
+        }
+
+        public IEnumerable<SearchHistoryViewModel> GetHistory(BaseGetAllRequest request)
+        {
+            var a = searchHistoryRepository.GetAll().Where(x => x.HistoryType == HistoryType.Post);
+            var vm = mapper.Map<IEnumerable<SearchHistoryViewModel>>(a);
+            vm = vm.GroupBy(x => x.PostValue.ContentFilter)
+                .Select(x => x.OrderByDescending(y => y.CreatedDate).FirstOrDefault())
+                .OrderByDescending(x=>x.CreatedDate);
+            
+            if (request.Skip.HasValue && request.Count.HasValue)
+                vm = vm.Skip(request.Skip.Value).Take(request.Count.Value);
+            return vm;
         }
     }
 }

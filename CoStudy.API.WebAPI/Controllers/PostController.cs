@@ -100,7 +100,7 @@ namespace CoStudy.API.WebAPI.Controllers
 
         [HttpGet]
         [Route("save")]
-        public async Task<IActionResult> GetSavedPost([FromQuery] BaseGetAllRequest request)
+        public async Task<IActionResult> GetSavedPost([FromQuery] GetSavedPostRequest request)
         {
             var data = await postService.GetSavedPost(request);
             return Ok(new ApiOkResponse(data));
@@ -137,6 +137,22 @@ namespace CoStudy.API.WebAPI.Controllers
         public async Task<IActionResult> ModifiedPostStatus(ModifedPostStatusRequest request)
         {
             var data = await postService.ModifiedPostStatus(request);
+            return Ok(new ApiOkResponse(data));
+        }
+
+        [HttpGet]
+        [Route("match-user")]
+        public async Task<IActionResult> GetUserMatchPost([FromQuery] string postId)
+        {
+            var data = await postService.GetUserByPostField(postId);
+            return Ok(new ApiOkResponse(data));
+        }
+
+        [HttpGet]
+        [Route("history")]
+        public IActionResult GetHistory([FromQuery] BaseGetAllRequest request)
+        {
+            var data = postService.GetHistory(request);
             return Ok(new ApiOkResponse(data));
         }
     }

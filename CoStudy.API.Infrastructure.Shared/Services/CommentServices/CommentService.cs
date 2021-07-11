@@ -8,6 +8,7 @@ using AutoMapper;
 using CoStudy.API.Application.FCM;
 using CoStudy.API.Application.Features;
 using CoStudy.API.Application.Repositories;
+using CoStudy.API.Application.Utitlities;
 using CoStudy.API.Domain.Entities.Application;
 using CoStudy.API.Infrastructure.Shared.Adapters;
 using CoStudy.API.Infrastructure.Shared.Models.Request;
@@ -17,6 +18,7 @@ using Microsoft.AspNetCore.Http;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Serializers;
 using MongoDB.Driver;
+using static Common.Constants;
 
 namespace CoStudy.API.Infrastructure.Shared.Services
 {
@@ -35,7 +37,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services
         private readonly IObjectLevelRepository objectLevelRepository;
         private readonly ILevelRepository levelRepository;
         private readonly IUserService userService;
-
+        private readonly IViolenceWordRepository violenceWordRepository;
         public CommentService(IHttpContextAccessor httpContextAccessor,
             IUserRepository userRepository,
             IPostRepository postRepository,
@@ -47,7 +49,9 @@ namespace CoStudy.API.Infrastructure.Shared.Services
             IMapper mapper,
             INotificationObjectRepository notificationObjectRepository,
             IObjectLevelRepository objectLevelRepository,
-            ILevelRepository levelRepository, IUserService userService)
+            ILevelRepository levelRepository, 
+            IUserService userService, 
+            IViolenceWordRepository violenceWordRepository)
         {
             this.httpContextAccessor = httpContextAccessor;
             this.userRepository = userRepository;
@@ -62,6 +66,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services
             this.objectLevelRepository = objectLevelRepository;
             this.levelRepository = levelRepository;
             this.userService = userService;
+            this.violenceWordRepository = violenceWordRepository;
         }
 
         public async Task<CommentViewModel> AddComment(AddCommentRequest request)
@@ -110,7 +115,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services
 
                 await fcmRepository.PushNotify(currentPost.OId, notificationDetail, NotificationContent.CommentNotification);
 
-                await userService.AddPoint(currentUser.OId, currentPost.OId);
+                await userService.AddPoint(currentUser.OId, currentPost.OId, null);
 
                 //Update again
                 var result = mapper.Map<CommentViewModel>(comment);
@@ -325,7 +330,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services
 
                 await fcmRepository.PushNotify(comment.OId, notificationDetail, NotificationContent.ReplyCommentNotification);
 
-                await userService.AddPoint(currentUser.OId, comment.PostId);
+                await userService.AddPoint(currentUser.OId, comment.PostId, null);
 
                 return mapper.Map<ReplyCommentViewModel>(replyComment);
             }
@@ -371,7 +376,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services
 
                 await fcmRepository.PushNotify(comment.OId, notificationDetail, NotificationContent.UpvoteCommentNotification);
 
-
+                await userService.AddPoint(currentUser.OId, comment.PostId, PointAdded.Upvote);
 
                 return "Upvote thành công";
             }
@@ -417,7 +422,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services
                 await fcmRepository.PushNotify(comment.OId, notificationDetail, NotificationContent.DownvoteCommentNotification);
 
 
-
+                await userService.AddPoint(currentUser.OId, comment.PostId, PointAdded.Downvote);
                 return "Downvote thành công";
             }
 
@@ -461,7 +466,6 @@ namespace CoStudy.API.Infrastructure.Shared.Services
                 };
 
                 await fcmRepository.PushNotify(comment.OId, notificationDetail, NotificationContent.UpvoteReplyNotification);
-
 
                 return "Upvote thành công";
             }
@@ -599,6 +603,30 @@ namespace CoStudy.API.Infrastructure.Shared.Services
             replyComment.Status = request.Status;
             await replyCommentRepository.UpdateAsync(replyComment, replyComment.Id);
             return mapper.Map<ReplyCommentViewModel>(replyComment);
+        }
+
+        public bool IsViolenceComment(string commentId)
+        {
+            var comment = commentRepository.GetById(ObjectId.Parse(commentId));
+            if(comment!=null && comment.Status == ItemStatus.Active)
+            {
+                var a = StringUtils.ValidateAllowString(violenceWordRepository,comment.Content);
+                if (!a)
+                    return true;
+            }
+            return false;
+        }
+
+        public bool IsViolenceReply(string replyId)
+        {
+            var comment = replyCommentRepository.GetById(ObjectId.Parse(replyId));
+            if (comment != null && comment.Status == ItemStatus.Active)
+            {
+                var a = StringUtils.ValidateAllowString(violenceWordRepository, comment.Content);
+                if (!a)
+                    return true;
+            }
+            return false;
         }
     }
 }

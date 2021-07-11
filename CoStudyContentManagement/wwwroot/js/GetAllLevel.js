@@ -65,25 +65,26 @@
                     { data: 'name', name: 'name', width: '10%', className: '' },
                     { data: 'description', name: 'description', width: '5%', className: 'text-center' },
                     { data: 'order', name: 'order', width: '5%', className: 'text-center' },
+                    { data: 'point', name: 'point', width: '5%', className: 'text-center' },
                     { data: 'is_active', name: 'is_active', width: '10%', className: 'text-center' },
                     { data: 'created_date', name: 'created_date', width: '5%', className: 'text-center' },
                     { data: 'oid', name: 'oid', width: '10%', className: '' },
                 ],
                 columnDefs: [
                     {
-                        targets: [5],
+                        targets: [6],
                         render: function (data) {
                             return getName(data);
                         }
                     },
                     {
-                        "targets": [6],
+                        "targets": [7],
                         "render": function (data, type, row) {
                             return (new Date(data)).toLocaleDateString();
                         }
                     },
                     {
-                        "targets": [7],
+                        "targets": [8],
                         "render": function (data, type, row) {
                             var htmlString = '<button  id="btn_detail" style="border-radius:100px" class="btn btn-info"><i class="fas fa-info-circle"></i></button> '
                                 + '<button  id="btn_update" style="border-radius:100px" class="btn btn-danger"><i class="fas fa-pencil-alt"></i></button>';
@@ -177,6 +178,7 @@ $(document).ready(function () {
             name: $('#update_name').val(),
             description: $('#update_description').val(),
             order: parseInt($('#update_order').val()),
+            point: parseInt($('#update_point').val()),
             is_active: ($('#update_status').val() === 'true')
         });
         $.ajax({
@@ -222,6 +224,9 @@ function getLevelById(id) {
 
             $('#detail_order').val(response.result.order);
             $('#detail_order').attr('readonly', true);
+
+            $('#detail_point').val(response.result.point);
+            $('#detail_point').attr('readonly', true);
 
             $('#detail_status').val(response.result.is_active.toString());
             $('#detail_status').attr('disabled', true);

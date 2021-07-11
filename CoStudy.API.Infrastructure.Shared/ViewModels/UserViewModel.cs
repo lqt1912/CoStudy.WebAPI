@@ -131,6 +131,5 @@ namespace CoStudy.API.Infrastructure.Shared.ViewModels
         [JsonProperty("call_id")]
         [JsonPropertyName("call_id")]
         public string CallId { get; set; }
-
     }
 }

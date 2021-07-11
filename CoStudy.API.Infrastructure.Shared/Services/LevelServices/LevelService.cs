@@ -144,7 +144,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services
 
         public IEnumerable<LevelViewModel> GetAllLevel(BaseGetAllRequest request)
         {
-            IQueryable<Level> result = levelRepository.GetAll().Where(x=>x.IsActive ==true);
+            IQueryable<Level> result = levelRepository.GetAll().Where(x=>x.IsActive ==true && x.Point >=0);
             if (request.Skip.HasValue && request.Count.HasValue)
             {
                 result = result.Skip(request.Skip.Value).Take(request.Count.Value);
@@ -154,11 +154,10 @@ namespace CoStudy.API.Infrastructure.Shared.Services
 
         public async Task<IEnumerable<ObjectLevelViewModel>> GetFieldsOfUser(string userId)
         {
-            FilterDefinition<ObjectLevel> filter = Builders<ObjectLevel>.Filter.Eq("object_id", userId);
-
-            List<ObjectLevel> objectlevels = (await objectLevelRepository.FindListAsync(filter));
+            var builder = Builders<ObjectLevel>.Filter;
+            var _filter = builder.Eq("object_id", userId) & builder.Eq("is_active", true);
+            List<ObjectLevel> objectlevels = (await objectLevelRepository.FindListAsync(_filter));
             return mapper.Map<IEnumerable<ObjectLevelViewModel>>(objectlevels);
-
         }
 
         public async Task<IEnumerable<ObjectLevelViewModel>> GetLevelByObject(string objectId)

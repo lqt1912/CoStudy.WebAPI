@@ -19,6 +19,11 @@ using Serilog;
 using Microsoft.EntityFrameworkCore;
 using CoStudy.API.WebAPI.Models;
 using Audit.PostgreSql.Configuration;
+using CoStudy.API.Infrastructure.Shared.Hangfire;
+using Hangfire;
+using System;
+using MongoDB.Bson.Serialization;
+using CoStudy.API.Infrastructure.Shared.Models.Request;
 
 namespace CoStudy.API.WebAPI
 {
@@ -48,6 +53,16 @@ namespace CoStudy.API.WebAPI
 
             services.AddDbContext<ApplicationDbContext>(opt =>
             opt.UseNpgsql(Configuration.GetValue<string>("Settings:PostgresConnection")));
+
+            if (!BsonClassMap.IsClassMapRegistered(typeof(FilterRequest)))
+            {
+                BsonClassMap.RegisterClassMap<FilterRequest>();
+            }
+
+            if (!BsonClassMap.IsClassMapRegistered(typeof(FilterUserRequest)))
+            {
+                BsonClassMap.RegisterClassMap<FilterUserRequest>();
+            }
             //Config identity
             services.ConfigureIdentity();
 
@@ -57,7 +72,7 @@ namespace CoStudy.API.WebAPI
 
             services.RegisterCustomRepository();
             services.RegisterCustomService();
-
+            services.RegisterHangfireService(Configuration);
             services.AddControllers();
             services.AddSwaggerExtension();
             services.ConfigureCors();
@@ -87,7 +102,9 @@ namespace CoStudy.API.WebAPI
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IBackgroundJobClient backgroundJobClient,
+            IRecurringJobManager recurringJobManager,
+            IServiceProvider serviceProvider)
         {
 
             var sqlConnectionString = Configuration.GetValue<string>("Settings:PostgresConnection");
@@ -112,7 +129,7 @@ namespace CoStudy.API.WebAPI
             }
 
             app.UseIpRateLimiting();
-
+            app.RegisterHangfireApp(backgroundJobClient, recurringJobManager, serviceProvider);
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseRouting();
