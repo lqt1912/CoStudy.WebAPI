@@ -58,9 +58,6 @@ namespace CoStudy.API.Infrastructure.Shared.ViewModels
         [JsonPropertyName("image_contents")]
         public List<Image> MediaContents { get; set; }
 
-        [JsonPropertyName("media_type")]
-        [JsonProperty("media_type")]
-        public MediaType MediaType { get; set; }
 
         [JsonProperty("comment_count")]
         [JsonPropertyName("comments_count")]
@@ -93,6 +90,10 @@ namespace CoStudy.API.Infrastructure.Shared.ViewModels
         [JsonProperty("is_notify_by_current")]
         [JsonPropertyName("is_notify_by_current")]
         public bool? IsNotifyByCurrent { get; set; }
+
+        [JsonProperty("is_recommended")]
+        [JsonPropertyName("is_recommended")]
+        public bool? IsRecommended { get; set; }
     }
 }
 

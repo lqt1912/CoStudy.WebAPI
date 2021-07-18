@@ -33,16 +33,15 @@ namespace CoStudy.API.Infrastructure.Shared.Services
 
         IReplyCommentRepository replyCommentRepository;
 
-        INotificationObjectRepository notificationObjectRepository;
 
         IFcmRepository fcmRepository;
-        IConfiguration configuration;
         public ReportServices(IReportRepository reportRepository,
         IMapper mapper, IUserRepository userRepository,
         IHttpContextAccessor httpContextAccessor,
         IPostRepository postRepository,
         ICommentRepository commentRepository,
-        IReplyCommentRepository replyCommentRepository, INotificationObjectRepository notificationObjectRepository, IFcmRepository fcmRepository, IConfiguration configuration)
+        IReplyCommentRepository replyCommentRepository, 
+        IFcmRepository fcmRepository)
         {
             this.reportRepository = reportRepository;
             this.mapper = mapper;
@@ -51,9 +50,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services
             this.postRepository = postRepository;
             this.commentRepository = commentRepository;
             this.replyCommentRepository = replyCommentRepository;
-            this.notificationObjectRepository = notificationObjectRepository;
             this.fcmRepository = fcmRepository;
-            this.configuration = configuration;
         }
 
 

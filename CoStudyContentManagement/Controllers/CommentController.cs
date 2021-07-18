@@ -2,17 +2,17 @@
 
 namespace CoStudyContentManagement.Controllers
 {
-    [Route("[controller]")]
+    [Route("binh-luan")]
     public class CommentController : Controller
     {
-        [Route("all")]
+        [Route("danh-sach-binh-luan")]
         public IActionResult GetAll()
         {
             ViewBag.GetAllComment = "nav-active";
             return View();
         }
 
-        [Route("detail")]
+        [Route("chi-tiet")]
         public IActionResult GetById([FromQuery] string commentId)
         {
             ViewBag.commentId = commentId;

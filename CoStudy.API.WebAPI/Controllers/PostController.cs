@@ -59,9 +59,9 @@ namespace CoStudy.API.WebAPI.Controllers
 
         [HttpPost]
         [Route("news-feed")]
-        public async Task<IActionResult> GetNewsFeed(NewsFeedRequest request)
+        public async Task<IActionResult> GetNewsFeed(NewsFeedRequest request, [FromQuery]NewsFeedQuery query )
         {
-            var data = await postService.GetNewsFeed(request);
+            var data = await postService.GetNewsFeed(request, query);
             return Ok(new ApiOkResponse(data));
         }
 

@@ -59,7 +59,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services
         public TableResultJson<LevelViewModel> GetAllLevel(TableRequest request)
         {
             var dataSource = levelRepository.GetAll();
-            var dataSourceViewModel = mapper.Map<List<LevelViewModel>>(dataSource).AsEnumerable();
+            var dataSourceViewModel = mapper.Map<List<LevelViewModel>>(dataSource).OrderByDescending(x=>x.CreatedDate).AsEnumerable();
             var response = new TableResultJson<LevelViewModel>
             {
                 draw = request.draw,

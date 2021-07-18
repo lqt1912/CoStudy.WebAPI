@@ -1,7 +1,6 @@
 ﻿@using Microsoft.Extensions.Configuration
 
 @{
-    ViewData["Title"] = "Logging";
     Layout = null;
 }
 <head>
@@ -16,7 +15,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
     <link href="~/css/site.css" rel="stylesheet" />
     <script src="~/js/site.js"></script>
-
+    <title>Đăng nhập</title>
 </head>
 
 <style>
@@ -31,6 +30,7 @@
     body {
         font-family: "Poppins", sans-serif;
         height: 100vh;
+        margin-bottom:0px;
     }
 
     a {
@@ -104,10 +104,10 @@
 
     /* FORM TYPOGRAPHY*/
 
-    input[type=button], input[type=submit], input[type=reset], input[type=password]  button {
+    input[type=button], input[type=submit], input[type=reset], input[type=password] button {
         background-color: #56baed;
         border: none;
-        color: white;
+        color: #2A8383;
         padding: 15px 80px;
         text-align: center;
         text-decoration: none;
@@ -141,7 +141,7 @@
     input[type=text], input[type=password] {
         background-color: #f6f6f6;
         border: none;
-        color: #0d0d0d;
+        color: #2A8383;
         padding: 15px 32px;
         text-align: center;
         text-decoration: none;
@@ -309,10 +309,17 @@
     #icon {
         width: 60%;
     }
+
+    .title{
+        color: antiquewhite;
+    }
 </style>
 
-<div class="wrapper fadeInDown">
-    <div id="formContent">
+<div class="wrapper fadeInDown" style="background-color: #2A8383 ">
+    <div style="padding-bottom: 1rem;" class="title">
+        <h1>Hệ thống quản lý tài nguyên CoStudy</h1>
+    </div>
+    <div id="formContent"  style="color: #2A8383">
         <!-- Tabs Titles -->
         <!-- Icon -->
         <div class="fadeIn first">
@@ -359,7 +366,7 @@
                         success: function (response) {
                             console.log(response.result.jwtToken);
                             setCookie("accessToken", response.result.jwtToken, 1);
-                            window.location.href = CLIENT_URL + 'User/all';
+                            window.location.href = CLIENT_URL + 'logging/getall';
                         },
                         error: function (response) {
                             console.log(response);

@@ -114,7 +114,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services
 
         public TableResultJson<ReportViewModel> GetReportPaged(TableRequest request)
         {
-            var dataSource = reportRepository.GetAll();
+            var dataSource = reportRepository.GetAll().OrderByDescending(x=>x.CreatedDate);
             var dataSourceViewModel = mapper.Map<List<ReportViewModel>>(dataSource).AsEnumerable();
             var response = new TableResultJson<ReportViewModel>();
 

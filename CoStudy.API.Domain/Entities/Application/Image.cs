@@ -62,7 +62,7 @@ namespace CoStudy.API.Domain.Entities.Application
         /// </value>
         [BsonElement("created_date")]
         [JsonPropertyName("created_date")]
-        public DateTime CreatedDate { get; set; }
+        public DateTime CreatedDate { get; set; } = DateTime.Now;
 
         /// <summary>
         /// Gets or sets the modified date.
@@ -72,7 +72,7 @@ namespace CoStudy.API.Domain.Entities.Application
         /// </value>
         [BsonElement("modified_date")]
         [JsonPropertyName("modified_date")]
-        public DateTime ModifiedDate { get; set; }
+        public DateTime ModifiedDate { get; set; } = DateTime.Now;
 
     }
 

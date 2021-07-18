@@ -7,11 +7,14 @@ namespace CoStudy.API.Infrastructure.Shared.Models.Request
         [JsonPropertyName("content")]
         public string Content { get; set; }
 
+
         [JsonPropertyName("image_hash")]
         public string Image { get; set; }
 
-        [JsonPropertyName("post_id")]
+        [JsonPropertyName("video")]
+        public string Video { get; set; }
 
+        [JsonPropertyName("post_id")]
         public string PostId { get; set; }
 
     }

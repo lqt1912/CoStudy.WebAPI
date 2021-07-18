@@ -214,7 +214,7 @@ $(document).ready(function () {
 
 function goToCommentDetail(id) {
     if (id != '')
-        window.location.replace('detail?commentId=' + id);
+        window.location.replace('chi-tiet?commentId=' + id);
     else alert("Vui lòng chọn đối tượng. ");
 }
 

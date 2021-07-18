@@ -6,14 +6,14 @@ namespace CoStudyContentManagement.Controllers
     /// Class PostController
     /// </summary>
     /// <seealso cref="Microsoft.AspNetCore.Mvc.Controller" />
-    [Route("[controller]")]
+    [Route("bai-viet")]
     public class PostController : Controller
     {
         /// <summary>
         /// Gets all post.
         /// </summary>
         /// <returns></returns>
-        [Route("all")]
+        [Route("danh-sach-bai-viet")]
         public IActionResult GetAllPost()
         {
             ViewBag.GetAllPost = "nav-active";
@@ -24,7 +24,7 @@ namespace CoStudyContentManagement.Controllers
         /// Posts the detail.
         /// </summary>
         /// <returns></returns>
-        [Route("detail")]
+        [Route("chi-tiet")]
         public IActionResult PostDetail([FromQuery] string postId)
         {
             ViewBag.postId = postId;

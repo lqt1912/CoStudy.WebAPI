@@ -50,6 +50,10 @@ namespace CoStudy.API.Domain.Entities.Application
         [JsonPropertyName("image")]
         public string Image { get; set; }
 
+        [BsonElement("video")]
+        [JsonPropertyName("video")]
+        public Image Video { get; set; }
+
         /// <summary>
         /// Gets or sets the author identifier.
         /// </summary>

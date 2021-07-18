@@ -18,8 +18,8 @@ namespace CoStudy.API.Infrastructure.Shared.AutoMapper
         IHttpContextAccessor httpContextAccessor;
 
         public FollowConvertAction(IUserRepository userRepository,
-      IFollowRepository followRepository,
-      IHttpContextAccessor httpContextAccessor)
+         IFollowRepository followRepository,
+        IHttpContextAccessor httpContextAccessor)
         {
             this.userRepository = userRepository;
             this.followRepository = followRepository;

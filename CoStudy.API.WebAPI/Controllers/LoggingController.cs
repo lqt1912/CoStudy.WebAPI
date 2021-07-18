@@ -1,4 +1,5 @@
-﻿using CoStudy.API.Infrastructure.Shared.Models.Request;
+﻿using CoStudy.API.Domain.Entities.Identity.MongoAuthen;
+using CoStudy.API.Infrastructure.Shared.Models.Request;
 using CoStudy.API.Infrastructure.Shared.Paging;
 using CoStudy.API.Infrastructure.Shared.Services;
 using CoStudy.API.WebAPI.Middlewares;
@@ -10,6 +11,7 @@ namespace CoStudy.API.WebAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Role.Admin)]
     public class LoggingController : ControllerBase
     {
         ILoggingServices loggingServices;

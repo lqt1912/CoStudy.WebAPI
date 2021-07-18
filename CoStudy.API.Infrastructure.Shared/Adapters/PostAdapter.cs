@@ -39,43 +39,13 @@ namespace CoStudy.API.Infrastructure.Shared.Adapters
                     Image postContent = new Image();
                     postContent.ImageHash = content.ImageHash;
                     postContent.Discription = content.Discription;
+                    postContent.MediaType = content.MediaType;
+                    postContent.ImageUrl = content.ImageHash;
                     post.MediaContents.Add(postContent);
                 }
             }
 
             return post;
-        }
-
-        public static AddPostResponse ToResponse(Post post, string UserId)
-        {
-            return new AddPostResponse()
-            {
-                Post = post,
-                UserId = UserId
-            };
-        }
-
-        public static Image FromRequest(AddMediaRequest request, IHttpContextAccessor httpContextAccessor)
-        {
-            string url = Feature.SaveImage(request.Image, httpContextAccessor, "PostImage");
-
-            return new Image()
-            {
-                Discription = request.Discription,
-                ImageUrl = url,
-                CreatedDate = DateTime.Now,
-                ModifiedDate = DateTime.Now,
-            };
-        }
-
-        public static AddMediaResponse ToResponse(Image image, string postId)
-        {
-            return new AddMediaResponse()
-            {
-                PostId = postId,
-                MediaUrl = image.ImageUrl,
-                Discription = image.Discription
-            };
         }
 
         public static Comment FromRequest(AddCommentRequest request, string UserId)
@@ -88,17 +58,13 @@ namespace CoStudy.API.Infrastructure.Shared.Adapters
                 Status = ItemStatus.Active,
                 CreatedDate = DateTime.Now,
                 ModifiedDate = DateTime.Now,
-                Image = request.Image
-            };
-        }
-
-
-        public static AddCommentResponse ToResponse(Comment comment, string postId)
-        {
-            return new AddCommentResponse()
-            {
-                Comment = comment,
-                PostId = postId
+                Image = request.Image,
+                Video = new Image()
+                {
+                     ImageUrl = request.Video,
+                      ImageHash = request.Video,
+                      MediaType = MediaType.Video
+                }
             };
         }
 
@@ -115,17 +81,5 @@ namespace CoStudy.API.Infrastructure.Shared.Adapters
                 ModifiedDate = DateTime.Now
             };
         }
-
-
-        public static ReplyCommentResponse ToResponseReply(ReplyComment comment)
-        {
-            return new ReplyCommentResponse()
-            {
-                Content = comment.Content,
-                AuthorId = comment.AuthorId,
-                ParentCommentId = comment.ParentId
-            };
-        }
-
     }
 }

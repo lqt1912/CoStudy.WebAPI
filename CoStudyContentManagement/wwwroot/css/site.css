@@ -145,6 +145,12 @@ body {
 .nav-active {
     background-color: #2A8383;
     color: white;
+   
+}
+
+#left-nav > div > a :hover{
+   cursor: pointer;
+   transition:ease-in-out 2s;
 }
 
 /* Start by setting display:none to make this hidden.
