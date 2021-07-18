@@ -134,31 +134,8 @@ namespace CoStudy.API.Application.FCM
                             notifyBody = (message.Content as List<string>)[0];
                             break;
                         case MessageBaseType.Image:
-                            {
-                                var a = message.Content as List<Image>;
-                                if (a != null)
-                                {
-                                    switch (a[0].MediaType)
-                                    {
-                                        case MediaType.Image:
-                                            notifyBody = "Đã gửi một ảnh. ";
-                                            break;
-                                        case MediaType.Video:
-                                            notifyBody = "Đã gửi một video. ";
-                                            break;
-                                        default:
-                                            notifyBody = "Đã gửi một phương tiện. ";
-                                            break;
-                                    }
-                                    break;
-                                }
-                                else
-                                {
-                                    notifyBody = "Đã gửi một phương tiện. ";
-                                    break;
-                                }
-                            }
-
+                            notifyBody = "Đã gửi một ảnh. ";
+                            break;
                         case MessageBaseType.MultiMedia:
                             notifyBody = "Đã gửi một phương tiện. ";
                             break;
@@ -177,8 +154,6 @@ namespace CoStudy.API.Application.FCM
 
                     try
                     {
-                        //item = receiver
-
                         FirebaseAdmin.Messaging.Message mes = new FirebaseAdmin.Messaging.Message()
                         {
                             Token = token,
@@ -194,7 +169,6 @@ namespace CoStudy.API.Application.FCM
                             }
                         };
                         string response = await FirebaseMessaging.DefaultInstance.SendAsync(mes).ConfigureAwait(true);
-
                     }
                     catch (Exception)
                     {

@@ -175,9 +175,7 @@
                 url: API_URL+"Logging/paged",
                 type: "POST",
                 method: "POST",
-                beforeSend: function (xhr) {
-                    xhr.setRequestHeader('Authorization', getConfig());
-                },
+
                 contentType: "application/json",
                 dataType: "json",
                 data: function (d) {
@@ -189,8 +187,6 @@
                 },
 
                 dataSrc: function (response) {
-                    if (response.code === 401)
-                        goToLoginPage();
                     if (response.data.length > 0) {
 
                         response.recordsTotal = response.recordsTotal;
@@ -338,9 +334,7 @@
         $.ajax({
             type: "GET",
             url: API_URL +"Logging/count",
-            beforeSend: function (xhr) {
-                xhr.setRequestHeader('Authorization', getConfig());
-            },
+
             success: function (response) {
                 $('#success').text(response.result[0]);
                 $('#unauth').text(response.result[2]);

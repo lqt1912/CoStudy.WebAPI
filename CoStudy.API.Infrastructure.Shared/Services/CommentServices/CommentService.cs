@@ -115,7 +115,6 @@ namespace CoStudy.API.Infrastructure.Shared.Services
 
                 await fcmRepository.PushNotify(currentPost.OId, notificationDetail, NotificationContent.CommentNotification);
 
-
                 await userService.AddPoint(currentUser.OId, currentPost.OId, null);
 
                 //Update again
@@ -377,10 +376,8 @@ namespace CoStudy.API.Infrastructure.Shared.Services
 
                 await fcmRepository.PushNotify(comment.OId, notificationDetail, NotificationContent.UpvoteCommentNotification);
 
+                await userService.AddPoint(currentUser.OId, comment.PostId, PointAdded.Upvote);
 
-                var pointUpvote = levelRepository.GetAll().FirstOrDefault(x => x.Order == -2) != null ?
-                levelRepository.GetAll().FirstOrDefault(x => x.Order == -2).Point : 0;
-                await userService.AddPoint(currentUser.OId, comment.PostId, pointUpvote);
                 return "Upvote thành công";
             }
 
@@ -424,10 +421,8 @@ namespace CoStudy.API.Infrastructure.Shared.Services
 
                 await fcmRepository.PushNotify(comment.OId, notificationDetail, NotificationContent.DownvoteCommentNotification);
 
-                var pointDownvote = levelRepository.GetAll().FirstOrDefault(x => x.Order == -3) != null ?
-                levelRepository.GetAll().FirstOrDefault(x => x.Order == -3).Point : 0;
-                await userService.AddPoint(currentUser.OId, comment.PostId, pointDownvote);
 
+                await userService.AddPoint(currentUser.OId, comment.PostId, PointAdded.Downvote);
                 return "Downvote thành công";
             }
 

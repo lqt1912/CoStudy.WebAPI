@@ -131,9 +131,8 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
                     };
                     await fcmRepository.PushNotify(x.FromId, notificationDetail, NotificationContent.AddPostNotification);
                 });
+
             }
-            if (post.PostType == PostType.Sharing)
-                await userService.AddPoint(currentUser.OId, post.OId, null);
             var response = mapper.Map<PostViewModel>(post);
             return response;
         }
@@ -245,11 +244,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
                 };
 
                 await fcmRepository.PushNotify(currentPost.AuthorId, notificationDetail, NotificationContent.UpvotePostNotification);
-
-                var pointUpvote = levelRepository.GetAll().FirstOrDefault(x => x.Order == -2) != null ?
-                levelRepository.GetAll().FirstOrDefault(x => x.Order == -2).Point : 0;
-                await userService.AddPoint(currentPost.AuthorId, currentPost.OId, pointUpvote);
-
+                await userService.AddPoint(currentPost.AuthorId, currentPost.OId, PointAdded.Upvote);
                 return UpvoteSuccess;
             }
             catch (Exception)
@@ -309,11 +304,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
                 };
 
                 await fcmRepository.PushNotify(currentPost.AuthorId, notificationDetail, NotificationContent.DownvotePostNotification);
-
-
-                var pointDownvote = levelRepository.GetAll().FirstOrDefault(x => x.Order == -3) != null ?
-                levelRepository.GetAll().FirstOrDefault(x => x.Order == -3).Point : 0;
-                await userService.AddPoint(currentPost.AuthorId, currentPost.OId, pointDownvote);
+                await userService.AddPoint(currentPost.AuthorId, currentPost.OId, PointAdded.Downvote);
                 return DownvoteSuccess;
             }
             catch (Exception)
@@ -391,7 +382,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
 
             if (request.FromDate != null && request.ToDate != null)
             {
-                result = result.Where(x => x.CreatedDate > request.FromDate && x.CreatedDate < request.ToDate.AddDays(1)).ToList();
+                result = result.Where(x => x.CreatedDate > request.FromDate && x.CreatedDate < request.ToDate).ToList();
             }
 
             switch (request.OrderType)
@@ -400,7 +391,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
                     result = result.OrderBy(x => x.CreatedDate).ToList();
                     break;
                 case OrderType.Descending:
-                    result = result.OrderByDescending(x => x.CreatedDate).ToList();
+                    result = result.OrderByDescending(x => x.ModifiedDate).ToList();
                     break;
                 default:
                     result = result.OrderBy(x => x.CreatedDate).ToList();
@@ -415,18 +406,18 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
             return mapper.Map<List<PostViewModel>>(result);
         }
 
-        public async Task<PostFilterResponse> Filter(FilterRequest filterRequest)
+        public async Task<PostFilterResponse> Filter(Models.Request.FilterRequest filterRequest)
         {
             var posts = postRepository.GetAll().Where(x => x.PostType == filterRequest.PostType);
 
             var builders = Builders<Post>.Filter;
             var filterParam = builders.Eq(Status, ItemStatus.Active);
 
-            //if (filterRequest.ContentFilter != null)
-            //{
-            //    filterParam = filterParam & (builders.Regex(PostStringContent, filterRequest.ContentFilter)
-            //        | builders.Regex(Title, filterRequest.ContentFilter));
-            //}
+            if (filterRequest.ContentFilter != null)
+            {
+                filterParam = filterParam & (builders.Regex(PostStringContent, filterRequest.ContentFilter)
+                    | builders.Regex(Title, filterRequest.ContentFilter));
+            }
 
             if (filterRequest.FromDate != null && filterRequest.ToDate != null)
             {
@@ -435,34 +426,12 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
                     & builders.Lt(CreatedDate, filterRequest.ToDate);
             }
 
-            if (filterRequest.PostType != PostType.All)
+            if(filterRequest.PostType !=PostType.All)
                 filterParam = filterParam & builders.Eq("post_type", filterRequest.PostType);
 
             posts = (await postRepository.FindListAsync(filterParam)).AsQueryable();
+
             var vm = mapper.Map<IEnumerable<PostViewModel>>(posts);
-
-            var _vm = new List<PostViewModel>();
-
-            foreach (var __vm in vm)
-            {
-                if (StringUtils.IsMatchSearch(filterRequest.ContentFilter, __vm.Title))
-                {
-                    _vm.Add(__vm);
-                    continue;
-                }
-
-                foreach (var str in __vm.StringContents)
-                {
-                    if (StringUtils.IsMatchSearch(filterRequest.ContentFilter, str.Content))
-                    {
-                        _vm.Add(__vm);
-                        continue;
-                    }
-                }
-                continue;
-            }
-
-            vm = _vm;
 
             if (filterRequest.SortObject.HasValue && filterRequest.SortType.HasValue)
             {
@@ -544,7 +513,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
                                 ? (result.Count - filterRequest.Skip.Value - filterRequest.Count.Value) : 0
                 };
             }
-            var rp = vm.ToList();
+            var rp = mapper.Map<List<PostViewModel>>(posts.ToList());
 
             return new PostFilterResponse
             {
@@ -565,15 +534,34 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
             return null;
         }
 
-        public async Task<IEnumerable<PostViewModel>> GetNewsFeed(NewsFeedRequest request, NewsFeedQuery query)
+        public async Task<IEnumerable<PostViewModel>> GetNewsFeed(NewsFeedRequest request)
         {
             var dataSource = new List<Post>();
-            var isRecommeneds = new List<Tuple<string, bool>>();
+
+            //Lấy danh sách post theo ngày
+            if (request.FromDate.HasValue && request.ToDate.HasValue)
+            {
+                var fromDate = request.FromDate.Value;
+                var toDaTe = request.ToDate.Value;
+                var postBuilder = Builders<Post>.Filter;
+                var postFilter = postBuilder.Lt(CreatedDate, toDaTe)
+                    & postBuilder.Gt(CreatedDate, fromDate);
+                var posts = await postRepository.FindListAsync(postFilter);
+                // dataSource = posts;
+            }
+
             //Lấy danh sách user_id đang theo dõi
             var currentUser = Feature.CurrentUser(httpContextAccessor, userRepository);
             var userBuilder = Builders<Follow>.Filter.Eq(FromId, currentUser.OId);
             var follows = await followRepository.FindListAsync(userBuilder);
             var followIds = follows.Select(x => x.ToId).Distinct();
+
+            //Lấy danh sách post của chính mình 
+            var postByCurrentBuilder = Builders<Post>.Filter;
+            var posytByCurrentFilter = postByCurrentBuilder.Eq(AuthorId, currentUser.OId);
+            var postByCurrent = await postRepository.FindListAsync(posytByCurrentFilter);
+            dataSource.AddRange(postByCurrent);
+
 
             //Duyệt danh sách và lấy ra những post của người dùng đang theo dõi. 
             foreach (var followId in followIds)
@@ -585,75 +573,43 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
                 dataSource.AddRange(postByAuthor);
             }
 
-            //Lấy danh sách post của chính mình 
-            var postByCurrentBuilder = Builders<Post>.Filter;
-            var posytByCurrentFilter = postByCurrentBuilder.Eq(AuthorId, currentUser.OId);
-            var postByCurrent = await postRepository.FindListAsync(posytByCurrentFilter);
-            dataSource.AddRange(postByCurrent);
-
-            //Lấy danh sách field là những thế mạnh của người dùng hiện tại
+            //Lấy danh sách field là những thế mạnh của người dùng
             var userForcesBuilder = Builders<ObjectLevel>.Filter;
             var userForcesFilter = userForcesBuilder.Eq(ObjectIdCs, currentUser.OId);
             var userForcesByObjectLevel = await objectLevelRepository.FindListAsync(userForcesFilter);
             var userForces = userForcesByObjectLevel.Select(x => x.FieldId).Distinct();
 
+            //Lấy danh sách field_group từ danh sách field bên trên
+            var fieldGroups = fieldGroupRepository.GetAll();
+            var fieldGroupsFinal = new List<FieldGroup>();
+            foreach (var fieldId in userForces)
+            {
+                foreach (var fieldGroup in fieldGroups)
+                {
+                    if (fieldGroup.FieldId.Contains(fieldId))
+                    {
+                        fieldGroupsFinal.Add(fieldGroup);
+                    }
+                }
+            }
+            fieldGroupsFinal = fieldGroupsFinal.Distinct().ToList();
+
+            //Duyệt danh sách field_group để lấy các field liên quan trong group.
+            var fieldToFilter = new List<string>();
+            fieldGroupsFinal.ForEach(x => fieldToFilter.AddRange(x.FieldId));
+            fieldToFilter = fieldToFilter.Distinct().ToList();
+
+            //Từ danh sách field mở rộng này, lấy dang sách các object thuộc về field đó
             var listObjectId = new List<string>();
-
-            if (query.OnlyPersonalField == false)
+            foreach (var x in fieldToFilter)
             {
-                //Lấy danh sách field_group từ danh sách field bên trên
-                var fieldGroups = fieldGroupRepository.GetAll();
-                var fieldGroupsFinal = new List<FieldGroup>();
-                foreach (var fieldId in userForces)
-                {
-                    foreach (var fieldGroup in fieldGroups)
-                    {
-                        if (fieldGroup.FieldId.Contains(fieldId))
-                        {
-                            fieldGroupsFinal.Add(fieldGroup);
-                        }
-                    }
-                }
-                fieldGroupsFinal = fieldGroupsFinal.Distinct().ToList();
-
-                //Duyệt danh sách field_group để lấy các field liên quan trong group.
-                var fieldToFilter = new List<string>();
-                fieldGroupsFinal.ForEach(x => fieldToFilter.AddRange(x.FieldId));
-                fieldToFilter = fieldToFilter.Distinct().ToList();
-
-                //Từ danh sách field mở rộng này, lấy dang sách các object thuộc về field đó
-                foreach (var x in fieldToFilter)
-                {
-                    var objectLevelBuilder = Builders<ObjectLevel>.Filter;
-                    var objectLevelFilter = objectLevelBuilder.Eq(FieldId, x)
-                        & objectLevelBuilder.Eq(IsActive, true);
-                    var objectLevels = await objectLevelRepository.FindListAsync(objectLevelFilter);
-                    listObjectId.AddRange(objectLevels.Select(x => x.ObjectId));
-
-                    foreach (var _a in objectLevels)
-                    {
-                        if(userForces.Any(f =>f == _a.FieldId))
-                            isRecommeneds.Add(new Tuple<string, bool>(_a.ObjectId, true));
-                    }
-                  
-                    isRecommeneds.GroupBy(x => x.Item1).Select(grp => grp.FirstOrDefault());
-                }
-
-                listObjectId = listObjectId.Distinct().ToList();
+                var objectLevelBuilder = Builders<ObjectLevel>.Filter;
+                var objectLevelFilter = objectLevelBuilder.Eq(FieldId, x)
+                    & objectLevelBuilder.Eq(IsActive, true);
+                var objectLevels = await objectLevelRepository.FindListAsync(objectLevelFilter);
+                listObjectId.AddRange(objectLevels.Select(x => x.ObjectId));
             }
-            else
-            {
-                foreach (var x in userForces)
-                {
-                    var _objectLevelBuilder = Builders<ObjectLevel>.Filter;
-                    var _objectLevelFilter = _objectLevelBuilder.Eq(FieldId, x)
-                        & _objectLevelBuilder.Eq(IsActive, true);
-
-                    var objectLevels = await objectLevelRepository.FindListAsync(_objectLevelFilter);
-                    listObjectId.AddRange(objectLevels.Select(x => x.ObjectId));
-                }
-                listObjectId = listObjectId.Distinct().ToList();
-            }
+            listObjectId = listObjectId.Distinct().ToList();
 
             //Lấy danh sách các post có id trong danh sách trên
             var _posts = new List<Post>();
@@ -663,61 +619,21 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
                 if (post != null)
                 {
                     _posts.Add(post);
-
                 }
             });
+            var _postIds = _posts.Select(x => x.OId);
 
-            //Kết hợp với datasoure ban đầu
+            //Kết hợp với datasoure ban đầu9
+            //dataSource = dataSource.Where(x => _postIds.Contains(x.OId)).Distinct().ToList();
             dataSource.AddRange(_posts);
-
-            //Distinct data
             dataSource = dataSource.GroupBy(x => x.OId).Select(grp => grp.FirstOrDefault()).ToList();
-
             dataSource = dataSource.Where(x => x.Status == ItemStatus.Active).ToList();
-
-            if (query.OnlyFollow == true)
-            {
-                dataSource = dataSource.Where(x => x.AuthorId != currentUser.OId).ToList();
-            }
-
-            //Sắp xếp
-            if (query.Arrange != null)
-            {
-                switch (query.Arrange)
-                {
-                    case _ArrangeType.CreatedDate:
-                        dataSource = dataSource.OrderByDescending(x => x.CreatedDate).ToList();
-                        break;
-                    case _ArrangeType.Random:
-                    default:
-                        break;
-                }
-            }
-
-            //Lấy danh sách post theo ngày
-            if (request.FromDate.HasValue && request.ToDate.HasValue)
-            {
-                dataSource = dataSource.Where(x => x.CreatedDate > request.FromDate.Value
-                                            && x.CreatedDate < request.ToDate.Value).ToList();
-            }
-
-            //Giới hạn lại số lượng cần lấy
             if (request.Skip.HasValue && request.Count.HasValue)
             {
                 dataSource = dataSource.Skip(request.Skip.Value).Take(request.Count.Value).ToList();
             }
 
-            var vm = mapper.Map<List<PostViewModel>>(dataSource);
-
-            foreach (var v in vm)
-            {
-                var a = new Tuple<string, bool>(v.OId, true);
-                if (isRecommeneds.Any(x => x.Item1 == a.Item1 && x.Item2 == true))
-                    v.IsRecommended = true;
-                else v.IsRecommended = false;
-            }
-
-            return vm;
+            return mapper.Map<List<PostViewModel>>(dataSource);
         }
 
         public async Task<IEnumerable<MessageViewModel>> SharePost(SharePostRequest request)
@@ -770,7 +686,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
             return result;
 
         }
-
+       
         public async Task<List<UserViewModel>> GetUserByPostField(string postId)
         {
             var postObjectLevelBuilder = Builders<ObjectLevel>.Filter;
@@ -799,7 +715,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
             return userObjectLevels.Select(userObjectLevel => objectLevels.FirstOrDefault(x => x.FieldId == userObjectLevel.FieldId)).Any(_ => _ != null);
         }
 
-        private bool IsMatch(PostViewModel post, LevelFilterItem levelFilterItem)
+        private bool IsMatch(PostViewModel post, Models.Request.LevelFilterItem levelFilterItem)
         {
             try
             {
@@ -827,7 +743,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
             }
         }
 
-        private bool IsMatch(PostViewModel post, LevelFilter levelFilter)
+        private bool IsMatch(PostViewModel post, Models.Request.LevelFilter levelFilter)
         {
             try
             {
@@ -912,8 +828,8 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
             var vm = mapper.Map<IEnumerable<SearchHistoryViewModel>>(a);
             vm = vm.GroupBy(x => x.PostValue.ContentFilter)
                 .Select(x => x.OrderByDescending(y => y.CreatedDate).FirstOrDefault())
-                .OrderByDescending(x => x.CreatedDate);
-
+                .OrderByDescending(x=>x.CreatedDate);
+            
             if (request.Skip.HasValue && request.Count.HasValue)
                 vm = vm.Skip(request.Skip.Value).Take(request.Count.Value);
             return vm;

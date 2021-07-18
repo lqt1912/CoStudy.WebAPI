@@ -59,6 +59,7 @@
                     } else {
                         return [];
                     };
+
                 },
                 dataFilter: function (data) {
                     return data;
@@ -260,7 +261,7 @@ $(document).ready(
 
 function goToPostDetail(id) {
     if (id != '')
-        window.location.replace('chi-tiet?postId=' + id);
+        window.location.replace('detail?postId=' + id);
     else alert('Vui lòng chọn đối tượng. ');
 }
 

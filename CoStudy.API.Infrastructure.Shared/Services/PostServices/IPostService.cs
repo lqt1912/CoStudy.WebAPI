@@ -20,7 +20,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
         Task<SavePostResponse> SavePost(string id);
         Task<List<PostViewModel>> GetSavedPost(GetSavedPostRequest request);
         Task<PostFilterResponse> Filter(FilterRequest filterRequest);
-        Task<IEnumerable<PostViewModel>> GetNewsFeed(NewsFeedRequest request, NewsFeedQuery query);
+        Task<IEnumerable<PostViewModel>> GetNewsFeed(NewsFeedRequest request);
         Task<IEnumerable<MessageViewModel>> SharePost(SharePostRequest request);
         Task<PostViewModel> ModifiedPostStatus(ModifedPostStatusRequest request);
         bool IsViolencePost(string postId);

@@ -10,14 +10,14 @@ namespace CoStudyContentManagement.Controllers
     /// Class UserController
     /// </summary>
     /// <seealso cref="Microsoft.AspNetCore.Mvc.Controller" />
-    [Route("nguoi-dung")]
+    [Route("[controller]")]
     public class UserController : Controller
     {
         /// <summary>
         /// Alls the user.
         /// </summary>
         /// <returns></returns>
-        [Route("danh-sach-nguoi-dung")]
+        [Route("all")]
         public IActionResult AllUser()
         {
             ViewBag.AllUser = "nav-active";
@@ -28,7 +28,7 @@ namespace CoStudyContentManagement.Controllers
         /// Gets the user by identifier.
         /// </summary>
         /// <returns></returns>
-        [Route("chi-tiet")]
+        [Route("detail")]
         public IActionResult GetUserById([FromQuery] string email)
         {
             ViewBag.email = email;

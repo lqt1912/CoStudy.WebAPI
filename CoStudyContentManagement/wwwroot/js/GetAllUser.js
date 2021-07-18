@@ -280,7 +280,7 @@ function goToDetail() {
 
 function goToUserDetail(email) {
     setTimeout(function () {
-        window.open(CLIENT_URL + 'nguoi-dung/chi-tiet?email=' + email);
+        window.open(CLIENT_URL + 'User/detail?email=' + email);
     }, 500);
 }
 

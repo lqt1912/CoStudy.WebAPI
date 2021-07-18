@@ -61,7 +61,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.NofticationServices
             return request;
         }
 
-        public async Task<IEnumerable<NotificationViewModel>> GetCurrentUserNotificationList(GetAllNotificationRequest request)
+        public async Task<IEnumerable<NotificationViewModel>> GetCurrentUserNotificationList(BaseGetAllRequest request)
         {
             var currentUser = Feature.CurrentUser(contextAccessor, userRepository);
             var builder = Builders<Noftication>.Filter;
@@ -70,10 +70,7 @@ namespace CoStudy.API.Infrastructure.Shared.Services.NofticationServices
                 & builder.Eq("status", ItemStatus.Active);
 
             var notifications = (await nofticationRepository.FindListAsync(filter)).AsEnumerable();
-
-            if (request.IsRead == false)
-                notifications = notifications.Where(x => x.IsRead == false);
-
+           // notifications = notifications.Where(x => x.ReceiverId == currentUser.OId && x.AuthorId != currentUser.OId);
             if (request.Skip.HasValue && request.Count.HasValue)
                 notifications = notifications.Skip(request.Skip.Value).Take(request.Count.Value);
 
