@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi;
 using System;
 using System.Collections.Generic;
 
@@ -26,35 +26,28 @@ namespace CoStudy.API.WebAPI.Extensions
                         Name = "Le Quoc Thang",
                         Email = "thang.le@tekmedi.com",
                         Url = new Uri("https://github.com/lqt1912"),
-                    },
+                    }
                 });
+
+                // 🔐 JWT Bearer definition
                 c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
                 {
-                    Description = @"Input bearer authentication here! ",
-                    Name = "Authorization",
+                    Type = SecuritySchemeType.Http,
+                    Scheme = "bearer",
+                    BearerFormat = "JWT",
                     In = ParameterLocation.Header,
-                    Type = SecuritySchemeType.ApiKey,
-                    Scheme = "Bearer"
+                    Name = "Authorization",
+                    Description = "Nhập token theo dạng: Bearer {token}"
                 });
 
-                c.AddSecurityRequirement(new OpenApiSecurityRequirement()
-                  {
+                // 🔒 Apply JWT globally
+                c.AddSecurityRequirement( _ => new OpenApiSecurityRequirement
+                {
                     {
-                      new OpenApiSecurityScheme
-                      {
-                        Reference = new OpenApiReference
-                          {
-                            Type = ReferenceType.SecurityScheme,
-                            Id = "Bearer"
-                          },
-                          Scheme = "oauth2",
-                          Name = "Bearer",
-                          In = ParameterLocation.Header,
-
-                        },
+                        new OpenApiSecuritySchemeReference(SecuritySchemeType.Http.ToString()),
                         new List<string>()
-                      }
-                    });
+                    }   
+                });
             });
         }
 

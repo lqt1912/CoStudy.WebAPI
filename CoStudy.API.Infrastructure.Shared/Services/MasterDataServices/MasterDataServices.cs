@@ -10,7 +10,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using CoStudy.API.Domain.Entities.Application;
-using MongoDB.Driver.Core.Authentication;
 
 namespace CoStudy.API.Infrastructure.Shared.Services
 {

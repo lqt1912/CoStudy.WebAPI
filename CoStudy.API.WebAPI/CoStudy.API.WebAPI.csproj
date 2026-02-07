@@ -1,51 +1,41 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
-
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
     <UserSecretsId>19af6bc4-e54d-4bc4-9ce0-9cb55b3e2b9b</UserSecretsId>
   </PropertyGroup>
-
   <ItemGroup>
     <Compile Remove="Services\**" />
     <Content Remove="Services\**" />
     <EmbeddedResource Remove="Services\**" />
     <None Remove="Services\**" />
+    <PackageReference Include="AspNetCoreRateLimit" Version="5.0.0" />
+    <PackageReference Include="Audit.NET.MongoDB" Version="32.0.0" />
+    <PackageReference Include="Audit.NET.PostgreSql" Version="32.0.0" />
+    <PackageReference Include="Audit.WebApi.Core" Version="32.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.2" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning" Version="5.1.0" />
+    <PackageReference Include="Microsoft.Azure.SignalR" Version="1.32.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.2" />
+    <PackageReference Include="Microsoft.OpenApi" Version="2.6.1" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
+    <PackageReference Include="Npgsql" Version="10.0.1" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.0" />
+    <PackageReference Include="Rebus" Version="8.9.0" />
+    <PackageReference Include="Serilog" Version="4.3.0" />
+    <PackageReference Include="Serilog.AspNetCore" Version="10.0.0" />
+    <PackageReference Include="Serilog.Sinks.File" Version="7.0.0" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="10.1.0" />
   </ItemGroup>
-
   <ItemGroup>
     <None Remove="IdentityDatabase.db" />
     <None Remove="IdentityDatabase.db.sql" />
   </ItemGroup>
-
   <ItemGroup>
     <Folder Include="wwwroot\UserAvatar\" />
   </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="AspNetCoreRateLimit" Version="3.2.2" />
-    <PackageReference Include="Audit.NET.MongoDB" Version="17.0.7" />
-    <PackageReference Include="Audit.NET.PostgreSql" Version="17.0.7" />
-    <PackageReference Include="Audit.WebApi.Core" Version="17.0.7" />
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="3.1.10" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning" Version="4.1.1" />
-    <PackageReference Include="Microsoft.AspNetCore.StaticFiles" Version="2.2.0" />
-    <PackageReference Include="Microsoft.Azure.SignalR" Version="1.6.1" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.1.16" />
-    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
-    <PackageReference Include="Npgsql" Version="5.0.7" />
-    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="3.1.11" />
-    <PackageReference Include="Rebus" Version="6.4.1" />
-    <PackageReference Include="Serilog" Version="2.10.0" />
-    <PackageReference Include="Serilog.AspNetCore" Version="3.4.0" />
-    <PackageReference Include="Serilog.Sinks.File" Version="4.1.0" />
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="5.5.0" />
-  </ItemGroup>
-
   <ItemGroup>
     <ProjectReference Include="..\CoStudy.API.Application\CoStudy.API.Application.csproj" />
     <ProjectReference Include="..\CoStudy.API.Infrastructure.Identity\CoStudy.API.Infrastructure.Identity.csproj" />
     <ProjectReference Include="..\CoStudy.API.Infrastructure.Shared\CoStudy.API.Infrastructure.Shared.csproj" />
   </ItemGroup>
-
-
 </Project>

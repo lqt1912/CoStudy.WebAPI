@@ -8,22 +8,10 @@ namespace CoStudy.API.Application.Features
 {
     public static class ImageValidator
     {
-        /// <summary>
-        /// This list is an array with Pair of <image_type,image_allow_bit> 
-        /// </summary>
         static List<Tuple<string, string>> _allowImageType;
 
-        /// <summary>
-        /// This list is array with pair of (image_type, list_bit_to_compare)
-        /// </summary>
         static List<Tuple<string, List<string>>> _bitComparer;
 
-        /// <summary>
-        /// Function to compare the stream with a list of comparer bit
-        /// </summary>
-        /// <param name="stream">Current stream  </param>
-        /// <param name="comparer"> The list of allowed type bits </param>
-        /// <returns> Return if Stream is image or not </returns>
         public static bool IsImage(Stream stream, List<string> comparer)
         {
             stream.Seek(0, SeekOrigin.Begin);
@@ -36,13 +24,6 @@ namespace CoStudy.API.Application.Features
             return true;
         }
 
-        /// <summary>
-        /// Getting allowed type from configuration  and compare with a list of allowed bit
-        /// </summary>
-        /// <param name="stream"> The current Stream  </param>
-        /// <param name="type"> The return of current image's type</param>
-        /// <param name="configuration"> The configuration's instance of program </param>
-        /// <returns> Return if Stream is Image or not </returns>
         public static bool IsImage(Stream stream, out string type, IConfiguration configuration)
         {
             _allowImageType = new List<Tuple<string, string>>();
@@ -119,13 +100,6 @@ namespace CoStudy.API.Application.Features
             return false;
         }
 
-        /// <summary>
-        /// Getting allowed type from configuration  and compare with a list of allowed bit
-        /// </summary>
-        /// <param name="stream"> The current Stream  </param>
-        /// <param name="type"> The return of current image's type</param>
-        /// <param name="configuration"> The configuration's instance of program </param>
-        /// <returns> Return if Stream is Image or not </returns>
         public static string IsImageAndType(Stream stream, out string type, IConfiguration configuration)
         {
             _allowImageType = new List<Tuple<string, string>>();

@@ -1,9 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
   </PropertyGroup>
-
   <ItemGroup>
     <Compile Remove="Common\**" />
     <Compile Remove="Settings\**" />
@@ -11,22 +9,17 @@
     <EmbeddedResource Remove="Settings\**" />
     <None Remove="Common\**" />
     <None Remove="Settings\**" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="10.0.2" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Abstractions" Version="10.0.2" />
+    <PackageReference Include="MongoDB.Driver" Version="3.6.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
   </ItemGroup>
-
   <ItemGroup>
     <Compile Remove="Entities\Identity\Account.cs" />
     <Compile Remove="Entities\Identity\RefreshToken.cs" />
     <Compile Remove="Entities\Identity\Role.cs" />
   </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="3.1.10" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Abstractions" Version="5.0.0" />
-    <PackageReference Include="MongoDB.Driver" Version="2.11.4" />
-  </ItemGroup>
-
   <ItemGroup>
     <ProjectReference Include="..\Common\Common.csproj" />
   </ItemGroup>
-
 </Project>

@@ -6,17 +6,9 @@ using System.Threading.Tasks;
 
 namespace CoStudyContentManagement.Controllers
 {
-    /// <summary>
-    /// Class UserController
-    /// </summary>
-    /// <seealso cref="Microsoft.AspNetCore.Mvc.Controller" />
     [Route("[controller]")]
     public class UserController : Controller
     {
-        /// <summary>
-        /// Alls the user.
-        /// </summary>
-        /// <returns></returns>
         [Route("all")]
         public IActionResult AllUser()
         {
@@ -24,10 +16,6 @@ namespace CoStudyContentManagement.Controllers
             return View();
         }
 
-        /// <summary>
-        /// Gets the user by identifier.
-        /// </summary>
-        /// <returns></returns>
         [Route("detail")]
         public IActionResult GetUserById([FromQuery] string email)
         {

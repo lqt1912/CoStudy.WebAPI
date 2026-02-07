@@ -1,29 +1,30 @@
 using AspNetCoreRateLimit;
 using Audit.Core;
+using Audit.PostgreSql.Configuration;
 using Audit.WebApi;
 using CoStudy.API.Application.Repositories;
 using CoStudy.API.Infrastructure.Identity;
 using CoStudy.API.Infrastructure.Identity.Helpers;
 using CoStudy.API.Infrastructure.Identity.Services.Implements;
 using CoStudy.API.Infrastructure.Shared.AutoMapper;
+using CoStudy.API.Infrastructure.Shared.Hangfire;
+using CoStudy.API.Infrastructure.Shared.Models.Request;
 using CoStudy.API.Infrastructure.Shared.Services;
 using CoStudy.API.WebAPI.BackgroundTask.WorkerService;
 using CoStudy.API.WebAPI.Extensions;
 using CoStudy.API.WebAPI.Middlewares;
+using CoStudy.API.WebAPI.Models;
+using Hangfire;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Serilog;
-using Microsoft.EntityFrameworkCore;
-using CoStudy.API.WebAPI.Models;
-using Audit.PostgreSql.Configuration;
-using CoStudy.API.Infrastructure.Shared.Hangfire;
-using Hangfire;
-using System;
 using MongoDB.Bson.Serialization;
-using CoStudy.API.Infrastructure.Shared.Models.Request;
+using MongoDB.Driver;
+using Serilog;
+using System;
 
 namespace CoStudy.API.WebAPI
 {
@@ -106,16 +107,13 @@ namespace CoStudy.API.WebAPI
             IRecurringJobManager recurringJobManager,
             IServiceProvider serviceProvider)
         {
-
-            var sqlConnectionString = Configuration.GetValue<string>("Settings:PostgresConnection");
-            Audit.Core.Configuration.Setup()
-                .UsePostgreSql(config => config
-                .ConnectionString(sqlConnectionString)
-                .TableName("audit_log")
-                .IdColumnName("id")
-                .DataColumn("data", DataType.JSONB)
-                .LastUpdatedColumnName("inserted_date"))
-                .WithCreationPolicy(EventCreationPolicy.InsertOnStartReplaceOnEnd);
+            var mongoConnection = Configuration.GetValue<string>("Settings:MongoConnectionString");
+            var mongoDb = Configuration.GetValue<string>("Default");
+            Audit.Core.Configuration.Setup().UseMongoDB(config => config
+                                            .ConnectionString(mongoConnection)
+                                            .Database(mongoDb)
+                                            .Collection("audit_log"))
+                                            .WithCreationPolicy(EventCreationPolicy.InsertOnStartReplaceOnEnd);
 
             app.UseCors(x => x
                 .AllowAnyMethod()

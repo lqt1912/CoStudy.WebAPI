@@ -7,59 +7,23 @@ using System.Reflection;
 
 namespace CoStudy.API.Application.Features
 {
-    /// <summary>
-    /// 
-    /// </summary>
     public static class ImageExtension
     {
 
-        /// <summary>
-        /// 
-        /// </summary>
         enum Dimensions
         {
-            /// <summary>
-            /// The width
-            /// </summary>
             Width,
-            /// <summary>
-            /// The height
-            /// </summary>
             Height
         }
-        /// <summary>
-        /// 
-        /// </summary>
         enum AnchorPosition
         {
-            /// <summary>
-            /// The top
-            /// </summary>
             Top,
-            /// <summary>
-            /// The center
-            /// </summary>
             Center,
-            /// <summary>
-            /// The bottom
-            /// </summary>
             Bottom,
-            /// <summary>
-            /// The left
-            /// </summary>
             Left,
-            /// <summary>
-            /// The right
-            /// </summary>
             Right
         }
 
-        /// <summary>
-        /// Parses the image format.
-        /// </summary>
-        /// <param name="str">The string.</param>
-        /// <returns></returns>
-        /// <exception cref="Exception">Lỗi định dạng</exception>
         public static System.Drawing.Imaging.ImageFormat ParseImageFormat(string str)
         {
             try
@@ -79,12 +43,6 @@ namespace CoStudy.API.Application.Features
             }
         }
 
-        /// <summary>
-        /// Scales the by percent.
-        /// </summary>
-        /// <param name="imgPhoto">The img photo.</param>
-        /// <param name="Percent">The percent.</param>
-        /// <returns></returns>
         public static Image ScaleByPercent(Image imgPhoto, double Percent)
         {
             float nPercent = ((float)Percent / 100);
@@ -114,13 +72,6 @@ namespace CoStudy.API.Application.Features
             return bmPhoto;
         }
 
-        /// <summary>
-        /// Fixeds the size.
-        /// </summary>
-        /// <param name="imgPhoto">The img photo.</param>
-        /// <param name="Width">The width.</param>
-        /// <param name="Height">The height.</param>
-        /// <returns></returns>
         public static Image FixedSize(Image imgPhoto, int Width, int Height)
         {
             int sourceWidth = imgPhoto.Width;
@@ -169,13 +120,6 @@ namespace CoStudy.API.Application.Features
             return bmPhoto;
         }
 
-        /// <summary>
-        /// Crops the image.
-        /// </summary>
-        /// <param name="imgPhoto">The img photo.</param>
-        /// <param name="cropArea">The crop area.</param>
-        /// <returns></returns>
-        /// <exception cref="Exception">Ngoài vùng crop</exception>
         public static Image CropImage(Image imgPhoto, Rectangle cropArea)
         {
             Bitmap bmpImage = new Bitmap(imgPhoto);
@@ -191,11 +135,6 @@ namespace CoStudy.API.Application.Features
 
         }
 
-        /// <summary>
-        /// Change image's color to black and white
-        /// </summary>
-        /// <param name="imgPhoto">The img photo.</param>
-        /// <returns></returns>
         public static Image ToBlackAndWhite(Image imgPhoto)
         {
             Bitmap bmp = new Bitmap(imgPhoto);
@@ -213,39 +152,18 @@ namespace CoStudy.API.Application.Features
 
         }
 
-        /// <summary>
-        /// Flip180s the x.
-        /// </summary>
-        /// <param name="imgPhoto">The img photo.</param>
-        /// <returns></returns>
         public static Image Flip180X(Image imgPhoto)
         {
             imgPhoto.RotateFlip(RotateFlipType.RotateNoneFlipX);
             return imgPhoto;
         }
 
-        /// <summary>
-        /// Flip180s the y.
-        /// </summary>
-        /// <param name="imgPhoto">The img photo.</param>
-        /// <returns></returns>
         public static Image Flip180Y(Image imgPhoto)
         {
             imgPhoto.RotateFlip(RotateFlipType.RotateNoneFlipY);
             return imgPhoto;
         }
 
-        /// <summary>
-        /// Creates a new Image containing the same image only rotated
-        /// </summary>
-        /// <param name="image">The <see cref="System.Drawing.Image" /> to rotate</param>
-        /// <param name="angle">The amount to rotate the image, clockwise, in degrees</param>
-        /// <returns>
-        /// A new <see cref="System.Drawing.Bitmap" /> that is just large enough
-        /// to contain the rotated image without cutting any corners off.
-        /// </returns>
-        /// <exception cref="ArgumentNullException">image</exception>
-        /// <exception cref="System.ArgumentNullException">Thrown if <see cref="image" /> is null.</exception>
         public static Bitmap RotateImage(Image image, float angle)
         {
             if (image == null)
@@ -413,13 +331,6 @@ namespace CoStudy.API.Application.Features
         }
 
 
-        /// <summary>
-        /// Resizes the image.
-        /// </summary>
-        /// <param name="image">The image.</param>
-        /// <param name="newWidth">The new width.</param>
-        /// <param name="newHeight">The new height.</param>
-        /// <returns></returns>
         public static Image ResizeImage(Image image, int newWidth, int newHeight)
         {
             Image imgPhoto = image;
