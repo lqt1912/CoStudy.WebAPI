@@ -1,0 +1,65 @@
+<article class="post-card card">
+    <!-- Header -->
+    <div class="post-header">
+        <a [routerLink]="['/profile', post().authorId]" class="post-author">
+            <app-avatar [src]="post().author?.avatarHash ?? ''" [initial]="authorInitial" size="md" />
+            <div class="author-info">
+                <span class="author-name">{{ authorName }}</span>
+                <span class="post-time text-xs text-secondary">{{ timeAgo }}</span>
+            </div>
+        </a>
+    </div>
+
+    <!-- Content -->
+    <a [routerLink]="['/post', post().id]" class="post-body">
+        @if (post().title) {
+        <h3 class="post-title">{{ post().title }}</h3>
+        }
+        <p class="post-content">{{ post().content }}</p>
+    </a>
+
+    <!-- Images -->
+    @if (post().images && post().images!.length > 0) {
+    <div class="post-images" [class]="'grid-' + Math.min(post().images!.length, 4)">
+        @for (img of post().images!.slice(0, 4); track img) {
+        <img [src]="img" alt="Post image" class="post-img" loading="lazy" />
+        }
+    </div>
+    }
+
+    <!-- Fields / Tags -->
+    @if (post().fieldIds && post().fieldIds!.length > 0) {
+    <div class="post-tags">
+        @for (fId of post().fieldIds!; track fId) {
+        <span class="badge badge-primary">#{{ fId }}</span>
+        }
+    </div>
+    }
+
+    <!-- Actions -->
+    <div class="post-actions">
+        <button class="action-btn" [class.active]="post().isUpvoted" (click)="onUpvote()">
+            <span class="material-icons-outlined">thumb_up</span>
+            <span>{{ post().upvoteCount ?? 0 }}</span>
+        </button>
+
+        <button class="action-btn" [class.active-down]="post().isDownvoted" (click)="onDownvote()">
+            <span class="material-icons-outlined">thumb_down</span>
+            <span>{{ post().downvoteCount ?? 0 }}</span>
+        </button>
+
+        <a [routerLink]="['/post', post().id]" class="action-btn">
+            <span class="material-icons-outlined">chat_bubble_outline</span>
+            <span>{{ post().commentCount ?? 0 }}</span>
+        </a>
+
+        <button class="action-btn" (click)="onShare()">
+            <span class="material-icons-outlined">share</span>
+            <span>{{ post().shareCount ?? 0 }}</span>
+        </button>
+
+        <button class="action-btn save-btn" [class.saved]="post().isSaved" (click)="onSave()">
+            <span class="material-icons-outlined">{{ post().isSaved ? 'bookmark' : 'bookmark_border' }}</span>
+        </button>
+    </div>
+</article>

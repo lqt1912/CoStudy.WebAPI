@@ -1,0 +1,104 @@
+<div class="max-w-3xl mx-auto py-8 px-4">
+    <!-- Loading -->
+    @if (isLoading) {
+    <div class="flex items-center justify-center py-20">
+        <i class="fas fa-spinner fa-spin text-4xl text-[var(--color-primary)]"></i>
+    </div>
+    } @else if (errorMessage) {
+    <!-- Error -->
+    <div class="flex flex-col items-center justify-center py-20 gap-4">
+        <div class="w-20 h-20 rounded-full bg-red-500/15 flex items-center justify-center">
+            <i class="fas fa-exclamation-triangle text-4xl text-[var(--color-danger)]"></i>
+        </div>
+        <p class="text-lg text-[var(--text-secondary)]">{{ errorMessage }}</p>
+        <a routerLink="/feed"
+            class="px-6 py-3 rounded-xl text-base font-semibold text-white bg-[var(--color-primary)] hover:bg-[var(--color-primary-hover)] transition-all">
+            Về trang chủ
+        </a>
+    </div>
+    } @else {
+
+    <!-- Profile Header Card -->
+    <div class="bg-[var(--color-surface)] rounded-2xl p-8 mb-6 shadow-lg">
+        <div class="flex flex-col sm:flex-row items-center sm:items-start gap-6">
+            <!-- Avatar -->
+            <div class="flex-shrink-0">
+                <app-avatar [src]="user?.avatar_hash || ''" [alt]="displayName" [initial]="initials"
+                    size="xl"></app-avatar>
+            </div>
+
+            <!-- Info -->
+            <div class="flex-1 text-center sm:text-left">
+                <h1 class="text-2xl font-bold text-[var(--text-primary)]">{{ displayName }}</h1>
+                <div class="flex gap-6 mt-4 justify-center sm:justify-start">
+                    <div class="text-center">
+                        <span class="text-xl font-bold text-[var(--text-primary)]">{{ user?.followerCount || 0 }}</span>
+                        <span class="text-sm text-[var(--text-muted)] ml-1">Người theo dõi</span>
+                    </div>
+                    <div class="text-center">
+                        <span class="text-xl font-bold text-[var(--text-primary)]">{{ user?.followingCount || 0
+                            }}</span>
+                        <span class="text-sm text-[var(--text-muted)] ml-1">Đang theo dõi</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="flex-shrink-0">
+                @if (isOwnProfile) {
+                <a routerLink="/profile"
+                    class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[var(--color-surface-2)] text-[var(--text-primary)] font-medium hover:bg-[var(--color-primary)] hover:text-white transition-all text-base">
+                    <i class="fas fa-pen text-sm"></i> Chỉnh sửa
+                </a>
+                } @else {
+                <button type="button" (click)="toggleFollow()"
+                    class="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl font-semibold transition-all text-base"
+                    [class]="user?.isFollowing
+                        ? 'bg-[var(--color-surface-2)] text-[var(--text-primary)] hover:bg-red-500/15 hover:text-[var(--color-danger)]'
+                        : 'bg-[var(--color-primary)] text-white hover:bg-[var(--color-primary-hover)]'">
+                    @if (user?.isFollowing) {
+                    <i class="fas fa-user-check text-sm"></i> Đang theo dõi
+                    } @else {
+                    <i class="fas fa-user-plus text-sm"></i> Theo dõi
+                    }
+                </button>
+                }
+            </div>
+        </div>
+    </div>
+
+    <!-- Details Card -->
+    <div class="bg-[var(--color-surface)] rounded-2xl p-8 shadow-lg space-y-8">
+        <!-- Bio -->
+        <div>
+            <h3 class="text-lg font-semibold text-[var(--text-primary)] mb-3 flex items-center gap-2">
+                <i class="fas fa-user text-[var(--color-primary)]"></i> Giới thiệu
+            </h3>
+            <p class="text-base text-[var(--text-secondary)] leading-relaxed">
+                {{ user?.bio || 'Chưa có giới thiệu.' }}
+            </p>
+        </div>
+
+        <!-- Info Grid -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <div class="space-y-1">
+                <label class="text-xs font-medium text-[var(--text-muted)] uppercase tracking-wider">Giới tính</label>
+                <p class="text-base text-[var(--text-primary)]">{{ user?.gender || 'Chưa cập nhật' }}</p>
+            </div>
+            <div class="space-y-1">
+                <label class="text-xs font-medium text-[var(--text-muted)] uppercase tracking-wider">Lĩnh vực</label>
+                <div class="flex flex-wrap gap-2 mt-1">
+                    @for (field of user?.fields; track field) {
+                    <span
+                        class="px-3 py-1 rounded-full text-sm bg-[var(--color-primary)]/15 text-[var(--color-primary)] font-medium">
+                        {{ field }}
+                    </span>
+                    } @empty {
+                    <span class="text-base text-[var(--text-muted)]">Chưa cập nhật</span>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+    }
+</div>

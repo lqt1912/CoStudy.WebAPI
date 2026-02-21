@@ -1,0 +1,6 @@
+<button class="bell-btn" aria-label="Thông báo">
+    <span class="material-icons-outlined">notifications</span>
+    @if (count() > 0) {
+    <span class="bell-badge">{{ count() > 99 ? '99+' : count() }}</span>
+    }
+</button>

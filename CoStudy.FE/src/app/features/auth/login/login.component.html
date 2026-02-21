@@ -1,0 +1,77 @@
+<div class="flex items-center justify-center min-h-screen bg-[var(--color-bg)] p-4">
+  <div class="w-full max-w-md p-12 bg-[var(--color-surface)] rounded-2xl shadow-lg">
+    <!-- Branding -->
+    <div class="text-center mb-10">
+      <div class="inline-flex items-center justify-center w-16 h-16 rounded-xl bg-[var(--color-primary)]/15 mb-5">
+        <i class="fas fa-graduation-cap text-3xl text-[var(--color-primary)]"></i>
+      </div>
+      <h1 class="text-3xl font-bold text-[var(--text-primary)] tracking-tight">Đăng nhập</h1>
+      <p class="mt-3 text-base text-[var(--text-secondary)]">Chào mừng bạn quay trở lại CoStudy</p>
+    </div>
+
+    @if (errorMessage) {
+    <div class="p-4 mb-6 text-base text-[var(--color-danger)] bg-red-500/10 rounded-xl text-center">
+      {{ errorMessage }}
+    </div>
+    }
+
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="space-y-6">
+      <!-- Email -->
+      <div class="space-y-2.5">
+        <label for="email" class="block text-base font-medium text-[var(--text-secondary)]">Email</label>
+        <input type="email" id="email" formControlName="email" placeholder="you@example.com"
+          class="w-full px-5 py-4 text-base text-[var(--text-primary)] bg-[var(--color-surface-2)] rounded-xl focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] transition-all placeholder:text-[var(--text-muted)] border-0"
+          [class.ring-2]="loginForm.get('email')?.invalid && loginForm.get('email')?.touched"
+          [class.ring-red-500]="loginForm.get('email')?.invalid && loginForm.get('email')?.touched">
+        @if (loginForm.get('email')?.touched && loginForm.get('email')?.invalid) {
+        <p class="text-sm text-[var(--color-danger)] mt-1.5 ml-1">
+          @if (loginForm.get('email')?.hasError('required')) { Email là bắt buộc }
+          @else if (loginForm.get('email')?.hasError('email')) { Vui lòng nhập email hợp lệ }
+        </p>
+        }
+      </div>
+
+      <!-- Password -->
+      <div class="space-y-2.5">
+        <label for="password" class="block text-base font-medium text-[var(--text-secondary)]">Mật khẩu</label>
+        <div class="relative">
+          <input [type]="hidePassword ? 'password' : 'text'" id="password" formControlName="password"
+            placeholder="Nhập mật khẩu"
+            class="w-full px-5 py-4 text-base text-[var(--text-primary)] bg-[var(--color-surface-2)] rounded-xl focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] transition-all placeholder:text-[var(--text-muted)] border-0 pr-12"
+            [class.ring-2]="loginForm.get('password')?.invalid && loginForm.get('password')?.touched"
+            [class.ring-red-500]="loginForm.get('password')?.invalid && loginForm.get('password')?.touched">
+          <button type="button" (click)="hidePassword = !hidePassword"
+            class="absolute inset-y-0 right-0 flex items-center px-4 text-[var(--text-muted)] hover:text-[var(--text-primary)] focus:outline-none transition-colors">
+            <i class="fas text-lg" [class.fa-eye]="!hidePassword" [class.fa-eye-slash]="hidePassword"></i>
+          </button>
+        </div>
+        @if (loginForm.get('password')?.touched && loginForm.get('password')?.hasError('required')) {
+        <p class="text-sm text-[var(--color-danger)] mt-1.5 ml-1">Mật khẩu là bắt buộc</p>
+        }
+      </div>
+
+      <!-- Forgot Password -->
+      <div class="flex justify-end -mt-2">
+        <a routerLink="/forgot-password"
+          class="text-base text-[var(--text-secondary)] hover:text-[var(--color-primary)] transition-colors">
+          Quên mật khẩu?
+        </a>
+      </div>
+
+      <!-- Submit -->
+      <button type="submit" [disabled]="loginForm.invalid || isLoading"
+        class="w-full px-5 py-4 text-white font-semibold bg-[var(--color-primary)] rounded-xl hover:bg-[var(--color-primary-hover)] disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2 text-lg">
+        @if (isLoading) {
+        <i class="fas fa-spinner fa-spin"></i>
+        }
+        Đăng nhập
+      </button>
+    </form>
+
+    <!-- Footer -->
+    <div class="text-center text-base text-[var(--text-secondary)] mt-10">
+      Chưa có tài khoản?
+      <a routerLink="/register" class="font-semibold text-[var(--color-primary)] hover:underline ml-1">Đăng ký</a>
+    </div>
+  </div>
+</div>

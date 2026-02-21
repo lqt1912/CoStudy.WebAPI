@@ -1,0 +1,30 @@
+<div class="admin-layout">
+    <aside class="admin-sidebar card">
+        <h2 class="sidebar-title">
+            <span class="material-icons-outlined">admin_panel_settings</span>
+            Admin Panel
+        </h2>
+        <nav class="sidebar-nav">
+            <a routerLink="dashboard" routerLinkActive="active" class="nav-item">
+                <span class="material-icons-outlined">dashboard</span>
+                Dashboard
+            </a>
+            <a routerLink="users" routerLinkActive="active" class="nav-item">
+                <span class="material-icons-outlined">people</span>
+                Quản lý người dùng
+            </a>
+            <a routerLink="reports" routerLinkActive="active" class="nav-item">
+                <span class="material-icons-outlined">report</span>
+                Báo cáo vi phạm
+            </a>
+            <a routerLink="master-data" routerLinkActive="active" class="nav-item">
+                <span class="material-icons-outlined">category</span>
+                Dữ liệu chung
+            </a>
+        </nav>
+    </aside>
+
+    <main class="admin-content">
+        <router-outlet />
+    </main>
+</div>

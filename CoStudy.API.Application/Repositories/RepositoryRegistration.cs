@@ -57,7 +57,8 @@ namespace CoStudy.API.Application.Repositories
 
             services.AddTransient<IObjectLevelRepository, ObjectLevelRepository>();
 
-            var googleCredential = GoogleCredential.FromFile(@"wwwroot/costudy-c5390-firebase-adminsdk-e63r1-83b0a1d0a7.json");
+            var googleCredential = CredentialFactory
+                .FromFile(@"wwwroot/costudy-e2eb1-ddc4638ff4a1.json", JsonCredentialParameters.ServiceAccountCredentialType);
             
             FirebaseApp.Create(new AppOptions() { Credential = googleCredential });
          

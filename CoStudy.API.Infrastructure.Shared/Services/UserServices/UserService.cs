@@ -192,6 +192,8 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
             currentUser.LastName = request.LastName;
             currentUser.PhoneNumber = request.PhoneNumber;
             currentUser.DateOfBirth = request.DateOfBirth;
+            currentUser.Bio = request.Bio;
+            currentUser.Gender = request.Gender;
             await userRepository.UpdateAsync(currentUser, currentUser.Id);
 
             return mapper.Map<UserViewModel>(currentUser);
@@ -415,6 +417,10 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
         public IEnumerable<UserNearbyViewModel> GetNearbyUser(BaseGetAllRequest baseGetAllRequest)
         {
             var currentUser = Feature.CurrentUser(_httpContextAccessor, userRepository);
+
+            if (currentUser.Address == null)
+                return Enumerable.Empty<UserNearbyViewModel>();
+
             var currentLocation = new Location()
             {
                 Latitude = Feature.ParseDouble(currentUser.Address.Latitude),
@@ -424,6 +430,8 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
             var userNearbys = new List<UserNearbyViewModel>();
             foreach (var x in userRepository.GetAll())
             {
+                if (x.Address == null) continue;
+
                 var a = new UserNearbyViewModel
                 {
                     UserId = x.OId,
@@ -477,6 +485,12 @@ namespace CoStudy.API.Infrastructure.Shared.Services.UserServices
         {
             var currentUser = Feature.CurrentUser(_httpContextAccessor, userRepository);
 
+            if (currentUser.Address == null)
+                currentUser.Address = new Address();
+
+            currentUser.Address.City = request.City;
+            currentUser.Address.District = request.District;
+            currentUser.Address.Detail = request.Detail;
             currentUser.Address.Latitude = request.Latitude;
             currentUser.Address.Longtitude = request.Longtitude;
             await userRepository.UpdateAsync(currentUser, currentUser.Id);

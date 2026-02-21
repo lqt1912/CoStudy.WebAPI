@@ -12,7 +12,7 @@ namespace CoStudy.API.Infrastructure.Identity.Contexts
         {
             this.configuration = configuration;
             _client = new MongoClient(configuration["MongoConnectionString"]);
-            _database = _client.GetDatabase("CoStudyServerDb");
+            _database = _client.GetDatabase("Default");
 
         }
         public MongoClient GetClient()

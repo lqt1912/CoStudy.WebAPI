@@ -33,6 +33,14 @@ namespace CoStudy.API.Domain.Entities.Application
         [JsonPropertyName("address")]
         public Address Address { get; set; }
 
+        [BsonElement("bio")]
+        [JsonPropertyName("bio")]
+        public string Bio { get; set; }
+
+        [BsonElement("gender")]
+        [JsonPropertyName("gender")]
+        public string Gender { get; set; }
+
 
         [BsonElement("avatar")]
         [JsonPropertyName("avatar")]

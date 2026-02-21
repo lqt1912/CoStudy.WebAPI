@@ -1,0 +1,35 @@
+<div class="feed-container">
+    <div class="feed-header">
+        <h1>Bảng tin</h1>
+        <p class="text-secondary">Bài viết từ những người bạn theo dõi</p>
+    </div>
+
+    @if (loading() && posts().length === 0) {
+    <app-loader text="Đang tải bảng tin..." />
+    }
+
+    <div class="feed-list">
+        @for (post of posts(); track post.id) {
+        <app-post-card [post]="post" (upvote)="onUpvote($event)" (downvote)="onDownvote($event)" (save)="onSave($event)"
+            (share)="onShare($event)" />
+        }
+    </div>
+
+    @if (!loading() && posts().length === 0) {
+    <div class="empty-state card">
+        <span class="material-icons-outlined empty-icon">article</span>
+        <h3>Chưa có bài viết nào</h3>
+        <p class="text-secondary">Hãy theo dõi người dùng khác để xem bài viết của họ</p>
+    </div>
+    }
+
+    @if (posts().length > 0 && !loading()) {
+    <div class="load-more">
+        <button class="btn btn-ghost" (click)="loadMore()">Tải thêm</button>
+    </div>
+    }
+
+    @if (loading() && posts().length > 0) {
+    <app-loader text="Đang tải thêm..." />
+    }
+</div>

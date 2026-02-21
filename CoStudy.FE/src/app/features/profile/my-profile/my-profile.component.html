@@ -1,0 +1,222 @@
+<div class="max-w-3xl mx-auto py-8 px-4">
+    <!-- Loading -->
+    @if (isLoading) {
+    <div class="flex items-center justify-center py-20">
+        <i class="fas fa-spinner fa-spin text-4xl text-[var(--color-primary)]"></i>
+    </div>
+    } @else {
+
+    <!-- Profile Header Card -->
+    <div class="bg-[var(--color-surface)] rounded-2xl p-8 mb-6 shadow-lg">
+        <div class="flex flex-col sm:flex-row items-center sm:items-start gap-6">
+            <!-- Avatar -->
+            <div class="relative flex-shrink-0 group cursor-pointer" (click)="avatarInput.click()">
+                <app-avatar [src]="avatarPreview || currentUser?.avatar_hash || ''" [alt]="displayName"
+                    [initial]="initials" size="xl"></app-avatar>
+
+                <!-- Upload overlay -->
+                @if (isUploadingAvatar) {
+                <div class="absolute inset-0 rounded-full bg-black/50 flex items-center justify-center z-10">
+                    <i class="fas fa-spinner fa-spin text-white text-2xl"></i>
+                </div>
+                } @else {
+                <div
+                    class="absolute inset-0 rounded-full bg-black/0 group-hover:bg-black/40 flex items-center justify-center transition-all opacity-0 group-hover:opacity-100">
+                    <i class="fas fa-camera text-white text-lg"></i>
+                </div>
+                }
+
+                <input #avatarInput type="file" (change)="onFileSelected($event)" class="hidden" accept="image/*">
+            </div>
+
+            <!-- Info -->
+            <div class="flex-1 text-center sm:text-left">
+                <h1 class="text-2xl font-bold text-[var(--text-primary)]">{{ displayName }}</h1>
+                <p class="text-base text-[var(--text-muted)] mt-1">{{ currentUser?.email }}</p>
+                <div class="flex gap-6 mt-4 justify-center sm:justify-start">
+                    <div class="text-center">
+                        <span class="text-xl font-bold text-[var(--text-primary)]">{{ currentUser?.followerCount || 0
+                            }}</span>
+                        <span class="text-sm text-[var(--text-muted)] ml-1">Người theo dõi</span>
+                    </div>
+                    <div class="text-center">
+                        <span class="text-xl font-bold text-[var(--text-primary)]">{{ currentUser?.followingCount || 0
+                            }}</span>
+                        <span class="text-sm text-[var(--text-muted)] ml-1">Đang theo dõi</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Edit Button -->
+            <div class="flex-shrink-0">
+                @if (!isEditMode) {
+                <button type="button"
+                    class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[var(--color-surface-2)] text-[var(--text-primary)] font-medium hover:bg-[var(--color-primary)] hover:text-white transition-all text-base"
+                    (click)="toggleEditMode()">
+                    <i class="fas fa-pen text-sm"></i> Chỉnh sửa
+                </button>
+                }
+            </div>
+        </div>
+    </div>
+
+    <!-- Messages -->
+    @if (successMessage) {
+    <div class="p-4 mb-6 text-base text-[var(--color-success)] bg-green-500/10 rounded-xl text-center">
+        {{ successMessage }}
+    </div>
+    }
+    @if (errorMessage) {
+    <div class="p-4 mb-6 text-base text-[var(--color-danger)] bg-red-500/10 rounded-xl text-center">
+        {{ errorMessage }}
+    </div>
+    }
+
+    <!-- View Mode -->
+    @if (!isEditMode) {
+    <div class="bg-[var(--color-surface)] rounded-2xl p-8 shadow-lg space-y-8">
+        <!-- Bio -->
+        <div>
+            <h3 class="text-lg font-semibold text-[var(--text-primary)] mb-3 flex items-center gap-2">
+                <i class="fas fa-user text-[var(--color-primary)]"></i> Giới thiệu
+            </h3>
+            <p class="text-base text-[var(--text-secondary)] leading-relaxed">
+                {{ currentUser?.bio || 'Chưa có giới thiệu.' }}
+            </p>
+        </div>
+
+        <!-- Info Grid -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <div class="space-y-1">
+                <label class="text-xs font-medium text-[var(--text-muted)] uppercase tracking-wider">Số điện
+                    thoại</label>
+                <p class="text-base text-[var(--text-primary)]">{{ currentUser?.phone_number || 'Chưa cập nhật' }}</p>
+            </div>
+            <div class="space-y-1">
+                <label class="text-xs font-medium text-[var(--text-muted)] uppercase tracking-wider">Giới tính</label>
+                <p class="text-base text-[var(--text-primary)]">{{ currentUser?.gender || 'Chưa cập nhật' }}</p>
+            </div>
+            <div class="space-y-1">
+                <label class="text-xs font-medium text-[var(--text-muted)] uppercase tracking-wider">Ngày sinh</label>
+                <p class="text-base text-[var(--text-primary)]">
+                    {{ currentUser?.date_of_birth ? (currentUser!.date_of_birth | date:'dd/MM/yyyy') : 'Chưa cập nhật'
+                    }}
+                </p>
+            </div>
+            <div class="space-y-1">
+                <label class="text-xs font-medium text-[var(--text-muted)] uppercase tracking-wider">Địa chỉ</label>
+                <p class="text-base text-[var(--text-primary)]">{{ formattedAddress }}</p>
+            </div>
+        </div>
+    </div>
+    }
+
+    <!-- Edit Mode -->
+    @if (isEditMode) {
+    <div class="bg-[var(--color-surface)] rounded-2xl p-8 shadow-lg space-y-8">
+        <!-- Basic Info Form -->
+        <form [formGroup]="profileForm" class="space-y-6">
+            <h3 class="text-lg font-semibold text-[var(--text-primary)] flex items-center gap-2">
+                <i class="fas fa-id-card text-[var(--color-primary)]"></i> Thông tin cơ bản
+            </h3>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                <div class="space-y-2">
+                    <label for="firstName" class="block text-base font-medium text-[var(--text-secondary)]">Họ</label>
+                    <input type="text" id="firstName" formControlName="firstName" placeholder="Nguyễn"
+                        class="w-full px-5 py-3.5 text-base text-[var(--text-primary)] bg-[var(--color-surface-2)] rounded-xl focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] transition-all placeholder:text-[var(--text-muted)] border-0">
+                    @if (profileForm.get('firstName')?.touched && profileForm.get('firstName')?.hasError('required')) {
+                    <p class="text-sm text-[var(--color-danger)] mt-1 ml-1">Họ là bắt buộc</p>
+                    }
+                </div>
+                <div class="space-y-2">
+                    <label for="lastName" class="block text-base font-medium text-[var(--text-secondary)]">Tên</label>
+                    <input type="text" id="lastName" formControlName="lastName" placeholder="Văn A"
+                        class="w-full px-5 py-3.5 text-base text-[var(--text-primary)] bg-[var(--color-surface-2)] rounded-xl focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] transition-all placeholder:text-[var(--text-muted)] border-0">
+                    @if (profileForm.get('lastName')?.touched && profileForm.get('lastName')?.hasError('required')) {
+                    <p class="text-sm text-[var(--color-danger)] mt-1 ml-1">Tên là bắt buộc</p>
+                    }
+                </div>
+            </div>
+
+            <div class="space-y-2">
+                <label for="bio" class="block text-base font-medium text-[var(--text-secondary)]">Giới thiệu</label>
+                <textarea id="bio" formControlName="bio" rows="3" placeholder="Viết vài dòng về bản thân..."
+                    class="w-full px-5 py-3.5 text-base text-[var(--text-primary)] bg-[var(--color-surface-2)] rounded-xl focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] transition-all placeholder:text-[var(--text-muted)] border-0 resize-none"></textarea>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-5">
+                <div class="space-y-2">
+                    <label for="phone" class="block text-base font-medium text-[var(--text-secondary)]">Số điện
+                        thoại</label>
+                    <input type="tel" id="phone" formControlName="phone" placeholder="0912 345 678"
+                        class="w-full px-5 py-3.5 text-base text-[var(--text-primary)] bg-[var(--color-surface-2)] rounded-xl focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] transition-all placeholder:text-[var(--text-muted)] border-0">
+                </div>
+                <div class="space-y-2">
+                    <label for="gender" class="block text-base font-medium text-[var(--text-secondary)]">Giới
+                        tính</label>
+                    <select id="gender" formControlName="gender"
+                        class="w-full px-5 py-3.5 text-base text-[var(--text-primary)] bg-[var(--color-surface-2)] rounded-xl focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] transition-all border-0 appearance-none">
+                        <option value="">Chọn</option>
+                        <option value="Male">Nam</option>
+                        <option value="Female">Nữ</option>
+                        <option value="Other">Khác</option>
+                    </select>
+                </div>
+                <div class="space-y-2">
+                    <label for="dateOfBirth" class="block text-base font-medium text-[var(--text-secondary)]">Ngày
+                        sinh</label>
+                    <input type="date" id="dateOfBirth" formControlName="dateOfBirth"
+                        class="w-full px-5 py-3.5 text-base text-[var(--text-primary)] bg-[var(--color-surface-2)] rounded-xl focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] transition-all border-0">
+                </div>
+            </div>
+        </form>
+
+        <!-- Address Form -->
+        <form [formGroup]="addressForm" class="space-y-6">
+            <h3 class="text-lg font-semibold text-[var(--text-primary)] flex items-center gap-2">
+                <i class="fas fa-map-marker-alt text-[var(--color-primary)]"></i> Địa chỉ
+            </h3>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                <div class="space-y-2">
+                    <label for="detail" class="block text-base font-medium text-[var(--text-secondary)]">Chi
+                        tiết</label>
+                    <input type="text" id="detail" formControlName="detail" placeholder="Số nhà, đường"
+                        class="w-full px-5 py-3.5 text-base text-[var(--text-primary)] bg-[var(--color-surface-2)] rounded-xl focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] transition-all placeholder:text-[var(--text-muted)] border-0">
+                </div>
+                <div class="space-y-2">
+                    <label for="district"
+                        class="block text-base font-medium text-[var(--text-secondary)]">Quận/Huyện</label>
+                    <input type="text" id="district" formControlName="district" placeholder="Quận/Huyện"
+                        class="w-full px-5 py-3.5 text-base text-[var(--text-primary)] bg-[var(--color-surface-2)] rounded-xl focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] transition-all placeholder:text-[var(--text-muted)] border-0">
+                </div>
+                <div class="space-y-2 sm:col-span-2">
+                    <label for="city" class="block text-base font-medium text-[var(--text-secondary)]">Tỉnh/Thành
+                        phố</label>
+                    <input type="text" id="city" formControlName="city" placeholder="Tỉnh/Thành phố"
+                        class="w-full px-5 py-3.5 text-base text-[var(--text-primary)] bg-[var(--color-surface-2)] rounded-xl focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] transition-all placeholder:text-[var(--text-muted)] border-0">
+                </div>
+            </div>
+        </form>
+
+        <!-- Edit Actions -->
+        <div class="flex justify-end gap-4 pt-4 border-t border-[var(--color-border)]">
+            <button type="button"
+                class="px-6 py-3 rounded-xl text-base font-medium text-[var(--text-secondary)] bg-[var(--color-surface-2)] hover:bg-[var(--color-surface)] transition-all"
+                (click)="toggleEditMode()">
+                Hủy
+            </button>
+            <button type="button"
+                class="px-6 py-3 rounded-xl text-base font-semibold text-white bg-[var(--color-primary)] hover:bg-[var(--color-primary-hover)] disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center gap-2"
+                (click)="onSave()" [disabled]="isSaving || profileForm.invalid">
+                @if (isSaving) {
+                <i class="fas fa-spinner fa-spin"></i>
+                }
+                Lưu thay đổi
+            </button>
+        </div>
+    </div>
+    }
+    }
+</div>

@@ -1,0 +1,11 @@
+@if (src()) {
+<img [src]="src()" [alt]="alt()" [class]="'avatar-img avatar-' + size()" (error)="onImageError($event)" />
+} @else {
+<div [class]="'avatar-fallback avatar-' + size()">
+    {{ initial() }}
+</div>
+}
+
+@if (showOnline()) {
+<span [class]="'online-indicator indicator-' + size()"></span>
+}

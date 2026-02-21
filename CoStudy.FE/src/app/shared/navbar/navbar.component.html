@@ -1,0 +1,126 @@
+<nav class="navbar">
+    <div class="navbar-inner">
+        <!-- Brand -->
+        <a routerLink="/feed" class="brand">
+            <span class="brand-icon material-icons-outlined">school</span>
+            <span class="brand-name">CoStudy</span>
+        </a>
+
+        <!-- Nav links (desktop) -->
+        <div class="nav-links">
+            <a routerLink="/feed" routerLinkActive="active" class="nav-link">
+                <span class="material-icons-outlined">home</span>
+                <span>Feed</span>
+            </a>
+            <a routerLink="/timeline" routerLinkActive="active" class="nav-link">
+                <span class="material-icons-outlined">explore</span>
+                <span>Khám phá</span>
+            </a>
+            <a routerLink="/search" routerLinkActive="active" class="nav-link">
+                <span class="material-icons-outlined">search</span>
+                <span>Tìm kiếm</span>
+            </a>
+            <a routerLink="/messages" routerLinkActive="active" class="nav-link">
+                <span class="material-icons-outlined">chat_bubble_outline</span>
+                <span>Tin nhắn</span>
+            </a>
+            <a routerLink="/leaderboard" routerLinkActive="active" class="nav-link">
+                <span class="material-icons-outlined">leaderboard</span>
+                <span>Xếp hạng</span>
+            </a>
+        </div>
+
+        <!-- Right side -->
+        <div class="nav-right">
+            <!-- Notification bell -->
+            <a routerLink="/notifications" routerLinkActive="active" class="nav-icon-btn" aria-label="Thông báo">
+                <span class="material-icons-outlined">notifications</span>
+                @if (unreadCount() > 0) {
+                <span class="badge-dot">{{ unreadCount() }}</span>
+                }
+            </a>
+
+            <!-- Profile dropdown -->
+            <div class="profile-menu">
+                <button class="profile-btn" (click)="toggleMenu()">
+                    <span class="avatar-initial">{{ currentInitial() }}</span>
+                    <span class="material-icons-outlined arrow-icon" [class.rotated]="menuOpen()">expand_more</span>
+                </button>
+
+                @if (menuOpen()) {
+                <div class="dropdown" (click)="toggleMenu()">
+                    <a routerLink="/profile" class="dropdown-item">
+                        <span class="material-icons-outlined">person</span>
+                        Hồ sơ của tôi
+                    </a>
+                    <a routerLink="/saved-posts" class="dropdown-item">
+                        <span class="material-icons-outlined">bookmark_border</span>
+                        Bài viết đã lưu
+                    </a>
+                    <a routerLink="/nearby" class="dropdown-item">
+                        <span class="material-icons-outlined">near_me</span>
+                        Gần đây
+                    </a>
+                    @if (isAdmin()) {
+                    <div class="dropdown-divider"></div>
+                    <a routerLink="/admin" class="dropdown-item admin-link">
+                        <span class="material-icons-outlined">admin_panel_settings</span>
+                        Quản trị
+                    </a>
+                    }
+                    <div class="dropdown-divider"></div>
+                    <button class="dropdown-item danger" (click)="logout()">
+                        <span class="material-icons-outlined">logout</span>
+                        Đăng xuất
+                    </button>
+                </div>
+                }
+            </div>
+        </div>
+
+        <!-- Mobile hamburger -->
+        <button class="hamburger" (click)="toggleMenu()" aria-label="Menu">
+            <span class="material-icons-outlined">{{ menuOpen() ? 'close' : 'menu' }}</span>
+        </button>
+    </div>
+
+    <!-- Mobile menu -->
+    @if (menuOpen()) {
+    <div class="mobile-menu">
+        <a routerLink="/feed" routerLinkActive="active" class="mobile-link" (click)="toggleMenu()">
+            <span class="material-icons-outlined">home</span> Feed
+        </a>
+        <a routerLink="/timeline" routerLinkActive="active" class="mobile-link" (click)="toggleMenu()">
+            <span class="material-icons-outlined">explore</span> Khám phá
+        </a>
+        <a routerLink="/search" routerLinkActive="active" class="mobile-link" (click)="toggleMenu()">
+            <span class="material-icons-outlined">search</span> Tìm kiếm
+        </a>
+        <a routerLink="/messages" routerLinkActive="active" class="mobile-link" (click)="toggleMenu()">
+            <span class="material-icons-outlined">chat_bubble_outline</span> Tin nhắn
+        </a>
+        <a routerLink="/notifications" routerLinkActive="active" class="mobile-link" (click)="toggleMenu()">
+            <span class="material-icons-outlined">notifications</span> Thông báo
+        </a>
+        <a routerLink="/leaderboard" routerLinkActive="active" class="mobile-link" (click)="toggleMenu()">
+            <span class="material-icons-outlined">leaderboard</span> Xếp hạng
+        </a>
+        <div class="mobile-divider"></div>
+        <a routerLink="/profile" class="mobile-link" (click)="toggleMenu()">
+            <span class="material-icons-outlined">person</span> Hồ sơ
+        </a>
+        <a routerLink="/saved-posts" class="mobile-link" (click)="toggleMenu()">
+            <span class="material-icons-outlined">bookmark_border</span> Đã lưu
+        </a>
+        @if (isAdmin()) {
+        <a routerLink="/admin" class="mobile-link admin-link" (click)="toggleMenu()">
+            <span class="material-icons-outlined">admin_panel_settings</span> Quản trị
+        </a>
+        }
+        <div class="mobile-divider"></div>
+        <button class="mobile-link danger" (click)="logout()">
+            <span class="material-icons-outlined">logout</span> Đăng xuất
+        </button>
+    </div>
+    }
+</nav>

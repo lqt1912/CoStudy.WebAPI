@@ -1,0 +1,75 @@
+:host {
+    position: relative;
+    display: inline-flex;
+    flex-shrink: 0;
+}
+
+.avatar-img,
+.avatar-fallback {
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--color-border);
+}
+
+.avatar-fallback {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, var(--color-primary-hover), var(--color-secondary));
+    color: #fff;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.avatar-sm {
+    width: 32px;
+    height: 32px;
+    font-size: 0.75rem;
+}
+
+.avatar-md {
+    width: 44px;
+    height: 44px;
+    font-size: 0.9rem;
+}
+
+.avatar-lg {
+    width: 72px;
+    height: 72px;
+    font-size: 1.5rem;
+}
+
+.avatar-xl {
+    width: 100px;
+    height: 100px;
+    font-size: 2rem;
+}
+
+.online-indicator {
+    position: absolute;
+    bottom: 1px;
+    right: 1px;
+    border-radius: 50%;
+    background: var(--color-success);
+    border: 2px solid var(--color-surface);
+}
+
+.indicator-sm {
+    width: 8px;
+    height: 8px;
+}
+
+.indicator-md {
+    width: 10px;
+    height: 10px;
+}
+
+.indicator-lg {
+    width: 14px;
+    height: 14px;
+}
+
+.indicator-xl {
+    width: 16px;
+    height: 16px;
+}

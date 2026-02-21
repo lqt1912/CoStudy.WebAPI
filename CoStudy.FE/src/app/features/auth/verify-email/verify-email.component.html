@@ -1,0 +1,33 @@
+<div class="flex items-center justify-center min-h-screen bg-[var(--color-bg)] p-4">
+    <div class="w-full max-w-md p-12 text-center bg-[var(--color-surface)] rounded-2xl shadow-lg">
+        @if (isLoading) {
+        <div class="flex flex-col items-center gap-5 py-10">
+            <i class="fas fa-spinner fa-spin text-5xl text-[var(--color-primary)]"></i>
+            <p class="text-base text-[var(--text-secondary)]">{{ message }}</p>
+        </div>
+        } @else {
+        <div class="flex flex-col items-center gap-6 py-6">
+            @if (isSuccess) {
+            <div class="inline-flex items-center justify-center w-20 h-20 rounded-full bg-green-500/15">
+                <i class="fas fa-check-circle text-6xl text-[var(--color-success)]"></i>
+            </div>
+            } @else {
+            <div class="inline-flex items-center justify-center w-20 h-20 rounded-full bg-red-500/15">
+                <i class="fas fa-exclamation-circle text-6xl text-[var(--color-danger)]"></i>
+            </div>
+            }
+
+            <h3 class="text-3xl font-bold text-[var(--text-primary)]">
+                {{ isSuccess ? 'Xác thực thành công!' : 'Xác thực thất bại' }}
+            </h3>
+
+            <p class="text-base text-[var(--text-secondary)]">{{ message }}</p>
+
+            <a routerLink="/login"
+                class="inline-flex items-center justify-center px-10 py-4 text-white font-semibold bg-[var(--color-primary)] rounded-xl hover:bg-[var(--color-primary-hover)] transition-all mt-2 text-lg">
+                Đi đến đăng nhập
+            </a>
+        </div>
+        }
+    </div>
+</div>

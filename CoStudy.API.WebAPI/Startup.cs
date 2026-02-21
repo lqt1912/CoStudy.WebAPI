@@ -1,7 +1,7 @@
 using AspNetCoreRateLimit;
 using Audit.Core;
-using Audit.PostgreSql.Configuration;
 using Audit.WebApi;
+using AutoMapper;
 using CoStudy.API.Application.Repositories;
 using CoStudy.API.Infrastructure.Identity;
 using CoStudy.API.Infrastructure.Identity.Helpers;
@@ -22,9 +22,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using MongoDB.Bson.Serialization;
-using MongoDB.Driver;
 using Serilog;
 using System;
+using System.Reflection.Metadata;
 
 namespace CoStudy.API.WebAPI
 {
@@ -96,8 +96,8 @@ namespace CoStudy.API.WebAPI
                     .IncludeResponseBody(ctx => ctx.HttpContext.Response.StatusCode == 200));
                 options.Filters.Add(new AuditIgnoreActionFilter());
             });
-            services.AddAutoMapper(typeof(MappingProfile).Assembly);
 
+            services.AddAutoMapper(cfg => { },typeof(MappingProfile).Assembly);
             services.AddCors();
             services.AddMvcCore();
         }
@@ -107,8 +107,8 @@ namespace CoStudy.API.WebAPI
             IRecurringJobManager recurringJobManager,
             IServiceProvider serviceProvider)
         {
-            var mongoConnection = Configuration.GetValue<string>("Settings:MongoConnectionString");
-            var mongoDb = Configuration.GetValue<string>("Default");
+            var mongoConnection = Configuration.GetValue<string>("MongoConnectionString");
+            var mongoDb = "Default";
             Audit.Core.Configuration.Setup().UseMongoDB(config => config
                                             .ConnectionString(mongoConnection)
                                             .Database(mongoDb)

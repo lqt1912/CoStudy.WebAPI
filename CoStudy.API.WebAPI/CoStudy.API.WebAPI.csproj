@@ -12,6 +12,7 @@
     <PackageReference Include="Audit.NET.MongoDB" Version="32.0.0" />
     <PackageReference Include="Audit.NET.PostgreSql" Version="32.0.0" />
     <PackageReference Include="Audit.WebApi.Core" Version="32.0.0" />
+    <PackageReference Include="AutoMapper" Version="16.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.2" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning" Version="5.1.0" />
     <PackageReference Include="Microsoft.Azure.SignalR" Version="1.32.0" />

@@ -4,24 +4,27 @@ using System.Text.Json.Serialization;
 
 namespace CoStudy.API.Infrastructure.Shared.Models.Request
 {
-       public class UpdateUserRequest
+    public class UpdateUserRequest
     {
-
-              [JsonPropertyName("first_name")]
+        [JsonPropertyName("firstName")]
         public string FisrtName { get; set; }
 
-              [JsonPropertyName("last_name")]
+        [JsonPropertyName("lastName")]
         public string LastName { get; set; }
 
-
-              [JsonPropertyName("date_of_birth")]
+        [JsonPropertyName("dateOfBirth")]
         public DateTime DateOfBirth { get; set; }
 
-              [JsonPropertyName("address")]
+        [JsonPropertyName("address")]
         public Address Address { get; set; }
 
-              [JsonPropertyName("phone_number")]
+        [JsonPropertyName("phone")]
         public string PhoneNumber { get; set; }
 
+        [JsonPropertyName("bio")]
+        public string Bio { get; set; }
+
+        [JsonPropertyName("gender")]
+        public string Gender { get; set; }
     }
 }

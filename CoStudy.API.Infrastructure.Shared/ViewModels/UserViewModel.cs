@@ -44,6 +44,14 @@ namespace CoStudy.API.Infrastructure.Shared.ViewModels
         [JsonPropertyName("address")]
         public Address Address { get; set; }
 
+        [JsonProperty("bio")]
+        [JsonPropertyName("bio")]
+        public string Bio { get; set; }
+
+        [JsonProperty("gender")]
+        [JsonPropertyName("gender")]
+        public string Gender { get; set; }
+
         [JsonProperty("full_address")]
         [JsonPropertyName("full_address")]
         public string FullAddress { get; set; }

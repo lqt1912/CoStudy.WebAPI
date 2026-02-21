@@ -84,6 +84,7 @@ namespace CoStudy.API.WebAPI.Extensions
             services.Configure<IpRateLimitOptions>(configuration.GetSection("IpRateLimit"));
             services.AddSingleton<IIpPolicyStore, MemoryCacheIpPolicyStore>();
             services.AddSingleton<IRateLimitCounterStore, MemoryCacheRateLimitCounterStore>();
+            services.AddSingleton<IProcessingStrategy, AsyncKeyLockProcessingStrategy>();
             services.AddSingleton<IRateLimitConfiguration, RateLimitConfiguration>();
         }
     }

@@ -1,0 +1,140 @@
+<div class="flex items-center justify-center min-h-screen bg-[var(--color-bg)] p-4">
+    <div class="w-full max-w-lg p-12 bg-[var(--color-surface)] rounded-2xl shadow-lg">
+        <!-- Branding -->
+        <div class="text-center mb-10">
+            <div class="inline-flex items-center justify-center w-16 h-16 rounded-xl bg-[var(--color-primary)]/15 mb-5">
+                <i class="fas fa-graduation-cap text-3xl text-[var(--color-primary)]"></i>
+            </div>
+            <h1 class="text-3xl font-bold text-[var(--text-primary)] tracking-tight">Tạo tài khoản</h1>
+            <p class="mt-3 text-base text-[var(--text-secondary)]">Đăng ký để bắt đầu hành trình học tập</p>
+        </div>
+
+        @if (successMessage) {
+        <div class="p-4 mb-6 text-base text-[var(--color-success)] bg-green-500/10 rounded-xl text-center">
+            {{ successMessage }}
+            <p class="mt-2">Đi đến <a routerLink="/login"
+                    class="font-bold underline hover:text-[var(--color-primary)]">Đăng nhập</a></p>
+        </div>
+        }
+
+        @if (errorMessage) {
+        <div class="p-4 mb-6 text-base text-[var(--color-danger)] bg-red-500/10 rounded-xl text-center">
+            {{ errorMessage }}
+        </div>
+        }
+
+        @if (!successMessage) {
+        <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="space-y-6">
+            <!-- Name -->
+            <div class="flex gap-4">
+                <div class="flex-1 space-y-2.5">
+                    <label for="firstName" class="block text-base font-medium text-[var(--text-secondary)]">Họ</label>
+                    <input type="text" id="firstName" formControlName="firstName" placeholder="Nguyễn"
+                        class="w-full px-5 py-4 text-base text-[var(--text-primary)] bg-[var(--color-surface-2)] rounded-xl focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] transition-all placeholder:text-[var(--text-muted)] border-0">
+                    @if (registerForm.get('firstName')?.touched && registerForm.get('firstName')?.hasError('required'))
+                    {
+                    <p class="text-sm text-[var(--color-danger)] mt-1.5 ml-1">Họ là bắt buộc</p>
+                    }
+                </div>
+                <div class="flex-1 space-y-2.5">
+                    <label for="lastName" class="block text-base font-medium text-[var(--text-secondary)]">Tên</label>
+                    <input type="text" id="lastName" formControlName="lastName" placeholder="Văn A"
+                        class="w-full px-5 py-4 text-base text-[var(--text-primary)] bg-[var(--color-surface-2)] rounded-xl focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] transition-all placeholder:text-[var(--text-muted)] border-0">
+                    @if (registerForm.get('lastName')?.touched && registerForm.get('lastName')?.hasError('required')) {
+                    <p class="text-sm text-[var(--color-danger)] mt-1.5 ml-1">Tên là bắt buộc</p>
+                    }
+                </div>
+            </div>
+
+            <!-- Email -->
+            <div class="space-y-2.5">
+                <label for="email" class="block text-base font-medium text-[var(--text-secondary)]">Email</label>
+                <input type="email" id="email" formControlName="email" placeholder="you@example.com"
+                    class="w-full px-5 py-4 text-base text-[var(--text-primary)] bg-[var(--color-surface-2)] rounded-xl focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] transition-all placeholder:text-[var(--text-muted)] border-0"
+                    [class.ring-2]="registerForm.get('email')?.invalid && registerForm.get('email')?.touched"
+                    [class.ring-red-500]="registerForm.get('email')?.invalid && registerForm.get('email')?.touched">
+                @if (registerForm.get('email')?.touched && registerForm.get('email')?.invalid) {
+                <p class="text-sm text-[var(--color-danger)] mt-1.5 ml-1">
+                    @if (registerForm.get('email')?.hasError('required')) { Email là bắt buộc }
+                    @else if (registerForm.get('email')?.hasError('email')) { Vui lòng nhập email hợp lệ }
+                </p>
+                }
+            </div>
+
+            <!-- Password -->
+            <div class="space-y-2.5">
+                <label for="password" class="block text-base font-medium text-[var(--text-secondary)]">Mật khẩu</label>
+                <div class="relative">
+                    <input [type]="hidePassword ? 'password' : 'text'" id="password" formControlName="password"
+                        placeholder="Ít nhất 6 ký tự"
+                        class="w-full px-5 py-4 text-base text-[var(--text-primary)] bg-[var(--color-surface-2)] rounded-xl focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] transition-all placeholder:text-[var(--text-muted)] border-0 pr-12"
+                        [class.ring-2]="registerForm.get('password')?.invalid && registerForm.get('password')?.touched"
+                        [class.ring-red-500]="registerForm.get('password')?.invalid && registerForm.get('password')?.touched">
+                    <button type="button" (click)="hidePassword = !hidePassword"
+                        class="absolute inset-y-0 right-0 flex items-center px-4 text-[var(--text-muted)] hover:text-[var(--text-primary)] focus:outline-none transition-colors">
+                        <i class="fas text-lg" [class.fa-eye]="!hidePassword" [class.fa-eye-slash]="hidePassword"></i>
+                    </button>
+                </div>
+                @if (registerForm.get('password')?.touched && registerForm.get('password')?.invalid) {
+                <p class="text-sm text-[var(--color-danger)] mt-1.5 ml-1">
+                    @if (registerForm.get('password')?.hasError('required')) { Mật khẩu là bắt buộc }
+                    @else if (registerForm.get('password')?.hasError('minlength')) { Mật khẩu phải có ít nhất 6 ký tự }
+                </p>
+                }
+            </div>
+
+            <!-- Confirm Password -->
+            <div class="space-y-2.5">
+                <label for="confirmPassword" class="block text-base font-medium text-[var(--text-secondary)]">Xác nhận
+                    mật khẩu</label>
+                <div class="relative">
+                    <input [type]="hideConfirmPassword ? 'password' : 'text'" id="confirmPassword"
+                        formControlName="confirmPassword" placeholder="Nhập lại mật khẩu"
+                        class="w-full px-5 py-4 text-base text-[var(--text-primary)] bg-[var(--color-surface-2)] rounded-xl focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] transition-all placeholder:text-[var(--text-muted)] border-0 pr-12"
+                        [class.ring-2]="registerForm.get('confirmPassword')?.invalid && registerForm.get('confirmPassword')?.touched"
+                        [class.ring-red-500]="registerForm.get('confirmPassword')?.invalid && registerForm.get('confirmPassword')?.touched">
+                    <button type="button" (click)="hideConfirmPassword = !hideConfirmPassword"
+                        class="absolute inset-y-0 right-0 flex items-center px-4 text-[var(--text-muted)] hover:text-[var(--text-primary)] focus:outline-none transition-colors">
+                        <i class="fas text-lg" [class.fa-eye]="!hideConfirmPassword"
+                            [class.fa-eye-slash]="hideConfirmPassword"></i>
+                    </button>
+                </div>
+                @if (registerForm.get('confirmPassword')?.touched && registerForm.get('confirmPassword')?.invalid) {
+                <p class="text-sm text-[var(--color-danger)] mt-1.5 ml-1">
+                    @if (registerForm.get('confirmPassword')?.hasError('required')) { Xác nhận mật khẩu là bắt buộc }
+                    @else if (registerForm.get('confirmPassword')?.hasError('mismatch')) { Mật khẩu không khớp }
+                </p>
+                }
+            </div>
+
+            <!-- Terms -->
+            <div class="flex items-center gap-3">
+                <input id="acceptTerms" formControlName="acceptTerms" type="checkbox"
+                    class="h-5 w-5 rounded bg-[var(--color-surface-2)] accent-[var(--color-primary)] border-0">
+                <label for="acceptTerms" class="text-base text-[var(--text-secondary)]">
+                    Tôi đồng ý với <a href="#" class="text-[var(--color-primary)] hover:underline">Điều khoản sử
+                        dụng</a>
+                </label>
+            </div>
+            @if (registerForm.get('acceptTerms')?.touched && registerForm.get('acceptTerms')?.hasError('required')) {
+            <p class="text-sm text-[var(--color-danger)] ml-1 -mt-3">Bạn phải đồng ý với điều khoản</p>
+            }
+
+            <!-- Submit -->
+            <button type="submit" [disabled]="registerForm.invalid || isLoading"
+                class="w-full px-5 py-4 text-white font-semibold bg-[var(--color-primary)] rounded-xl hover:bg-[var(--color-primary-hover)] disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2 text-lg">
+                @if (isLoading) {
+                <i class="fas fa-spinner fa-spin"></i>
+                }
+                Đăng ký
+            </button>
+        </form>
+        }
+
+        <!-- Footer -->
+        <div class="text-center text-base text-[var(--text-secondary)] mt-10">
+            Đã có tài khoản?
+            <a routerLink="/login" class="font-semibold text-[var(--color-primary)] hover:underline ml-1">Đăng nhập</a>
+        </div>
+    </div>
+</div>
