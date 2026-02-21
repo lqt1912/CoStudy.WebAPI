@@ -1,7 +1,379 @@
-<div>
-    <h2>Dữ liệu chung</h2>
-    <div class="empty-state card">
-        <span class="material-icons-outlined empty-icon">category</span>
-        <p class="text-secondary">Đang phát triển</p>
+<div class="min-h-screen p-6">
+
+    <!-- Header -->
+    <div class="mb-6">
+        <h1 class="text-2xl font-bold text-white">Quản lý Dữ liệu Chung</h1>
+        <p class="text-slate-400 text-sm mt-1">Quản lý lĩnh vực, nhóm lĩnh vực và cấp độ</p>
+    </div>
+
+    <!-- Tabs -->
+    <div class="flex gap-1 mb-6 bg-slate-800 p-1 rounded-xl w-fit">
+        <button (click)="activeTab.set('fields')" [class]="activeTab() === 'fields'
+        ? 'px-5 py-2 rounded-lg bg-indigo-600 text-white font-medium text-sm transition-all'
+        : 'px-5 py-2 rounded-lg text-slate-400 hover:text-white text-sm transition-all'">
+            🎓 Lĩnh vực
+        </button>
+        <button (click)="activeTab.set('groups')" [class]="activeTab() === 'groups'
+        ? 'px-5 py-2 rounded-lg bg-indigo-600 text-white font-medium text-sm transition-all'
+        : 'px-5 py-2 rounded-lg text-slate-400 hover:text-white text-sm transition-all'">
+            📂 Nhóm lĩnh vực
+        </button>
+        <button (click)="activeTab.set('levels')" [class]="activeTab() === 'levels'
+        ? 'px-5 py-2 rounded-lg bg-indigo-600 text-white font-medium text-sm transition-all'
+        : 'px-5 py-2 rounded-lg text-slate-400 hover:text-white text-sm transition-all'">
+            🏆 Cấp độ
+        </button>
+    </div>
+
+    <!-- ══════════════════ TAB: FIELDS ══════════════════ -->
+    @if (activeTab() === 'fields') {
+    <div class="bg-slate-800 rounded-2xl p-6 shadow-lg">
+        <div class="flex gap-3 mb-6">
+            <input type="text" [ngModel]="newFieldValue()" (ngModelChange)="newFieldValue.set($event)"
+                (keydown)="onFieldKeydown($event)" placeholder="Nhập tên lĩnh vực mới..."
+                class="flex-1 bg-slate-700 border border-slate-600 text-white placeholder-slate-400 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-indigo-500 transition-colors" />
+            <button (click)="addField()" [disabled]="addingField() || !newFieldValue().trim()"
+                class="flex items-center gap-2 px-5 py-2.5 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed text-white text-sm font-medium rounded-xl transition-colors">
+                @if (addingField()) { <span class="loader-sm"></span> } @else { <span>＋</span> }
+                Thêm
+            </button>
+        </div>
+        @if (fieldError()) {
+        <div class="mb-4 px-4 py-3 bg-red-500/15 border border-red-500/30 text-red-400 rounded-xl text-sm">{{
+            fieldError() }}</div>
+        }
+        @if (fieldLoading()) {
+        <div class="flex justify-center py-12">
+            <div class="loader"></div>
+        </div>
+        } @else {
+        @if (fields().length === 0) {
+        <div class="text-center py-12 text-slate-500">
+            <div class="text-4xl mb-3">📋</div>
+            <p>Chưa có lĩnh vực nào</p>
+        </div>
+        } @else {
+        <div class="space-y-2">
+            @for (field of fields(); track field.oid) {
+            <div
+                class="flex items-center justify-between px-4 py-3 bg-slate-700/60 hover:bg-slate-700 rounded-xl group transition-colors">
+                <div class="flex items-center gap-3">
+                    <span class="w-2 h-2 rounded-full bg-indigo-400"></span>
+                    <span class="text-white text-sm font-medium">{{ field.value }}</span>
+                </div>
+                <button (click)="deleteField(field.oid)"
+                    class="opacity-0 group-hover:opacity-100 p-1.5 text-slate-400 hover:text-red-400 hover:bg-red-400/10 rounded-lg transition-all"
+                    title="Xóa">🗑</button>
+            </div>
+            }
+        </div>
+        @if (fieldPageCount() > 1) {
+        <div class="flex items-center justify-center gap-2 mt-6">
+            <button (click)="goFieldPage(fieldPage() - 1)" [disabled]="fieldPage() === 0"
+                class="px-3 py-1.5 text-sm text-slate-300 bg-slate-700 hover:bg-slate-600 disabled:opacity-40 disabled:cursor-not-allowed rounded-lg transition-colors">‹</button>
+            @for (p of pages; track p) {
+            <button (click)="goFieldPage(p)"
+                [class]="p === fieldPage() ? 'px-3 py-1.5 text-sm bg-indigo-600 text-white rounded-lg' : 'px-3 py-1.5 text-sm text-slate-300 bg-slate-700 hover:bg-slate-600 rounded-lg transition-colors'">
+                {{ p + 1 }}
+            </button>
+            }
+            <button (click)="goFieldPage(fieldPage() + 1)" [disabled]="fieldPage() >= fieldPageCount() - 1"
+                class="px-3 py-1.5 text-sm text-slate-300 bg-slate-700 hover:bg-slate-600 disabled:opacity-40 disabled:cursor-not-allowed rounded-lg transition-colors">›</button>
+        </div>
+        }
+        }
+        }
+    </div>
+    }
+
+    <!-- ══════════════════ TAB: GROUPS ══════════════════ -->
+    @if (activeTab() === 'groups') {
+    <div class="bg-slate-800 rounded-2xl p-6 shadow-lg">
+        <div class="flex justify-end mb-6">
+            <button (click)="openCreateGroupModal()"
+                class="flex items-center gap-2 px-5 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-medium rounded-xl transition-colors">
+                ＋ Tạo nhóm mới
+            </button>
+        </div>
+        @if (groupError()) {
+        <div class="mb-4 px-4 py-3 bg-red-500/15 border border-red-500/30 text-red-400 rounded-xl text-sm">{{
+            groupError() }}</div>
+        }
+        @if (groupLoading()) {
+        <div class="flex justify-center py-12">
+            <div class="loader"></div>
+        </div>
+        } @else {
+        @if (groups().length === 0) {
+        <div class="text-center py-12 text-slate-500">
+            <div class="text-4xl mb-3">📂</div>
+            <p>Chưa có nhóm lĩnh vực nào</p>
+        </div>
+        } @else {
+        <div class="space-y-3">
+            @for (group of groups(); track group.oid) {
+            <div
+                class="bg-slate-700/60 rounded-xl overflow-hidden border border-slate-700 hover:border-slate-600 transition-colors">
+                <div class="flex items-center justify-between px-4 py-4 cursor-pointer"
+                    (click)="toggleGroup(group.oid)">
+                    <div class="flex items-center gap-3">
+                        <span class="text-lg">📂</span>
+                        <div>
+                            <p class="text-white font-medium text-sm">{{ group.group_name }}</p>
+                            <p class="text-slate-400 text-xs mt-0.5">{{ group.fields?.length ?? 0 }} lĩnh vực</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button (click)="$event.stopPropagation(); openEditGroupModal(group)"
+                            class="px-3 py-1 text-xs text-indigo-300 bg-indigo-500/15 hover:bg-indigo-500/30 rounded-lg transition-colors">Chỉnh
+                            sửa</button>
+                        <span class="text-slate-400 text-sm transition-transform"
+                            [class.rotate-90]="expandedGroupId() === group.oid">▶</span>
+                    </div>
+                </div>
+                @if (expandedGroupId() === group.oid) {
+                <div class="px-4 pb-4 border-t border-slate-600/50">
+                    @if (!group.fields || group.fields.length === 0) {
+                    <p class="text-slate-500 text-sm pt-3">Nhóm này chưa có lĩnh vực nào.</p>
+                    } @else {
+                    <div class="flex flex-wrap gap-2 pt-3">
+                        @for (field of group.fields; track field.oid) {
+                        <span
+                            class="px-3 py-1 bg-indigo-500/20 text-indigo-300 text-xs rounded-full border border-indigo-500/30">{{
+                            field.value }}</span>
+                        }
+                    </div>
+                    }
+                </div>
+                }
+            </div>
+            }
+        </div>
+        @if (groupPageCount() > 1) {
+        <div class="flex items-center justify-center gap-2 mt-6">
+            <button (click)="goGroupPage(groupPage() - 1)" [disabled]="groupPage() === 0"
+                class="px-3 py-1.5 text-sm text-slate-300 bg-slate-700 hover:bg-slate-600 disabled:opacity-40 disabled:cursor-not-allowed rounded-lg transition-colors">‹</button>
+            @for (p of pages; track p) {
+            <button (click)="goGroupPage(p)"
+                [class]="p === groupPage() ? 'px-3 py-1.5 text-sm bg-indigo-600 text-white rounded-lg' : 'px-3 py-1.5 text-sm text-slate-300 bg-slate-700 hover:bg-slate-600 rounded-lg transition-colors'">
+                {{ p + 1 }}
+            </button>
+            }
+            <button (click)="goGroupPage(groupPage() + 1)" [disabled]="groupPage() >= groupPageCount() - 1"
+                class="px-3 py-1.5 text-sm text-slate-300 bg-slate-700 hover:bg-slate-600 disabled:opacity-40 disabled:cursor-not-allowed rounded-lg transition-colors">›</button>
+        </div>
+        }
+        }
+        }
+    </div>
+    }
+
+    <!-- ══════════════════ TAB: LEVELS ══════════════════ -->
+    @if (activeTab() === 'levels') {
+    <div class="bg-slate-800 rounded-2xl p-6 shadow-lg">
+
+        <!-- Info banner -->
+        <div class="flex items-start gap-3 mb-6 px-4 py-3 bg-amber-500/10 border border-amber-500/20 rounded-xl">
+            <span class="text-amber-400 text-lg mt-0.5">💡</span>
+            <div class="text-sm text-amber-300/80">
+                <strong class="text-amber-300">Cấp độ</strong> xác định mức độ khó của bài viết trong mỗi lĩnh vực.
+                Tạo theo thứ tự từ dễ đến khó (Order 0 → 4). Điểm (<em>Point</em>) quy định ngưỡng người dùng cần đạt để
+                xem bài ở cấp này.
+            </div>
+        </div>
+
+        <div class="flex justify-end mb-6">
+            <button (click)="openLevelModal()"
+                class="flex items-center gap-2 px-5 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-medium rounded-xl transition-colors">
+                ＋ Thêm cấp độ
+            </button>
+        </div>
+
+        @if (levelError()) {
+        <div class="mb-4 px-4 py-3 bg-red-500/15 border border-red-500/30 text-red-400 rounded-xl text-sm">{{
+            levelError() }}</div>
+        }
+
+        @if (levelLoading()) {
+        <div class="flex justify-center py-12">
+            <div class="loader"></div>
+        </div>
+        } @else {
+        @if (levels().length === 0) {
+        <div class="text-center py-12 text-slate-500">
+            <div class="text-4xl mb-3">🏆</div>
+            <p>Chưa có cấp độ nào. Hãy tạo ít nhất 1 cấp để bắt đầu.</p>
+        </div>
+        } @else {
+        <!-- Level cards grid -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            @for (level of levels(); track level.oid) {
+            <div
+                class="relative bg-slate-700/60 border border-slate-600 rounded-2xl p-5 hover:border-indigo-500/40 transition-colors">
+                <!-- Order badge -->
+                <div
+                    class="absolute top-3 right-3 w-6 h-6 rounded-full bg-slate-600 text-slate-300 text-xs flex items-center justify-center font-bold">
+                    {{ level.order ?? 0 }}
+                </div>
+                <!-- Icon + name -->
+                <div class="flex items-center gap-3 mb-3">
+                    <span class="text-3xl">{{ level.icon || '⭐' }}</span>
+                    <div>
+                        <p class="text-white font-semibold text-sm">{{ level.name }}</p>
+                        @if (level.description) {
+                        <p class="text-slate-400 text-xs mt-0.5">{{ level.description }}</p>
+                        }
+                    </div>
+                </div>
+                <!-- Point pill -->
+                <div
+                    class="inline-flex items-center gap-1.5 px-3 py-1 bg-indigo-500/15 border border-indigo-500/25 rounded-full">
+                    <span class="text-indigo-400 text-xs font-semibold">{{ level.point ?? 0 }} điểm</span>
+                </div>
+            </div>
+            }
+        </div>
+
+        @if (levelPageCount() > 1) {
+        <div class="flex items-center justify-center gap-2 mt-6">
+            <button (click)="goLevelPage(levelPage() - 1)" [disabled]="levelPage() === 0"
+                class="px-3 py-1.5 text-sm text-slate-300 bg-slate-700 hover:bg-slate-600 disabled:opacity-40 disabled:cursor-not-allowed rounded-lg transition-colors">‹</button>
+            @for (p of pages; track p) {
+            <button (click)="goLevelPage(p)"
+                [class]="p === levelPage() ? 'px-3 py-1.5 text-sm bg-indigo-600 text-white rounded-lg' : 'px-3 py-1.5 text-sm text-slate-300 bg-slate-700 hover:bg-slate-600 rounded-lg transition-colors'">
+                {{ p + 1 }}
+            </button>
+            }
+            <button (click)="goLevelPage(levelPage() + 1)" [disabled]="levelPage() >= levelPageCount() - 1"
+                class="px-3 py-1.5 text-sm text-slate-300 bg-slate-700 hover:bg-slate-600 disabled:opacity-40 disabled:cursor-not-allowed rounded-lg transition-colors">›</button>
+        </div>
+        }
+        }
+        }
+    </div>
+    }
+</div>
+
+<!-- ══════════════════ MODAL: Group ══════════════════ -->
+@if (showGroupModal()) {
+<div class="fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" (click)="closeModal()"></div>
+    <div class="relative w-full max-w-lg bg-slate-800 rounded-2xl shadow-2xl border border-slate-700 overflow-hidden">
+        <div class="flex items-center justify-between px-6 py-4 border-b border-slate-700">
+            <h2 class="text-white font-semibold text-base">{{ modalMode() === 'create' ? '➕ Tạo nhóm lĩnh vực' : '✏️
+                Chỉnh sửa nhóm' }}</h2>
+            <button (click)="closeModal()" class="text-slate-400 hover:text-white transition-colors text-xl">✕</button>
+        </div>
+        <div class="px-6 py-5 space-y-4 max-h-[65vh] overflow-y-auto">
+            <div>
+                <label class="block text-slate-300 text-sm font-medium mb-1.5">Tên nhóm</label>
+                <input type="text" [ngModel]="modalGroupName()" (ngModelChange)="modalGroupName.set($event)"
+                    placeholder="VD: Khoa học tự nhiên"
+                    class="w-full bg-slate-700 border border-slate-600 text-white placeholder-slate-400 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-indigo-500 transition-colors" />
+            </div>
+            <div>
+                <label class="block text-slate-300 text-sm font-medium mb-2">Chọn lĩnh vực
+                    <span class="ml-2 text-indigo-400 font-normal">({{ modalSelectedFieldIds().length }} đã chọn)</span>
+                </label>
+                <div class="space-y-1.5 max-h-48 overflow-y-auto pr-1">
+                    @for (field of fields(); track field.oid) {
+                    <label
+                        class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-700 cursor-pointer transition-colors">
+                        <input type="checkbox" [checked]="isFieldSelected(field.oid)"
+                            (change)="toggleFieldInModal(field.oid)" class="w-4 h-4 rounded accent-indigo-500" />
+                        <span class="text-white text-sm">{{ field.value }}</span>
+                    </label>
+                    }
+                </div>
+            </div>
+            @if (modalError()) {
+            <div class="px-4 py-3 bg-red-500/15 border border-red-500/30 text-red-400 rounded-xl text-sm">{{
+                modalError() }}</div>
+            }
+        </div>
+        <div class="flex justify-end gap-3 px-6 py-4 border-t border-slate-700">
+            <button (click)="closeModal()"
+                class="px-5 py-2 text-slate-300 hover:text-white bg-slate-700 hover:bg-slate-600 text-sm rounded-xl transition-colors">Hủy</button>
+            <button (click)="saveModal()" [disabled]="modalSaving()"
+                class="flex items-center gap-2 px-5 py-2 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed text-white text-sm font-medium rounded-xl transition-colors">
+                @if (modalSaving()) { <span class="loader-sm"></span> }
+                {{ modalMode() === 'create' ? 'Tạo nhóm' : 'Lưu thay đổi' }}
+            </button>
+        </div>
     </div>
 </div>
+}
+
+<!-- ══════════════════ MODAL: Level ══════════════════ -->
+@if (showLevelModal()) {
+<div class="fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" (click)="closeLevelModal()">
+    </div>
+    <div class="relative w-full max-w-md bg-slate-800 rounded-2xl shadow-2xl border border-slate-700">
+        <div class="flex items-center justify-between px-6 py-4 border-b border-slate-700">
+            <h2 class="text-white font-semibold text-base">🏆 Thêm cấp độ mới</h2>
+            <button (click)="closeLevelModal()"
+                class="text-slate-400 hover:text-white transition-colors text-xl">✕</button>
+        </div>
+        <div class="px-6 py-5 space-y-4 overflow-y-auto max-h-[70vh]">
+
+            <!-- Icon picker section -->
+            <div>
+                <label class="block text-slate-300 text-xs font-medium mb-1.5">Icon</label>
+                <select [ngModel]="levelModalIcon()" (ngModelChange)="levelModalIcon.set($event)"
+                    class="w-full bg-slate-700 border border-slate-600 text-white rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-indigo-500 transition-colors cursor-pointer">
+                    @for (icon of iconOptions; track icon) {
+                    <option [value]="icon">{{ icon }}</option>
+                    }
+                </select>
+            </div>
+
+            <!-- Name -->
+            <div>
+                <label class="block text-slate-300 text-xs font-medium mb-1.5">Tên cấp độ *</label>
+                <input type="text" [ngModel]="levelModalName()" (ngModelChange)="levelModalName.set($event)"
+                    placeholder="VD: Cơ bản, Trung cấp..."
+                    class="w-full bg-slate-700 border border-slate-600 text-white placeholder-slate-400 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-indigo-500 transition-colors" />
+            </div>
+
+            <!-- Description -->
+            <div>
+                <label class="block text-slate-300 text-xs font-medium mb-1.5">Mô tả</label>
+                <input type="text" [ngModel]="levelModalDescription()"
+                    (ngModelChange)="levelModalDescription.set($event)" placeholder="Dành cho người mới bắt đầu..."
+                    class="w-full bg-slate-700 border border-slate-600 text-white placeholder-slate-400 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-indigo-500 transition-colors" />
+            </div>
+
+            <!-- Point + Order -->
+            <div class="flex gap-3">
+                <div class="flex-1">
+                    <label class="block text-slate-300 text-xs font-medium mb-1.5">Điểm tối thiểu</label>
+                    <input type="number" [ngModel]="levelModalPoint()" (ngModelChange)="levelModalPoint.set(+$event)"
+                        min="0"
+                        class="w-full bg-slate-700 border border-slate-600 text-white rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-indigo-500 transition-colors" />
+                </div>
+                <div class="w-28">
+                    <label class="block text-slate-300 text-xs font-medium mb-1.5">Thứ tự (Order)</label>
+                    <input type="number" [ngModel]="levelModalOrder()" (ngModelChange)="levelModalOrder.set(+$event)"
+                        min="0"
+                        class="w-full bg-slate-700 border border-slate-600 text-white rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-indigo-500 transition-colors" />
+                </div>
+            </div>
+
+            @if (levelModalError()) {
+            <div class="px-4 py-3 bg-red-500/15 border border-red-500/30 text-red-400 rounded-xl text-sm">{{
+                levelModalError() }}</div>
+            }
+        </div>
+        <div class="flex justify-end gap-3 px-6 py-4 border-t border-slate-700">
+            <button (click)="closeLevelModal()"
+                class="px-5 py-2 text-slate-300 hover:text-white bg-slate-700 hover:bg-slate-600 text-sm rounded-xl transition-colors">Hủy</button>
+            <button (click)="saveLevelModal()" [disabled]="levelModalSaving()"
+                class="flex items-center gap-2 px-5 py-2 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed text-white text-sm font-medium rounded-xl transition-colors">
+                @if (levelModalSaving()) { <span class="loader-sm"></span> }
+                Tạo cấp độ
+            </button>
+        </div>
+    </div>
+</div>
+}

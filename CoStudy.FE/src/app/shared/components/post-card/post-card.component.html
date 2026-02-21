@@ -1,10 +1,18 @@
-<article class="post-card card">
+<article class="post-card card" style="position:relative">
+    <!-- Post type badge – top right -->
+    @if (post().post_type_name || post().postType !== undefined) {
+    <span [class]="postTypeBadgeClass" style="position:absolute;top:12px;right:12px">
+        <span class="material-icons-outlined" style="font-size:12px;line-height:1">{{ isQuestion ? 'help_outline' :
+            'tips_and_updates' }}</span>
+        {{ postTypeLabel }}
+    </span>
+    }
     <!-- Header -->
     <div class="post-header">
         <a [routerLink]="['/profile', post().authorId]" class="post-author">
-            <app-avatar [src]="post().author?.avatarHash ?? ''" [initial]="authorInitial" size="md" />
+            <app-avatar [src]="authorAvatar" [initial]="authorInitial" size="md" />
             <div class="author-info">
-                <span class="author-name">{{ authorName }}</span>
+                <div class="author-name">{{ authorName }}</div>
                 <span class="post-time text-xs text-secondary">{{ timeAgo }}</span>
             </div>
         </a>

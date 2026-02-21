@@ -1,0 +1,147 @@
+<div class="create-post-widget">
+
+    <!-- Collapsed trigger -->
+    @if (!expanded()) {
+    <div class="flex items-center gap-3 px-4 py-3 bg-slate-800 rounded-2xl cursor-text border border-slate-700 hover:border-indigo-500/50 transition-colors"
+        (click)="onEditorFocus()">
+        <span class="text-2xl">✏️</span>
+        <span class="text-slate-400 text-sm">Bạn đang nghĩ gì? Chia sẻ kiến thức hoặc đặt câu hỏi...</span>
+    </div>
+    }
+
+    <!-- Expanded form -->
+    @if (expanded()) {
+    <div class="bg-slate-800 rounded-2xl border border-slate-700 shadow-xl overflow-hidden">
+
+        <!-- Post type toggle -->
+        <div class="flex border-b border-slate-700">
+            <button (click)="postType.set(1)" [class]="postType() === 1
+            ? 'flex-1 py-3 text-sm font-medium text-indigo-400 border-b-2 border-indigo-500 bg-indigo-500/5 transition-all'
+            : 'flex-1 py-3 text-sm text-slate-400 hover:text-white transition-all'">
+                💡 Chia sẻ kiến thức
+            </button>
+            <button (click)="postType.set(0)" [class]="postType() === 0
+            ? 'flex-1 py-3 text-sm font-medium text-violet-400 border-b-2 border-violet-500 bg-violet-500/5 transition-all'
+            : 'flex-1 py-3 text-sm text-slate-400 hover:text-white transition-all'">
+                ❓ Đặt câu hỏi
+            </button>
+        </div>
+
+        <div class="p-4 space-y-3">
+
+            <!-- Title -->
+            <input type="text" [ngModel]="title()" (ngModelChange)="title.set($event)" placeholder="Tiêu đề bài viết..."
+                class="w-full bg-slate-700/60 border border-slate-600 text-white placeholder-slate-400 rounded-xl px-4 py-2.5 text-sm font-medium focus:outline-none focus:border-indigo-500 transition-colors" />
+
+            <!-- Toolbar -->
+            <div class="flex flex-wrap items-center gap-1 px-1">
+                <button (click)="execFormat('bold')" [class]="isBold() ? 'toolbar-btn active' : 'toolbar-btn'"
+                    title="In đậm (Ctrl+B)">
+                    <strong>B</strong>
+                </button>
+                <button (click)="execFormat('italic')" [class]="isItalic() ? 'toolbar-btn active' : 'toolbar-btn'"
+                    title="In nghiêng (Ctrl+I)">
+                    <em>I</em>
+                </button>
+                <button (click)="execFormat('underline')" [class]="isUnderline() ? 'toolbar-btn active' : 'toolbar-btn'"
+                    title="Gạch chân (Ctrl+U)">
+                    <u>U</u>
+                </button>
+                <div class="w-px h-5 bg-slate-600 mx-1"></div>
+                <button (click)="execBlock('h2')" class="toolbar-btn text-xs" title="Tiêu đề">H2</button>
+                <button (click)="execBlock('h3')" class="toolbar-btn text-xs" title="Tiêu đề nhỏ">H3</button>
+                <div class="w-px h-5 bg-slate-600 mx-1"></div>
+                <button (click)="execFormat('insertUnorderedList')" class="toolbar-btn" title="Danh sách">• —</button>
+                <button (click)="insertCode()" class="toolbar-btn font-mono text-xs"
+                    title="Code nhúng">&lt;/&gt;</button>
+                <button (click)="execBlock('blockquote')" class="toolbar-btn text-xs" title="Trích dẫn">❝</button>
+            </div>
+
+            <!-- Rich-text editor area -->
+            <div #editor contenteditable="true" class="editor-area" (focus)="onEditorFocus()"
+                (keyup)="updateFormatState()" (mouseup)="updateFormatState()"
+                data-placeholder="Nhập nội dung bài viết... (hỗ trợ định dạng HTML)">
+            </div>
+
+            <!-- Step 1: Field selector chips -->
+            @if (fields().length > 0) {
+            <div>
+                <div class="flex items-center justify-between mb-2">
+                    <p class="text-slate-400 text-xs font-semibold uppercase tracking-wider">🏷️ Lĩnh vực liên quan</p>
+                    @if (selectedFields().length > 0) {
+                    <span class="text-indigo-400 text-xs">{{ selectedFields().length }} đã chọn</span>
+                    } @else {
+                    <span class="text-slate-500 text-xs italic">Nhấn vào chip để chọn</span>
+                    }
+                </div>
+                <div class="flex flex-wrap gap-2">
+                    @for (field of fields(); track field.oid) {
+                    <button (click)="toggleField(field.oid)"
+                        [class]="isFieldSelected(field.oid)
+                        ? 'inline-flex items-center gap-1.5 px-3 py-1 text-xs rounded-full border bg-indigo-500/25 border-indigo-500 text-indigo-300 scale-105 shadow-md shadow-indigo-500/10 transition-all duration-150'
+                        : 'inline-flex items-center gap-1.5 px-3 py-1 text-xs rounded-full border border-slate-600 text-slate-400 hover:border-slate-500 hover:text-slate-300 hover:bg-slate-700/50 transition-all duration-150'">
+                        @if (isFieldSelected(field.oid)) {
+                        <span class="text-indigo-400 text-[10px] font-bold">✓</span>
+                        }
+                        {{ field.value }}
+                    </button>
+                    }
+                </div>
+            </div>
+            }
+
+            <!-- Step 2: Level picker for each selected field (pill style) -->
+            @if (selectedFields().length > 0 && levels().length > 0) {
+            <div class="bg-slate-700/30 border border-slate-600/40 rounded-xl p-3 space-y-3">
+                <p class="text-slate-400 text-xs font-semibold uppercase tracking-wider">⚡ Chọn cấp độ cho mỗi lĩnh vực
+                </p>
+                @for (field of selectedFields(); track field.oid) {
+                <div>
+                    <p class="text-indigo-300 text-xs font-medium mb-1.5 flex items-center gap-1.5">
+                        <span class="w-1 h-1 rounded-full bg-indigo-400 inline-block"></span>
+                        {{ field.value }}
+                    </p>
+                    <div class="flex flex-wrap gap-1.5">
+                        @for (level of levels(); track level.oid) {
+                        <button type="button" (click)="setLevel(field.oid, level.oid)"
+                            [class]="getLevelForField(field.oid) === level.oid
+                            ? 'inline-flex items-center gap-1 px-2.5 py-1 text-xs rounded-lg bg-indigo-600 border border-indigo-500 text-white font-medium transition-all duration-150 shadow-sm'
+                            : 'inline-flex items-center gap-1 px-2.5 py-1 text-xs rounded-lg bg-slate-700 border border-slate-600 text-slate-300 hover:border-slate-500 hover:text-white transition-all duration-150'">
+                            {{ level.icon || '⭐' }} {{ level.name }}
+                            @if (level.point) {
+                            <span class="opacity-60 text-[10px]">{{ level.point }}đ</span>
+                            }
+                        </button>
+                        }
+                    </div>
+                </div>
+                }
+            </div>
+            }
+
+
+
+            <!-- Error -->
+            @if (error()) {
+            <p class="text-red-400 text-sm px-1">⚠ {{ error() }}</p>
+            }
+
+            <!-- Footer actions -->
+            <div class="flex justify-end gap-3 pt-1">
+                <button (click)="cancel()"
+                    class="px-4 py-2 text-sm text-slate-400 hover:text-white bg-slate-700 hover:bg-slate-600 rounded-xl transition-colors">
+                    Hủy
+                </button>
+                <button (click)="submit()" [disabled]="submitting()"
+                    class="flex items-center gap-2 px-5 py-2 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed rounded-xl transition-colors">
+                    @if (submitting()) {
+                    <span class="spinner-sm"></span>
+                    }
+                    {{ postType() === 0 ? 'Đăng câu hỏi' : 'Đăng bài' }}
+                </button>
+            </div>
+        </div>
+    </div>
+    }
+
+</div>

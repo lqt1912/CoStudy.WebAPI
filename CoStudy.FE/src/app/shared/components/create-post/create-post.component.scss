@@ -1,0 +1,109 @@
+/* toolbar buttons — Tailwind can't handle toggled-active state cleanly */
+.toolbar-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 2rem;
+    height: 2rem;
+    padding: 0 0.4rem;
+    border-radius: 0.5rem;
+    font-size: 0.8125rem;
+    color: #94a3b8;
+    background: transparent;
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s, border-color 0.15s;
+
+    &:hover {
+        background: rgba(99, 102, 241, 0.12);
+        color: #fff;
+    }
+
+    &.active {
+        background: rgba(99, 102, 241, 0.2);
+        border-color: rgba(99, 102, 241, 0.4);
+        color: #a5b4fc;
+    }
+}
+
+/* Contenteditable rich-text area */
+.editor-area {
+    min-height: 120px;
+    max-height: 400px;
+    overflow-y: auto;
+    padding: 0.75rem 1rem;
+    background: rgba(51, 65, 85, 0.5);
+    border: 1px solid #475569;
+    border-radius: 0.75rem;
+    color: #e2e8f0;
+    font-size: 0.9rem;
+    line-height: 1.6;
+    outline: none;
+    transition: border-color 0.2s;
+
+    &:focus {
+        border-color: #6366f1;
+    }
+
+    &:empty::before {
+        content: attr(data-placeholder);
+        color: #64748b;
+        pointer-events: none;
+    }
+
+    /* Styles for rendered HTML content */
+    h2 {
+        font-size: 1.2rem;
+        font-weight: 700;
+        margin: 0.5rem 0;
+        color: #f1f5f9;
+    }
+
+    h3 {
+        font-size: 1rem;
+        font-weight: 600;
+        margin: 0.4rem 0;
+        color: #e2e8f0;
+    }
+
+    ul {
+        list-style: disc;
+        padding-left: 1.4rem;
+        margin: 0.4rem 0;
+    }
+
+    blockquote {
+        border-left: 3px solid #6366f1;
+        padding-left: 0.75rem;
+        color: #94a3b8;
+        margin: 0.5rem 0;
+        font-style: italic;
+    }
+
+    code,
+    .inline-code {
+        background: rgba(99, 102, 241, 0.15);
+        color: #a5b4fc;
+        padding: 0.1em 0.4em;
+        border-radius: 0.3rem;
+        font-family: 'Fira Code', 'Cascadia Code', monospace;
+        font-size: 0.85em;
+    }
+}
+
+/* Inline spinner */
+.spinner-sm {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    border: 2px solid rgba(255, 255, 255, 0.25);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}

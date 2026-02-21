@@ -99,9 +99,11 @@ namespace CoStudy.API.Infrastructure.Shared.Services
             {
                 Level model = new Level()
                 {
+                    Name = item.Name,
                     Description = item.Description,
                     Icon = item.Icon,
-                    Name = item.Name
+                    Point = item.Point,
+                    Order = item.Order
                 };
                 await levelRepository.AddAsync(model);
                 result.Add(model);
@@ -115,6 +117,10 @@ namespace CoStudy.API.Infrastructure.Shared.Services
             List<ObjectLevel> result = new List<ObjectLevel>();
             foreach (ObjectLevel item in objectLevels)
             {
+                // Default to Level 0 (Beginner) when no levelId is provided
+                if (string.IsNullOrEmpty(item.LevelId))
+                    item.LevelId = Constants.LevelConstants.LEVEL_0_ID;
+
                 Level existLevel = await levelRepository.GetByIdAsync(ObjectId.Parse(item.LevelId));
 
                 if (existLevel != null)

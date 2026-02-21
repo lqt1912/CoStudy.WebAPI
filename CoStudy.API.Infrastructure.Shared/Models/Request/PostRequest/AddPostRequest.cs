@@ -7,20 +7,19 @@ namespace CoStudy.API.Infrastructure.Shared.Models.Request
 {
     public class AddPostRequest
     {
-
         [JsonPropertyName("title")]
         public string Title { get; set; }
 
-        [JsonPropertyName("string_contents")]
+        [JsonPropertyName("stringContents")]
         public List<PostContent> StringContents { get; set; }
 
-        [JsonPropertyName("image_contents")]
+        [JsonPropertyName("imageContents")]
         public List<Image> MediaContents { get; set; }
 
         [JsonPropertyName("fields")]
         public IEnumerable<ObjectLevel> Fields { get; set; }
 
-        [JsonPropertyName("post_type")]
+        [JsonPropertyName("postType")]
         public PostType PostType { get; set; }
     }
 }

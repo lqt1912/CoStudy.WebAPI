@@ -107,10 +107,13 @@ namespace CoStudy.API.Infrastructure.Shared.Services.PostServices
                 UserIds = new List<string> { currentUser.OId }
             });
 
-            foreach (var item in request.Fields)
-                item.ObjectId = post.OId;
+            if (request.Fields != null)
+            {
+                foreach (var item in request.Fields)
+                    item.ObjectId = post.OId;
 
-            await levelService.AddObjectLevel(request.Fields);
+                await levelService.AddObjectLevel(request.Fields);
+            }
 
             var userMatchs = await GetUsersMatchPostField(post);
 

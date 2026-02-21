@@ -44,7 +44,7 @@ namespace CoStudy.API.WebAPI.Controllers
 
         [HttpGet]
         [Route("field-group")]
-        public IActionResult GetAllFieldGroup(BaseGetAllRequest request)
+        public IActionResult GetAllFieldGroup([FromQuery] BaseGetAllRequest request)
         {
             var data = fieldService.GetAllFieldGroup(request);
             return Ok(new ApiOkResponse(data));

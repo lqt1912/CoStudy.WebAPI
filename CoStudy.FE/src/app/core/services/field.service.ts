@@ -1,45 +1,59 @@
-import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { inject, Injectable } from '@angular/core';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { BaseGetAllRequest } from '../models/post.model';
+import {
+  Field,
+  FieldGroup,
+  AddFieldRequest,
+  AddFieldGroupRequest,
+  AddFieldToGroupRequest,
+  FieldApiResponse,
+  FieldPaginationRequest
+} from '../models/field.model';
 
 @Injectable({ providedIn: 'root' })
 export class FieldService {
+  private http = inject(HttpClient);
   private base = `${environment.apiUrl}/field`;
   private groupBase = `${environment.apiUrl}/fieldgroup`;
 
-  constructor(private http: HttpClient) {}
-
-  getAllFields(req?: BaseGetAllRequest): Observable<any> {
-    return this.http.get(this.base, { params: req as any });
+  private buildParams(req?: FieldPaginationRequest): HttpParams {
+    let params = new HttpParams();
+    if (req?.skip != null) params = params.set('skip', req.skip.toString());
+    if (req?.count != null) params = params.set('count', req.count.toString());
+    return params;
   }
 
-  getFieldByGroupId(groupId: string): Observable<any> {
-    return this.http.get(`${this.base}/group-id/${groupId}`);
+  getAllFields(req?: FieldPaginationRequest): Observable<FieldApiResponse<Field[]>> {
+    return this.http.get<FieldApiResponse<Field[]>>(this.base, { params: this.buildParams(req) });
   }
 
-  addField(field: any): Observable<any> {
-    return this.http.post(this.base, field);
+  getFieldByGroupId(groupId: string): Observable<FieldApiResponse<Field[]>> {
+    return this.http.get<FieldApiResponse<Field[]>>(`${this.base}/group-id/${groupId}`);
   }
 
-  deleteField(id: string): Observable<any> {
-    return this.http.delete(`${this.base}/${id}`);
+  addField(field: AddFieldRequest): Observable<FieldApiResponse<Field>> {
+    return this.http.post<FieldApiResponse<Field>>(this.base, field);
   }
 
-  getAllFieldGroups(req?: BaseGetAllRequest): Observable<any> {
-    return this.http.get(`${this.groupBase}/field-group`, { params: req as any });
+  deleteField(id: string): Observable<FieldApiResponse<string>> {
+    return this.http.delete<FieldApiResponse<string>>(`${this.base}/${id}`);
   }
 
-  addFieldGroup(group: any): Observable<any> {
-    return this.http.post(this.groupBase, group);
+  getAllFieldGroups(req?: FieldPaginationRequest): Observable<FieldApiResponse<FieldGroup[]>> {
+    return this.http.get<FieldApiResponse<FieldGroup[]>>(`${this.groupBase}/field-group`, { params: this.buildParams(req) });
   }
 
-  addFieldToGroup(req: any): Observable<any> {
-    return this.http.post(`${this.groupBase}/add-field`, req);
+  addFieldGroup(group: AddFieldGroupRequest): Observable<FieldApiResponse<FieldGroup>> {
+    return this.http.post<FieldApiResponse<FieldGroup>>(this.groupBase, group);
   }
 
-  removeFieldFromGroup(req: any): Observable<any> {
-    return this.http.post(`${this.groupBase}/remove-field`, req);
+  addFieldToGroup(req: AddFieldToGroupRequest): Observable<FieldApiResponse<FieldGroup>> {
+    return this.http.post<FieldApiResponse<FieldGroup>>(`${this.groupBase}/add-field`, req);
+  }
+
+  removeFieldFromGroup(req: AddFieldToGroupRequest): Observable<FieldApiResponse<FieldGroup>> {
+    return this.http.post<FieldApiResponse<FieldGroup>>(`${this.groupBase}/remove-field`, req);
   }
 }

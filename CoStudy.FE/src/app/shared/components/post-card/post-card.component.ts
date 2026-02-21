@@ -21,13 +21,39 @@ export class PostCardComponent {
   share = output<string>();
 
   get authorName(): string {
-    const author = this.post().author;
+    const p = this.post();
+    // Prefer flat fields from API response
+    if (p.author_name) return p.author_name;
+    const author = p.author;
     if (!author) return 'Ẩn danh';
     return `${author.firstName ?? ''} ${author.lastName ?? ''}`.trim() || author.email || 'Ẩn danh';
   }
 
+  get authorAvatar(): string {
+    const p = this.post();
+    return p.author_avatar ?? p.author?.avatarHash ?? '';
+  }
+
   get authorInitial(): string {
     return (this.authorName[0] ?? '?').toUpperCase();
+  }
+
+  get isQuestion(): boolean {
+    const p = this.post();
+    const name = (p.post_type_name ?? '').toLowerCase();
+    return p.postType === 0 || name.includes('question') || name.includes('hỏi');
+  }
+
+  get postTypeBadgeClass(): string {
+    return this.isQuestion
+      ? 'inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-violet-500/20 text-violet-300 border border-violet-500/30'
+      : 'inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-indigo-500/20 text-indigo-300 border border-indigo-500/30';
+  }
+
+  get postTypeLabel(): string {
+    const name = this.post().post_type_name;
+    if (name) return name;
+    return this.isQuestion ? 'Câu hỏi' : 'Chia sẻ';
   }
 
   get timeAgo(): string {

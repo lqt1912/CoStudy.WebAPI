@@ -15,6 +15,10 @@ export class LevelService {
     return this.http.get(`${this.base}/level/all`, { params: req as any });
   }
 
+  addLevel(levels: any[]): Observable<any> {
+    return this.http.post(`${this.base}/level/add`, levels);
+  }
+
   getLevelById(id: string): Observable<any> {
     return this.http.get(`${this.base}/level/${id}`);
   }

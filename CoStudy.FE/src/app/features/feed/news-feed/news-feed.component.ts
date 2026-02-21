@@ -1,24 +1,26 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { PostService } from '../../../core/services/post.service';
 import { Post } from '../../../core/models/post.model';
 import { PostCardComponent } from '../../../shared/components/post-card/post-card.component';
 import { LoaderComponent } from '../../../shared/components/loader/loader.component';
+import { CreatePostComponent } from '../../../shared/components/create-post/create-post.component';
 
 @Component({
   selector: 'app-news-feed',
   standalone: true,
-  imports: [CommonModule, PostCardComponent, LoaderComponent],
+  imports: [CommonModule, PostCardComponent, LoaderComponent, CreatePostComponent],
   templateUrl: './news-feed.component.html',
-  styleUrls: ['./news-feed.component.scss']
+  styleUrls: ['./news-feed.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class NewsFeedComponent implements OnInit {
+  private postService = inject(PostService);
+
   posts = signal<Post[]>([]);
   loading = signal(true);
   page = 0;
   pageSize = 10;
-
-  constructor(private postService: PostService) {}
 
   ngOnInit(): void {
     this.loadPosts();
@@ -28,7 +30,7 @@ export class NewsFeedComponent implements OnInit {
     this.loading.set(true);
     this.postService.getNewsFeed({ skip: this.page * this.pageSize, count: this.pageSize }).subscribe({
       next: (res: any) => {
-        const newPosts = res?.data ?? [];
+        const newPosts = res?.result ?? res?.data ?? [];
         this.posts.update(prev => [...prev, ...newPosts]);
         this.loading.set(false);
       },
@@ -55,5 +57,9 @@ export class NewsFeedComponent implements OnInit {
 
   onShare(postId: string): void {
     // TODO: Implement share modal
+  }
+
+  onPostCreated(post: any): void {
+    if (post) this.posts.update(list => [post, ...list]);
   }
 }

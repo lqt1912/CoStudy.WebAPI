@@ -26,8 +26,8 @@ namespace CoStudy.API.Domain.Entities.Application
         /// The type of the content.
         /// </value>
         [BsonElement("content_type")]
-        [JsonPropertyName("content_type")]
-        [FromForm(Name = "content_type")]
+        [JsonPropertyName("contentType")]
+        [FromForm(Name = "contentType")]
         public PostContentType ContentType { get; set; }
 
         /// <summary>

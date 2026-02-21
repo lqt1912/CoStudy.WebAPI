@@ -1,15 +1,32 @@
-h2 {
-    margin-bottom: 1rem;
+/* Custom CSS only for what Tailwind can't handle */
+
+.loader {
+    width: 28px;
+    height: 28px;
+    border: 3px solid rgba(99, 102, 241, 0.2);
+    border-top-color: #6366f1;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
 }
 
-.empty-state {
-    text-align: center;
-    padding: 3rem 2rem;
+.loader-sm {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
 }
 
-.empty-icon {
-    font-size: 3rem;
-    color: var(--text-muted);
-    margin-bottom: 1rem;
-    display: block;
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Smooth accordion */
+.rotate-90 {
+    transform: rotate(90deg);
+    transition: transform 0.2s ease;
 }
