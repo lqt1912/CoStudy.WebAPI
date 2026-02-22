@@ -1,24 +1,318 @@
-.page-container {
-    max-width: 680px;
-    margin: 0 auto;
+:host {
+    display: block;
 }
 
-.page-header {
-    margin-bottom: 1.5rem;
+.saved-page {
+    max-width: 780px;
+    margin: 0 auto;
+    padding: 1.5rem 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
 
-    h1 {
-        font-size: 1.5rem;
+// ── Page header ──────────────────────────────────────────────────────────
+.page-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.25rem 1.5rem;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.header-icon {
+    font-size: 2rem;
+    color: var(--color-warning, #f59e0b);
+    background: rgba(245, 158, 11, 0.1);
+    padding: 0.4rem;
+    border-radius: var(--radius-md);
+}
+
+.page-title {
+    font-size: 1.2rem;
+    font-weight: 800;
+    color: var(--text-primary);
+    margin: 0;
+    line-height: 1.2;
+}
+
+.page-subtitle {
+    font-size: 0.78rem;
+    margin: 2px 0 0;
+}
+
+.btn-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.4rem 0.85rem;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--color-border);
+    background: transparent;
+    color: var(--text-secondary);
+    font-size: 0.82rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all var(--transition);
+
+    .material-icons-outlined {
+        font-size: 1rem;
+    }
+
+    &:hover {
+        border-color: var(--color-primary);
+        color: var(--color-primary);
     }
 }
 
+// ── Posts list ────────────────────────────────────────────────────────────
+.posts-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.post-wrapper {
+    position: relative;
+
+    &:hover .unsave-btn {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.unsave-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.35rem 0.8rem;
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.25);
+    color: #f87171;
+    border-radius: var(--radius-sm);
+    font-size: 0.78rem;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    opacity: 0;
+    transform: translateY(4px);
+    transition: all var(--transition);
+
+    .material-icons-outlined {
+        font-size: 0.9rem;
+    }
+
+    &:hover {
+        background: rgba(239, 68, 68, 0.2);
+    }
+}
+
+// ── Load more ─────────────────────────────────────────────────────────────
+.load-more-row {
+    display: flex;
+    justify-content: center;
+    padding: 0.5rem 0;
+}
+
+.btn-load-more {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.55rem 1.5rem;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--color-border);
+    background: var(--color-surface);
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all var(--transition);
+
+    .material-icons-outlined {
+        font-size: 1.1rem;
+    }
+
+    &:hover:not(:disabled) {
+        border-color: var(--color-primary);
+        color: var(--color-primary);
+    }
+
+    &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+}
+
+// ── Empty state ───────────────────────────────────────────────────────────
 .empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 4rem 1.5rem;
     text-align: center;
-    padding: 3rem 2rem;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    color: var(--text-muted);
+
+    .material-icons-outlined {
+        font-size: 1.6rem;
+    }
 }
 
 .empty-icon {
-    font-size: 3rem;
+    font-size: 3.5rem !important;
+    color: var(--color-warning, #f59e0b);
+    opacity: 0.5;
+}
+
+.empty-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.empty-desc {
+    font-size: 0.875rem;
+    margin: 0;
+}
+
+.btn-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.5rem 1.25rem;
+    border-radius: var(--radius-sm);
+    background: var(--color-primary);
+    color: #fff;
+    text-decoration: none;
+    font-size: 0.875rem;
+    font-weight: 600;
+    transition: opacity var(--transition);
+    margin-top: 0.25rem;
+
+    .material-icons-outlined {
+        font-size: 1rem;
+    }
+
+    &:hover {
+        opacity: 0.9;
+    }
+}
+
+// ── Card background ────────────────────────────────────────────────────────
+.card {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+}
+
+// ── Skeletons ─────────────────────────────────────────────────────────────
+.skeleton {
+    background: linear-gradient(90deg, var(--color-border) 25%, rgba(255, 255, 255, 0.04) 50%, var(--color-border) 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+    border-radius: 6px;
+}
+
+@keyframes shimmer {
+    0% {
+        background-position: 200% 0;
+    }
+
+    100% {
+        background-position: -200% 0;
+    }
+}
+
+.skeleton-card {
+    padding: 1.25rem;
+}
+
+.skel-row {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.5rem;
+}
+
+.circle {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.skel-lines {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+.sk-line {
+    height: 12px;
+}
+
+.sk-title {
+    height: 20px;
+}
+
+.sk-text {
+    height: 12px;
+}
+
+.w70 {
+    width: 70%;
+}
+
+.w50 {
+    width: 50%;
+}
+
+.w30 {
+    width: 30%;
+}
+
+.mt1 {
+    margin-top: 8px;
+}
+
+.mt2 {
+    margin-top: 16px;
+}
+
+// ── Utils ─────────────────────────────────────────────────────────────────
+.text-muted {
     color: var(--text-muted);
-    margin-bottom: 1rem;
-    display: block;
+}
+
+.spinner {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-top-color: var(--text-secondary);
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
 }

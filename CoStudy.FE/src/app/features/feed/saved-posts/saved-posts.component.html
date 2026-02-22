@@ -1,10 +1,89 @@
-<div class="page-container">
+<div class="saved-page">
+
+    <!-- Header -->
     <div class="page-header">
-        <h1>Bài viết đã lưu</h1>
+        <div class="header-left">
+            <span class="material-icons-outlined header-icon">bookmark</span>
+            <div>
+                <h1 class="page-title">Bài viết đã lưu</h1>
+                <p class="page-subtitle text-muted">{{ posts().length }} bài viết</p>
+            </div>
+        </div>
+        <a routerLink="/feed" class="btn-back">
+            <span class="material-icons-outlined">arrow_back</span>
+            Feed
+        </a>
     </div>
+
+    <!-- Loading -->
+    @if (loading()) {
+    <div class="posts-list">
+        @for (i of [1,2,3]; track i) {
+        <div class="skeleton-card card">
+            <div class="skel-row">
+                <div class="skeleton circle"></div>
+                <div class="skel-lines">
+                    <div class="skeleton sk-line w50"></div>
+                    <div class="skeleton sk-line w30 mt1"></div>
+                </div>
+            </div>
+            <div class="skeleton sk-title mt2"></div>
+            <div class="skeleton sk-text mt1"></div>
+            <div class="skeleton sk-text w70 mt1"></div>
+        </div>
+        }
+    </div>
+    }
+
+    <!-- Error -->
+    @if (error()) {
+    <div class="empty-state card">
+        <span class="material-icons-outlined">error_outline</span>
+        <p>{{ error() }}</p>
+    </div>
+    }
+
+    <!-- Empty -->
+    @if (!loading() && !error() && posts().length === 0) {
     <div class="empty-state card">
         <span class="material-icons-outlined empty-icon">bookmark_border</span>
-        <h3>Chưa có bài viết đã lưu</h3>
-        <p class="text-secondary">Lưu bài viết yêu thích để xem lại sau</p>
+        <h2 class="empty-title">Chưa có bài viết nào được lưu</h2>
+        <p class="empty-desc text-muted">Khi bạn lưu bài viết, chúng sẽ xuất hiện ở đây.</p>
+        <a routerLink="/feed" class="btn-primary">
+            <span class="material-icons-outlined">explore</span>
+            Khám phá Feed
+        </a>
     </div>
+    }
+
+    <!-- Posts list -->
+    @if (!loading() && posts().length > 0) {
+    <div class="posts-list">
+        @for (p of posts(); track p.id) {
+        <div class="post-wrapper">
+            <app-post-card [post]="p"></app-post-card>
+            <button class="unsave-btn" (click)="unsave(p.id)" title="Bỏ lưu bài viết">
+                <span class="material-icons-outlined">bookmark_remove</span>
+                Bỏ lưu
+            </button>
+        </div>
+        }
+
+        <!-- Load more -->
+        @if (hasMore()) {
+        <div class="load-more-row">
+            <button class="btn-load-more" (click)="loadMore()" [disabled]="loadingMore()">
+                @if (loadingMore()) {
+                <span class="spinner"></span>
+                Đang tải...
+                } @else {
+                <span class="material-icons-outlined">expand_more</span>
+                Tải thêm
+                }
+            </button>
+        </div>
+        }
+    </div>
+    }
+
 </div>

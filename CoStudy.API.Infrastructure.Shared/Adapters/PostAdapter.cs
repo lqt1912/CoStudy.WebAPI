@@ -37,6 +37,7 @@ namespace CoStudy.API.Infrastructure.Shared.Adapters
                 foreach (Image content in request.MediaContents)
                 {
                     Image postContent = new Image();
+                    postContent.ImageUrl = content.ImageUrl;
                     postContent.ImageHash = content.ImageHash;
                     postContent.Discription = content.Discription;
                     post.MediaContents.Add(postContent);

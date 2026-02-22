@@ -88,6 +88,20 @@ namespace CoStudy.API.WebAPI.Middlewares
 
             if (!context.Response.HasStarted)
             {
+                // Không override 401/403 — để HTTP status code trả về đúng
+                if (context.Response.StatusCode == 401 || context.Response.StatusCode == 403)
+                {
+                    context.Response.ContentType = "application/json";
+                    var errorBody = JsonConvert.SerializeObject(new
+                    {
+                        success = false,
+                        code = context.Response.StatusCode,
+                        message = context.Response.StatusCode == 401 ? "Unauthorized" : "Forbidden"
+                    });
+                    await context.Response.WriteAsync(errorBody);
+                    return;
+                }
+
                 context.Response.ContentType = "application/json";
 
                 ApiResponse response = new ApiResponse(success, context.Response.StatusCode, message);

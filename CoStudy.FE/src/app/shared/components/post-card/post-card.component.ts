@@ -1,8 +1,9 @@
-import { Component, input, output } from '@angular/core';
+import { Component, inject, input, output, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { Post } from '../../../core/models/post.model';
 import { AvatarComponent } from '../avatar/avatar.component';
+import { PostService } from '../../../core/services/post.service';
 
 @Component({
   selector: 'app-post-card',
@@ -12,13 +13,28 @@ import { AvatarComponent } from '../avatar/avatar.component';
   styleUrls: ['./post-card.component.scss']
 })
 export class PostCardComponent {
+  private postService = inject(PostService);
   Math = Math;
   post = input.required<Post>();
 
+  // Local optimistic state
+  localUpvotes   = signal<number | null>(null);
+  localDownvotes = signal<number | null>(null);
+  localSaved     = signal<boolean | null>(null);
+  localUpvoted   = signal<boolean | null>(null);
+  localDownvoted = signal<boolean | null>(null);
+
+  // Keep output for backward compatibility (parent can still listen)
   upvote = output<string>();
   downvote = output<string>();
   save = output<string>();
   share = output<string>();
+
+  get displayUpvotes(): number   { return this.localUpvotes()   ?? this.post().upvoteCount   ?? 0; }
+  get displayDownvotes(): number { return this.localDownvotes() ?? this.post().downvoteCount ?? 0; }
+  get isSavedNow(): boolean      { return this.localSaved()     ?? this.post().isSaved       ?? false; }
+  get isUpvotedNow(): boolean    { return this.localUpvoted()   ?? this.post().isUpvoted     ?? false; }
+  get isDownvotedNow(): boolean  { return this.localDownvoted() ?? this.post().isDownvoted   ?? false; }
 
   get authorName(): string {
     const p = this.post();
@@ -70,15 +86,35 @@ export class PostCardComponent {
     return new Date(date).toLocaleDateString('vi-VN');
   }
 
+  /** Unified list of image URLs: backend stores the URL in image_hash */
+  get postImages(): string[] {
+    const imageContents = this.post().image_contents;
+    if (imageContents?.length) {
+      return imageContents.map(img => img.image_hash).filter(Boolean);
+    }
+    return this.post().images ?? [];
+  }
+
   onUpvote(): void {
+    const next = !this.isUpvotedNow;
+    this.localUpvoted.set(next);
+    this.localUpvotes.set(this.displayUpvotes + (next ? 1 : -1));
+    this.postService.upvote(this.post().id).subscribe();
     this.upvote.emit(this.post().id);
   }
 
   onDownvote(): void {
+    const next = !this.isDownvotedNow;
+    this.localDownvoted.set(next);
+    this.localDownvotes.set(this.displayDownvotes + (next ? 1 : -1));
+    this.postService.downvote(this.post().id).subscribe();
     this.downvote.emit(this.post().id);
   }
 
   onSave(): void {
+    const next = !this.isSavedNow;
+    this.localSaved.set(next);
+    this.postService.savePost(this.post().id).subscribe();
     this.save.emit(this.post().id);
   }
 

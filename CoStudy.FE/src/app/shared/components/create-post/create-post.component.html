@@ -34,6 +34,9 @@
                 class="w-full bg-slate-700/60 border border-slate-600 text-white placeholder-slate-400 rounded-xl px-4 py-2.5 text-sm font-medium focus:outline-none focus:border-indigo-500 transition-colors" />
 
             <!-- Toolbar -->
+            <!-- Hidden file input -->
+            <input #imgInput type="file" accept="image/*" multiple hidden (change)="onImageSelect($event)" />
+
             <div class="flex flex-wrap items-center gap-1 px-1">
                 <button (click)="execFormat('bold')" [class]="isBold() ? 'toolbar-btn active' : 'toolbar-btn'"
                     title="In đậm (Ctrl+B)">
@@ -55,6 +58,11 @@
                 <button (click)="insertCode()" class="toolbar-btn font-mono text-xs"
                     title="Code nhúng">&lt;/&gt;</button>
                 <button (click)="execBlock('blockquote')" class="toolbar-btn text-xs" title="Trích dẫn">❝</button>
+                <!-- Image attach button -->
+                <div class="w-px h-5 bg-slate-600 mx-1"></div>
+                <button type="button" (click)="imgInput.click()" class="toolbar-btn" title="Đính kèm ảnh">
+                    <span class="material-icons-outlined" style="font-size:15px;line-height:1">image</span>
+                </button>
             </div>
 
             <!-- Rich-text editor area -->
@@ -63,63 +71,109 @@
                 data-placeholder="Nhập nội dung bài viết... (hỗ trợ định dạng HTML)">
             </div>
 
-            <!-- Step 1: Field selector chips -->
-            @if (fields().length > 0) {
-            <div>
-                <div class="flex items-center justify-between mb-2">
-                    <p class="text-slate-400 text-xs font-semibold uppercase tracking-wider">🏷️ Lĩnh vực liên quan</p>
-                    @if (selectedFields().length > 0) {
-                    <span class="text-indigo-400 text-xs">{{ selectedFields().length }} đã chọn</span>
-                    } @else {
-                    <span class="text-slate-500 text-xs italic">Nhấn vào chip để chọn</span>
+            <!-- Image preview strip -->
+            @if (previewUrls().length > 0) {
+            <div class="flex gap-2 overflow-x-auto pb-1">
+                @for (url of previewUrls(); track url; let i = $index) {
+                <div class="relative shrink-0 w-20 h-20 rounded-lg overflow-hidden border border-slate-600 group">
+                    <img [src]="url" alt="Preview" class="w-full h-full object-cover" />
+                    <!-- Uploading overlay -->
+                    @if (uploading()) {
+                    <div class="absolute inset-0 bg-slate-900/70 flex items-center justify-center">
+                        <span class="spinner-sm"></span>
+                    </div>
                     }
-                </div>
-                <div class="flex flex-wrap gap-2">
-                    @for (field of fields(); track field.oid) {
-                    <button (click)="toggleField(field.oid)"
-                        [class]="isFieldSelected(field.oid)
-                        ? 'inline-flex items-center gap-1.5 px-3 py-1 text-xs rounded-full border bg-indigo-500/25 border-indigo-500 text-indigo-300 scale-105 shadow-md shadow-indigo-500/10 transition-all duration-150'
-                        : 'inline-flex items-center gap-1.5 px-3 py-1 text-xs rounded-full border border-slate-600 text-slate-400 hover:border-slate-500 hover:text-slate-300 hover:bg-slate-700/50 transition-all duration-150'">
-                        @if (isFieldSelected(field.oid)) {
-                        <span class="text-indigo-400 text-[10px] font-bold">✓</span>
-                        }
-                        {{ field.value }}
+                    <!-- Remove button -->
+                    @if (!uploading()) {
+                    <button type="button" (click)="removeImage(i)"
+                        class="absolute top-1 right-1 w-5 h-5 rounded-full bg-slate-900/80 text-white text-xs leading-none flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                        ×
                     </button>
                     }
-                </div>
-            </div>
-            }
-
-            <!-- Step 2: Level picker for each selected field (pill style) -->
-            @if (selectedFields().length > 0 && levels().length > 0) {
-            <div class="bg-slate-700/30 border border-slate-600/40 rounded-xl p-3 space-y-3">
-                <p class="text-slate-400 text-xs font-semibold uppercase tracking-wider">⚡ Chọn cấp độ cho mỗi lĩnh vực
-                </p>
-                @for (field of selectedFields(); track field.oid) {
-                <div>
-                    <p class="text-indigo-300 text-xs font-medium mb-1.5 flex items-center gap-1.5">
-                        <span class="w-1 h-1 rounded-full bg-indigo-400 inline-block"></span>
-                        {{ field.value }}
-                    </p>
-                    <div class="flex flex-wrap gap-1.5">
-                        @for (level of levels(); track level.oid) {
-                        <button type="button" (click)="setLevel(field.oid, level.oid)"
-                            [class]="getLevelForField(field.oid) === level.oid
-                            ? 'inline-flex items-center gap-1 px-2.5 py-1 text-xs rounded-lg bg-indigo-600 border border-indigo-500 text-white font-medium transition-all duration-150 shadow-sm'
-                            : 'inline-flex items-center gap-1 px-2.5 py-1 text-xs rounded-lg bg-slate-700 border border-slate-600 text-slate-300 hover:border-slate-500 hover:text-white transition-all duration-150'">
-                            {{ level.icon || '⭐' }} {{ level.name }}
-                            @if (level.point) {
-                            <span class="opacity-60 text-[10px]">{{ level.point }}đ</span>
-                            }
-                        </button>
-                        }
-                    </div>
                 </div>
                 }
             </div>
             }
+            <!-- ─── Field / Level picker trigger ─────────────────────── -->
+            <!-- Selected field tags chạy ngang, mỗi tag có dấu × để bỏ chọn -->
+            <div class="flex flex-wrap items-center gap-2">
+                <!-- Tag của từng field đã chọn -->
+                @for (field of selectedFields(); track field.oid) {
+                <div
+                    class="inline-flex items-center gap-1 bg-indigo-500/15 border border-indigo-500/40 text-indigo-300 rounded-full px-2.5 py-0.5 text-xs font-medium">
+                    <span>{{ field.value }}</span>
+                    <!-- level được chọn -->
+                    @if (getLevelForField(field.oid); as lvlId) {
+                    <span class="text-indigo-200 opacity-70">·</span>
+                    <span class="text-indigo-200 text-[10px]">{{ getLevelName(lvlId) }}</span>
+                    }
+                    <button type="button" (click)="toggleField(field.oid)"
+                        class="ml-0.5 text-indigo-400 hover:text-white opacity-70 hover:opacity-100 leading-none">✕</button>
+                </div>
+                }
 
+                <!-- Button mở picker -->
+                <button type="button" (click)="toggleFieldPicker()"
+                    [class]="showFieldPicker()
+                        ? 'inline-flex items-center gap-1.5 px-3 py-1 text-xs rounded-full bg-indigo-600/30 border border-indigo-500 text-indigo-300 transition-all'
+                        : 'inline-flex items-center gap-1.5 px-3 py-1 text-xs rounded-full bg-slate-700 border border-slate-600 text-slate-400 hover:border-indigo-500/50 hover:text-indigo-300 transition-all'">
+                    <span class="material-icons-outlined" style="font-size:13px">add</span>
+                    {{ selectedFields().length === 0 ? 'Thêm lĩnh vực' : 'Sửa lĩnh vực' }}
+                </button>
+            </div>
 
+            <!-- ─── Inline Dropdown Panel ─────────────────────────────── -->
+            @if (showFieldPicker() && fields().length > 0) {
+            <div class="bg-slate-900/80 border border-slate-600 rounded-lg p-3 space-y-3 backdrop-blur-sm">
+
+                <!-- Field chips -->
+                <div>
+                    <p class="text-slate-500 text-[10px] uppercase tracking-wider font-semibold mb-1.5">Lĩnh vực</p>
+                    <div class="flex flex-wrap gap-1.5">
+                        @for (field of fields(); track field.oid) {
+                        <button type="button" (click)="toggleField(field.oid)"
+                            [class]="isFieldSelected(field.oid)
+                                ? 'inline-flex items-center gap-1 px-2.5 py-1 text-xs rounded-lg bg-indigo-600 border border-indigo-500 text-white font-medium transition-all'
+                                : 'inline-flex items-center gap-1 px-2.5 py-1 text-xs rounded-lg bg-slate-800 border border-slate-600 text-slate-400 hover:border-slate-500 hover:text-white transition-all'">
+                            @if (isFieldSelected(field.oid)) {<span class="text-[10px]">✓</span>}
+                            {{ field.value }}
+                        </button>
+                        }
+                    </div>
+                </div>
+
+                <!-- Level picker (chỉ hiện nếu đã chọn lĩnh vực) -->
+                @if (selectedFields().length > 0 && levels().length > 0) {
+                <div class="border-t border-slate-700 pt-2.5 space-y-2">
+                    <p class="text-slate-500 text-[10px] uppercase tracking-wider font-semibold">Cấp độ</p>
+                    @for (field of selectedFields(); track field.oid) {
+                    <div class="flex items-center gap-2 flex-wrap">
+                        <span class="text-indigo-300 text-xs font-medium w-24 truncate shrink-0">{{ field.value
+                            }}</span>
+                        <div class="flex flex-wrap gap-1">
+                            @for (level of levels(); track level.oid) {
+                            <button type="button" (click)="setLevel(field.oid, level.oid)"
+                                [class]="getLevelForField(field.oid) === level.oid
+                                    ? 'inline-flex items-center gap-1 px-2 py-0.5 text-[11px] rounded-md bg-indigo-600 border border-indigo-500 text-white font-medium transition-all'
+                                    : 'inline-flex items-center gap-1 px-2 py-0.5 text-[11px] rounded-md bg-slate-700 border border-slate-600 text-slate-300 hover:border-slate-500 transition-all'">
+                                {{ level.icon || '⭐' }} {{ level.name }}
+                            </button>
+                            }
+                        </div>
+                    </div>
+                    }
+                </div>
+                }
+
+                <!-- Confirm button -->
+                <div class="flex justify-end border-t border-slate-700 pt-2">
+                    <button type="button" (click)="toggleFieldPicker()"
+                        class="px-3 py-1 text-xs text-white bg-indigo-600 hover:bg-indigo-500 rounded-lg transition-colors">
+                        Xong
+                    </button>
+                </div>
+            </div>
+            }
 
             <!-- Error -->
             @if (error()) {

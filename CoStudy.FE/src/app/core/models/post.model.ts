@@ -23,6 +23,7 @@ export interface Post {
   status?: string;
   createdAt?: string;
   updatedAt?: string;
+  image_contents?: PostImage[];
 }
 
 
@@ -31,6 +32,14 @@ export type PostType = 0 | 1;
 
 // Content type: 0 = Text, 1 = Code
 export type PostContentType = 0 | 1;
+
+export interface PostImage {
+  /** URL returned by the file-upload API (Google Cloud) */
+  image_url: string;
+  /** Same as image_url — backend requires both fields */
+  image_hash: string;
+  discription?: string;
+}
 
 export interface PostContentItem {
   contentType: PostContentType;
@@ -45,7 +54,7 @@ export interface ObjectLevelField {
 export interface AddPostRequest {
   title: string;
   stringContents: PostContentItem[];
-  imageContents?: any[];
+  imageContents?: PostImage[];
   fields?: ObjectLevelField[];
   postType: PostType;
 }

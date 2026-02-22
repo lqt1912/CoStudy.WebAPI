@@ -1,7 +1,167 @@
-<div class="page-container">
-    <div class="empty-state card">
-        <span class="material-icons-outlined empty-icon">article</span>
-        <h3>Chi tiết bài viết</h3>
-        <p class="text-secondary">Đang phát triển</p>
+<div class="detail-page">
+
+    <!-- Loading -->
+    @if (loadingPost()) {
+    <div class="skeleton-wrapper">
+        <div class="skeleton skeleton-title"></div>
+        <div class="skeleton skeleton-text"></div>
+        <div class="skeleton skeleton-text short"></div>
+        <div class="skeleton skeleton-img"></div>
     </div>
+    }
+
+    <!-- Error -->
+    @if (postError()) {
+    <div class="error-box">
+        <span class="material-icons-outlined">error_outline</span>
+        {{ postError() }}
+        <a routerLink="/feed" class="btn-back">Quay về feed</a>
+    </div>
+    }
+
+    <!-- Post content -->
+    @if (post(); as p) {
+    <article class="post-article card">
+
+        <!-- ── Header ── -->
+        <header class="post-header">
+            <a [routerLink]="['/profile', p.authorId]" class="post-author">
+                <app-avatar [src]="p.author_avatar ?? ''" [initial]="(p.author_name ?? '?')[0].toUpperCase()"
+                    size="md"></app-avatar>
+                <div class="author-info">
+                    <span class="author-name">{{ p.author_name }}</span>
+                    <span class="post-time text-muted text-xs">{{ timeAgo(p.createdAt) }}</span>
+                </div>
+            </a>
+            <!-- Type badge -->
+            <span [class]="p.postType === 0 ? 'badge badge-question' : 'badge badge-share'">
+                <span class="material-icons-outlined badge-icon">{{ p.postType === 0 ? 'help_outline' : 'share'
+                    }}</span>
+                {{ p.post_type_name ?? (p.postType === 0 ? 'Câu hỏi' : 'Chia sẻ') }}
+            </span>
+        </header>
+
+        <!-- ── Title ── -->
+        <h1 class="post-title">{{ p.title }}</h1>
+
+        <!-- ── Body (HTML content) ── -->
+        @if (p.content) {
+        <div class="post-body" [innerHTML]="p.content"></div>
+        }
+
+        <!-- ── Images ── -->
+        @if (postImages.length > 0) {
+        <div class="post-images" [class.grid-1]="postImages.length === 1" [class.grid-2]="postImages.length === 2"
+            [class.grid-3]="postImages.length === 3" [class.grid-4]="postImages.length >= 4">
+            @for (url of postImages.slice(0,4); track url) {
+            <button type="button" class="img-btn" (click)="openLightbox(url)">
+                <img [src]="url" alt="Post image" class="post-img" loading="lazy" />
+            </button>
+            }
+        </div>
+        }
+
+        <!-- ── Actions ── -->
+        <div class="post-actions">
+            <button class="action-btn" [class.active]="p.isUpvoted" (click)="onUpvote()">
+                <span class="material-icons-outlined">thumb_up</span>
+                {{ p.upvoteCount ?? 0 }}
+            </button>
+            <button class="action-btn" [class.active-down]="p.isDownvoted" (click)="onDownvote()">
+                <span class="material-icons-outlined">thumb_down</span>
+                {{ p.downvoteCount ?? 0 }}
+            </button>
+            <span class="action-btn non-btn">
+                <span class="material-icons-outlined">chat_bubble_outline</span>
+                {{ comments().length }}
+            </span>
+            <button class="action-btn save-btn" [class.saved]="p.isSaved" (click)="onSave()" title="Lưu bài">
+                <span class="material-icons-outlined">{{ p.isSaved ? 'bookmark' : 'bookmark_border' }}</span>
+            </button>
+        </div>
+    </article>
+
+    <!-- ── Comment compose ── -->
+    <section class="comment-compose card">
+        <textarea #commentInput class="comment-input" rows="3" placeholder="Viết bình luận..." [value]="commentText()"
+            (input)="commentText.set(commentInput.value)" (keydown.ctrl.enter)="submitComment()">
+    </textarea>
+        @if (commentError()) {
+        <p class="text-danger text-xs mt-1">{{ commentError() }}</p>
+        }
+        <div class="compose-footer">
+            <span class="text-muted text-xs">Ctrl+Enter để gửi</span>
+            <button class="btn-submit" [disabled]="submittingComment() || !commentText().trim()"
+                (click)="submitComment()">
+                @if (submittingComment()) {
+                <span class="spinner-sm"></span>
+                } @else {
+                <span class="material-icons-outlined" style="font-size:16px">send</span>
+                Gửi
+                }
+            </button>
+        </div>
+    </section>
+
+    <!-- ── Comments list ── -->
+    <section class="comments-section">
+        <h2 class="comments-heading">
+            Bình luận
+            <span class="count-badge">{{ comments().length }}</span>
+        </h2>
+
+        @if (loadingComments()) {
+        <div class="comments-loading">
+            @for (i of [1,2,3]; track i) {
+            <div class="skeleton-comment">
+                <div class="skeleton circle"></div>
+                <div class="skeleton-lines">
+                    <div class="skeleton sk-line"></div>
+                    <div class="skeleton sk-line short"></div>
+                </div>
+            </div>
+            }
+        </div>
+        }
+
+        @if (!loadingComments() && comments().length === 0) {
+        <div class="empty-comments">
+            <span class="material-icons-outlined">forum</span>
+            <p>Chưa có bình luận nào. Hãy là người đầu tiên!</p>
+        </div>
+        }
+
+        @for (c of comments(); track c.oid) {
+        <div class="comment-item">
+            <app-avatar [src]="c.author_avatar ?? ''" [initial]="(c.author_name ?? '?')[0].toUpperCase()"
+                size="sm"></app-avatar>
+            <div class="comment-body">
+                <div class="comment-header">
+                    <span class="comment-author">{{ c.author_name }}</span>
+                    <span class="comment-time text-muted text-xs">{{ timeAgo(c.created_date) }}</span>
+                </div>
+                <p class="comment-content">{{ c.content }}</p>
+                <div class="comment-actions">
+                    <button class="caction-btn" [class.active]="c.is_vote_by_current">
+                        <span class="material-icons-outlined">thumb_up</span>
+                        {{ c.upvote_count }}
+                    </button>
+                    <span class="comment-replies text-muted text-xs">{{ c.replies_count }} trả lời</span>
+                </div>
+            </div>
+        </div>
+        }
+    </section>
+    }
+
 </div>
+
+<!-- ── Lightbox ── -->
+@if (lightboxUrl()) {
+<div class="lightbox-overlay" (click)="closeLightbox()">
+    <button class="lightbox-close" (click)="closeLightbox()">
+        <span class="material-icons-outlined">close</span>
+    </button>
+    <img [src]="lightboxUrl()!" alt="Image" class="lightbox-img" (click)="$event.stopPropagation()" />
+</div>
+}

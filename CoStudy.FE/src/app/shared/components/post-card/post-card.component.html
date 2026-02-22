@@ -26,11 +26,11 @@
         <p class="post-content">{{ post().content }}</p>
     </a>
 
-    <!-- Images -->
-    @if (post().images && post().images!.length > 0) {
-    <div class="post-images" [class]="'grid-' + Math.min(post().images!.length, 4)">
-        @for (img of post().images!.slice(0, 4); track img) {
-        <img [src]="img" alt="Post image" class="post-img" loading="lazy" />
+    <!-- Images (from image_contents) -->
+    @if (postImages.length > 0) {
+    <div class="post-images" [class]="'grid-' + Math.min(postImages.length, 4)">
+        @for (url of postImages.slice(0, 4); track url) {
+        <img [src]="url" alt="Post image" class="post-img" loading="lazy" />
         }
     </div>
     }
@@ -46,14 +46,14 @@
 
     <!-- Actions -->
     <div class="post-actions">
-        <button class="action-btn" [class.active]="post().isUpvoted" (click)="onUpvote()">
+        <button class="action-btn" [class.active]="isUpvotedNow" (click)="onUpvote()">
             <span class="material-icons-outlined">thumb_up</span>
-            <span>{{ post().upvoteCount ?? 0 }}</span>
+            <span>{{ displayUpvotes }}</span>
         </button>
 
-        <button class="action-btn" [class.active-down]="post().isDownvoted" (click)="onDownvote()">
+        <button class="action-btn" [class.active-down]="isDownvotedNow" (click)="onDownvote()">
             <span class="material-icons-outlined">thumb_down</span>
-            <span>{{ post().downvoteCount ?? 0 }}</span>
+            <span>{{ displayDownvotes }}</span>
         </button>
 
         <a [routerLink]="['/post', post().id]" class="action-btn">
@@ -66,8 +66,8 @@
             <span>{{ post().shareCount ?? 0 }}</span>
         </button>
 
-        <button class="action-btn save-btn" [class.saved]="post().isSaved" (click)="onSave()">
-            <span class="material-icons-outlined">{{ post().isSaved ? 'bookmark' : 'bookmark_border' }}</span>
+        <button class="action-btn save-btn" [class.saved]="isSavedNow" (click)="onSave()">
+            <span class="material-icons-outlined">{{ isSavedNow ? 'bookmark' : 'bookmark_border' }}</span>
         </button>
     </div>
 </article>

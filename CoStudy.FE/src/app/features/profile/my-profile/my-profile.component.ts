@@ -154,9 +154,9 @@ export class MyProfileComponent implements OnInit {
     this.isUploadingAvatar = true;
     this.errorMessage = '';
 
-    this.fileService.uploadFiles('avatars', [file]).subscribe({
-      next: (res: any) => {
-        const imageUrl = res?.result?.[0];
+    this.fileService.uploadFiles([file], 'avatars').subscribe({
+      next: (urls: string[]) => {
+        const imageUrl = urls[0];
         if (imageUrl) {
           this.userService.uploadAvatar({ avatarHash: imageUrl }).subscribe({
             next: () => {

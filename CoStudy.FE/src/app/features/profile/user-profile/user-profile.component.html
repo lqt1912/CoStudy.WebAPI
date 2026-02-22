@@ -1,104 +1,187 @@
-<div class="max-w-3xl mx-auto py-8 px-4">
-    <!-- Loading -->
-    @if (isLoading) {
-    <div class="flex items-center justify-center py-20">
-        <i class="fas fa-spinner fa-spin text-4xl text-[var(--color-primary)]"></i>
-    </div>
-    } @else if (errorMessage) {
-    <!-- Error -->
-    <div class="flex flex-col items-center justify-center py-20 gap-4">
-        <div class="w-20 h-20 rounded-full bg-red-500/15 flex items-center justify-center">
-            <i class="fas fa-exclamation-triangle text-4xl text-[var(--color-danger)]"></i>
+<!-- Loading skeleton -->
+@if (isLoading()) {
+<div class="profile-page">
+    <div class="profile-hero card">
+        <div class="hero-cover skeleton"></div>
+        <div class="hero-body">
+            <div class="skeleton circle-lg"></div>
+            <div class="hero-info">
+                <div class="skeleton sk-line w60"></div>
+                <div class="skeleton sk-line w40 mt1"></div>
+            </div>
         </div>
-        <p class="text-lg text-[var(--text-secondary)]">{{ errorMessage }}</p>
-        <a routerLink="/feed"
-            class="px-6 py-3 rounded-xl text-base font-semibold text-white bg-[var(--color-primary)] hover:bg-[var(--color-primary-hover)] transition-all">
-            Về trang chủ
-        </a>
     </div>
-    } @else {
+</div>
+}
 
-    <!-- Profile Header Card -->
-    <div class="bg-[var(--color-surface)] rounded-2xl p-8 mb-6 shadow-lg">
-        <div class="flex flex-col sm:flex-row items-center sm:items-start gap-6">
-            <!-- Avatar -->
-            <div class="flex-shrink-0">
-                <app-avatar [src]="user?.avatar_hash || ''" [alt]="displayName" [initial]="initials"
-                    size="xl"></app-avatar>
+<!-- Error -->
+@if (errorMessage()) {
+<div class="profile-page">
+    <div class="error-box card">
+        <span class="material-icons-outlined">person_off</span>
+        <p>{{ errorMessage() }}</p>
+        <a routerLink="/feed" class="btn-link">← Quay về feed</a>
+    </div>
+</div>
+}
+
+<!-- Profile content -->
+@if (user(); as u) {
+<div class="profile-page">
+
+    <!-- ── Hero card ── -->
+    <div class="profile-hero card">
+        <div class="hero-cover">
+            <div class="cover-gradient"></div>
+        </div>
+        <div class="hero-body">
+            <div class="avatar-wrapper">
+                <app-avatar [src]="u.avatar_hash ?? ''" [initial]="initials" size="xl">
+                </app-avatar>
+                @if (u.status === 0) {
+                <span class="online-dot" title="Đang hoạt động"></span>
+                }
             </div>
 
-            <!-- Info -->
-            <div class="flex-1 text-center sm:text-left">
-                <h1 class="text-2xl font-bold text-[var(--text-primary)]">{{ displayName }}</h1>
-                <div class="flex gap-6 mt-4 justify-center sm:justify-start">
-                    <div class="text-center">
-                        <span class="text-xl font-bold text-[var(--text-primary)]">{{ user?.followerCount || 0 }}</span>
-                        <span class="text-sm text-[var(--text-muted)] ml-1">Người theo dõi</span>
+            <div class="hero-info">
+                <h1 class="profile-name">{{ displayName }}</h1>
+                @if (u.email) {
+                <span class="profile-email text-muted">{{ u.email }}</span>
+                }
+                @if (u.bio) {
+                <p class="profile-bio">{{ u.bio }}</p>
+                }
+
+                <!-- Stats row -->
+                <div class="stats-row">
+                    <div class="stat-item">
+                        <span class="stat-value">{{ posts().length }}</span>
+                        <span class="stat-label">Bài viết</span>
                     </div>
-                    <div class="text-center">
-                        <span class="text-xl font-bold text-[var(--text-primary)]">{{ user?.followingCount || 0
-                            }}</span>
-                        <span class="text-sm text-[var(--text-muted)] ml-1">Đang theo dõi</span>
+                    <div class="stat-divider"></div>
+                    <div class="stat-item">
+                        <span class="stat-value">{{ u.followerCount ?? 0 }}</span>
+                        <span class="stat-label">Người theo dõi</span>
+                    </div>
+                    <div class="stat-divider"></div>
+                    <div class="stat-item">
+                        <span class="stat-value">{{ u.followingCount ?? 0 }}</span>
+                        <span class="stat-label">Đang theo dõi</span>
                     </div>
                 </div>
             </div>
 
-            <!-- Action Buttons -->
-            <div class="flex-shrink-0">
+            <!-- Action buttons -->
+            <div class="hero-actions">
                 @if (isOwnProfile) {
-                <a routerLink="/profile"
-                    class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[var(--color-surface-2)] text-[var(--text-primary)] font-medium hover:bg-[var(--color-primary)] hover:text-white transition-all text-base">
-                    <i class="fas fa-pen text-sm"></i> Chỉnh sửa
+                <a routerLink="/profile" class="btn btn-outline">
+                    <span class="material-icons-outlined">edit</span>
+                    Chỉnh sửa
                 </a>
                 } @else {
-                <button type="button" (click)="toggleFollow()"
-                    class="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl font-semibold transition-all text-base"
-                    [class]="user?.isFollowing
-                        ? 'bg-[var(--color-surface-2)] text-[var(--text-primary)] hover:bg-red-500/15 hover:text-[var(--color-danger)]'
-                        : 'bg-[var(--color-primary)] text-white hover:bg-[var(--color-primary-hover)]'">
-                    @if (user?.isFollowing) {
-                    <i class="fas fa-user-check text-sm"></i> Đang theo dõi
-                    } @else {
-                    <i class="fas fa-user-plus text-sm"></i> Theo dõi
-                    }
+                <button class="btn" [class.btn-outline]="u.isFollowing" [class.btn-primary]="!u.isFollowing"
+                    (click)="toggleFollow()">
+                    <span class="material-icons-outlined">{{ u.isFollowing ? 'person_remove' : 'person_add' }}</span>
+                    {{ u.isFollowing ? 'Hủy theo dõi' : 'Theo dõi' }}
                 </button>
+                <a [routerLink]="['/messages']" class="btn btn-outline">
+                    <span class="material-icons-outlined">chat_bubble_outline</span>
+                    Nhắn tin
+                </a>
                 }
             </div>
         </div>
     </div>
 
-    <!-- Details Card -->
-    <div class="bg-[var(--color-surface)] rounded-2xl p-8 shadow-lg space-y-8">
-        <!-- Bio -->
-        <div>
-            <h3 class="text-lg font-semibold text-[var(--text-primary)] mb-3 flex items-center gap-2">
-                <i class="fas fa-user text-[var(--color-primary)]"></i> Giới thiệu
-            </h3>
-            <p class="text-base text-[var(--text-secondary)] leading-relaxed">
-                {{ user?.bio || 'Chưa có giới thiệu.' }}
-            </p>
-        </div>
+    <!-- ── Tabs ── -->
+    <div class="tabs-bar">
+        <button class="tab-btn" [class.active]="activeTab() === 'posts'" (click)="activeTab.set('posts')">
+            <span class="material-icons-outlined">article</span> Bài viết
+        </button>
+        <button class="tab-btn" [class.active]="activeTab() === 'info'" (click)="activeTab.set('info')">
+            <span class="material-icons-outlined">info_outline</span> Thông tin
+        </button>
+    </div>
 
-        <!-- Info Grid -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
-            <div class="space-y-1">
-                <label class="text-xs font-medium text-[var(--text-muted)] uppercase tracking-wider">Giới tính</label>
-                <p class="text-base text-[var(--text-primary)]">{{ user?.gender || 'Chưa cập nhật' }}</p>
-            </div>
-            <div class="space-y-1">
-                <label class="text-xs font-medium text-[var(--text-muted)] uppercase tracking-wider">Lĩnh vực</label>
-                <div class="flex flex-wrap gap-2 mt-1">
-                    @for (field of user?.fields; track field) {
-                    <span
-                        class="px-3 py-1 rounded-full text-sm bg-[var(--color-primary)]/15 text-[var(--color-primary)] font-medium">
-                        {{ field }}
-                    </span>
-                    } @empty {
-                    <span class="text-base text-[var(--text-muted)]">Chưa cập nhật</span>
-                    }
-                </div>
-            </div>
+    <!-- ── Posts tab ── -->
+    @if (activeTab() === 'posts') {
+    <div class="posts-tab">
+        @if (loadingPosts()) {
+        @for (i of [1,2,3]; track i) {
+        <div class="card skeleton-post">
+            <div class="skeleton sk-line w70"></div>
+            <div class="skeleton sk-line w50 mt1"></div>
+            <div class="skeleton sk-img mt1"></div>
         </div>
+        }
+        }
+        @if (!loadingPosts() && posts().length === 0) {
+        <div class="empty-state card">
+            <span class="material-icons-outlined">article</span>
+            <p>Chưa có bài viết nào.</p>
+        </div>
+        }
+        @for (p of posts(); track p.id) {
+        <app-post-card [post]="p"></app-post-card>
+        }
     </div>
     }
+
+    <!-- ── Info tab ── -->
+    @if (activeTab() === 'info') {
+    <div class="info-tab card">
+        <h2 class="section-title">Thông tin cá nhân</h2>
+
+        @if (u.gender) {
+        <div class="info-row">
+            <span class="material-icons-outlined">wc</span>
+            <span>{{ u.gender === 'Male' ? 'Nam' : u.gender === 'Female' ? 'Nữ' : u.gender }}</span>
+        </div>
+        }
+
+        @if (u.date_of_birth) {
+        <div class="info-row">
+            <span class="material-icons-outlined">cake</span>
+            <span>{{ u.date_of_birth | date:'dd/MM/yyyy' }}</span>
+        </div>
+        }
+
+        @if (u.phone_number) {
+        <div class="info-row">
+            <span class="material-icons-outlined">phone</span>
+            <span>{{ u.phone_number }}</span>
+        </div>
+        }
+
+        @if (u.address?.city || u.address?.district) {
+        <div class="info-row">
+            <span class="material-icons-outlined">location_on</span>
+            <span>{{ addressLine }}</span>
+        </div>
+        }
+
+        @if (u.additional_infos && u.additional_infos.length > 0) {
+        <hr class="divider">
+        <h3 class="sub-title">Thông tin thêm</h3>
+        @for (info of u.additional_infos; track info.key) {
+        <div class="info-row">
+            <span class="info-key">{{ info.key }}</span>
+            <span class="info-value">{{ info.value }}</span>
+        </div>
+        }
+        }
+
+        @if (u.fields && u.fields.length > 0) {
+        <hr class="divider">
+        <h3 class="sub-title">Lĩnh vực</h3>
+        <div class="tags-row">
+            @for (f of u.fields; track f) {
+            <span class="tag">{{ f }}</span>
+            }
+        </div>
+        }
+    </div>
+    }
+
 </div>
+}
